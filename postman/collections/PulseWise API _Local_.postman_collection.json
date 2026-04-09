@@ -1,0 +1,3675 @@
+{
+  "info": {
+    "_postman_id": "7b9ffbe8-10fb-4749-8367-00acbf7bebb6",
+    "name": "PulseWise API (Local)",
+    "description": "Collection canonical untuk seluruh endpoint PulseWise (auth, phase-2, dashboard dokter, QR linking).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "GET Health",
+          "id": "37f2b2d7-3994-4c74-8926-a7f67ad161ca",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "f464b3a8-447e-4f06-b6d3-925627e7e518",
+              "name": "GET Health",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/health",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "health"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Security-Policy",
+                  "value": "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+                },
+                {
+                  "key": "Cross-Origin-Opener-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Cross-Origin-Resource-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Origin-Agent-Cluster",
+                  "value": "?1"
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "no-referrer"
+                },
+                {
+                  "key": "Strict-Transport-Security",
+                  "value": "max-age=31536000; includeSubDomains"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "X-DNS-Prefetch-Control",
+                  "value": "off"
+                },
+                {
+                  "key": "X-Download-Options",
+                  "value": "noopen"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "X-Permitted-Cross-Domain-Policies",
+                  "value": "none"
+                },
+                {
+                  "key": "X-XSS-Protection",
+                  "value": "0"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "151"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"97-urIagm7Z/JCt2NveGgYi/MpiwDI\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Wed, 08 Apr 2026 18:13:43 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "responseTime": "2026-04-08T18:13:44.882Z",
+              "body": "{\n    \"success\": true,\n    \"message\": \"Pulse Wise Backend is running smoothly\",\n    \"data\": {\n        \"timestamp\": \"2026-04-08T18:13:43.570Z\",\n        \"dbTime\": \"2026-04-08T18:13:43.490Z\"\n    }\n}"
+            }
+          ]
+        }
+      ],
+      "id": "061dd5c0-3c7a-4213-9f8a-06a96f6f0650"
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "POST Register Patient",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });",
+                  "const json = pm.response.json();",
+                  "if (json?.data?.user?.userId) { pm.environment.set('patientId', json.data.user.userId); }"
+                ],
+                "id": "cd75b688-7213-48e0-b33e-4c9923490b64"
+              }
+            }
+          ],
+          "id": "e1b9a587-06a1-4e36-8b5f-6017a8567633",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{patientUsername}}\",\n  \"email\": \"{{patientEmail}}\",\n  \"password\": \"{{patientPassword}}\",\n  \"firstName\": \"{{patientFirstName}}\",\n  \"lastName\": \"{{patientLastName}}\",\n  \"role\": \"patient\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "879fff26-bd49-4e42-9aeb-e524d21aafc5",
+              "name": "POST Register Patient",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"{{patientUsername}}\",\n  \"email\": \"{{patientEmail}}\",\n  \"password\": \"{{patientPassword}}\",\n  \"firstName\": \"{{patientFirstName}}\",\n  \"lastName\": \"{{patientLastName}}\",\n  \"role\": \"patient\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/auth/register",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Security-Policy",
+                  "value": "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+                },
+                {
+                  "key": "Cross-Origin-Opener-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Cross-Origin-Resource-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Origin-Agent-Cluster",
+                  "value": "?1"
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "no-referrer"
+                },
+                {
+                  "key": "Strict-Transport-Security",
+                  "value": "max-age=31536000; includeSubDomains"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "X-DNS-Prefetch-Control",
+                  "value": "off"
+                },
+                {
+                  "key": "X-Download-Options",
+                  "value": "noopen"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "X-Permitted-Cross-Domain-Policies",
+                  "value": "none"
+                },
+                {
+                  "key": "X-XSS-Protection",
+                  "value": "0"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "339"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"153-cTdL9ifmR5+IVXN8LkL/Dr4Dfhc\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Wed, 08 Apr 2026 18:23:43 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "responseTime": "2026-04-08T18:23:45.828Z",
+              "body": "{\n    \"success\": true,\n    \"message\": \"Register berhasil\",\n    \"data\": {\n        \"user\": {\n            \"userId\": \"7ca4213e-79c2-48f7-bea2-b77050906e5f\",\n            \"username\": \"frans_pulse\",\n            \"email\": \"fransnicklaus101004@gmail.com\",\n            \"firstName\": \"Frans\",\n            \"lastName\": \"Nicklaus\",\n            \"role\": \"patient\",\n            \"accountStatus\": \"pending_verification\",\n            \"emailVerifiedAt\": null\n        },\n        \"nextStep\": \"EMAIL_VERIFICATION_REQUIRED\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST Send Email OTP",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "if (json?.data?.devOtp) { pm.environment.set('otpCode', json.data.devOtp); }"
+                ],
+                "id": "c017a8c2-6d7f-4ed8-ac55-959590996f46"
+              }
+            }
+          ],
+          "id": "f54a6591-bbef-4f71-9581-71a26bc9b292",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{patientEmail}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/verifications/email",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "verifications",
+                "email"
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "b8e56d0f-63cf-45c5-9d7d-fd1954b6db67",
+              "name": "POST Send Email OTP",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"{{patientEmail}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/auth/verifications/email",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "verifications",
+                    "email"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Security-Policy",
+                  "value": "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+                },
+                {
+                  "key": "Cross-Origin-Opener-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Cross-Origin-Resource-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Origin-Agent-Cluster",
+                  "value": "?1"
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "no-referrer"
+                },
+                {
+                  "key": "Strict-Transport-Security",
+                  "value": "max-age=31536000; includeSubDomains"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "X-DNS-Prefetch-Control",
+                  "value": "off"
+                },
+                {
+                  "key": "X-Download-Options",
+                  "value": "noopen"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "X-Permitted-Cross-Domain-Policies",
+                  "value": "none"
+                },
+                {
+                  "key": "X-XSS-Protection",
+                  "value": "0"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "134"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"86-gZH0A2EPJ4Gy6zdrjfUJb5wvSks\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Wed, 08 Apr 2026 18:45:50 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "responseTime": "2026-04-08T18:45:57.225Z",
+              "body": "{\n    \"success\": true,\n    \"message\": \"OTP verifikasi berhasil dikirim\",\n    \"data\": {\n        \"delivery\": \"email\",\n        \"expiresInMinutes\": 10,\n        \"nextStep\": \"VERIFY_OTP\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST Confirm Email OTP",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
+                ],
+                "id": "54c81799-b3b5-4427-a0f4-91d3cce876c8"
+              }
+            }
+          ],
+          "id": "e12b54e8-32f7-412d-82be-54855a1459ca",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{patientEmail}}\",\n  \"otp\": \"{{otpCode}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/verifications/email/confirm",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "verifications",
+                "email",
+                "confirm"
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "65137743-00ae-4661-95c0-c70e03656d17",
+              "name": "POST Confirm Email OTP",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"{{patientEmail}}\",\n  \"otp\": \"{{otpCode}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/auth/verifications/email/confirm",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "verifications",
+                    "email",
+                    "confirm"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Security-Policy",
+                  "value": "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+                },
+                {
+                  "key": "Cross-Origin-Opener-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Cross-Origin-Resource-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Origin-Agent-Cluster",
+                  "value": "?1"
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "no-referrer"
+                },
+                {
+                  "key": "Strict-Transport-Security",
+                  "value": "max-age=31536000; includeSubDomains"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "X-DNS-Prefetch-Control",
+                  "value": "off"
+                },
+                {
+                  "key": "X-Download-Options",
+                  "value": "noopen"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "X-Permitted-Cross-Domain-Policies",
+                  "value": "none"
+                },
+                {
+                  "key": "X-XSS-Protection",
+                  "value": "0"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "341"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"155-/VG93+zAAIFGDkBwGYWSFawz74c\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Wed, 08 Apr 2026 18:46:35 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "responseTime": "2026-04-08T18:46:41.613Z",
+              "body": "{\n    \"success\": true,\n    \"message\": \"Email berhasil diverifikasi\",\n    \"data\": {\n        \"user\": {\n            \"userId\": \"7ca4213e-79c2-48f7-bea2-b77050906e5f\",\n            \"username\": \"frans_pulse\",\n            \"email\": \"fransnicklaus101004@gmail.com\",\n            \"firstName\": \"Frans\",\n            \"lastName\": \"Nicklaus\",\n            \"role\": \"patient\",\n            \"accountStatus\": \"active\",\n            \"emailVerifiedAt\": \"2026-04-08T18:46:35.571Z\"\n        },\n        \"accountStatus\": \"active\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST Login Patient",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "if (json?.data?.token) { pm.environment.set('token', json.data.token); }",
+                  "if (json?.data?.token) { pm.environment.set('patientToken', json.data.token); }",
+                  "if (json?.data?.user?.userId) { pm.environment.set('patientId', json.data.user.userId); }"
+                ],
+                "id": "1eb5826c-bad7-4874-8aab-d53cba016e0f"
+              }
+            }
+          ],
+          "id": "2410e3b7-ad65-4a7f-a874-043a6c1fdf81",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{patientEmail}}\",\n  \"password\": \"{{patientPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "4d7e07ff-89e0-46ef-b8ab-0984a1707b31",
+              "name": "POST Login Patient",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"{{patientEmail}}\",\n  \"password\": \"{{patientPassword}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/auth/login",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Security-Policy",
+                  "value": "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+                },
+                {
+                  "key": "Cross-Origin-Opener-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Cross-Origin-Resource-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Origin-Agent-Cluster",
+                  "value": "?1"
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "no-referrer"
+                },
+                {
+                  "key": "Strict-Transport-Security",
+                  "value": "max-age=31536000; includeSubDomains"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "X-DNS-Prefetch-Control",
+                  "value": "off"
+                },
+                {
+                  "key": "X-Download-Options",
+                  "value": "noopen"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "X-Permitted-Cross-Domain-Policies",
+                  "value": "none"
+                },
+                {
+                  "key": "X-XSS-Protection",
+                  "value": "0"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "512"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"200-0apBBpKDRUFaorrkE1jqVOD9yC4\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Wed, 08 Apr 2026 18:46:50 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "responseTime": "2026-04-08T18:46:53.094Z",
+              "body": "{\n    \"success\": true,\n    \"message\": \"Login berhasil\",\n    \"data\": {\n        \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3Y2E0MjEzZS03OWMyLTQ4ZjctYmVhMi1iNzcwNTA5MDZlNWYiLCJlbWFpbCI6ImZyYW5zbmlja2xhdXMxMDEwMDRAZ21haWwuY29tIiwicm9sZSI6InBhdGllbnQiLCJpYXQiOjE3NzU2NzQwMTAsImV4cCI6MTc3NTc2MDQxMH0.vYwkBGS5ClqBrFN2J1s083A5jhppoPdacKElRYFxrlU\",\n        \"user\": {\n            \"userId\": \"7ca4213e-79c2-48f7-bea2-b77050906e5f\",\n            \"username\": \"frans_pulse\",\n            \"email\": \"fransnicklaus101004@gmail.com\",\n            \"firstName\": \"Frans\",\n            \"lastName\": \"Nicklaus\",\n            \"role\": \"patient\"\n        }\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST Login Doctor",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "if (json?.data?.token) { pm.environment.set('doctorToken', json.data.token); }",
+                  "if (json?.data?.user?.userId) { pm.environment.set('doctorId', json.data.user.userId); }"
+                ],
+                "id": "73a5ca6d-05a2-4426-b13f-95800802b5b5"
+              }
+            }
+          ],
+          "id": "b2df0ffc-d276-48ba-8fbe-5feaadcfda29",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{doctorEmail}}\",\n  \"password\": \"{{doctorPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "f25c1640-37fc-4712-b455-ec92c2155457",
+              "name": "POST Login Doctor",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"{{doctorEmail}}\",\n  \"password\": \"{{doctorPassword}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/auth/login",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Security-Policy",
+                  "value": "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+                },
+                {
+                  "key": "Cross-Origin-Opener-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Cross-Origin-Resource-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Origin-Agent-Cluster",
+                  "value": "?1"
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "no-referrer"
+                },
+                {
+                  "key": "Strict-Transport-Security",
+                  "value": "max-age=31536000; includeSubDomains"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "X-DNS-Prefetch-Control",
+                  "value": "off"
+                },
+                {
+                  "key": "X-Download-Options",
+                  "value": "noopen"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "X-Permitted-Cross-Domain-Policies",
+                  "value": "none"
+                },
+                {
+                  "key": "X-XSS-Protection",
+                  "value": "0"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "487"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"1e7-z99zk/YffF6tYGhvqlFHwmHVfo4\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Wed, 08 Apr 2026 18:47:00 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "responseTime": "2026-04-08T18:47:02.066Z",
+              "body": "{\n    \"success\": true,\n    \"message\": \"Login berhasil\",\n    \"data\": {\n        \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4YWNhNjA4OS0zODk5LTRiODUtYTcxNS0wYTYzMTEzZTg0NmEiLCJlbWFpbCI6ImRvY3RvckBwdWxzZXdpc2UubG9jYWwiLCJyb2xlIjoiZG9jdG9yIiwiaWF0IjoxNzc1Njc0MDIwLCJleHAiOjE3NzU3NjA0MjB9.uKk2AuEsMQj4WfUaLUlwpso3Xq54b1PBDZOYgnj5B8I\",\n        \"user\": {\n            \"userId\": \"8aca6089-3899-4b85-a715-0a63113e846a\",\n            \"username\": \"devdoctor\",\n            \"email\": \"doctor@pulsewise.local\",\n            \"firstName\": \"Dev\",\n            \"lastName\": \"Doctor\",\n            \"role\": \"doctor\"\n        }\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET Auth Me",
+          "id": "b02c7334-6932-4827-bb71-ef0574f075e8",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{patientToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "3355693e-baec-4473-ba38-6d0036e9914f",
+              "name": "GET Auth Me",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{patientToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/auth/me",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "me"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Security-Policy",
+                  "value": "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+                },
+                {
+                  "key": "Cross-Origin-Opener-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Cross-Origin-Resource-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Origin-Agent-Cluster",
+                  "value": "?1"
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "no-referrer"
+                },
+                {
+                  "key": "Strict-Transport-Security",
+                  "value": "max-age=31536000; includeSubDomains"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "X-DNS-Prefetch-Control",
+                  "value": "off"
+                },
+                {
+                  "key": "X-Download-Options",
+                  "value": "noopen"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "X-Permitted-Cross-Domain-Policies",
+                  "value": "none"
+                },
+                {
+                  "key": "X-XSS-Protection",
+                  "value": "0"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "306"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"132-rqv1R5hs0PkczIacqAW0T6Ks1nc\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Wed, 08 Apr 2026 18:47:14 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "responseTime": "2026-04-08T18:47:16.013Z",
+              "body": "{\n    \"success\": true,\n    \"message\": \"Data user berhasil diambil\",\n    \"data\": {\n        \"userId\": \"7ca4213e-79c2-48f7-bea2-b77050906e5f\",\n        \"username\": \"frans_pulse\",\n        \"email\": \"fransnicklaus101004@gmail.com\",\n        \"firstName\": \"Frans\",\n        \"lastName\": \"Nicklaus\",\n        \"role\": \"patient\",\n        \"accountStatus\": \"active\",\n        \"emailVerifiedAt\": \"2026-04-08T18:46:35.571Z\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST OAuth Google Login",
+          "id": "45ee6a9b-d3c3-4dc5-8951-d0df38bca7fe",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idToken\": \"{{googleIdToken}}\",\n  \"role\": \"patient\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/oauth/google",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "oauth",
+                "google"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "d2293dec-1c8b-47a2-b7a4-b251799e82c8"
+    },
+    {
+      "name": "Phase 2 - Patient",
+      "item": [
+        {
+          "name": "GET Patients",
+          "id": "9c3a660f-7a08-420d-bddf-3de55e2c63a4",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctorToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/patients?page=1&limit=20&sortBy=created_at&order=desc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "patients"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "created_at"
+                },
+                {
+                  "key": "order",
+                  "value": "desc"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "c43018fa-3570-4e0c-a9ff-4b40ef07a2c9",
+              "name": "GET Patients",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{doctorToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/patients?page=1&limit=20&sortBy=created_at&order=desc",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "patients"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1",
+                      "uuid": "5d28362a-48dd-4411-ae77-084fa6fdec58"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20",
+                      "uuid": "7f95a019-514a-4d13-b9e4-65973f934c06"
+                    },
+                    {
+                      "key": "sortBy",
+                      "value": "created_at",
+                      "uuid": "7bd531ab-c58f-4e7a-b99d-d7d29720c22d"
+                    },
+                    {
+                      "key": "order",
+                      "value": "desc",
+                      "uuid": "e4144c34-21e1-4166-a8df-b112f4e1e179"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Security-Policy",
+                  "value": "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+                },
+                {
+                  "key": "Cross-Origin-Opener-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Cross-Origin-Resource-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Origin-Agent-Cluster",
+                  "value": "?1"
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "no-referrer"
+                },
+                {
+                  "key": "Strict-Transport-Security",
+                  "value": "max-age=31536000; includeSubDomains"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "X-DNS-Prefetch-Control",
+                  "value": "off"
+                },
+                {
+                  "key": "X-Download-Options",
+                  "value": "noopen"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "X-Permitted-Cross-Domain-Policies",
+                  "value": "none"
+                },
+                {
+                  "key": "X-XSS-Protection",
+                  "value": "0"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "599"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"257-yWwdtNooCoujJAcshQQJruLf2J4\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Wed, 08 Apr 2026 18:49:30 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "responseTime": "2026-04-08T18:49:32.237Z",
+              "body": "{\n    \"success\": true,\n    \"message\": \"Daftar pasien berhasil diambil\",\n    \"data\": {\n        \"items\": [\n            {\n                \"patient_id\": \"b6495a8b-ba2f-4e3f-a882-4e7b221f09d9\",\n                \"date_of_birth\": \"1990-05-11T17:00:00.000Z\",\n                \"sex\": \"male\",\n                \"created_at\": \"2026-04-08T16:03:17.634Z\"\n            },\n            {\n                \"patient_id\": \"229f4f2c-a907-4c51-877a-c3f867453744\",\n                \"date_of_birth\": \"1994-09-02T17:00:00.000Z\",\n                \"sex\": \"female\",\n                \"created_at\": \"2026-04-08T16:03:17.634Z\"\n            },\n            {\n                \"patient_id\": \"29130aed-2a9b-4b23-86ca-3f6860e4c16e\",\n                \"date_of_birth\": \"1999-12-29T17:00:00.000Z\",\n                \"sex\": \"male\",\n                \"created_at\": \"2026-03-12T05:51:40.050Z\"\n            }\n        ],\n        \"pagination\": {\n            \"page\": \"1\",\n            \"limit\": \"20\",\n            \"totalItems\": 3,\n            \"totalPages\": 1\n        }\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "PUT Patient Profile",
+          "id": "85a60cbd-40f9-485e-93dd-e5cef3dedc29",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{patientToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dateOfBirth\": \"1999-12-30\",\n  \"sex\": \"male\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/patients/{{patientId}}/profile",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "patients",
+                "{{patientId}}",
+                "profile"
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "b17dae86-4921-404f-993d-82ff8077c713",
+              "name": "PUT Patient Profile",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{patientToken}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"dateOfBirth\": \"1999-12-30\",\n  \"sex\": \"male\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/patients/{{patientId}}/profile",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "patients",
+                    "{{patientId}}",
+                    "profile"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Security-Policy",
+                  "value": "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+                },
+                {
+                  "key": "Cross-Origin-Opener-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Cross-Origin-Resource-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Origin-Agent-Cluster",
+                  "value": "?1"
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "no-referrer"
+                },
+                {
+                  "key": "Strict-Transport-Security",
+                  "value": "max-age=31536000; includeSubDomains"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "X-DNS-Prefetch-Control",
+                  "value": "off"
+                },
+                {
+                  "key": "X-Download-Options",
+                  "value": "noopen"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "X-Permitted-Cross-Domain-Policies",
+                  "value": "none"
+                },
+                {
+                  "key": "X-XSS-Protection",
+                  "value": "0"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "219"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"db-YxhZR24iyArl9OhU2U7Zuaybch4\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Wed, 08 Apr 2026 18:50:51 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "responseTime": "2026-04-08T18:51:02.064Z",
+              "body": "{\n    \"success\": true,\n    \"message\": \"Profil pasien berhasil diperbarui\",\n    \"data\": {\n        \"patient_id\": \"7ca4213e-79c2-48f7-bea2-b77050906e5f\",\n        \"date_of_birth\": \"1999-12-29T17:00:00.000Z\",\n        \"sex\": \"male\",\n        \"created_at\": \"2026-04-08T18:50:51.663Z\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET Patient Profile",
+          "id": "2844aeff-cc20-40d6-9798-d9511fade351",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{patientToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/patients/{{patientId}}/profile",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "patients",
+                "{{patientId}}",
+                "profile"
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "25f992dc-6f7c-4eef-af41-a98131ac6cf9",
+              "name": "GET Patient Profile",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{patientToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/patients/{{patientId}}/profile",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "patients",
+                    "{{patientId}}",
+                    "profile"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Security-Policy",
+                  "value": "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+                },
+                {
+                  "key": "Cross-Origin-Opener-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Cross-Origin-Resource-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Origin-Agent-Cluster",
+                  "value": "?1"
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "no-referrer"
+                },
+                {
+                  "key": "Strict-Transport-Security",
+                  "value": "max-age=31536000; includeSubDomains"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "X-DNS-Prefetch-Control",
+                  "value": "off"
+                },
+                {
+                  "key": "X-Download-Options",
+                  "value": "noopen"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "X-Permitted-Cross-Domain-Policies",
+                  "value": "none"
+                },
+                {
+                  "key": "X-XSS-Protection",
+                  "value": "0"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "300"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"12c-oreXtDKoERRAxrvBI71PuTonHyU\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Wed, 08 Apr 2026 18:50:55 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "responseTime": "2026-04-08T18:50:57.420Z",
+              "body": "{\n    \"success\": true,\n    \"message\": \"Profil pasien berhasil diambil\",\n    \"data\": {\n        \"patient_id\": \"7ca4213e-79c2-48f7-bea2-b77050906e5f\",\n        \"date_of_birth\": \"1999-12-29T17:00:00.000Z\",\n        \"sex\": \"male\",\n        \"created_at\": \"2026-04-08T18:50:51.663Z\",\n        \"first_name\": \"Frans\",\n        \"last_name\": \"Nicklaus\",\n        \"email\": \"fransnicklaus101004@gmail.com\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST Create Patient Share (Legacy)",
+          "id": "27b02282-0093-42fa-a06f-2d291264631a",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{patientToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"expiresInHours\": 24\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/patients/{{patientId}}/shares",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "patients",
+                "{{patientId}}",
+                "shares"
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "b4e200fa-b073-46c4-ab68-dd7ee7a599d7",
+              "name": "POST Create Patient Share (Legacy)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{patientToken}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"expiresInHours\": 24\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/patients/{{patientId}}/shares",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "patients",
+                    "{{patientId}}",
+                    "shares"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Security-Policy",
+                  "value": "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+                },
+                {
+                  "key": "Cross-Origin-Opener-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Cross-Origin-Resource-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Origin-Agent-Cluster",
+                  "value": "?1"
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "no-referrer"
+                },
+                {
+                  "key": "Strict-Transport-Security",
+                  "value": "max-age=31536000; includeSubDomains"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "X-DNS-Prefetch-Control",
+                  "value": "off"
+                },
+                {
+                  "key": "X-Download-Options",
+                  "value": "noopen"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "X-Permitted-Cross-Domain-Policies",
+                  "value": "none"
+                },
+                {
+                  "key": "X-XSS-Protection",
+                  "value": "0"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "270"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"10e-n144Yf6DHlR1haal1LZEwnQa2U4\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Wed, 08 Apr 2026 18:51:15 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "responseTime": "2026-04-08T18:51:21.189Z",
+              "body": "{\n    \"success\": true,\n    \"message\": \"Share code pasien berhasil dibuat\",\n    \"data\": {\n        \"shareId\": \"f8040eb6-f3e4-424f-8252-b68d8552b888\",\n        \"patientId\": \"7ca4213e-79c2-48f7-bea2-b77050906e5f\",\n        \"shareCode\": \"PW-5C101EF77797\",\n        \"expiresAt\": \"2026-04-09T18:51:15.045Z\",\n        \"qrPayload\": \"PW-5C101EF77797\"\n    }\n}"
+            }
+          ]
+        }
+      ],
+      "id": "85633ef6-d882-4ce9-8cba-42b3990b2915"
+    },
+    {
+      "name": "Phase 2 - Doctor",
+      "item": [
+        {
+          "name": "GET Doctor Profile",
+          "id": "5abfc362-29c6-428e-a3cb-3e4e04f07207",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctorToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/doctors/{{doctorId}}/profile",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "doctors",
+                "{{doctorId}}",
+                "profile"
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "b14f0db0-4be0-42dc-8f40-09a72b816b1b",
+              "name": "GET Doctor Profile",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{doctorToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/doctors/{{doctorId}}/profile",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "doctors",
+                    "{{doctorId}}",
+                    "profile"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Security-Policy",
+                  "value": "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+                },
+                {
+                  "key": "Cross-Origin-Opener-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Cross-Origin-Resource-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Origin-Agent-Cluster",
+                  "value": "?1"
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "no-referrer"
+                },
+                {
+                  "key": "Strict-Transport-Security",
+                  "value": "max-age=31536000; includeSubDomains"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "X-DNS-Prefetch-Control",
+                  "value": "off"
+                },
+                {
+                  "key": "X-Download-Options",
+                  "value": "noopen"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "X-Permitted-Cross-Domain-Policies",
+                  "value": "none"
+                },
+                {
+                  "key": "X-XSS-Protection",
+                  "value": "0"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "321"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"141-9E5Erc5NbL6fagvnpVey1GnhaWw\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Wed, 08 Apr 2026 18:51:28 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "responseTime": "2026-04-08T18:51:30.619Z",
+              "body": "{\n    \"success\": true,\n    \"message\": \"Profil dokter berhasil diambil\",\n    \"data\": {\n        \"doctor_id\": \"8aca6089-3899-4b85-a715-0a63113e846a\",\n        \"specialization\": \"Cardiology\",\n        \"license_no\": \"DOC-SEED-001\",\n        \"hospital_name\": \"RS PulseWise\",\n        \"created_at\": \"2026-03-11T06:52:53.030Z\",\n        \"first_name\": \"Dev\",\n        \"last_name\": \"Doctor\",\n        \"email\": \"doctor@pulsewise.local\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "PUT Doctor Profile",
+          "id": "ac56ec86-2e88-4b76-876e-47d91a303fa9",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctorToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"specialization\": \"Cardiology\",\n  \"licenseNo\": \"DOC-123456\",\n  \"hospitalName\": \"RS PulseWise\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/doctors/{{doctorId}}/profile",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "doctors",
+                "{{doctorId}}",
+                "profile"
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "b7501d09-8906-4d95-a7dd-70627dcf0171",
+              "name": "PUT Doctor Profile",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{doctorToken}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"specialization\": \"Cardiology\",\n  \"licenseNo\": \"DOC-123456\",\n  \"hospitalName\": \"RS PulseWise\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/doctors/{{doctorId}}/profile",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "doctors",
+                    "{{doctorId}}",
+                    "profile"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Security-Policy",
+                  "value": "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+                },
+                {
+                  "key": "Cross-Origin-Opener-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Cross-Origin-Resource-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Origin-Agent-Cluster",
+                  "value": "?1"
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "no-referrer"
+                },
+                {
+                  "key": "Strict-Transport-Security",
+                  "value": "max-age=31536000; includeSubDomains"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "X-DNS-Prefetch-Control",
+                  "value": "off"
+                },
+                {
+                  "key": "X-Download-Options",
+                  "value": "noopen"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "X-Permitted-Cross-Domain-Policies",
+                  "value": "none"
+                },
+                {
+                  "key": "X-XSS-Protection",
+                  "value": "0"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "249"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"f9-k3akb1fE59jlYkNq22vlz4WfncY\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Wed, 08 Apr 2026 18:51:36 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "responseTime": "2026-04-08T18:51:38.246Z",
+              "body": "{\n    \"success\": true,\n    \"message\": \"Profil dokter berhasil diperbarui\",\n    \"data\": {\n        \"doctor_id\": \"8aca6089-3899-4b85-a715-0a63113e846a\",\n        \"specialization\": \"Cardiology\",\n        \"license_no\": \"DOC-123456\",\n        \"hospital_name\": \"RS PulseWise\",\n        \"created_at\": \"2026-03-11T06:52:53.030Z\"\n    }\n}"
+            }
+          ]
+        }
+      ],
+      "id": "81f17bb8-4b0b-4a75-87cb-5ccd461179b5"
+    },
+    {
+      "name": "Phase 2 - Doctor Patients",
+      "item": [
+        {
+          "name": "POST Link Doctor Patient",
+          "id": "d0225c62-d3e5-431e-a4c4-75c52fa7f91a",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctorToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patientId\": \"{{patientId}}\",\n  \"source\": \"manual\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/doctors/{{doctorId}}/patients",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "doctors",
+                "{{doctorId}}",
+                "patients"
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "dd8b2f11-c013-4301-bd91-4116d2c76e2a",
+              "name": "POST Link Doctor Patient",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{doctorToken}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"patientId\": \"{{patientId}}\",\n  \"source\": \"manual\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/doctors/{{doctorId}}/patients",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "doctors",
+                    "{{doctorId}}",
+                    "patients"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Security-Policy",
+                  "value": "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+                },
+                {
+                  "key": "Cross-Origin-Opener-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Cross-Origin-Resource-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Origin-Agent-Cluster",
+                  "value": "?1"
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "no-referrer"
+                },
+                {
+                  "key": "Strict-Transport-Security",
+                  "value": "max-age=31536000; includeSubDomains"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "X-DNS-Prefetch-Control",
+                  "value": "off"
+                },
+                {
+                  "key": "X-Download-Options",
+                  "value": "noopen"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "X-Permitted-Cross-Domain-Policies",
+                  "value": "none"
+                },
+                {
+                  "key": "X-XSS-Protection",
+                  "value": "0"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "251"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"fb-TI1C1tPE2nEsvrj7VQYxdcg1/lA\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Wed, 08 Apr 2026 18:53:14 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "responseTime": "2026-04-08T18:53:18.012Z",
+              "body": "{\n    \"success\": true,\n    \"message\": \"Relasi dokter-pasien berhasil dibuat\",\n    \"data\": {\n        \"doctor_id\": \"8aca6089-3899-4b85-a715-0a63113e846a\",\n        \"patient_id\": \"7ca4213e-79c2-48f7-bea2-b77050906e5f\",\n        \"source\": \"manual\",\n        \"linked_at\": \"2026-04-08T18:53:14.408Z\",\n        \"is_active\": true\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST Link By Scanned Patient ID (Primary QR Flow)",
+          "id": "aa1ff6e9-1d58-4cee-8141-73f55de9b081",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctorToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patientId\": \"{{patientId}}\",\n  \"source\": \"qr_patient_id\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/doctors/{{doctorId}}/patients/link-by-patient-id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "doctors",
+                "{{doctorId}}",
+                "patients",
+                "link-by-patient-id"
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "85a61262-7785-4b14-b5d7-bc6c1ab1c509",
+              "name": "POST Link By Scanned Patient ID (Primary QR Flow)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{doctorToken}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"patientId\": \"{{patientId}}\",\n  \"source\": \"qr_patient_id\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/doctors/{{doctorId}}/patients/link-by-patient-id",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "doctors",
+                    "{{doctorId}}",
+                    "patients",
+                    "link-by-patient-id"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Security-Policy",
+                  "value": "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+                },
+                {
+                  "key": "Cross-Origin-Opener-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Cross-Origin-Resource-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Origin-Agent-Cluster",
+                  "value": "?1"
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "no-referrer"
+                },
+                {
+                  "key": "Strict-Transport-Security",
+                  "value": "max-age=31536000; includeSubDomains"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "X-DNS-Prefetch-Control",
+                  "value": "off"
+                },
+                {
+                  "key": "X-Download-Options",
+                  "value": "noopen"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "X-Permitted-Cross-Domain-Policies",
+                  "value": "none"
+                },
+                {
+                  "key": "X-XSS-Protection",
+                  "value": "0"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "279"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"117-cCS/s386zj4rlTWOPIFLOrCSczo\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Wed, 08 Apr 2026 18:53:36 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "responseTime": "2026-04-08T18:53:39.002Z",
+              "body": "{\n    \"success\": true,\n    \"message\": \"Relasi dokter-pasien berhasil dibuat dari scan patient ID\",\n    \"data\": {\n        \"doctor_id\": \"8aca6089-3899-4b85-a715-0a63113e846a\",\n        \"patient_id\": \"7ca4213e-79c2-48f7-bea2-b77050906e5f\",\n        \"source\": \"qr_patient_id\",\n        \"linked_at\": \"2026-04-08T18:53:36.433Z\",\n        \"is_active\": true\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET Doctor Patients",
+          "id": "6ef10446-6956-4ded-8a76-966631814921",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctorToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/doctors/{{doctorId}}/patients?page=1&limit=20",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "doctors",
+                "{{doctorId}}",
+                "patients"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "59791077-a7bb-4237-b950-11dd1c56486c",
+              "name": "GET Doctor Patients",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{doctorToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/doctors/{{doctorId}}/patients?page=1&limit=20",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "doctors",
+                    "{{doctorId}}",
+                    "patients"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1",
+                      "uuid": "7b0d1a1d-c01e-499b-a96a-a228361e9ad7"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20",
+                      "uuid": "8cf8724e-6ea6-4de8-8ea7-b4a06a123c3d"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Security-Policy",
+                  "value": "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+                },
+                {
+                  "key": "Cross-Origin-Opener-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Cross-Origin-Resource-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Origin-Agent-Cluster",
+                  "value": "?1"
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "no-referrer"
+                },
+                {
+                  "key": "Strict-Transport-Security",
+                  "value": "max-age=31536000; includeSubDomains"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "X-DNS-Prefetch-Control",
+                  "value": "off"
+                },
+                {
+                  "key": "X-Download-Options",
+                  "value": "noopen"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "X-Permitted-Cross-Domain-Policies",
+                  "value": "none"
+                },
+                {
+                  "key": "X-XSS-Protection",
+                  "value": "0"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "1208"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"4b8-RQiw4y7nHJfgXoypx5GPixk4vSo\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Wed, 08 Apr 2026 18:54:07 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "responseTime": "2026-04-08T18:54:20.757Z",
+              "body": "{\n    \"success\": true,\n    \"message\": \"Relasi pasien dokter berhasil diambil\",\n    \"data\": {\n        \"items\": [\n            {\n                \"doctor_id\": \"8aca6089-3899-4b85-a715-0a63113e846a\",\n                \"patient_id\": \"7ca4213e-79c2-48f7-bea2-b77050906e5f\",\n                \"source\": \"qr_patient_id\",\n                \"linked_at\": \"2026-04-08T18:53:36.433Z\",\n                \"is_active\": true,\n                \"first_name\": \"Frans\",\n                \"last_name\": \"Nicklaus\",\n                \"email\": \"fransnicklaus101004@gmail.com\"\n            },\n            {\n                \"doctor_id\": \"8aca6089-3899-4b85-a715-0a63113e846a\",\n                \"patient_id\": \"b6495a8b-ba2f-4e3f-a882-4e7b221f09d9\",\n                \"source\": \"qr\",\n                \"linked_at\": \"2026-04-08T17:33:12.474Z\",\n                \"is_active\": true,\n                \"first_name\": \"Ari\",\n                \"last_name\": \"Pratama\",\n                \"email\": \"seed.patient1@pulsewise.local\"\n            },\n            {\n                \"doctor_id\": \"8aca6089-3899-4b85-a715-0a63113e846a\",\n                \"patient_id\": \"229f4f2c-a907-4c51-877a-c3f867453744\",\n                \"source\": \"seed\",\n                \"linked_at\": \"2026-04-08T16:03:17.634Z\",\n                \"is_active\": true,\n                \"first_name\": \"Nadia\",\n                \"last_name\": \"Saraswati\",\n                \"email\": \"seed.patient2@pulsewise.local\"\n            },\n            {\n                \"doctor_id\": \"8aca6089-3899-4b85-a715-0a63113e846a\",\n                \"patient_id\": \"29130aed-2a9b-4b23-86ca-3f6860e4c16e\",\n                \"source\": \"manual\",\n                \"linked_at\": \"2026-03-12T05:52:15.021Z\",\n                \"is_active\": true,\n                \"first_name\": \"Darrell\",\n                \"last_name\": \"Valentino\",\n                \"email\": \"darrell.valentino14@gmail.com\"\n            }\n        ],\n        \"pagination\": {\n            \"page\": \"1\",\n            \"limit\": \"20\",\n            \"totalItems\": 4,\n            \"totalPages\": 1\n        }\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "DELETE Doctor Patient Link",
+          "id": "cb4adf06-716a-4f4b-b6be-fcf935ed32b0",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctorToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/doctors/{{doctorId}}/patients/{{patientId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "doctors",
+                "{{doctorId}}",
+                "patients",
+                "{{patientId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "19bc670c-e25c-4bd0-9a3b-fb4dfa642d60",
+              "name": "DELETE Doctor Patient Link",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{doctorToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/doctors/{{doctorId}}/patients/{{patientId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "doctors",
+                    "{{doctorId}}",
+                    "patients",
+                    "{{patientId}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Security-Policy",
+                  "value": "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+                },
+                {
+                  "key": "Cross-Origin-Opener-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Cross-Origin-Resource-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Origin-Agent-Cluster",
+                  "value": "?1"
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "no-referrer"
+                },
+                {
+                  "key": "Strict-Transport-Security",
+                  "value": "max-age=31536000; includeSubDomains"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "X-DNS-Prefetch-Control",
+                  "value": "off"
+                },
+                {
+                  "key": "X-Download-Options",
+                  "value": "noopen"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "X-Permitted-Cross-Domain-Policies",
+                  "value": "none"
+                },
+                {
+                  "key": "X-XSS-Protection",
+                  "value": "0"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "266"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"10a-K5z0FY5QN4BmE27tBpuK9pIikKs\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Wed, 08 Apr 2026 18:54:27 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "responseTime": "2026-04-08T18:54:28.506Z",
+              "body": "{\n    \"success\": true,\n    \"message\": \"Relasi dokter-pasien berhasil dinonaktifkan\",\n    \"data\": {\n        \"doctor_id\": \"8aca6089-3899-4b85-a715-0a63113e846a\",\n        \"patient_id\": \"7ca4213e-79c2-48f7-bea2-b77050906e5f\",\n        \"source\": \"qr_patient_id\",\n        \"linked_at\": \"2026-04-08T18:53:36.433Z\",\n        \"is_active\": false\n    }\n}"
+            }
+          ]
+        }
+      ],
+      "id": "7e2ffe19-bfca-49fb-b78b-62731268a3da"
+    },
+    {
+      "name": "Phase 2 - Doctor Dashboard",
+      "item": [
+        {
+          "name": "GET Dashboard Patients",
+          "id": "902a44b0-678f-45a2-a10e-be75879f3690",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctorToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients?page=1&limit=20",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "doctors",
+                "{{doctorId}}",
+                "dashboard",
+                "patients"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "86d6e50c-86a7-4123-87d7-b8c4ed4c1759",
+              "name": "GET Dashboard Patients",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{doctorToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients?page=1&limit=20",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "doctors",
+                    "{{doctorId}}",
+                    "dashboard",
+                    "patients"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1",
+                      "uuid": "6edf8d69-e443-4568-8cb0-1c4cde680b2c"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20",
+                      "uuid": "4e933602-0136-42f1-9849-707a1fa2abe6"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Security-Policy",
+                  "value": "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+                },
+                {
+                  "key": "Cross-Origin-Opener-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Cross-Origin-Resource-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Origin-Agent-Cluster",
+                  "value": "?1"
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "no-referrer"
+                },
+                {
+                  "key": "Strict-Transport-Security",
+                  "value": "max-age=31536000; includeSubDomains"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "X-DNS-Prefetch-Control",
+                  "value": "off"
+                },
+                {
+                  "key": "X-Download-Options",
+                  "value": "noopen"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "X-Permitted-Cross-Domain-Policies",
+                  "value": "none"
+                },
+                {
+                  "key": "X-XSS-Protection",
+                  "value": "0"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "1065"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"429-i9oFYbni8gsk0gqlP9+lgAf5310\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Wed, 08 Apr 2026 18:54:41 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "responseTime": "2026-04-08T18:54:43.736Z",
+              "body": "{\n    \"success\": true,\n    \"message\": \"Daftar pasien dashboard dokter berhasil diambil\",\n    \"data\": {\n        \"items\": [\n            {\n                \"patientId\": \"b6495a8b-ba2f-4e3f-a882-4e7b221f09d9\",\n                \"firstName\": \"Ari\",\n                \"lastName\": \"Pratama\",\n                \"email\": \"seed.patient1@pulsewise.local\",\n                \"dateOfBirth\": \"1990-05-11\",\n                \"sex\": \"male\",\n                \"latestVitals\": {\n                    \"measuredAt\": \"2026-04-08T09:15:00.000Z\",\n                    \"systolicBp\": 116,\n                    \"diastolicBp\": 70,\n                    \"weight\": 74.11,\n                    \"height\": 170,\n                    \"bmi\": 25.64\n                }\n            },\n            {\n                \"patientId\": \"229f4f2c-a907-4c51-877a-c3f867453744\",\n                \"firstName\": \"Nadia\",\n                \"lastName\": \"Saraswati\",\n                \"email\": \"seed.patient2@pulsewise.local\",\n                \"dateOfBirth\": \"1994-09-02\",\n                \"sex\": \"female\",\n                \"latestVitals\": {\n                    \"measuredAt\": \"2026-04-08T09:15:00.000Z\",\n                    \"systolicBp\": 116,\n                    \"diastolicBp\": 70,\n                    \"weight\": 62.11,\n                    \"height\": 160,\n                    \"bmi\": 24.26\n                }\n            },\n            {\n                \"patientId\": \"29130aed-2a9b-4b23-86ca-3f6860e4c16e\",\n                \"firstName\": \"Darrell\",\n                \"lastName\": \"Valentino\",\n                \"email\": \"darrell.valentino14@gmail.com\",\n                \"dateOfBirth\": \"1999-12-29\",\n                \"sex\": \"male\",\n                \"latestVitals\": {\n                    \"measuredAt\": null,\n                    \"systolicBp\": null,\n                    \"diastolicBp\": null,\n                    \"weight\": null,\n                    \"height\": null,\n                    \"bmi\": null\n                }\n            }\n        ],\n        \"pagination\": {\n            \"page\": \"1\",\n            \"limit\": \"20\",\n            \"totalItems\": 3,\n            \"totalPages\": 1\n        }\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET Dashboard Patient Summary",
+          "id": "644748cf-dfff-420c-9376-74d42727c238",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctorToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "doctors",
+                "{{doctorId}}",
+                "dashboard",
+                "patients",
+                "{{patientId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "6f776498-55b7-4c9d-a0d0-99bb0c530135",
+              "name": "GET Dashboard Patient Summary",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{doctorToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "doctors",
+                    "{{doctorId}}",
+                    "dashboard",
+                    "patients",
+                    "{{patientId}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Security-Policy",
+                  "value": "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+                },
+                {
+                  "key": "Cross-Origin-Opener-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Cross-Origin-Resource-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Origin-Agent-Cluster",
+                  "value": "?1"
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "no-referrer"
+                },
+                {
+                  "key": "Strict-Transport-Security",
+                  "value": "max-age=31536000; includeSubDomains"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "X-DNS-Prefetch-Control",
+                  "value": "off"
+                },
+                {
+                  "key": "X-Download-Options",
+                  "value": "noopen"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "X-Permitted-Cross-Domain-Policies",
+                  "value": "none"
+                },
+                {
+                  "key": "X-XSS-Protection",
+                  "value": "0"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "927"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"39f-4G2KmSS+tchys2/rrntvycZC+o0\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Wed, 08 Apr 2026 18:58:58 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "responseTime": "2026-04-08T18:59:17.179Z",
+              "body": "{\n    \"success\": true,\n    \"message\": \"Ringkasan pasien dashboard dokter berhasil diambil\",\n    \"data\": {\n        \"patient\": {\n            \"patientId\": \"7ca4213e-79c2-48f7-bea2-b77050906e5f\",\n            \"firstName\": \"Frans\",\n            \"lastName\": \"Nicklaus\",\n            \"email\": \"fransnicklaus101004@gmail.com\",\n            \"phone\": null,\n            \"dateOfBirth\": \"1999-12-28\",\n            \"sex\": \"male\"\n        },\n        \"latestVitals\": {\n            \"measuredAt\": \"2026-04-08T18:58:40.086Z\",\n            \"systolicBp\": 128,\n            \"diastolicBp\": 82,\n            \"heartRate\": 78,\n            \"oxygenSaturation\": 97,\n            \"weight\": 74.2,\n            \"height\": 176,\n            \"bmi\": 23.95\n        },\n        \"thresholds\": {\n            \"SPO2_CRITICAL_THRESHOLD\": 90,\n            \"SPO2_CAUTION_THRESHOLD\": 95,\n            \"WEIGHT_DAILY_INCREASE_CRITICAL_KG\": 3,\n            \"HR_NORMAL_MIN\": 60,\n            \"HR_NORMAL_MAX\": 100,\n            \"BP_NORMAL_SYSTOLIC_MAX\": 119,\n            \"BP_NORMAL_DIASTOLIC_MAX\": 79,\n            \"BP_ELEVATED_SYSTOLIC_MIN\": 120,\n            \"BP_ELEVATED_SYSTOLIC_MAX\": 129,\n            \"BP_ELEVATED_DIASTOLIC_MAX\": 79,\n            \"BP_STAGE1_SYSTOLIC_MIN\": 130,\n            \"BP_STAGE1_SYSTOLIC_MAX\": 139,\n            \"BP_STAGE1_DIASTOLIC_MIN\": 80,\n            \"BP_STAGE1_DIASTOLIC_MAX\": 89,\n            \"BP_STAGE2_SYSTOLIC_MIN\": 140,\n            \"BP_STAGE2_DIASTOLIC_MIN\": 90\n        }\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET Dashboard Patient Vitals",
+          "id": "602738ea-ff54-454c-a0eb-ea1c123f9d85",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctorToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/vitals?timePeriod=last_30_days",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "doctors",
+                "{{doctorId}}",
+                "dashboard",
+                "patients",
+                "{{patientId}}",
+                "vitals"
+              ],
+              "query": [
+                {
+                  "key": "timePeriod",
+                  "value": "last_30_days"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "d5e78247-5d3f-4573-9ca9-9b59e0db27b5",
+              "name": "GET Dashboard Patient Vitals",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{doctorToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/vitals?timePeriod=last_30_days",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "doctors",
+                    "{{doctorId}}",
+                    "dashboard",
+                    "patients",
+                    "{{patientId}}",
+                    "vitals"
+                  ],
+                  "query": [
+                    {
+                      "key": "timePeriod",
+                      "value": "last_30_days",
+                      "uuid": "1cc60596-16c5-4c9f-a0b9-c474ff23819e"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Security-Policy",
+                  "value": "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+                },
+                {
+                  "key": "Cross-Origin-Opener-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Cross-Origin-Resource-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Origin-Agent-Cluster",
+                  "value": "?1"
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "no-referrer"
+                },
+                {
+                  "key": "Strict-Transport-Security",
+                  "value": "max-age=31536000; includeSubDomains"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "X-DNS-Prefetch-Control",
+                  "value": "off"
+                },
+                {
+                  "key": "X-Download-Options",
+                  "value": "noopen"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "X-Permitted-Cross-Domain-Policies",
+                  "value": "none"
+                },
+                {
+                  "key": "X-XSS-Protection",
+                  "value": "0"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "1333"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"535-XX72eSJM7vML08OG2AmlAwbMa50\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Wed, 08 Apr 2026 19:03:14 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "responseTime": "2026-04-08T19:03:15.170Z",
+              "body": "{\n    \"success\": true,\n    \"message\": \"Time-series vital pasien dashboard dokter berhasil diambil\",\n    \"data\": {\n        \"patient\": {\n            \"patientId\": \"7ca4213e-79c2-48f7-bea2-b77050906e5f\",\n            \"firstName\": \"Frans\",\n            \"lastName\": \"Nicklaus\",\n            \"email\": \"fransnicklaus101004@gmail.com\",\n            \"phone\": null,\n            \"dateOfBirth\": \"1999-12-28\",\n            \"sex\": \"male\"\n        },\n        \"period\": {\n            \"startAt\": \"2026-03-10T00:00:00.000Z\",\n            \"endAt\": \"2026-04-08T19:03:14.449Z\",\n            \"timePeriod\": \"last_30_days\"\n        },\n        \"series\": {\n            \"timestamps\": [\n                \"2026-04-08T18:58:16.178Z\",\n                \"2026-04-08T18:58:40.086Z\",\n                \"2026-04-08T18:59:26.968Z\"\n            ],\n            \"systolicBp\": [\n                128,\n                128,\n                128\n            ],\n            \"diastolicBp\": [\n                82,\n                82,\n                82\n            ],\n            \"heartRate\": [\n                78,\n                78,\n                78\n            ],\n            \"oxygenSaturation\": [\n                97,\n                97,\n                97\n            ],\n            \"weight\": [\n                74.2,\n                74.2,\n                74.2\n            ],\n            \"height\": [\n                176,\n                176,\n                176\n            ],\n            \"bmi\": [\n                23.95,\n                23.95,\n                23.95\n            ]\n        },\n        \"latestVitals\": {\n            \"measuredAt\": \"2026-04-08T18:59:26.968Z\",\n            \"systolicBp\": 128,\n            \"diastolicBp\": 82,\n            \"heartRate\": 78,\n            \"oxygenSaturation\": 97,\n            \"weight\": 74.2,\n            \"height\": 176,\n            \"bmi\": 23.95\n        },\n        \"thresholds\": {\n            \"SPO2_CRITICAL_THRESHOLD\": 90,\n            \"SPO2_CAUTION_THRESHOLD\": 95,\n            \"WEIGHT_DAILY_INCREASE_CRITICAL_KG\": 3,\n            \"HR_NORMAL_MIN\": 60,\n            \"HR_NORMAL_MAX\": 100,\n            \"BP_NORMAL_SYSTOLIC_MAX\": 119,\n            \"BP_NORMAL_DIASTOLIC_MAX\": 79,\n            \"BP_ELEVATED_SYSTOLIC_MIN\": 120,\n            \"BP_ELEVATED_SYSTOLIC_MAX\": 129,\n            \"BP_ELEVATED_DIASTOLIC_MAX\": 79,\n            \"BP_STAGE1_SYSTOLIC_MIN\": 130,\n            \"BP_STAGE1_SYSTOLIC_MAX\": 139,\n            \"BP_STAGE1_DIASTOLIC_MIN\": 80,\n            \"BP_STAGE1_DIASTOLIC_MAX\": 89,\n            \"BP_STAGE2_SYSTOLIC_MIN\": 140,\n            \"BP_STAGE2_DIASTOLIC_MIN\": 90\n        }\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET Dashboard Abnormal Report",
+          "id": "1273873b-2142-45e0-969a-9276f13b0f2c",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctorToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/abnormal-report?timePeriod=last_30_days",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "doctors",
+                "{{doctorId}}",
+                "dashboard",
+                "patients",
+                "{{patientId}}",
+                "abnormal-report"
+              ],
+              "query": [
+                {
+                  "key": "timePeriod",
+                  "value": "last_30_days"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "436f233d-2d5d-4e7f-8c32-1ca24c1fb8b1",
+              "name": "GET Dashboard Abnormal Report",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{doctorToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/abnormal-report?timePeriod=last_30_days",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "doctors",
+                    "{{doctorId}}",
+                    "dashboard",
+                    "patients",
+                    "{{patientId}}",
+                    "abnormal-report"
+                  ],
+                  "query": [
+                    {
+                      "key": "timePeriod",
+                      "value": "last_30_days",
+                      "uuid": "734d9d38-839a-48ed-8c4b-7604890e42d6"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Security-Policy",
+                  "value": "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+                },
+                {
+                  "key": "Cross-Origin-Opener-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Cross-Origin-Resource-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Origin-Agent-Cluster",
+                  "value": "?1"
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "no-referrer"
+                },
+                {
+                  "key": "Strict-Transport-Security",
+                  "value": "max-age=31536000; includeSubDomains"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "X-DNS-Prefetch-Control",
+                  "value": "off"
+                },
+                {
+                  "key": "X-Download-Options",
+                  "value": "noopen"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "X-Permitted-Cross-Domain-Policies",
+                  "value": "none"
+                },
+                {
+                  "key": "X-XSS-Protection",
+                  "value": "0"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "1489"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"5d1-FtUmnk+xgjwAYGttyxA7w95OH48\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Wed, 08 Apr 2026 19:03:26 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "responseTime": "2026-04-08T19:03:28.085Z",
+              "body": "{\n    \"success\": true,\n    \"message\": \"Abnormal report pasien dashboard dokter berhasil diambil\",\n    \"data\": {\n        \"patient\": {\n            \"patientId\": \"7ca4213e-79c2-48f7-bea2-b77050906e5f\",\n            \"firstName\": \"Frans\",\n            \"lastName\": \"Nicklaus\",\n            \"email\": \"fransnicklaus101004@gmail.com\",\n            \"phone\": null,\n            \"dateOfBirth\": \"1999-12-28\",\n            \"sex\": \"male\"\n        },\n        \"period\": {\n            \"startAt\": \"2026-03-10T00:00:00.000Z\",\n            \"endAt\": \"2026-04-08T19:03:26.368Z\",\n            \"timePeriod\": \"last_30_days\"\n        },\n        \"stats\": {\n            \"systolicBp\": {\n                \"avg\": 128,\n                \"min\": 128,\n                \"max\": 128\n            },\n            \"diastolicBp\": {\n                \"avg\": 82,\n                \"min\": 82,\n                \"max\": 82\n            },\n            \"heartRate\": {\n                \"avg\": 78,\n                \"min\": 78,\n                \"max\": 78\n            },\n            \"oxygenSaturation\": {\n                \"avg\": 97,\n                \"min\": 97,\n                \"max\": 97\n            },\n            \"weight\": {\n                \"avg\": 74.2,\n                \"min\": 74.2,\n                \"max\": 74.2\n            },\n            \"bmi\": {\n                \"avg\": 24,\n                \"min\": 23.95,\n                \"max\": 23.95\n            }\n        },\n        \"abnormalInstances\": [\n            {\n                \"timestamp\": \"2026-04-08T18:58:16.178Z\",\n                \"details\": {\n                    \"bloodPressure\": \"128/82 mmHg (Stage 1 Hypertension)\"\n                }\n            },\n            {\n                \"timestamp\": \"2026-04-08T18:58:40.086Z\",\n                \"details\": {\n                    \"bloodPressure\": \"128/82 mmHg (Stage 1 Hypertension)\"\n                }\n            },\n            {\n                \"timestamp\": \"2026-04-08T18:59:26.968Z\",\n                \"details\": {\n                    \"bloodPressure\": \"128/82 mmHg (Stage 1 Hypertension)\"\n                }\n            }\n        ],\n        \"thresholds\": {\n            \"SPO2_CRITICAL_THRESHOLD\": 90,\n            \"SPO2_CAUTION_THRESHOLD\": 95,\n            \"WEIGHT_DAILY_INCREASE_CRITICAL_KG\": 3,\n            \"HR_NORMAL_MIN\": 60,\n            \"HR_NORMAL_MAX\": 100,\n            \"BP_NORMAL_SYSTOLIC_MAX\": 119,\n            \"BP_NORMAL_DIASTOLIC_MAX\": 79,\n            \"BP_ELEVATED_SYSTOLIC_MIN\": 120,\n            \"BP_ELEVATED_SYSTOLIC_MAX\": 129,\n            \"BP_ELEVATED_DIASTOLIC_MAX\": 79,\n            \"BP_STAGE1_SYSTOLIC_MIN\": 130,\n            \"BP_STAGE1_SYSTOLIC_MAX\": 139,\n            \"BP_STAGE1_DIASTOLIC_MIN\": 80,\n            \"BP_STAGE1_DIASTOLIC_MAX\": 89,\n            \"BP_STAGE2_SYSTOLIC_MIN\": 140,\n            \"BP_STAGE2_DIASTOLIC_MIN\": 90\n        }\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST Create Dashboard Pairing Session",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });",
+                  "const json = pm.response.json();",
+                  "if (json?.data?.pairingSessionId) { pm.environment.set('pairingSessionId', json.data.pairingSessionId); }",
+                  "if (json?.data?.pairingToken) { pm.environment.set('pairingToken', json.data.pairingToken); }"
+                ],
+                "id": "fc2cfc7d-3f78-4edd-8c43-b93a5b976dd1"
+              }
+            }
+          ],
+          "id": "9dbd4b3c-ff01-4a7c-890a-72967189632e",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctorToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"expiresInSeconds\": 90\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/pairing-sessions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "doctors",
+                "{{doctorId}}",
+                "dashboard",
+                "pairing-sessions"
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "2870b8d3-c1c3-454c-8173-7d76606a1920",
+              "name": "POST Create Dashboard Pairing Session",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{doctorToken}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"expiresInSeconds\": 90\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/pairing-sessions",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "doctors",
+                    "{{doctorId}}",
+                    "dashboard",
+                    "pairing-sessions"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Security-Policy",
+                  "value": "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+                },
+                {
+                  "key": "Cross-Origin-Opener-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Cross-Origin-Resource-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Origin-Agent-Cluster",
+                  "value": "?1"
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "no-referrer"
+                },
+                {
+                  "key": "Strict-Transport-Security",
+                  "value": "max-age=31536000; includeSubDomains"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "X-DNS-Prefetch-Control",
+                  "value": "off"
+                },
+                {
+                  "key": "X-Download-Options",
+                  "value": "noopen"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "X-Permitted-Cross-Domain-Policies",
+                  "value": "none"
+                },
+                {
+                  "key": "X-XSS-Protection",
+                  "value": "0"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "497"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"1f1-Pr24vecGTsMDLlciEYvxhsmUepw\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Wed, 08 Apr 2026 19:06:31 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "responseTime": "2026-04-08T19:06:33.444Z",
+              "body": "{\n    \"success\": true,\n    \"message\": \"Session pairing dashboard berhasil dibuat\",\n    \"data\": {\n        \"pairingSessionId\": \"7e098e23-d434-4462-b0b3-71191d9f28da\",\n        \"doctorId\": \"8aca6089-3899-4b85-a715-0a63113e846a\",\n        \"status\": \"pending\",\n        \"expiresAt\": \"2026-04-08T19:08:01.319Z\",\n        \"pairingToken\": \"PWDASH-FF13B49AB5D1F78DE8B5D40CA0414A7BA108\",\n        \"qrPayload\": \"PWDASH-FF13B49AB5D1F78DE8B5D40CA0414A7BA108\",\n        \"pollingPath\": \"/api/v1/doctors/8aca6089-3899-4b85-a715-0a63113e846a/dashboard/pairing-sessions/7e098e23-d434-4462-b0b3-71191d9f28da\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET Dashboard Pairing Session Status",
+          "id": "03cfff5d-f97d-4ead-9e0c-905072f85112",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctorToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/pairing-sessions/{{pairingSessionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "doctors",
+                "{{doctorId}}",
+                "dashboard",
+                "pairing-sessions",
+                "{{pairingSessionId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "3b229811-ba6a-4697-95db-6afd7efc871a",
+              "name": "GET Dashboard Pairing Session Status",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{doctorToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/pairing-sessions/{{pairingSessionId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "doctors",
+                    "{{doctorId}}",
+                    "dashboard",
+                    "pairing-sessions",
+                    "{{pairingSessionId}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Security-Policy",
+                  "value": "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+                },
+                {
+                  "key": "Cross-Origin-Opener-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Cross-Origin-Resource-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Origin-Agent-Cluster",
+                  "value": "?1"
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "no-referrer"
+                },
+                {
+                  "key": "Strict-Transport-Security",
+                  "value": "max-age=31536000; includeSubDomains"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "X-DNS-Prefetch-Control",
+                  "value": "off"
+                },
+                {
+                  "key": "X-Download-Options",
+                  "value": "noopen"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "X-Permitted-Cross-Domain-Policies",
+                  "value": "none"
+                },
+                {
+                  "key": "X-XSS-Protection",
+                  "value": "0"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "281"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"119-h00P0JIt2XsCbiBPDwDucw+6Tmo\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Wed, 08 Apr 2026 19:06:55 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "responseTime": "2026-04-08T19:06:56.826Z",
+              "body": "{\n    \"success\": true,\n    \"message\": \"Status pairing dashboard berhasil diambil\",\n    \"data\": {\n        \"pairingSessionId\": \"7e098e23-d434-4462-b0b3-71191d9f28da\",\n        \"doctorId\": \"8aca6089-3899-4b85-a715-0a63113e846a\",\n        \"status\": \"pending\",\n        \"expiresAt\": \"2026-04-08T19:08:01.319Z\",\n        \"confirmedAt\": null,\n        \"patientId\": null\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET Dashboard Pairing Session Events (SSE)",
+          "id": "03237b02-d986-45f1-a6fd-fc1b34688a5f",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctorToken}}"
+              },
+              {
+                "key": "Accept",
+                "value": "text/event-stream"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/pairing-sessions/{{pairingSessionId}}/events",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "doctors",
+                "{{doctorId}}",
+                "dashboard",
+                "pairing-sessions",
+                "{{pairingSessionId}}",
+                "events"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST Confirm Dashboard Pairing (Mobile Patient)",
+          "id": "7b5c5308-60a7-4949-a03e-d000f2c26501",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{patientToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pairingToken\": \"{{pairingToken}}\",\n  \"source\": \"qr_dashboard_pairing\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/pairing-sessions/confirm",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "dashboard",
+                "pairing-sessions",
+                "confirm"
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "323d0c44-6a51-44f4-ac3a-61a98b2f98f6",
+              "name": "POST Confirm Dashboard Pairing (Mobile Patient)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{patientToken}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"pairingToken\": \"{{pairingToken}}\",\n  \"source\": \"qr_dashboard_pairing\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/dashboard/pairing-sessions/confirm",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "dashboard",
+                    "pairing-sessions",
+                    "confirm"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Security-Policy",
+                  "value": "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+                },
+                {
+                  "key": "Cross-Origin-Opener-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Cross-Origin-Resource-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Origin-Agent-Cluster",
+                  "value": "?1"
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "no-referrer"
+                },
+                {
+                  "key": "Strict-Transport-Security",
+                  "value": "max-age=31536000; includeSubDomains"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "X-DNS-Prefetch-Control",
+                  "value": "off"
+                },
+                {
+                  "key": "X-Download-Options",
+                  "value": "noopen"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "SAMEORIGIN"
+                },
+                {
+                  "key": "X-Permitted-Cross-Domain-Policies",
+                  "value": "none"
+                },
+                {
+                  "key": "X-XSS-Protection",
+                  "value": "0"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "523"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"20b-4a9661ieVi7rSte4pYbFfhjRZHA\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Wed, 08 Apr 2026 19:09:47 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "responseTime": "2026-04-08T19:09:49.374Z",
+              "body": "{\n    \"success\": true,\n    \"message\": \"Pairing dashboard berhasil dikonfirmasi dari mobile\",\n    \"data\": {\n        \"pairingSessionId\": \"43a11d72-efed-4cf5-9fd7-751134928693\",\n        \"status\": \"confirmed\",\n        \"doctorId\": \"8aca6089-3899-4b85-a715-0a63113e846a\",\n        \"patientId\": \"7ca4213e-79c2-48f7-bea2-b77050906e5f\",\n        \"confirmedAt\": \"2026-04-08T19:09:47.628Z\",\n        \"doctorPatientLink\": {\n            \"doctor_id\": \"8aca6089-3899-4b85-a715-0a63113e846a\",\n            \"patient_id\": \"7ca4213e-79c2-48f7-bea2-b77050906e5f\",\n            \"source\": \"qr_dashboard_pairing\",\n            \"linked_at\": \"2026-04-08T19:09:47.614Z\",\n            \"is_active\": true\n        }\n    }\n}"
+            }
+          ]
+        }
+      ],
+      "id": "f6f8e1ef-4ae8-488a-9216-2f29003260c7"
+    }
+  ]
+}

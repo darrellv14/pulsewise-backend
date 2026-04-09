@@ -1,33 +1,10 @@
 const authService = require('../services/authService');
 const { success } = require('../utils/response');
-const { BAD_REQUEST, CREATED } = require('../constants/httpStatus');
+const { CREATED } = require('../constants/httpStatus');
 
 async function register(req, res, next) {
   try {
-    const {
-      username,
-      email,
-      password,
-      firstName,
-      lastName,
-      role,
-    } = req.body;
-
-    if (!username || !email || !password) {
-      return res.status(BAD_REQUEST).json({
-        success: false,
-        message: 'Username, email, dan password wajib diisi',
-      });
-    }
-
-    const result = await authService.register({
-      username,
-      email,
-      password,
-      firstName,
-      lastName,
-      role,
-    });
+    const result = await authService.register(req.body);
 
     return success(res, 'Register berhasil', result, CREATED);
   } catch (error) {
@@ -35,18 +12,36 @@ async function register(req, res, next) {
   }
 }
 
+async function sendEmailVerification(req, res, next) {
+  try {
+    const result = await authService.sendEmailVerification(req.body.email);
+    return success(res, 'OTP verifikasi berhasil dikirim', result);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function confirmEmailVerification(req, res, next) {
+  try {
+    const result = await authService.confirmEmailVerification(req.body.email, req.body.otp);
+    return success(res, 'Email berhasil diverifikasi', result);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function oauthGoogle(req, res, next) {
+  try {
+    const result = await authService.loginWithGoogle(req.body.idToken, req.body.role);
+    return success(res, 'Login Google berhasil', result);
+  } catch (error) {
+    return next(error);
+  }
+}
+
 async function login(req, res, next) {
   try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: 'Email dan password wajib diisi',
-      });
-    }
-
-    const result = await authService.login(email, password);
+    const result = await authService.login(req.body.email, req.body.password);
     return success(res, 'Login berhasil', result);
   } catch (error) {
     return next(error);
@@ -64,6 +59,9 @@ async function me(req, res, next) {
 
 module.exports = {
   register,
+  sendEmailVerification,
+  confirmEmailVerification,
+  oauthGoogle,
   login,
   me,
 };

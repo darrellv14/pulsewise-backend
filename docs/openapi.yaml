@@ -15,6 +15,7 @@ tags:
   - name: Patients
   - name: Doctors
   - name: DoctorPatients
+  - name: DoctorDashboard
 
 components:
   securitySchemes:
@@ -132,6 +133,13 @@ components:
         role:
           type: string
           enum: [patient, doctor, admin]
+        accountStatus:
+          type: string
+          enum: [pending_verification, active, suspended]
+        emailVerifiedAt:
+          type: string
+          format: date-time
+          nullable: true
 
     RegisterRequest:
       type: object
@@ -165,12 +173,288 @@ components:
         password:
           type: string
 
+    EmailVerificationRequest:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+
+    EmailVerificationConfirmRequest:
+      type: object
+      required: [email, otp]
+      properties:
+        email:
+          type: string
+          format: email
+        otp:
+          type: string
+          example: '123456'
+
+    GoogleOauthRequest:
+      type: object
+      required: [idToken]
+      properties:
+        idToken:
+          type: string
+        role:
+          type: string
+          enum: [patient, doctor]
+          default: patient
+
     PatientProfile:
+      type: object
+      properties:
+        patient_id:
+          type: string
+          format: uuid
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+        sex:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        first_name:
+          type: string
+          nullable: true
+        last_name:
+          type: string
+          nullable: true
+        email:
+          type: string
+          format: email
+          nullable: true
+
+    DoctorProfile:
+      type: object
+      properties:
+        doctor_id:
+          type: string
+          format: uuid
+        specialization:
+          type: string
+          nullable: true
+        license_no:
+          type: string
+          nullable: true
+        hospital_name:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        first_name:
+          type: string
+          nullable: true
+        last_name:
+          type: string
+          nullable: true
+        email:
+          type: string
+          format: email
+          nullable: true
+
+    PatientProfileUpdateRequest:
+      type: object
+      minProperties: 1
+      properties:
+        dateOfBirth:
+          type: string
+          format: date
+          nullable: true
+        sex:
+          type: string
+          nullable: true
+          example: male
+
+    DoctorProfileUpdateRequest:
+      type: object
+      minProperties: 1
+      properties:
+        specialization:
+          type: string
+          nullable: true
+          example: Cardiology
+        licenseNo:
+          type: string
+          nullable: true
+          example: DOC-123456
+        hospitalName:
+          type: string
+          nullable: true
+          example: RS PulseWise
+
+    DoctorPatientLinkRequest:
+      type: object
+      required: [patientId]
+      properties:
+        patientId:
+          type: string
+          format: uuid
+        source:
+          type: string
+          example: manual
+
+    DoctorPatientLink:
+      type: object
+      properties:
+        doctor_id:
+          type: string
+          format: uuid
+        patient_id:
+          type: string
+          format: uuid
+        source:
+          type: string
+        linked_at:
+          type: string
+          format: date-time
+        is_active:
+          type: boolean
+        first_name:
+          type: string
+          nullable: true
+        last_name:
+          type: string
+          nullable: true
+        email:
+          type: string
+          format: email
+          nullable: true
+
+    PatientShareCreateRequest:
+      type: object
+      properties:
+        expiresInHours:
+          type: integer
+          minimum: 1
+          maximum: 168
+          default: 24
+
+    DoctorLinkByShareRequest:
+      type: object
+      required: [shareCode]
+      properties:
+        shareCode:
+          type: string
+          example: PW-9A8B7C6D5E4F
+
+    DoctorLinkByPatientIdRequest:
+      type: object
+      required: [patientId]
+      properties:
+        patientId:
+          type: string
+          format: uuid
+        source:
+          type: string
+          example: qr_patient_id
+
+    DashboardPairingSessionCreateRequest:
+      type: object
+      properties:
+        expiresInSeconds:
+          type: integer
+          minimum: 30
+          maximum: 300
+          default: 90
+
+    DashboardPairingSessionConfirmRequest:
+      type: object
+      required: [pairingToken]
+      properties:
+        pairingToken:
+          type: string
+          example: PWDASH-79F438BA5A36D22D7A4EA247FEC9E928A9CC
+        source:
+          type: string
+          example: qr_dashboard_pairing
+
+    DashboardPairingSession:
+      type: object
+      properties:
+        pairingSessionId:
+          type: string
+          format: uuid
+        doctorId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [pending, confirmed, expired, cancelled]
+        expiresAt:
+          type: string
+          format: date-time
+        confirmedAt:
+          type: string
+          format: date-time
+          nullable: true
+        patientId:
+          type: string
+          format: uuid
+          nullable: true
+
+    DashboardPairingSessionCreateData:
+      allOf:
+        - $ref: '#/components/schemas/DashboardPairingSession'
+        - type: object
+          properties:
+            pairingToken:
+              type: string
+            qrPayload:
+              type: string
+            pollingPath:
+              type: string
+
+    DashboardPairingSessionConfirmData:
+      allOf:
+        - $ref: '#/components/schemas/DashboardPairingSession'
+        - type: object
+          properties:
+            doctorPatientLink:
+              $ref: '#/components/schemas/DoctorPatientLink'
+
+    PatientShare:
+      type: object
+      properties:
+        shareId:
+          type: string
+          format: uuid
+        patientId:
+          type: string
+          format: uuid
+        shareCode:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+        qrPayload:
+          type: string
+
+    DashboardPatientIdentity:
       type: object
       properties:
         patientId:
           type: string
           format: uuid
+        firstName:
+          type: string
+          nullable: true
+        lastName:
+          type: string
+          nullable: true
+        email:
+          type: string
+          format: email
+          nullable: true
+        phone:
+          type: string
+          nullable: true
         dateOfBirth:
           type: string
           format: date
@@ -179,21 +463,239 @@ components:
           type: string
           nullable: true
 
-    DoctorProfile:
+    LatestVitals:
       type: object
       properties:
-        doctorId:
+        measuredAt:
+          type: string
+          format: date-time
+          nullable: true
+        systolicBp:
+          type: number
+          nullable: true
+        diastolicBp:
+          type: number
+          nullable: true
+        heartRate:
+          type: number
+          nullable: true
+        oxygenSaturation:
+          type: number
+          nullable: true
+        weight:
+          type: number
+          nullable: true
+        height:
+          type: number
+          nullable: true
+        bmi:
+          type: number
+          nullable: true
+
+    DashboardPatientListItem:
+      type: object
+      properties:
+        patientId:
           type: string
           format: uuid
-        specialization:
+        firstName:
           type: string
           nullable: true
-        licenseNo:
+        lastName:
           type: string
           nullable: true
-        hospitalName:
+        email:
+          type: string
+          format: email
+          nullable: true
+        dateOfBirth:
+          type: string
+          format: date
+          nullable: true
+        sex:
           type: string
           nullable: true
+        latestVitals:
+          $ref: '#/components/schemas/LatestVitals'
+
+    DashboardPeriod:
+      type: object
+      properties:
+        startAt:
+          type: string
+          format: date-time
+        endAt:
+          type: string
+          format: date-time
+        timePeriod:
+          type: string
+
+    DashboardVitalsSeries:
+      type: object
+      properties:
+        timestamps:
+          type: array
+          items:
+            type: string
+            format: date-time
+        systolicBp:
+          type: array
+          items:
+            type: number
+            nullable: true
+        diastolicBp:
+          type: array
+          items:
+            type: number
+            nullable: true
+        heartRate:
+          type: array
+          items:
+            type: number
+            nullable: true
+        oxygenSaturation:
+          type: array
+          items:
+            type: number
+            nullable: true
+        weight:
+          type: array
+          items:
+            type: number
+            nullable: true
+        height:
+          type: array
+          items:
+            type: number
+            nullable: true
+        bmi:
+          type: array
+          items:
+            type: number
+            nullable: true
+
+    DashboardThresholds:
+      type: object
+      properties:
+        SPO2_CRITICAL_THRESHOLD:
+          type: number
+        SPO2_CAUTION_THRESHOLD:
+          type: number
+        WEIGHT_DAILY_INCREASE_CRITICAL_KG:
+          type: number
+        HR_NORMAL_MIN:
+          type: number
+        HR_NORMAL_MAX:
+          type: number
+        BP_NORMAL_SYSTOLIC_MAX:
+          type: number
+        BP_NORMAL_DIASTOLIC_MAX:
+          type: number
+        BP_ELEVATED_SYSTOLIC_MIN:
+          type: number
+        BP_ELEVATED_SYSTOLIC_MAX:
+          type: number
+        BP_ELEVATED_DIASTOLIC_MAX:
+          type: number
+        BP_STAGE1_SYSTOLIC_MIN:
+          type: number
+        BP_STAGE1_SYSTOLIC_MAX:
+          type: number
+        BP_STAGE1_DIASTOLIC_MIN:
+          type: number
+        BP_STAGE1_DIASTOLIC_MAX:
+          type: number
+        BP_STAGE2_SYSTOLIC_MIN:
+          type: number
+        BP_STAGE2_DIASTOLIC_MIN:
+          type: number
+
+    DashboardMetricStats:
+      type: object
+      properties:
+        avg:
+          type: number
+          nullable: true
+        min:
+          type: number
+          nullable: true
+        max:
+          type: number
+          nullable: true
+
+    DashboardAbnormalInstance:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        details:
+          type: object
+          additionalProperties:
+            type: string
+
+    DoctorDashboardPatientsData:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/DashboardPatientListItem'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    DoctorDashboardPatientSummaryData:
+      type: object
+      properties:
+        patient:
+          $ref: '#/components/schemas/DashboardPatientIdentity'
+        latestVitals:
+          $ref: '#/components/schemas/LatestVitals'
+        thresholds:
+          $ref: '#/components/schemas/DashboardThresholds'
+
+    DoctorDashboardPatientVitalsData:
+      type: object
+      properties:
+        patient:
+          $ref: '#/components/schemas/DashboardPatientIdentity'
+        period:
+          $ref: '#/components/schemas/DashboardPeriod'
+        series:
+          $ref: '#/components/schemas/DashboardVitalsSeries'
+        latestVitals:
+          $ref: '#/components/schemas/LatestVitals'
+        thresholds:
+          $ref: '#/components/schemas/DashboardThresholds'
+
+    DoctorDashboardAbnormalReportData:
+      type: object
+      properties:
+        patient:
+          $ref: '#/components/schemas/DashboardPatientIdentity'
+        period:
+          $ref: '#/components/schemas/DashboardPeriod'
+        stats:
+          type: object
+          properties:
+            systolicBp:
+              $ref: '#/components/schemas/DashboardMetricStats'
+            diastolicBp:
+              $ref: '#/components/schemas/DashboardMetricStats'
+            heartRate:
+              $ref: '#/components/schemas/DashboardMetricStats'
+            oxygenSaturation:
+              $ref: '#/components/schemas/DashboardMetricStats'
+            weight:
+              $ref: '#/components/schemas/DashboardMetricStats'
+            bmi:
+              $ref: '#/components/schemas/DashboardMetricStats'
+        abnormalInstances:
+          type: array
+          items:
+            $ref: '#/components/schemas/DashboardAbnormalInstance'
+        thresholds:
+          $ref: '#/components/schemas/DashboardThresholds'
 
 paths:
   /api/v1/health:
@@ -223,7 +725,7 @@ paths:
   /api/v1/auth/register:
     post:
       tags: [Auth]
-      summary: Register user baru
+      summary: Register user baru (status pending_verification)
       requestBody:
         required: true
         content:
@@ -243,10 +745,11 @@ paths:
                       data:
                         type: object
                         properties:
-                          token:
-                            type: string
                           user:
                             $ref: '#/components/schemas/AuthUser'
+                          nextStep:
+                            type: string
+                            example: EMAIL_VERIFICATION_REQUIRED
         '400':
           description: Invalid payload
           content:
@@ -295,6 +798,90 @@ paths:
                 $ref: '#/components/schemas/ErrorEnvelope'
         '401':
           description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Account not active
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /api/v1/auth/verifications/email:
+    post:
+      tags: [Auth]
+      summary: Kirim OTP verifikasi email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailVerificationRequest'
+      responses:
+        '200':
+          description: OTP sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /api/v1/auth/verifications/email/confirm:
+    post:
+      tags: [Auth]
+      summary: Konfirmasi OTP verifikasi email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailVerificationConfirmRequest'
+      responses:
+        '200':
+          description: Email verified
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+        '400':
+          description: Invalid or expired OTP
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /api/v1/auth/oauth/google:
+    post:
+      tags: [Auth]
+      summary: Login/register menggunakan Google token (BE verification)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoogleOauthRequest'
+      responses:
+        '200':
+          description: OAuth login success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+        '401':
+          description: Invalid Google token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '501':
+          description: OAuth provider not configured
           content:
             application/json:
               schema:
@@ -398,7 +985,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatientProfile'
+              $ref: '#/components/schemas/PatientProfileUpdateRequest'
       responses:
         '200':
           description: Updated
@@ -449,7 +1036,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DoctorProfile'
+              $ref: '#/components/schemas/DoctorProfileUpdateRequest'
       responses:
         '200':
           description: Updated
@@ -461,7 +1048,7 @@ paths:
   /api/v1/doctors/{doctorId}/patients:
     get:
       tags: [DoctorPatients]
-      summary: List patients by doctor (Phase 2 target)
+      summary: List relasi pasien milik dokter
       security:
         - BearerAuth: []
       parameters:
@@ -479,10 +1066,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessEnvelope'
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/DoctorPatientLink'
+                          pagination:
+                            $ref: '#/components/schemas/Pagination'
     post:
       tags: [DoctorPatients]
-      summary: Link doctor to patient (Phase 2 target)
+      summary: Link dokter ke pasien
       security:
         - BearerAuth: []
       parameters:
@@ -497,27 +1096,24 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required: [patientId]
-              properties:
-                patientId:
-                  type: string
-                  format: uuid
-                source:
-                  type: string
-                  example: qr
+              $ref: '#/components/schemas/DoctorPatientLinkRequest'
       responses:
         '201':
           description: Linked
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessEnvelope'
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/DoctorPatientLink'
 
   /api/v1/doctors/{doctorId}/patients/{patientId}:
     delete:
       tags: [DoctorPatients]
-      summary: Unlink doctor and patient (Phase 2 target)
+      summary: Nonaktifkan relasi dokter-pasien
       security:
         - BearerAuth: []
       parameters:
@@ -539,4 +1135,452 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessEnvelope'
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/DoctorPatientLink'
+
+  /api/v1/doctors/{doctorId}/patients/link-by-share:
+    post:
+      tags: [DoctorPatients]
+      summary: Link dokter ke pasien menggunakan share code QR (legacy, optional)
+      deprecated: true
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: doctorId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DoctorLinkByShareRequest'
+      responses:
+        '201':
+          description: Linked by share code
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        allOf:
+                          - $ref: '#/components/schemas/DoctorPatientLink'
+                          - type: object
+                            properties:
+                              linkedByShareCode:
+                                type: string
+        '404':
+          description: Share code invalid or expired
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /api/v1/doctors/{doctorId}/patients/link-by-patient-id:
+    post:
+      tags: [DoctorPatients]
+      summary: Link dokter ke pasien dari hasil scan QR frontend (payload patientId)
+      description: |
+        QR code digenerate di frontend dari string patientId.
+        Backend menerima hasil scan dalam bentuk patientId dan membuat relasi dokter-pasien.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: doctorId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DoctorLinkByPatientIdRequest'
+      responses:
+        '201':
+          description: Linked by scanned patient ID
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/DoctorPatientLink'
+
+  /api/v1/doctors/{doctorId}/dashboard/pairing-sessions:
+    post:
+      tags: [DoctorDashboard]
+      summary: Buat session QR pairing untuk dashboard desktop dokter
+      description: |
+        Endpoint ini dipanggil web dashboard dokter untuk membuat QR pairing jangka pendek.
+        Mobile pasien akan scan QR lalu konfirmasi ke endpoint pairing confirm.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: doctorId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DashboardPairingSessionCreateRequest'
+      responses:
+        '201':
+          description: Pairing session created
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/DashboardPairingSessionCreateData'
+
+  /api/v1/doctors/{doctorId}/dashboard/pairing-sessions/{pairingSessionId}:
+    get:
+      tags: [DoctorDashboard]
+      summary: Ambil status session QR pairing dashboard desktop
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: doctorId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: pairingSessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Pairing session status
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/DashboardPairingSession'
+        '404':
+          description: Pairing session not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /api/v1/doctors/{doctorId}/dashboard/pairing-sessions/{pairingSessionId}/events:
+    get:
+      tags: [DoctorDashboard]
+      summary: Stream realtime status pairing dashboard via SSE
+      description: |
+        Endpoint SSE (Server-Sent Events) untuk menerima perubahan status pairing secara realtime.
+        Event utama:
+        - `pairing-status` berisi payload status terbaru
+        - `ping` heartbeat agar koneksi tetap aktif
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: doctorId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: pairingSessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: SSE stream pairing status
+          content:
+            text/event-stream:
+              schema:
+                type: string
+                example: |
+                  event: pairing-status
+                  data: {"pairingSessionId":"92d6f1bf-45ef-470f-a5a3-2f277f3138ca","doctorId":"8aca6089-3899-4b85-a715-0a63113e846a","status":"pending","expiresAt":"2026-04-09T12:10:00.000Z","confirmedAt":null,"patientId":null}
+        '404':
+          description: Pairing session not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /api/v1/dashboard/pairing-sessions/confirm:
+    post:
+      tags: [DoctorDashboard]
+      summary: Konfirmasi pairing dashboard dari hasil scan QR di mobile pasien
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DashboardPairingSessionConfirmRequest'
+      responses:
+        '201':
+          description: Pairing confirmed
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/DashboardPairingSessionConfirmData'
+        '404':
+          description: Pairing token invalid or expired
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /api/v1/patients/{patientId}/shares:
+    post:
+      tags: [Patients]
+      summary: Generate share code pasien untuk linking QR/doctor (legacy, optional)
+      deprecated: true
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatientShareCreateRequest'
+      responses:
+        '201':
+          description: Share code created
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PatientShare'
+        '403':
+          description: Forbidden access to patient scope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /api/v1/doctors/{doctorId}/dashboard/patients:
+    get:
+      tags: [DoctorDashboard]
+      summary: List pasien dashboard dokter (dengan search dan latest vitals)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: doctorId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+            example: agus
+      responses:
+        '200':
+          description: Dashboard patient list
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/DoctorDashboardPatientsData'
+        '403':
+          description: Forbidden access to doctor scope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /api/v1/doctors/{doctorId}/dashboard/patients/{patientId}:
+    get:
+      tags: [DoctorDashboard]
+      summary: Ringkasan pasien untuk dashboard dokter
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: doctorId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Patient summary for doctor dashboard
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/DoctorDashboardPatientSummaryData'
+        '404':
+          description: Linked patient not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /api/v1/doctors/{doctorId}/dashboard/patients/{patientId}/vitals:
+    get:
+      tags: [DoctorDashboard]
+      summary: Time-series vitals pasien siap Chart.js
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: doctorId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: startDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: timePeriod
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [last_7_days, last_14_days, last_30_days, last_3_months, last_6_months, all]
+            default: last_30_days
+      responses:
+        '200':
+          description: Vital series for dashboard chart
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/DoctorDashboardPatientVitalsData'
+
+  /api/v1/doctors/{doctorId}/dashboard/patients/{patientId}/abnormal-report:
+    get:
+      tags: [DoctorDashboard]
+      summary: Laporan abnormal reading pasien untuk dashboard dokter
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: doctorId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: startDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: timePeriod
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [last_7_days, last_14_days, last_30_days, last_3_months, last_6_months, all]
+            default: last_30_days
+      responses:
+        '200':
+          description: Abnormal report for dashboard
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/DoctorDashboardAbnormalReportData'

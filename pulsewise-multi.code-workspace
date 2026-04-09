@@ -1,0 +1,18 @@
+{
+  "folders": [
+    {
+      "name": "pulsewise-backend",
+      "path": "."
+    },
+    {
+      "name": "chf-dashboard",
+      "path": "..\\chf-dashboard"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/.venv": true,
+      "**/__pycache__": true
+    }
+  }
+}

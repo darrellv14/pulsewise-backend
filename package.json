@@ -3,10 +3,12 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "set NODE_ENV=test&& jest --runInBand",
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "migrate": "node scripts/migrate.js"
+    "migrate": "node scripts/migrate.js",
+    "seed:dev": "node scripts/seed-dev-users.js",
+    "seed:dashboard": "node scripts/seed-dashboard-data.js"
   },
   "keywords": [],
   "author": "",
@@ -18,11 +20,18 @@
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "firebase-admin": "^13.7.0",
+    "google-auth-library": "^10.6.1",
     "helmet": "^8.1.0",
+    "joi": "^18.0.2",
     "jsonwebtoken": "^9.0.3",
+    "mailtrap": "^4.4.0",
     "morgan": "^1.10.1",
     "pg": "^8.16.3",
     "swagger-ui-express": "^5.0.1",
     "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "jest": "^30.3.0",
+    "supertest": "^7.2.2"
   }
 }

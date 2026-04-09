@@ -1,0 +1,291 @@
+{
+  "info": {
+    "_postman_id": "3178bb74-5270-4139-8e55-e3a5700e7c07",
+    "name": "PulseWise Dashboard Smoke",
+    "description": "Smoke test collection untuk flow dashboard dokter + QR frontend berbasis patientId.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Dashboard Smoke E2E",
+      "item": [
+        {
+          "name": "POST Login Seed Patient",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.environment.set('patientToken', json?.data?.token || '');",
+                  "pm.environment.set('patientId', json?.data?.user?.userId || '');"
+                ],
+                "id": "bf05a975-8f07-4323-a6be-d4dd7b2e67c2"
+              }
+            }
+          ],
+          "id": "e3bd179a-3d0b-4ec1-ac60-95c805a10f8d",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{seedPatientEmail}}\",\n  \"password\": \"{{patientPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST Login Doctor",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.environment.set('doctorToken', json?.data?.token || '');",
+                  "pm.environment.set('doctorId', json?.data?.user?.userId || '');"
+                ],
+                "id": "603f4750-ee79-4144-bb96-0f8cb032d132"
+              }
+            }
+          ],
+          "id": "c9228138-4874-409a-a5e5-d8e39ac1afc9",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{doctorEmail}}\",\n  \"password\": \"{{doctorPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET Dashboard Patients",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
+                ],
+                "id": "9b5413ed-34e6-46bd-bc41-319cba0972c4"
+              }
+            }
+          ],
+          "id": "af2a4af7-de03-4579-b75a-bc31a19fdd75",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctorToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients?page=1&limit=20",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "doctors",
+                "{{doctorId}}",
+                "dashboard",
+                "patients"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET Dashboard Patient Summary",
+          "id": "0a695ee4-318d-4e09-81da-c5e39dde9214",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctorToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "doctors",
+                "{{doctorId}}",
+                "dashboard",
+                "patients",
+                "{{patientId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET Dashboard Patient Vitals",
+          "id": "b4a9e89a-aec1-4e57-9189-41c98f35915e",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctorToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/vitals?timePeriod=last_30_days",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "doctors",
+                "{{doctorId}}",
+                "dashboard",
+                "patients",
+                "{{patientId}}",
+                "vitals"
+              ],
+              "query": [
+                {
+                  "key": "timePeriod",
+                  "value": "last_30_days"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET Dashboard Abnormal Report",
+          "id": "f4b3667f-9b60-4a49-b547-e5bbf4e2aa64",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctorToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/abnormal-report?timePeriod=last_30_days",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "doctors",
+                "{{doctorId}}",
+                "dashboard",
+                "patients",
+                "{{patientId}}",
+                "abnormal-report"
+              ],
+              "query": [
+                {
+                  "key": "timePeriod",
+                  "value": "last_30_days"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST Link Doctor By Scanned Patient ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });"
+                ],
+                "id": "3665b1a6-a506-4886-84b4-b254f0771ff5"
+              }
+            }
+          ],
+          "id": "6d745760-1e24-40fe-a0bb-3440487ed455",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctorToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patientId\": \"{{patientId}}\",\n  \"source\": \"qr_patient_id\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/doctors/{{doctorId}}/patients/link-by-patient-id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "doctors",
+                "{{doctorId}}",
+                "patients",
+                "link-by-patient-id"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "c03cdbcd-f19a-47ca-96e0-c0ffb892375a"
+    }
+  ]
+}

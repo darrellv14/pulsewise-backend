@@ -1,0 +1,347 @@
+const { success } = require('../utils/response');
+const phase2Service = require('../services/phase2Service');
+const { CREATED } = require('../constants/httpStatus');
+
+const DASHBOARD_PAIRING_TERMINAL_STATUSES = new Set(['confirmed', 'expired', 'cancelled']);
+const DASHBOARD_PAIRING_SSE_POLL_MS = 2000;
+const DASHBOARD_PAIRING_SSE_PING_MS = 15000;
+
+function writeSseEvent(res, eventName, payload) {
+  res.write(`event: ${eventName}\n`);
+  res.write(`data: ${JSON.stringify(payload)}\n\n`);
+}
+
+async function listPatients(req, res, next) {
+  try {
+    const data = await phase2Service.listPatients(req.query);
+    return success(res, 'Daftar pasien berhasil diambil', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function getPatientProfile(req, res, next) {
+  try {
+    const data = await phase2Service.getPatientProfile(req.params.patientId);
+    return success(res, 'Profil pasien berhasil diambil', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function updatePatientProfile(req, res, next) {
+  try {
+    const data = await phase2Service.updatePatientProfile(req.params.patientId, req.body);
+    return success(res, 'Profil pasien berhasil diperbarui', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function getDoctorProfile(req, res, next) {
+  try {
+    const data = await phase2Service.getDoctorProfile(req.params.doctorId);
+    return success(res, 'Profil dokter berhasil diambil', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function updateDoctorProfile(req, res, next) {
+  try {
+    const data = await phase2Service.updateDoctorProfile(req.params.doctorId, req.body);
+    return success(res, 'Profil dokter berhasil diperbarui', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function listDoctorPatients(req, res, next) {
+  try {
+    const data = await phase2Service.listDoctorPatients({
+      doctorId: req.params.doctorId,
+      page: req.query.page,
+      limit: req.query.limit,
+    });
+
+    return success(res, 'Relasi pasien dokter berhasil diambil', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function linkDoctorPatient(req, res, next) {
+  try {
+    const data = await phase2Service.linkDoctorPatient({
+      doctorId: req.params.doctorId,
+      patientId: req.body.patientId,
+      source: req.body.source,
+    });
+
+    return success(res, 'Relasi dokter-pasien berhasil dibuat', data, CREATED);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function createPatientShare(req, res, next) {
+  try {
+    const data = await phase2Service.createPatientShare({
+      actor: req.user,
+      patientId: req.params.patientId,
+      expiresInHours: req.body.expiresInHours,
+    });
+
+    return success(res, 'Share code pasien berhasil dibuat', data, CREATED);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function linkDoctorPatientByShareCode(req, res, next) {
+  try {
+    const data = await phase2Service.linkDoctorPatientByShareCode({
+      actor: req.user,
+      doctorId: req.params.doctorId,
+      shareCode: req.body.shareCode,
+    });
+
+    return success(res, 'Relasi dokter-pasien berhasil dibuat dari share code', data, CREATED);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function linkDoctorPatientByPatientId(req, res, next) {
+  try {
+    const data = await phase2Service.linkDoctorPatientByPatientId({
+      actor: req.user,
+      doctorId: req.params.doctorId,
+      patientId: req.body.patientId,
+      source: req.body.source,
+    });
+
+    return success(res, 'Relasi dokter-pasien berhasil dibuat dari scan patient ID', data, CREATED);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function createDashboardPairingSession(req, res, next) {
+  try {
+    const data = await phase2Service.createDashboardPairingSession({
+      actor: req.user,
+      doctorId: req.params.doctorId,
+      expiresInSeconds: req.body.expiresInSeconds,
+    });
+
+    return success(res, 'Session pairing dashboard berhasil dibuat', data, CREATED);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function getDashboardPairingSessionStatus(req, res, next) {
+  try {
+    const data = await phase2Service.getDashboardPairingSessionStatus({
+      actor: req.user,
+      doctorId: req.params.doctorId,
+      pairingSessionId: req.params.pairingSessionId,
+    });
+
+    return success(res, 'Status pairing dashboard berhasil diambil', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function streamDashboardPairingSessionStatus(req, res, next) {
+  let pollTimer = null;
+  let pingTimer = null;
+
+  const cleanup = () => {
+    if (pollTimer) {
+      clearInterval(pollTimer);
+      pollTimer = null;
+    }
+
+    if (pingTimer) {
+      clearInterval(pingTimer);
+      pingTimer = null;
+    }
+  };
+
+  const sendCurrentStatus = async () => {
+    const statusData = await phase2Service.getDashboardPairingSessionStatus({
+      actor: req.user,
+      doctorId: req.params.doctorId,
+      pairingSessionId: req.params.pairingSessionId,
+    });
+
+    writeSseEvent(res, 'pairing-status', statusData);
+
+    if (DASHBOARD_PAIRING_TERMINAL_STATUSES.has(statusData.status)) {
+      cleanup();
+      res.end();
+    }
+  };
+
+  const handleStreamError = (error) => {
+    cleanup();
+
+    if (!res.headersSent) {
+      return next(error);
+    }
+
+    if (!res.writableEnded) {
+      writeSseEvent(res, 'error', {
+        message: error.message || 'Terjadi kesalahan pada stream status pairing',
+      });
+      res.end();
+    }
+
+    return undefined;
+  };
+
+  try {
+    res.status(200);
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache, no-transform');
+    res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no');
+
+    if (typeof res.flushHeaders === 'function') {
+      res.flushHeaders();
+    }
+
+    req.on('close', () => {
+      cleanup();
+    });
+
+    await sendCurrentStatus();
+    if (res.writableEnded) {
+      return undefined;
+    }
+
+    pollTimer = setInterval(() => {
+      sendCurrentStatus().catch(handleStreamError);
+    }, DASHBOARD_PAIRING_SSE_POLL_MS);
+
+    pingTimer = setInterval(() => {
+      if (!res.writableEnded) {
+        writeSseEvent(res, 'ping', {});
+      }
+    }, DASHBOARD_PAIRING_SSE_PING_MS);
+
+    return undefined;
+  } catch (error) {
+    return handleStreamError(error);
+  }
+}
+
+async function confirmDashboardPairingSession(req, res, next) {
+  try {
+    const data = await phase2Service.confirmDashboardPairingSession({
+      actor: req.user,
+      pairingToken: req.body.pairingToken,
+      source: req.body.source,
+    });
+
+    return success(res, 'Pairing dashboard berhasil dikonfirmasi dari mobile', data, CREATED);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function unlinkDoctorPatient(req, res, next) {
+  try {
+    const data = await phase2Service.unlinkDoctorPatient({
+      doctorId: req.params.doctorId,
+      patientId: req.params.patientId,
+    });
+
+    return success(res, 'Relasi dokter-pasien berhasil dinonaktifkan', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function listDoctorDashboardPatients(req, res, next) {
+  try {
+    const data = await phase2Service.listDoctorDashboardPatients({
+      actor: req.user,
+      doctorId: req.params.doctorId,
+      query: req.query,
+    });
+
+    return success(res, 'Daftar pasien dashboard dokter berhasil diambil', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function getDoctorDashboardPatientSummary(req, res, next) {
+  try {
+    const data = await phase2Service.getDoctorDashboardPatientSummary({
+      actor: req.user,
+      doctorId: req.params.doctorId,
+      patientId: req.params.patientId,
+    });
+
+    return success(res, 'Ringkasan pasien dashboard dokter berhasil diambil', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function getDoctorDashboardPatientVitals(req, res, next) {
+  try {
+    const data = await phase2Service.getDoctorDashboardPatientVitals({
+      actor: req.user,
+      doctorId: req.params.doctorId,
+      patientId: req.params.patientId,
+      query: req.query,
+    });
+
+    return success(res, 'Time-series vital pasien dashboard dokter berhasil diambil', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function getDoctorDashboardAbnormalReport(req, res, next) {
+  try {
+    const data = await phase2Service.getDoctorDashboardAbnormalReport({
+      actor: req.user,
+      doctorId: req.params.doctorId,
+      patientId: req.params.patientId,
+      query: req.query,
+    });
+
+    return success(res, 'Abnormal report pasien dashboard dokter berhasil diambil', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+module.exports = {
+  listPatients,
+  getPatientProfile,
+  updatePatientProfile,
+  getDoctorProfile,
+  updateDoctorProfile,
+  listDoctorPatients,
+  linkDoctorPatient,
+  createPatientShare,
+  linkDoctorPatientByShareCode,
+  linkDoctorPatientByPatientId,
+  createDashboardPairingSession,
+  getDashboardPairingSessionStatus,
+  streamDashboardPairingSessionStatus,
+  confirmDashboardPairingSession,
+  unlinkDoctorPatient,
+  listDoctorDashboardPatients,
+  getDoctorDashboardPatientSummary,
+  getDoctorDashboardPatientVitals,
+  getDoctorDashboardAbnormalReport,
+};
