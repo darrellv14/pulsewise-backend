@@ -1,7 +1,7 @@
 const express = require('express');
 const authenticate = require('../middlewares/authenticate');
 const validateRequest = require('../middlewares/validateRequest');
-const legacyParityController = require('../controllers/legacyParityController');
+const patientCareController = require('../controllers/patientCareController');
 const {
   userIdParamSchema,
   emergencyContactParamsSchema,
@@ -14,9 +14,10 @@ const {
   symptomCreateSchema,
   activityCreateSchema,
   consumptionCreateSchema,
+  emergencyContactListQuerySchema,
   avatarSignatureQuerySchema,
   avatarSaveSchema,
-} = require('../validators/legacyParityValidator');
+} = require('../validators/patientCareValidator');
 
 const router = express.Router();
 
@@ -24,27 +25,28 @@ router.get(
   '/users/:userId/emergency-contacts',
   authenticate,
   validateRequest(userIdParamSchema, 'params'),
-  legacyParityController.listEmergencyContacts
+  validateRequest(emergencyContactListQuerySchema, 'query'),
+  patientCareController.listEmergencyContacts
 );
 router.post(
   '/users/:userId/emergency-contacts',
   authenticate,
   validateRequest(userIdParamSchema, 'params'),
   validateRequest(emergencyContactCreateSchema),
-  legacyParityController.createEmergencyContact
+  patientCareController.createEmergencyContact
 );
 router.put(
   '/users/:userId/emergency-contacts/:emergencyContactId',
   authenticate,
   validateRequest(emergencyContactParamsSchema, 'params'),
   validateRequest(emergencyContactUpdateSchema),
-  legacyParityController.updateEmergencyContact
+  patientCareController.updateEmergencyContact
 );
 router.delete(
   '/users/:userId/emergency-contacts/:emergencyContactId',
   authenticate,
   validateRequest(emergencyContactParamsSchema, 'params'),
-  legacyParityController.deleteEmergencyContact
+  patientCareController.deleteEmergencyContact
 );
 
 router.get(
@@ -52,48 +54,48 @@ router.get(
   authenticate,
   validateRequest(userIdParamSchema, 'params'),
   validateRequest(heartDiaryQuerySchema, 'query'),
-  legacyParityController.listHeartDiaries
+  patientCareController.listHeartDiaries
 );
 router.post(
   '/users/:userId/diaries',
   authenticate,
   validateRequest(userIdParamSchema, 'params'),
   validateRequest(heartDiaryCreateSchema),
-  legacyParityController.upsertHeartDiary
+  patientCareController.upsertHeartDiary
 );
 router.get(
   '/users/:userId/diaries/:diaryId',
   authenticate,
   validateRequest(diaryParamsSchema, 'params'),
-  legacyParityController.getHeartDiaryDetail
+  patientCareController.getHeartDiaryDetail
 );
 router.post(
   '/users/:userId/diaries/:diaryId/body-metrics',
   authenticate,
   validateRequest(diaryParamsSchema, 'params'),
   validateRequest(bodyMetricCreateSchema),
-  legacyParityController.createDailyBodyMetric
+  patientCareController.createDailyBodyMetric
 );
 router.post(
   '/users/:userId/diaries/:diaryId/symptoms',
   authenticate,
   validateRequest(diaryParamsSchema, 'params'),
   validateRequest(symptomCreateSchema),
-  legacyParityController.createDailySymptom
+  patientCareController.createDailySymptom
 );
 router.post(
   '/users/:userId/diaries/:diaryId/activities',
   authenticate,
   validateRequest(diaryParamsSchema, 'params'),
   validateRequest(activityCreateSchema),
-  legacyParityController.createDailyActivity
+  patientCareController.createDailyActivity
 );
 router.post(
   '/users/:userId/diaries/:diaryId/consumptions',
   authenticate,
   validateRequest(diaryParamsSchema, 'params'),
   validateRequest(consumptionCreateSchema),
-  legacyParityController.createDailyConsumption
+  patientCareController.createDailyConsumption
 );
 
 router.get(
@@ -101,14 +103,14 @@ router.get(
   authenticate,
   validateRequest(userIdParamSchema, 'params'),
   validateRequest(avatarSignatureQuerySchema, 'query'),
-  legacyParityController.createAvatarUploadSignature
+  patientCareController.createAvatarUploadSignature
 );
 router.put(
   '/users/:userId/avatar',
   authenticate,
   validateRequest(userIdParamSchema, 'params'),
   validateRequest(avatarSaveSchema),
-  legacyParityController.saveAvatarUploadResult
+  patientCareController.saveAvatarUploadResult
 );
 
 module.exports = router;

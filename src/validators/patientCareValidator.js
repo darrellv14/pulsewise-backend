@@ -1,4 +1,5 @@
 const { z } = require('zod');
+const env = require('../config/env');
 
 const uuidV4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const uuidV4Schema = z.string().uuid().regex(uuidV4Regex, 'Harus UUID v4 yang valid');
@@ -13,6 +14,14 @@ const dateTimeSchema = z
 
 const optionalNullableString = (maxLength) =>
   z.union([z.string().trim().max(maxLength), z.literal(''), z.null()]).optional();
+const allowedAvatarFormats = String(env.cloudinary.avatarAllowedFormats || 'jpg,jpeg,png,webp')
+  .split(',')
+  .map((item) => item.trim().toLowerCase())
+  .filter(Boolean);
+const paginationQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+});
 
 const userIdParamSchema = z.object({
   userId: uuidV4Schema,
@@ -46,8 +55,10 @@ const heartDiaryCreateSchema = z.object({
   diaryDate: dateSchema,
 });
 
-const heartDiaryQuerySchema = z
-  .object({
+const emergencyContactListQuerySchema = paginationQuerySchema;
+
+const heartDiaryQuerySchema = paginationQuerySchema
+  .extend({
     startDate: dateSchema.optional(),
     endDate: dateSchema.optional(),
   })
@@ -119,6 +130,18 @@ const avatarSignatureQuerySchema = z.object({
 const avatarSaveSchema = z.object({
   secureUrl: z.string().trim().url().max(2000),
   publicId: optionalNullableString(300),
+  bytes: z.coerce.number().int().min(1).max(env.cloudinary.avatarMaxBytes).optional(),
+  width: z.coerce.number().int().min(1).max(env.cloudinary.avatarMaxWidth).optional(),
+  height: z.coerce.number().int().min(1).max(env.cloudinary.avatarMaxHeight).optional(),
+  format: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .refine((value) => allowedAvatarFormats.includes(value), {
+      message: `Format avatar harus salah satu dari ${allowedAvatarFormats.join(', ')}`,
+    })
+    .optional(),
+  resourceType: z.literal('image').optional(),
 });
 
 module.exports = {
@@ -133,6 +156,7 @@ module.exports = {
   symptomCreateSchema,
   activityCreateSchema,
   consumptionCreateSchema,
+  emergencyContactListQuerySchema,
   avatarSignatureQuerySchema,
   avatarSaveSchema,
 };

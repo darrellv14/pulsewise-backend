@@ -1,13 +1,14 @@
 const { CREATED } = require('../constants/httpStatus');
 const env = require('../config/env');
 const { success } = require('../utils/response');
-const legacyParityService = require('../services/legacyParityService');
+const patientCareService = require('../services/patientCareService');
 
 async function listEmergencyContacts(req, res, next) {
   try {
-    const data = await legacyParityService.listEmergencyContacts({
+    const data = await patientCareService.listEmergencyContacts({
       actor: req.user,
       userId: req.params.userId,
+      query: req.query,
     });
 
     return success(res, 'Daftar emergency contact berhasil diambil', data);
@@ -18,7 +19,7 @@ async function listEmergencyContacts(req, res, next) {
 
 async function createEmergencyContact(req, res, next) {
   try {
-    const data = await legacyParityService.createEmergencyContact({
+    const data = await patientCareService.createEmergencyContact({
       actor: req.user,
       userId: req.params.userId,
       payload: req.body,
@@ -32,7 +33,7 @@ async function createEmergencyContact(req, res, next) {
 
 async function updateEmergencyContact(req, res, next) {
   try {
-    const data = await legacyParityService.updateEmergencyContact({
+    const data = await patientCareService.updateEmergencyContact({
       actor: req.user,
       userId: req.params.userId,
       emergencyContactId: req.params.emergencyContactId,
@@ -47,7 +48,7 @@ async function updateEmergencyContact(req, res, next) {
 
 async function deleteEmergencyContact(req, res, next) {
   try {
-    const data = await legacyParityService.deleteEmergencyContact({
+    const data = await patientCareService.deleteEmergencyContact({
       actor: req.user,
       userId: req.params.userId,
       emergencyContactId: req.params.emergencyContactId,
@@ -61,7 +62,7 @@ async function deleteEmergencyContact(req, res, next) {
 
 async function upsertHeartDiary(req, res, next) {
   try {
-    const data = await legacyParityService.upsertHeartDiary({
+    const data = await patientCareService.upsertHeartDiary({
       actor: req.user,
       userId: req.params.userId,
       payload: req.body,
@@ -75,7 +76,7 @@ async function upsertHeartDiary(req, res, next) {
 
 async function listHeartDiaries(req, res, next) {
   try {
-    const data = await legacyParityService.listHeartDiaries({
+    const data = await patientCareService.listHeartDiaries({
       actor: req.user,
       userId: req.params.userId,
       query: req.query,
@@ -89,7 +90,7 @@ async function listHeartDiaries(req, res, next) {
 
 async function getHeartDiaryDetail(req, res, next) {
   try {
-    const data = await legacyParityService.getHeartDiaryDetail({
+    const data = await patientCareService.getHeartDiaryDetail({
       actor: req.user,
       userId: req.params.userId,
       diaryId: req.params.diaryId,
@@ -103,7 +104,7 @@ async function getHeartDiaryDetail(req, res, next) {
 
 async function createDailyBodyMetric(req, res, next) {
   try {
-    const data = await legacyParityService.createDailyBodyMetric({
+    const data = await patientCareService.createDailyBodyMetric({
       actor: req.user,
       userId: req.params.userId,
       diaryId: req.params.diaryId,
@@ -118,7 +119,7 @@ async function createDailyBodyMetric(req, res, next) {
 
 async function createDailySymptom(req, res, next) {
   try {
-    const data = await legacyParityService.createDailySymptom({
+    const data = await patientCareService.createDailySymptom({
       actor: req.user,
       userId: req.params.userId,
       diaryId: req.params.diaryId,
@@ -133,7 +134,7 @@ async function createDailySymptom(req, res, next) {
 
 async function createDailyActivity(req, res, next) {
   try {
-    const data = await legacyParityService.createDailyActivity({
+    const data = await patientCareService.createDailyActivity({
       actor: req.user,
       userId: req.params.userId,
       diaryId: req.params.diaryId,
@@ -148,7 +149,7 @@ async function createDailyActivity(req, res, next) {
 
 async function createDailyConsumption(req, res, next) {
   try {
-    const data = await legacyParityService.createDailyConsumption({
+    const data = await patientCareService.createDailyConsumption({
       actor: req.user,
       userId: req.params.userId,
       diaryId: req.params.diaryId,
@@ -163,7 +164,7 @@ async function createDailyConsumption(req, res, next) {
 
 async function createAvatarUploadSignature(req, res, next) {
   try {
-    const data = await legacyParityService.createAvatarUploadSignature({
+    const data = await patientCareService.createAvatarUploadSignature({
       actor: req.user,
       userId: req.params.userId,
       query: req.query,
@@ -178,7 +179,7 @@ async function createAvatarUploadSignature(req, res, next) {
 
 async function saveAvatarUploadResult(req, res, next) {
   try {
-    const data = await legacyParityService.saveAvatarUploadResult({
+    const data = await patientCareService.saveAvatarUploadResult({
       actor: req.user,
       userId: req.params.userId,
       payload: req.body,

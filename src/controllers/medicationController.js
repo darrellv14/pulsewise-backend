@@ -7,6 +7,7 @@ async function listMedications(req, res, next) {
     const data = await medicationService.listMedications({
       actor: req.user,
       userId: req.params.userId,
+      query: req.query,
     });
 
     return success(res, 'Daftar medication berhasil diambil', data);
@@ -78,6 +79,7 @@ async function listRemindersByMedication(req, res, next) {
       actor: req.user,
       userId: req.params.userId,
       medicationId: req.params.medicationId,
+      query: req.query,
     });
 
     return success(res, 'Daftar reminder berhasil diambil', data);

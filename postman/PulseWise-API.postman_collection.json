@@ -625,7 +625,7 @@
                 "value": "Bearer {{patientToken}}"
               }
             ],
-            "url": "{{baseUrl}}/users/{{patientId}}/medications"
+            "url": "{{baseUrl}}/users/{{patientId}}/medications?page=1&limit=20"
           }
         },
         {
@@ -706,7 +706,7 @@
                 "value": "Bearer {{patientToken}}"
               }
             ],
-            "url": "{{baseUrl}}/users/{{patientId}}/medications/{{medicationId}}/reminders"
+            "url": "{{baseUrl}}/users/{{patientId}}/medications/{{medicationId}}/reminders?page=1&limit=20"
           }
         },
         {
@@ -787,7 +787,7 @@
                 "value": "Bearer {{patientToken}}"
               }
             ],
-            "url": "{{baseUrl}}/users/{{patientId}}/medications/{{medicationId}}/logs?startDate=2026-04-01&endDate=2026-04-10"
+            "url": "{{baseUrl}}/users/{{patientId}}/medications/{{medicationId}}/logs?page=1&limit=20&startDate=2026-04-01&endDate=2026-04-10"
           }
         },
         {
@@ -835,7 +835,7 @@
                 "value": "Bearer {{patientToken}}"
               }
             ],
-            "url": "{{baseUrl}}/users/{{patientId}}/emergency-contacts"
+            "url": "{{baseUrl}}/users/{{patientId}}/emergency-contacts?page=1&limit=20"
           }
         },
         {
@@ -903,7 +903,7 @@
                 "value": "Bearer {{patientToken}}"
               }
             ],
-            "url": "{{baseUrl}}/users/{{patientId}}/diaries?startDate=2026-04-01&endDate=2026-04-30"
+            "url": "{{baseUrl}}/users/{{patientId}}/diaries?page=1&limit=20&startDate=2026-04-01&endDate=2026-04-30"
           }
         },
         {

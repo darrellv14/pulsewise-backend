@@ -135,7 +135,7 @@ async function seedMedicationLogs(client, userId) {
     const created = await client.query(
       `
         INSERT INTO medications (user_id, name, description, condition_tag)
-        VALUES ($1, 'Aspirin', 'Seed legacy parity', 'heart')
+        VALUES ($1, 'Aspirin', 'Seed patient care', 'heart')
         RETURNING medication_id
       `,
       [userId]
@@ -174,7 +174,7 @@ async function run() {
   try {
     await client.query('BEGIN');
 
-    const patientEmail = process.env.SEED_LEGACY_PATIENT_EMAIL || 'dev@pulsewise.local';
+    const patientEmail = process.env.SEED_PATIENT_CARE_EMAIL || 'dev@pulsewise.local';
     const userId = await getUserIdByEmail(client, patientEmail);
 
     if (!userId) {
@@ -189,12 +189,12 @@ async function run() {
 
     await client.query('COMMIT');
 
-    console.log('[seed:legacy] done');
-    console.log(`[seed:legacy] patient=${patientEmail}`);
-    console.log('[seed:legacy] emergency + diary + medication log seeded');
+    console.log('[seed:patient-care] done');
+    console.log(`[seed:patient-care] patient=${patientEmail}`);
+    console.log('[seed:patient-care] emergency + diary + medication log seeded');
   } catch (error) {
     await client.query('ROLLBACK');
-    console.error('[seed:legacy] failed', error.message);
+    console.error('[seed:patient-care] failed', error.message);
     process.exit(1);
   } finally {
     client.release();

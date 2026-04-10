@@ -1,6 +1,8 @@
 const crypto = require('crypto');
-const { FORBIDDEN, NOT_FOUND, INTERNAL_SERVER_ERROR } = require('../constants/httpStatus');
-const legacyParityRepository = require('../repositories/legacyParityRepository');
+const { BAD_REQUEST, FORBIDDEN, NOT_FOUND, INTERNAL_SERVER_ERROR } = require('../constants/httpStatus');
+const env = require('../config/env');
+const patientCareRepository = require('../repositories/patientCareRepository');
+const { buildPagination } = require('../utils/pagination');
 
 function createHttpError(message, statusCode, details = null) {
   const error = new Error(message);
@@ -156,19 +158,93 @@ function signCloudinaryParams(params, apiSecret) {
   return crypto.createHash('sha1').update(`${sorted}${apiSecret}`).digest('hex');
 }
 
-async function listEmergencyContacts({ actor, userId }) {
-  assertUserScope({ actor, userId });
+function buildAvatarUploadPolicy(envConfig) {
+  const maxBytes = Math.max(1, Number(envConfig.cloudinary.avatarMaxBytes) || 2 * 1024 * 1024);
+  const maxWidth = Math.max(1, Number(envConfig.cloudinary.avatarMaxWidth) || 512);
+  const maxHeight = Math.max(1, Number(envConfig.cloudinary.avatarMaxHeight) || 512);
+  const quality = String(envConfig.cloudinary.avatarQuality || 'auto:good').trim() || 'auto:good';
+  const allowedFormats = String(envConfig.cloudinary.avatarAllowedFormats || 'jpg,jpeg,png,webp')
+    .split(',')
+    .map((item) => item.trim().toLowerCase())
+    .filter(Boolean);
 
-  const rows = await legacyParityRepository.listEmergencyContacts(userId);
   return {
-    items: rows.map(mapEmergencyContact),
+    maxBytes,
+    maxWidth,
+    maxHeight,
+    quality,
+    allowedFormats,
+    allowedFormatsCsv: allowedFormats.join(','),
+    transformation: `c_limit,h_${maxHeight},w_${maxWidth},q_${quality}`,
+  };
+}
+
+function assertAvatarUploadResult(payload, envConfig, cloudinaryConfig) {
+  const policy = buildAvatarUploadPolicy(envConfig);
+
+  if (payload.resourceType && String(payload.resourceType).trim().toLowerCase() !== 'image') {
+    throw createHttpError('Avatar harus berupa image', BAD_REQUEST);
+  }
+
+  if (payload.bytes && Number(payload.bytes) > policy.maxBytes) {
+    throw createHttpError(`Ukuran avatar melebihi batas ${policy.maxBytes} bytes`, BAD_REQUEST);
+  }
+
+  if (payload.width && Number(payload.width) > policy.maxWidth) {
+    throw createHttpError(`Lebar avatar melebihi batas ${policy.maxWidth}px`, BAD_REQUEST);
+  }
+
+  if (payload.height && Number(payload.height) > policy.maxHeight) {
+    throw createHttpError(`Tinggi avatar melebihi batas ${policy.maxHeight}px`, BAD_REQUEST);
+  }
+
+  if (
+    payload.format &&
+    !policy.allowedFormats.includes(String(payload.format).trim().toLowerCase())
+  ) {
+    throw createHttpError(
+      `Format avatar tidak didukung. Gunakan ${policy.allowedFormats.join(', ')}`,
+      BAD_REQUEST
+    );
+  }
+
+  let parsedUrl;
+  try {
+    parsedUrl = new URL(payload.secureUrl);
+  } catch (_error) {
+    throw createHttpError('URL avatar tidak valid', BAD_REQUEST);
+  }
+
+  const expectedPath = `/${cloudinaryConfig.cloudName}/image/upload/`;
+  if (parsedUrl.hostname !== 'res.cloudinary.com' || !parsedUrl.pathname.includes(expectedPath)) {
+    throw createHttpError(
+      'URL avatar harus berasal dari Cloudinary image upload yang valid',
+      BAD_REQUEST
+    );
+  }
+}
+
+async function listEmergencyContacts({ actor, userId, query }) {
+  assertUserScope({ actor, userId });
+  const page = query?.page || 1;
+  const limit = query?.limit || 20;
+  const offset = (page - 1) * limit;
+
+  const result = await patientCareRepository.listEmergencyContacts({
+    userId,
+    limit,
+    offset,
+  });
+  return {
+    items: result.items.map(mapEmergencyContact),
+    pagination: buildPagination({ page, limit, totalItems: result.totalItems }),
   };
 }
 
 async function createEmergencyContact({ actor, userId, payload }) {
   assertUserScope({ actor, userId });
 
-  const created = await legacyParityRepository.createEmergencyContact({
+  const created = await patientCareRepository.createEmergencyContact({
     userId,
     contactLabel: payload.contactLabel,
     contactNumber: payload.contactNumber,
@@ -180,7 +256,7 @@ async function createEmergencyContact({ actor, userId, payload }) {
 async function updateEmergencyContact({ actor, userId, emergencyContactId, payload }) {
   assertUserScope({ actor, userId });
 
-  const updated = await legacyParityRepository.updateEmergencyContact({
+  const updated = await patientCareRepository.updateEmergencyContact({
     userId,
     emergencyContactId,
     contactLabel: payload.contactLabel !== undefined ? payload.contactLabel : null,
@@ -197,7 +273,7 @@ async function updateEmergencyContact({ actor, userId, emergencyContactId, paylo
 async function deleteEmergencyContact({ actor, userId, emergencyContactId }) {
   assertUserScope({ actor, userId });
 
-  const deletedCount = await legacyParityRepository.deleteEmergencyContact({
+  const deletedCount = await patientCareRepository.deleteEmergencyContact({
     userId,
     emergencyContactId,
   });
@@ -214,7 +290,7 @@ async function deleteEmergencyContact({ actor, userId, emergencyContactId }) {
 async function upsertHeartDiary({ actor, userId, payload }) {
   assertUserScope({ actor, userId });
 
-  const diary = await legacyParityRepository.upsertHeartDiary({
+  const diary = await patientCareRepository.upsertHeartDiary({
     userId,
     diaryDate: payload.diaryDate,
   });
@@ -224,31 +300,37 @@ async function upsertHeartDiary({ actor, userId, payload }) {
 
 async function listHeartDiaries({ actor, userId, query }) {
   assertUserScope({ actor, userId });
+  const page = query?.page || 1;
+  const limit = query?.limit || 20;
+  const offset = (page - 1) * limit;
 
-  const rows = await legacyParityRepository.listHeartDiaries({
+  const result = await patientCareRepository.listHeartDiaries({
     userId,
-    startDate: query.startDate,
-    endDate: query.endDate,
+    startDate: query?.startDate,
+    endDate: query?.endDate,
+    limit,
+    offset,
   });
 
   return {
-    items: rows.map(mapDiary),
+    items: result.items.map(mapDiary),
+    pagination: buildPagination({ page, limit, totalItems: result.totalItems }),
   };
 }
 
 async function getHeartDiaryDetail({ actor, userId, diaryId }) {
   assertUserScope({ actor, userId });
 
-  const diary = await legacyParityRepository.getHeartDiary({ userId, diaryId });
+  const diary = await patientCareRepository.getHeartDiary({ userId, diaryId });
   if (!diary) {
     throw createHttpError('Heart diary tidak ditemukan', NOT_FOUND);
   }
 
   const [metrics, symptoms, activities, consumptions] = await Promise.all([
-    legacyParityRepository.listDailyBodyMetrics(diaryId),
-    legacyParityRepository.listDailySymptoms(diaryId),
-    legacyParityRepository.listDailyActivities(diaryId),
-    legacyParityRepository.listDailyConsumptions(diaryId),
+    patientCareRepository.listDailyBodyMetrics(diaryId),
+    patientCareRepository.listDailySymptoms(diaryId),
+    patientCareRepository.listDailyActivities(diaryId),
+    patientCareRepository.listDailyConsumptions(diaryId),
   ]);
 
   return {
@@ -263,12 +345,12 @@ async function getHeartDiaryDetail({ actor, userId, diaryId }) {
 async function createDailyBodyMetric({ actor, userId, diaryId, payload }) {
   assertUserScope({ actor, userId });
 
-  const diary = await legacyParityRepository.getHeartDiary({ userId, diaryId });
+  const diary = await patientCareRepository.getHeartDiary({ userId, diaryId });
   if (!diary) {
     throw createHttpError('Heart diary tidak ditemukan', NOT_FOUND);
   }
 
-  const created = await legacyParityRepository.createDailyBodyMetric({
+  const created = await patientCareRepository.createDailyBodyMetric({
     diaryId,
     conditionTag: payload.conditionTag || null,
     bodyHeight: payload.bodyHeight,
@@ -285,12 +367,12 @@ async function createDailyBodyMetric({ actor, userId, diaryId, payload }) {
 async function createDailySymptom({ actor, userId, diaryId, payload }) {
   assertUserScope({ actor, userId });
 
-  const diary = await legacyParityRepository.getHeartDiary({ userId, diaryId });
+  const diary = await patientCareRepository.getHeartDiary({ userId, diaryId });
   if (!diary) {
     throw createHttpError('Heart diary tidak ditemukan', NOT_FOUND);
   }
 
-  const created = await legacyParityRepository.createDailySymptom({
+  const created = await patientCareRepository.createDailySymptom({
     diaryId,
     symptomName: payload.symptomName,
     intensity: payload.intensity,
@@ -304,12 +386,12 @@ async function createDailySymptom({ actor, userId, diaryId, payload }) {
 async function createDailyActivity({ actor, userId, diaryId, payload }) {
   assertUserScope({ actor, userId });
 
-  const diary = await legacyParityRepository.getHeartDiary({ userId, diaryId });
+  const diary = await patientCareRepository.getHeartDiary({ userId, diaryId });
   if (!diary) {
     throw createHttpError('Heart diary tidak ditemukan', NOT_FOUND);
   }
 
-  const created = await legacyParityRepository.createDailyActivity({
+  const created = await patientCareRepository.createDailyActivity({
     diaryId,
     name: payload.name,
     duration: payload.duration,
@@ -325,12 +407,12 @@ async function createDailyActivity({ actor, userId, diaryId, payload }) {
 async function createDailyConsumption({ actor, userId, diaryId, payload }) {
   assertUserScope({ actor, userId });
 
-  const diary = await legacyParityRepository.getHeartDiary({ userId, diaryId });
+  const diary = await patientCareRepository.getHeartDiary({ userId, diaryId });
   if (!diary) {
     throw createHttpError('Heart diary tidak ditemukan', NOT_FOUND);
   }
 
-  const created = await legacyParityRepository.createDailyConsumption({
+  const created = await patientCareRepository.createDailyConsumption({
     diaryId,
     type: payload.type || null,
     name: payload.name || null,
@@ -346,11 +428,14 @@ async function createAvatarUploadSignature({ actor, userId, query, envConfig }) 
   assertUserScope({ actor, userId });
 
   const cloudinaryConfig = resolveCloudinaryConfig(envConfig);
+  const avatarPolicy = buildAvatarUploadPolicy(envConfig);
   const timestamp = Math.floor(Date.now() / 1000);
   const folder = query.folder || envConfig.cloudinary.uploadFolder;
   const params = {
+    allowed_formats: avatarPolicy.allowedFormatsCsv,
     folder,
     timestamp,
+    transformation: avatarPolicy.transformation,
   };
 
   const signature = signCloudinaryParams(params, cloudinaryConfig.apiSecret);
@@ -361,14 +446,18 @@ async function createAvatarUploadSignature({ actor, userId, query, envConfig }) 
     timestamp,
     folder,
     signature,
+    transformation: avatarPolicy.transformation,
+    allowed_formats: avatarPolicy.allowedFormatsCsv,
     uploadUrl: `https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/image/upload`,
   };
 }
 
 async function saveAvatarUploadResult({ actor, userId, payload }) {
   assertUserScope({ actor, userId });
+  const cloudinaryConfig = resolveCloudinaryConfig(env);
+  assertAvatarUploadResult(payload, env, cloudinaryConfig);
 
-  const updated = await legacyParityRepository.updateUserAvatar({
+  const updated = await patientCareRepository.updateUserAvatar({
     userId,
     avatarPhoto: payload.secureUrl,
   });

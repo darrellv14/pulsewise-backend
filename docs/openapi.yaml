@@ -716,6 +716,10 @@ components:
           type: string
         signature:
           type: string
+        transformation:
+          type: string
+        allowed_formats:
+          type: string
         uploadUrl:
           type: string
           format: uri
@@ -732,6 +736,20 @@ components:
           type: string
           nullable: true
           maxLength: 300
+        bytes:
+          type: integer
+          minimum: 1
+        width:
+          type: integer
+          minimum: 1
+        height:
+          type: integer
+          minimum: 1
+        format:
+          type: string
+        resourceType:
+          type: string
+          enum: [image]
 
     AvatarSaveResponse:
       type: object
@@ -2191,6 +2209,8 @@ paths:
           schema:
             type: string
             format: uuid
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
       responses:
         '200':
           description: List medication
@@ -2208,6 +2228,8 @@ paths:
                             type: array
                             items:
                               $ref: '#/components/schemas/Medication'
+                          pagination:
+                            $ref: '#/components/schemas/Pagination'
     post:
       tags: [Medications]
       summary: Buat medication baru
@@ -2351,6 +2373,8 @@ paths:
           schema:
             type: string
             format: uuid
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
       responses:
         '200':
           description: List reminder
@@ -2368,6 +2392,8 @@ paths:
                             type: array
                             items:
                               $ref: '#/components/schemas/Reminder'
+                          pagination:
+                            $ref: '#/components/schemas/Pagination'
     post:
       tags: [Medications]
       summary: Tambah reminder pada medication
@@ -2487,6 +2513,8 @@ paths:
           schema:
             type: string
             format: uuid
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
         - name: startDate
           in: query
           required: false
@@ -2516,6 +2544,8 @@ paths:
                             type: array
                             items:
                               $ref: '#/components/schemas/MedicationLog'
+                          pagination:
+                            $ref: '#/components/schemas/Pagination'
     post:
       tags: [Medications]
       summary: Catat konsumsi obat (medication log)
@@ -2566,6 +2596,8 @@ paths:
           schema:
             type: string
             format: uuid
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
       responses:
         '200':
           description: Daftar emergency contact
@@ -2583,6 +2615,8 @@ paths:
                             type: array
                             items:
                               $ref: '#/components/schemas/EmergencyContact'
+                          pagination:
+                            $ref: '#/components/schemas/Pagination'
     post:
       tags: [Patient Care]
       summary: Add new emergency contact for a patient
@@ -2690,6 +2724,8 @@ paths:
           schema:
             type: string
             format: uuid
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
         - name: startDate
           in: query
           required: false
@@ -2719,6 +2755,8 @@ paths:
                             type: array
                             items:
                               $ref: '#/components/schemas/HeartDiary'
+                          pagination:
+                            $ref: '#/components/schemas/Pagination'
     post:
       tags: [Patient Care]
       summary: Create or update daily heart diary record

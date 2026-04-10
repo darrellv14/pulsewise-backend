@@ -6,6 +6,8 @@ const {
   userIdParamSchema,
   medicationParamsSchema,
   reminderParamsSchema,
+  medicationListQuerySchema,
+  reminderListQuerySchema,
   medicationCreateSchema,
   medicationUpdateSchema,
   reminderCreateSchema,
@@ -20,6 +22,7 @@ router.get(
   '/users/:userId/medications',
   authenticate,
   validateRequest(userIdParamSchema, 'params'),
+  validateRequest(medicationListQuerySchema, 'query'),
   medicationController.listMedications
 );
 router.get(
@@ -53,6 +56,7 @@ router.get(
   '/users/:userId/medications/:medicationId/reminders',
   authenticate,
   validateRequest(medicationParamsSchema, 'params'),
+  validateRequest(reminderListQuerySchema, 'query'),
   medicationController.listRemindersByMedication
 );
 router.post(

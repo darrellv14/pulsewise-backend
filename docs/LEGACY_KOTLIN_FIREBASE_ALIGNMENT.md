@@ -132,5 +132,5 @@ Evidence pengecekan akhir (2026-04-10):
 
 - `npm run lint`: pass.
 - `npm run migrate`: pass.
-- `npm run seed:dev`, `npm run seed:dashboard`, `npm run seed:legacy`: pass.
+- `npm run seed:dev`, `npm run seed:dashboard`, `npm run seed:patient-care`: pass.
 - `npm test`: pass (5 suites, 26 tests).

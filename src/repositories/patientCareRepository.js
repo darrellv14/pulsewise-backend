@@ -1,17 +1,74 @@
 const { pool } = require('../config/database');
 
-async function listEmergencyContacts(userId) {
-  const result = await pool.query(
-    `
+async function listEmergencyContacts({ userId, limit, offset }) {
+  const [itemsResult, totalResult] = await Promise.all([
+    pool.query(
+      `
       SELECT emergency_contact_id, user_id, contact_label, contact_number, created_at
       FROM emergency_contacts
       WHERE user_id = $1
       ORDER BY created_at DESC
+      LIMIT $2 OFFSET $3
     `,
-    [userId]
-  );
+      [userId, limit, offset]
+    ),
+    pool.query(
+      `
+      SELECT COUNT(*)::int AS total_items
+      FROM emergency_contacts
+      WHERE user_id = $1
+    `,
+      [userId]
+    ),
+  ]);
 
-  return result.rows;
+  return {
+    items: itemsResult.rows,
+    totalItems: totalResult.rows[0]?.total_items || 0,
+  };
+}
+
+async function listHeartDiaries({ userId, startDate, endDate, limit, offset }) {
+  const clauses = ['user_id = $1'];
+  const values = [userId];
+
+  if (startDate) {
+    values.push(startDate);
+    clauses.push(`diary_date >= $${values.length}`);
+  }
+
+  if (endDate) {
+    values.push(endDate);
+    clauses.push(`diary_date <= $${values.length}`);
+  }
+
+  const listValues = [...values, limit, offset];
+
+  const [itemsResult, totalResult] = await Promise.all([
+    pool.query(
+      `
+      SELECT diary_id, user_id, diary_date, created_at
+      FROM heart_diaries
+      WHERE ${clauses.join(' AND ')}
+      ORDER BY diary_date DESC
+      LIMIT $${values.length + 1} OFFSET $${values.length + 2}
+    `,
+      listValues
+    ),
+    pool.query(
+      `
+      SELECT COUNT(*)::int AS total_items
+      FROM heart_diaries
+      WHERE ${clauses.join(' AND ')}
+    `,
+      values
+    ),
+  ]);
+
+  return {
+    items: itemsResult.rows,
+    totalItems: totalResult.rows[0]?.total_items || 0,
+  };
 }
 
 async function createEmergencyContact({ userId, contactLabel, contactNumber }) {
@@ -69,33 +126,6 @@ async function upsertHeartDiary({ userId, diaryDate }) {
   );
 
   return result.rows[0] || null;
-}
-
-async function listHeartDiaries({ userId, startDate, endDate }) {
-  const clauses = ['user_id = $1'];
-  const values = [userId];
-
-  if (startDate) {
-    values.push(startDate);
-    clauses.push(`diary_date >= $${values.length}`);
-  }
-
-  if (endDate) {
-    values.push(endDate);
-    clauses.push(`diary_date <= $${values.length}`);
-  }
-
-  const result = await pool.query(
-    `
-      SELECT diary_id, user_id, diary_date, created_at
-      FROM heart_diaries
-      WHERE ${clauses.join(' AND ')}
-      ORDER BY diary_date DESC
-    `,
-    values
-  );
-
-  return result.rows;
 }
 
 async function getHeartDiary({ userId, diaryId }) {

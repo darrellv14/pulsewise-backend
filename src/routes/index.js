@@ -4,7 +4,7 @@ const authRoutes = require('./authRoutes');
 const careRoutes = require('./careRoutes');
 const biometricRoutes = require('./biometricRoutes');
 const medicationRoutes = require('./medicationRoutes');
-const legacyParityRoutes = require('./legacyParityRoutes');
+const patientCareRoutes = require('./patientCareRoutes');
 
 const router = express.Router();
 
@@ -13,6 +13,6 @@ router.use('/auth', authRoutes);
 router.use('/', careRoutes);
 router.use('/', biometricRoutes);
 router.use('/', medicationRoutes);
-router.use('/', legacyParityRoutes);
+router.use('/', patientCareRoutes);
 
 module.exports = router;

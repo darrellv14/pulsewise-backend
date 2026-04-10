@@ -5,6 +5,7 @@ const { OAuth2Client } = require('google-auth-library');
 const env = require('../config/env');
 const userRepository = require('../repositories/userRepository');
 const { sendOtpEmail } = require('./emailService');
+const { normalizeOtp } = require('../utils/otp');
 
 const ALLOWED_ROLES = new Set(['patient', 'doctor', 'admin']);
 const googleClient = new OAuth2Client();
@@ -49,7 +50,7 @@ function generateOtpCode() {
 }
 
 function hashOtpCode(otp) {
-  return crypto.createHash('sha256').update(otp).digest('hex');
+  return crypto.createHash('sha256').update(normalizeOtp(otp)).digest('hex');
 }
 
 async function register(payload) {
@@ -159,7 +160,7 @@ async function confirmEmailVerification(email, otp) {
     throw error;
   }
 
-  const isOtpValid = verification.otp_code_hash === hashOtpCode(String(otp || '').trim());
+  const isOtpValid = verification.otp_code_hash === hashOtpCode(otp);
   if (!isOtpValid) {
     const error = new Error('OTP tidak valid');
     error.statusCode = 400;

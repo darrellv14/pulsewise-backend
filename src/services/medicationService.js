@@ -1,5 +1,6 @@
 const prisma = require('../config/prisma');
 const { FORBIDDEN, NOT_FOUND, CONFLICT } = require('../constants/httpStatus');
+const { buildPagination } = require('../utils/pagination');
 
 function createHttpError(message, statusCode, details = null) {
   const error = new Error(message);
@@ -149,27 +150,40 @@ async function assertNoDuplicateReminderTime(
   }
 }
 
-async function listMedications({ actor, userId }) {
+async function listMedications({ actor, userId, query }) {
   assertPatientScope({ actor, userId });
+  const page = query?.page || 1;
+  const limit = query?.limit || 20;
+  const skip = (page - 1) * limit;
 
-  const medications = await prisma.medication.findMany({
-    where: {
-      userId,
-    },
-    include: {
-      reminders: {
-        orderBy: {
-          scheduleTime: 'asc',
+  const [medications, totalItems] = await Promise.all([
+    prisma.medication.findMany({
+      where: {
+        userId,
+      },
+      include: {
+        reminders: {
+          orderBy: {
+            scheduleTime: 'asc',
+          },
         },
       },
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-  });
+      orderBy: {
+        createdAt: 'desc',
+      },
+      skip,
+      take: limit,
+    }),
+    prisma.medication.count({
+      where: {
+        userId,
+      },
+    }),
+  ]);
 
   return {
     items: medications.map(toMedicationDto),
+    pagination: buildPagination({ page, limit, totalItems }),
   };
 }
 
@@ -345,23 +359,36 @@ async function deleteMedication({ actor, userId, medicationId }) {
   };
 }
 
-async function listRemindersByMedication({ actor, userId, medicationId }) {
+async function listRemindersByMedication({ actor, userId, medicationId, query }) {
   assertPatientScope({ actor, userId });
+  const page = query?.page || 1;
+  const limit = query?.limit || 20;
+  const skip = (page - 1) * limit;
 
   await ensureMedicationOwnership(prisma, { medicationId, userId });
 
-  const reminders = await prisma.reminder.findMany({
-    where: {
-      userId,
-      medicationId,
-    },
-    orderBy: {
-      scheduleTime: 'asc',
-    },
-  });
+  const where = {
+    userId,
+    medicationId,
+  };
+
+  const [reminders, totalItems] = await Promise.all([
+    prisma.reminder.findMany({
+      where,
+      orderBy: {
+        scheduleTime: 'asc',
+      },
+      skip,
+      take: limit,
+    }),
+    prisma.reminder.count({
+      where,
+    }),
+  ]);
 
   return {
     items: reminders.map(toReminderDto),
+    pagination: buildPagination({ page, limit, totalItems }),
   };
 }
 
@@ -447,6 +474,9 @@ async function deleteReminder({ actor, userId, reminderId }) {
 
 async function listMedicationLogs({ actor, userId, medicationId, query }) {
   assertPatientScope({ actor, userId });
+  const page = query?.page || 1;
+  const limit = query?.limit || 20;
+  const skip = (page - 1) * limit;
 
   await ensureMedicationOwnership(prisma, { medicationId, userId });
 
@@ -455,25 +485,33 @@ async function listMedicationLogs({ actor, userId, medicationId, query }) {
     medicationId,
   };
 
-  if (query.startDate || query.endDate) {
+  if (query?.startDate || query?.endDate) {
     where.medicationDate = {};
   }
 
-  if (query.startDate) {
+  if (query?.startDate) {
     where.medicationDate.gte = toPrismaDate(query.startDate);
   }
 
-  if (query.endDate) {
+  if (query?.endDate) {
     where.medicationDate.lte = toPrismaDate(query.endDate);
   }
 
-  const logs = await prisma.medicationLog.findMany({
-    where,
-    orderBy: [{ medicationDate: 'desc' }, { createdAt: 'desc' }],
-  });
+  const [logs, totalItems] = await Promise.all([
+    prisma.medicationLog.findMany({
+      where,
+      orderBy: [{ medicationDate: 'desc' }, { createdAt: 'desc' }],
+      skip,
+      take: limit,
+    }),
+    prisma.medicationLog.count({
+      where,
+    }),
+  ]);
 
   return {
     items: logs.map(toMedicationLogDto),
+    pagination: buildPagination({ page, limit, totalItems }),
   };
 }
 

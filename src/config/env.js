@@ -62,6 +62,11 @@ const env = {
     apiSecret: process.env.CLOUDINARY_API_SECRET || '',
     cloudName: process.env.CLOUDINARY_CLOUD_NAME || '',
     uploadFolder: process.env.CLOUDINARY_UPLOAD_FOLDER || 'pulsewise/avatar',
+    avatarMaxBytes: Number(process.env.CLOUDINARY_AVATAR_MAX_BYTES || 2 * 1024 * 1024),
+    avatarMaxWidth: Number(process.env.CLOUDINARY_AVATAR_MAX_WIDTH || 512),
+    avatarMaxHeight: Number(process.env.CLOUDINARY_AVATAR_MAX_HEIGHT || 512),
+    avatarAllowedFormats: process.env.CLOUDINARY_AVATAR_ALLOWED_FORMATS || 'jpg,jpeg,png,webp',
+    avatarQuality: process.env.CLOUDINARY_AVATAR_QUALITY || 'auto:good',
   },
   rateLimit: {
     authWindowMs: Number(process.env.RATE_LIMIT_AUTH_WINDOW_MS || 15 * 60 * 1000),

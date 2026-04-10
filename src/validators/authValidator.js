@@ -1,9 +1,20 @@
 const { z } = require('zod');
+const { normalizeOtp } = require('../utils/otp');
 
 const optionalNullableString = (maxLength) =>
   z.union([z.string().trim().max(maxLength), z.literal(''), z.null()]).optional();
 
 const emailRule = z.string().trim().email().max(255);
+const otpRule = z.preprocess(
+  (value) => {
+    if (typeof value === 'string' || typeof value === 'number') {
+      return normalizeOtp(value);
+    }
+
+    return value;
+  },
+  z.string().length(6, 'OTP harus 6 digit').regex(/^[0-9]+$/, 'OTP harus berisi angka')
+);
 
 const registerSchema = z.object({
   username: z.string().trim().min(3).max(100),
@@ -25,11 +36,7 @@ const sendEmailVerificationSchema = z.object({
 
 const confirmEmailVerificationSchema = z.object({
   email: emailRule,
-  otp: z
-    .string()
-    .trim()
-    .length(6)
-    .regex(/^[0-9]+$/, 'OTP harus berisi angka'),
+  otp: otpRule,
 });
 
 const googleOauthSchema = z.object({

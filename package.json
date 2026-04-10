@@ -21,7 +21,7 @@
     "migrate": "node scripts/migrate.js",
     "seed:dev": "node scripts/seed-dev-users.js",
     "seed:dashboard": "node scripts/seed-dashboard-data.js",
-    "seed:legacy": "node scripts/seed-legacy-parity.js"
+    "seed:patient-care": "node scripts/seed-patient-care.js"
   },
   "keywords": [],
   "author": "",
