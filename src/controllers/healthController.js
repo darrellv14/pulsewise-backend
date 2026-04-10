@@ -1,6 +1,12 @@
 const { healthCheck } = require('../config/database');
 const { success } = require('../utils/response');
 
+function healthz(req, res) {
+  return success(res, 'Pulse Wise Backend is live', {
+    timestamp: new Date().toISOString(),
+  });
+}
+
 async function health(req, res, next) {
   try {
     const db = await healthCheck();
@@ -15,5 +21,6 @@ async function health(req, res, next) {
 }
 
 module.exports = {
+  healthz,
   health,
 };

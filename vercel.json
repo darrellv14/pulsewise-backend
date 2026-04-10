@@ -2,7 +2,10 @@
   "version": 2,
   "functions": {
     "api/index.js": {
-      "includeFiles": "docs/openapi.yaml"
+      "includeFiles": [
+        "docs/openapi.yaml",
+        "node_modules/swagger-ui-dist/**"
+      ]
     }
   },
   "rewrites": [
