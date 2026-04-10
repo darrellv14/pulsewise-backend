@@ -56,11 +56,31 @@ const env = {
     senderEmail: process.env.MAILTRAP_SENDER_EMAIL || 'hello@demomailtrap.co',
     senderName: process.env.MAILTRAP_SENDER_NAME || 'PulseWise',
   },
+  cloudinary: {
+    url: process.env.CLOUDINARY_URL || '',
+    apiKey: process.env.CLOUDINARY_API_KEY || '',
+    apiSecret: process.env.CLOUDINARY_API_SECRET || '',
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME || '',
+    uploadFolder: process.env.CLOUDINARY_UPLOAD_FOLDER || 'pulsewise/avatar',
+  },
+  rateLimit: {
+    authWindowMs: Number(process.env.RATE_LIMIT_AUTH_WINDOW_MS || 15 * 60 * 1000),
+    authMax: Number(process.env.RATE_LIMIT_AUTH_MAX || 20),
+  },
   postgres: {
-    host: ensureEnv('POSTGRES_HOST', pickPostgresValue('POSTGRES_HOST', parsedDbUrl?.host, 'localhost')),
+    host: ensureEnv(
+      'POSTGRES_HOST',
+      pickPostgresValue('POSTGRES_HOST', parsedDbUrl?.host, 'localhost')
+    ),
     port: Number(pickPostgresValue('POSTGRES_PORT', parsedDbUrl?.port, 5432)),
-    database: ensureEnv('POSTGRES_DB', pickPostgresValue('POSTGRES_DB', parsedDbUrl?.database, 'pulsewise')),
-    user: ensureEnv('POSTGRES_USER', pickPostgresValue('POSTGRES_USER', parsedDbUrl?.user, 'pulsewise')),
+    database: ensureEnv(
+      'POSTGRES_DB',
+      pickPostgresValue('POSTGRES_DB', parsedDbUrl?.database, 'pulsewise')
+    ),
+    user: ensureEnv(
+      'POSTGRES_USER',
+      pickPostgresValue('POSTGRES_USER', parsedDbUrl?.user, 'pulsewise')
+    ),
     password: ensureEnv(
       'POSTGRES_PASSWORD',
       pickPostgresValue('POSTGRES_PASSWORD', parsedDbUrl?.password, 'pulsewise123')

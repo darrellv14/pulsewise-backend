@@ -77,9 +77,7 @@
               "listen": "test",
               "script": {
                 "type": "text/javascript",
-                "exec": [
-                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
-                ]
+                "exec": ["pm.test('Status 200', function () { pm.response.to.have.status(200); });"]
               }
             }
           ],
@@ -140,9 +138,7 @@
               "listen": "test",
               "script": {
                 "type": "text/javascript",
-                "exec": [
-                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });"
-                ]
+                "exec": ["pm.test('Status 201', function () { pm.response.to.have.status(201); });"]
               }
             }
           ],

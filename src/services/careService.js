@@ -419,8 +419,14 @@ async function getPatientProfile(patientId) {
 async function updatePatientProfile(patientId, payload) {
   return profileRepository.upsertPatientProfile({
     patientId,
-    dateOfBirth: payload.dateOfBirth || null,
-    sex: payload.sex || null,
+    dateOfBirth: payload.dateOfBirth !== undefined ? payload.dateOfBirth : undefined,
+    sex: payload.sex !== undefined ? payload.sex : undefined,
+    bodyHeightCm: payload.heightCm !== undefined ? payload.heightCm : undefined,
+    isSmoking: payload.isSmoking !== undefined ? payload.isSmoking : undefined,
+    isElectricSmoking:
+      payload.isElectricSmoking !== undefined ? payload.isElectricSmoking : undefined,
+    bloodType: payload.bloodType !== undefined ? payload.bloodType : undefined,
+    address: payload.address !== undefined ? payload.address : undefined,
   });
 }
 

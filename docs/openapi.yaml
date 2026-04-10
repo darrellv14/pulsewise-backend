@@ -18,6 +18,9 @@ tags:
   - name: Doctors
   - name: DoctorPatients
   - name: DoctorDashboard
+  - name: Medications
+  - name: Patient Care
+  - name: Profile Management
   - name: Biometrics
 
 components:
@@ -207,6 +210,25 @@ components:
         sex:
           type: string
           nullable: true
+        body_height_cm:
+          type: number
+          nullable: true
+          example: 172.5
+        is_smoking:
+          type: boolean
+          nullable: true
+          example: false
+        is_electric_smoking:
+          type: boolean
+          nullable: true
+          example: false
+        blood_type:
+          type: string
+          nullable: true
+          enum: [A, A+, A-, B, B+, B-, AB, AB+, AB-, O, O+, O-]
+        address:
+          type: string
+          nullable: true
         created_at:
           type: string
           format: date-time
@@ -258,13 +280,514 @@ components:
           type: string
           format: date
           nullable: true
-        age:
-          type: integer
+        heightCm:
+          type: number
+          minimum: 30
+          maximum: 300
           nullable: true
+        isSmoking:
+          type: boolean
+          nullable: true
+        isElectricSmoking:
+          type: boolean
+          nullable: true
+        bloodType:
+          type: string
+          nullable: true
+          enum: [A, A+, A-, B, B+, B-, AB, AB+, AB-, O, O+, O-]
         sex:
           type: string
           nullable: true
           example: male
+        address:
+          type: string
+          nullable: true
+          example: Jalan Sukamaju No. 88, Surabaya
+
+    Medication:
+      type: object
+      properties:
+        medicationId:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        conditionTag:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        reminders:
+          type: array
+          items:
+            $ref: '#/components/schemas/Reminder'
+
+    Reminder:
+      type: object
+      properties:
+        reminderId:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        medicationId:
+          type: string
+          format: uuid
+        scheduleTime:
+          type: string
+          example: '08:00'
+        createdAt:
+          type: string
+          format: date-time
+
+    ReminderInput:
+      type: object
+      required: [scheduleTime]
+      properties:
+        scheduleTime:
+          type: string
+          pattern: '^([01]\\d|2[0-3]):([0-5]\\d)$'
+          example: '08:00'
+
+    MedicationLog:
+      type: object
+      properties:
+        medicationLogId:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        medicationId:
+          type: string
+          format: uuid
+        medicationDate:
+          type: string
+          format: date
+        medicationTime:
+          type: string
+          nullable: true
+          example: '08:15'
+        createdAt:
+          type: string
+          format: date-time
+
+    MedicationLogCreateRequest:
+      type: object
+      required: [medicationDate]
+      properties:
+        medicationDate:
+          type: string
+          format: date
+          example: '2026-04-10'
+        medicationTime:
+          type: string
+          nullable: true
+          pattern: '^([01]\\d|2[0-3]):([0-5]\\d)$'
+          example: '08:15'
+
+    EmergencyContact:
+      type: object
+      properties:
+        emergencyContactId:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        contactLabel:
+          type: string
+        contactNumber:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    EmergencyContactCreateRequest:
+      type: object
+      required: [contactLabel, contactNumber]
+      properties:
+        contactLabel:
+          type: string
+          minLength: 1
+          maxLength: 100
+        contactNumber:
+          type: string
+          minLength: 3
+          maxLength: 50
+
+    EmergencyContactUpdateRequest:
+      type: object
+      minProperties: 1
+      properties:
+        contactLabel:
+          type: string
+          nullable: true
+          maxLength: 100
+        contactNumber:
+          type: string
+          nullable: true
+          maxLength: 50
+
+    HeartDiary:
+      type: object
+      properties:
+        diaryId:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        diaryDate:
+          type: string
+          format: date
+        createdAt:
+          type: string
+          format: date-time
+
+    DailyBodyMetric:
+      type: object
+      properties:
+        metricId:
+          type: string
+          format: uuid
+        diaryId:
+          type: string
+          format: uuid
+        conditionTag:
+          type: string
+          nullable: true
+        bodyHeight:
+          type: number
+          nullable: true
+        bodyWeight:
+          type: number
+          nullable: true
+        bmi:
+          type: number
+          nullable: true
+        systolicPressure:
+          type: integer
+          nullable: true
+        diastolicPressure:
+          type: integer
+          nullable: true
+        timeStamp:
+          type: string
+          format: date-time
+          nullable: true
+
+    DailySymptom:
+      type: object
+      properties:
+        symptomId:
+          type: string
+          format: uuid
+        diaryId:
+          type: string
+          format: uuid
+        symptomName:
+          type: string
+        intensity:
+          type: integer
+          nullable: true
+        note:
+          type: string
+          nullable: true
+        timeStamp:
+          type: string
+          format: date-time
+          nullable: true
+
+    DailyActivity:
+      type: object
+      properties:
+        activityId:
+          type: string
+          format: uuid
+        diaryId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        duration:
+          type: integer
+          nullable: true
+        heartRate:
+          type: integer
+          nullable: true
+        userFeeling:
+          type: string
+          nullable: true
+        note:
+          type: string
+          nullable: true
+        timeStamp:
+          type: string
+          format: date-time
+          nullable: true
+
+    DailyConsumption:
+      type: object
+      properties:
+        consumptionId:
+          type: string
+          format: uuid
+        diaryId:
+          type: string
+          format: uuid
+        type:
+          type: string
+          nullable: true
+        name:
+          type: string
+          nullable: true
+        portion:
+          type: string
+          nullable: true
+        note:
+          type: string
+          nullable: true
+        timeStamp:
+          type: string
+          format: date-time
+          nullable: true
+
+    HeartDiaryCreateRequest:
+      type: object
+      required: [diaryDate]
+      properties:
+        diaryDate:
+          type: string
+          format: date
+          example: '2026-04-10'
+
+    DailyBodyMetricCreateRequest:
+      type: object
+      minProperties: 1
+      properties:
+        conditionTag:
+          type: string
+          nullable: true
+          maxLength: 64
+        bodyHeight:
+          type: number
+          minimum: 30
+          maximum: 300
+          nullable: true
+        bodyWeight:
+          type: number
+          minimum: 1
+          maximum: 500
+          nullable: true
+        bmi:
+          type: number
+          minimum: 1
+          maximum: 100
+          nullable: true
+        systolicPressure:
+          type: integer
+          minimum: 50
+          maximum: 300
+          nullable: true
+        diastolicPressure:
+          type: integer
+          minimum: 30
+          maximum: 250
+          nullable: true
+        timeStamp:
+          type: string
+          format: date-time
+
+    DailySymptomCreateRequest:
+      type: object
+      required: [symptomName]
+      properties:
+        symptomName:
+          type: string
+          minLength: 1
+          maxLength: 120
+        intensity:
+          type: integer
+          minimum: 1
+          maximum: 10
+          nullable: true
+        note:
+          type: string
+          nullable: true
+          maxLength: 2000
+        timeStamp:
+          type: string
+          format: date-time
+
+    DailyActivityCreateRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        duration:
+          type: integer
+          minimum: 1
+          maximum: 1440
+          nullable: true
+        heartRate:
+          type: integer
+          minimum: 20
+          maximum: 250
+          nullable: true
+        userFeeling:
+          type: string
+          nullable: true
+          maxLength: 80
+        note:
+          type: string
+          nullable: true
+          maxLength: 2000
+        timeStamp:
+          type: string
+          format: date-time
+
+    DailyConsumptionCreateRequest:
+      type: object
+      properties:
+        type:
+          type: string
+          nullable: true
+          maxLength: 50
+        name:
+          type: string
+          nullable: true
+          maxLength: 120
+        portion:
+          type: string
+          nullable: true
+          maxLength: 80
+        note:
+          type: string
+          nullable: true
+          maxLength: 2000
+        timeStamp:
+          type: string
+          format: date-time
+
+    HeartDiaryDetail:
+      allOf:
+        - $ref: '#/components/schemas/HeartDiary'
+        - type: object
+          properties:
+            bodyMetrics:
+              type: array
+              items:
+                $ref: '#/components/schemas/DailyBodyMetric'
+            symptoms:
+              type: array
+              items:
+                $ref: '#/components/schemas/DailySymptom'
+            activities:
+              type: array
+              items:
+                $ref: '#/components/schemas/DailyActivity'
+            consumptions:
+              type: array
+              items:
+                $ref: '#/components/schemas/DailyConsumption'
+
+    AvatarUploadSignatureResponse:
+      type: object
+      properties:
+        cloudName:
+          type: string
+        apiKey:
+          type: string
+        timestamp:
+          type: integer
+        folder:
+          type: string
+        signature:
+          type: string
+        uploadUrl:
+          type: string
+          format: uri
+
+    AvatarSaveRequest:
+      type: object
+      required: [secureUrl]
+      properties:
+        secureUrl:
+          type: string
+          format: uri
+          maxLength: 2000
+        publicId:
+          type: string
+          nullable: true
+          maxLength: 300
+
+    AvatarSaveResponse:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        avatarPhoto:
+          type: string
+          format: uri
+        cloudinaryPublicId:
+          type: string
+          nullable: true
+        updatedAt:
+          type: string
+          format: date-time
+
+    MedicationCreateRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        description:
+          type: string
+          nullable: true
+        conditionTag:
+          type: string
+          nullable: true
+        reminders:
+          type: array
+          maxItems: 24
+          items:
+            $ref: '#/components/schemas/ReminderInput'
+
+    MedicationUpdateRequest:
+      type: object
+      minProperties: 1
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        description:
+          type: string
+          nullable: true
+        conditionTag:
+          type: string
+          nullable: true
+        reminders:
+          type: array
+          maxItems: 24
+          items:
+            $ref: '#/components/schemas/ReminderInput'
 
     DoctorProfileUpdateRequest:
       type: object
@@ -1129,7 +1652,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessEnvelope'
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PatientProfile'
 
   /api/v1/doctors/{doctorId}/profile:
     get:
@@ -1649,6 +2177,826 @@ paths:
                     properties:
                       data:
                         $ref: '#/components/schemas/DoctorDashboardAbnormalReportData'
+
+  /api/v1/users/{userId}/medications:
+    get:
+      tags: [Medications]
+      summary: Daftar medication milik user
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List medication
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Medication'
+    post:
+      tags: [Medications]
+      summary: Buat medication baru
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MedicationCreateRequest'
+      responses:
+        '201':
+          description: Medication berhasil dibuat
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Medication'
+
+  /api/v1/users/{userId}/medications/{medicationId}:
+    get:
+      tags: [Medications]
+      summary: Detail medication berdasarkan ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: medicationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Detail medication
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Medication'
+    put:
+      tags: [Medications]
+      summary: Update medication
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: medicationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MedicationUpdateRequest'
+      responses:
+        '200':
+          description: Medication berhasil diperbarui
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Medication'
+    delete:
+      tags: [Medications]
+      summary: Hapus medication
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: medicationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Medication berhasil dihapus
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+
+  /api/v1/users/{userId}/medications/{medicationId}/reminders:
+    get:
+      tags: [Medications]
+      summary: Daftar reminder pada medication
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: medicationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List reminder
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Reminder'
+    post:
+      tags: [Medications]
+      summary: Tambah reminder pada medication
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: medicationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReminderInput'
+      responses:
+        '201':
+          description: Reminder berhasil dibuat
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Reminder'
+
+  /api/v1/users/{userId}/reminders/{reminderId}:
+    put:
+      tags: [Medications]
+      summary: Update reminder berdasarkan ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: reminderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReminderInput'
+      responses:
+        '200':
+          description: Reminder berhasil diperbarui
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Reminder'
+    delete:
+      tags: [Medications]
+      summary: Hapus reminder berdasarkan ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: reminderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Reminder berhasil dihapus
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+
+  /api/v1/users/{userId}/medications/{medicationId}/logs:
+    get:
+      tags: [Medications]
+      summary: Daftar medication log pada medication
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: medicationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: startDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: List medication log
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/MedicationLog'
+    post:
+      tags: [Medications]
+      summary: Catat konsumsi obat (medication log)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: medicationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MedicationLogCreateRequest'
+      responses:
+        '201':
+          description: Medication log berhasil dibuat
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/MedicationLog'
+
+  /api/v1/users/{userId}/emergency-contacts:
+    get:
+      tags: [Patient Care]
+      summary: List emergency contacts for a patient
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Daftar emergency contact
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/EmergencyContact'
+    post:
+      tags: [Patient Care]
+      summary: Add new emergency contact for a patient
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmergencyContactCreateRequest'
+      responses:
+        '201':
+          description: Emergency contact berhasil dibuat
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/EmergencyContact'
+
+  /api/v1/users/{userId}/emergency-contacts/{emergencyContactId}:
+    put:
+      tags: [Patient Care]
+      summary: Update an existing emergency contact
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: emergencyContactId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmergencyContactUpdateRequest'
+      responses:
+        '200':
+          description: Emergency contact berhasil diperbarui
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/EmergencyContact'
+    delete:
+      tags: [Patient Care]
+      summary: Delete an emergency contact
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: emergencyContactId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Emergency contact berhasil dihapus
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+
+  /api/v1/users/{userId}/diaries:
+    get:
+      tags: [Patient Care]
+      summary: List daily heart diary records for a patient
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: startDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Daftar heart diary
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/HeartDiary'
+    post:
+      tags: [Patient Care]
+      summary: Create or update daily heart diary record
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HeartDiaryCreateRequest'
+      responses:
+        '201':
+          description: Heart diary berhasil disimpan
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/HeartDiary'
+
+  /api/v1/users/{userId}/diaries/{diaryId}:
+    get:
+      tags: [Patient Care]
+      summary: Get detailed heart diary record
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: diaryId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Detail heart diary
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/HeartDiaryDetail'
+
+  /api/v1/users/{userId}/diaries/{diaryId}/body-metrics:
+    post:
+      tags: [Patient Care]
+      summary: Add daily body metric entry to heart diary
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: diaryId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DailyBodyMetricCreateRequest'
+      responses:
+        '201':
+          description: Body metric berhasil ditambahkan
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/DailyBodyMetric'
+
+  /api/v1/users/{userId}/diaries/{diaryId}/symptoms:
+    post:
+      tags: [Patient Care]
+      summary: Add daily symptom entry to heart diary
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: diaryId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DailySymptomCreateRequest'
+      responses:
+        '201':
+          description: Symptom berhasil ditambahkan
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/DailySymptom'
+
+  /api/v1/users/{userId}/diaries/{diaryId}/activities:
+    post:
+      tags: [Patient Care]
+      summary: Add daily activity entry to heart diary
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: diaryId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DailyActivityCreateRequest'
+      responses:
+        '201':
+          description: Activity berhasil ditambahkan
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/DailyActivity'
+
+  /api/v1/users/{userId}/diaries/{diaryId}/consumptions:
+    post:
+      tags: [Patient Care]
+      summary: Add daily intake entry to heart diary
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: diaryId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DailyConsumptionCreateRequest'
+      responses:
+        '201':
+          description: Consumption berhasil ditambahkan
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/DailyConsumption'
+
+  /api/v1/users/{userId}/avatar/upload-signature:
+    get:
+      tags: [Profile Management]
+      summary: Generate secure avatar upload signature
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: folder
+          in: query
+          required: false
+          schema:
+            type: string
+            maxLength: 120
+      responses:
+        '200':
+          description: Signature upload berhasil dibuat
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/AvatarUploadSignatureResponse'
+
+  /api/v1/users/{userId}/avatar:
+    put:
+      tags: [Profile Management]
+      summary: Save patient avatar after upload
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AvatarSaveRequest'
+      responses:
+        '200':
+          description: Avatar user berhasil diperbarui
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/AvatarSaveResponse'
 
   /api/v1/biometrics:
     post:

@@ -1,7 +1,15 @@
 const { pool } = require('../config/database');
 
 async function listPatientProfiles({ limit, offset, sortBy, order }) {
-  const sortable = new Set(['created_at', 'date_of_birth', 'sex']);
+  const sortable = new Set([
+    'created_at',
+    'date_of_birth',
+    'sex',
+    'body_height_cm',
+    'is_smoking',
+    'is_electric_smoking',
+    'blood_type',
+  ]);
   const sortColumn = sortable.has(sortBy) ? sortBy : 'created_at';
   const sortOrder = order === 'asc' ? 'ASC' : 'DESC';
 
@@ -10,8 +18,17 @@ async function listPatientProfiles({ limit, offset, sortBy, order }) {
       p.patient_id,
       p.date_of_birth,
       p.sex,
+      p.body_height_cm,
+      p.is_smoking,
+      p.is_electric_smoking,
+      p.blood_type,
       p.created_at
+      ,u.first_name,
+      u.last_name,
+      u.email,
+      u.address
     FROM patient_profiles p
+    JOIN users u ON u.user_id = p.patient_id
     ORDER BY ${sortColumn} ${sortOrder}
     LIMIT $1 OFFSET $2
   `;
@@ -35,10 +52,15 @@ async function getPatientProfileById(patientId) {
       p.patient_id,
       p.date_of_birth,
       p.sex,
+      p.body_height_cm,
+      p.is_smoking,
+      p.is_electric_smoking,
+      p.blood_type,
       p.created_at,
       u.first_name,
       u.last_name,
-      u.email
+      u.email,
+      u.address
     FROM patient_profiles p
     JOIN users u ON u.user_id = p.patient_id
     WHERE p.patient_id = $1
@@ -49,22 +71,114 @@ async function getPatientProfileById(patientId) {
   return result.rows[0] || null;
 }
 
-async function upsertPatientProfile({ patientId, dateOfBirth, sex }) {
-  const query = `
-    INSERT INTO patient_profiles (
-      patient_id,
-      date_of_birth,
-      sex
-    ) VALUES ($1, $2, $3)
-    ON CONFLICT (patient_id)
-    DO UPDATE SET
-      date_of_birth = EXCLUDED.date_of_birth,
-      sex = EXCLUDED.sex
-    RETURNING patient_id, date_of_birth, sex, created_at
-  `;
+async function upsertPatientProfile({
+  patientId,
+  dateOfBirth,
+  sex,
+  bodyHeightCm,
+  isSmoking,
+  isElectricSmoking,
+  bloodType,
+  address,
+}) {
+  const client = await pool.connect();
 
-  const result = await pool.query(query, [patientId, dateOfBirth, sex]);
-  return result.rows[0] || null;
+  try {
+    await client.query('BEGIN');
+
+    await client.query(
+      'INSERT INTO patient_profiles (patient_id) VALUES ($1) ON CONFLICT (patient_id) DO NOTHING',
+      [patientId]
+    );
+
+    const profileUpdates = [];
+    const profileValues = [];
+
+    if (dateOfBirth !== undefined) {
+      profileUpdates.push(`date_of_birth = $${profileValues.length + 1}`);
+      profileValues.push(dateOfBirth);
+    }
+
+    if (sex !== undefined) {
+      profileUpdates.push(`sex = $${profileValues.length + 1}`);
+      profileValues.push(sex);
+    }
+
+    if (bodyHeightCm !== undefined) {
+      profileUpdates.push(`body_height_cm = $${profileValues.length + 1}`);
+      profileValues.push(bodyHeightCm);
+    }
+
+    if (isSmoking !== undefined) {
+      profileUpdates.push(`is_smoking = $${profileValues.length + 1}`);
+      profileValues.push(isSmoking);
+    }
+
+    if (isElectricSmoking !== undefined) {
+      profileUpdates.push(`is_electric_smoking = $${profileValues.length + 1}`);
+      profileValues.push(isElectricSmoking);
+    }
+
+    if (bloodType !== undefined) {
+      profileUpdates.push(`blood_type = $${profileValues.length + 1}`);
+      profileValues.push(bloodType);
+    }
+
+    if (profileUpdates.length > 0) {
+      profileValues.push(patientId);
+      await client.query(
+        `
+          UPDATE patient_profiles
+          SET ${profileUpdates.join(', ')}
+          WHERE patient_id = $${profileValues.length}
+        `,
+        profileValues
+      );
+    }
+
+    if (address !== undefined) {
+      await client.query(
+        `
+          UPDATE users
+          SET address = $1,
+              updated_at = NOW()
+          WHERE user_id = $2
+        `,
+        [address, patientId]
+      );
+    }
+
+    const result = await client.query(
+      `
+        SELECT
+          p.patient_id,
+          p.date_of_birth,
+          p.sex,
+          p.body_height_cm,
+          p.is_smoking,
+          p.is_electric_smoking,
+          p.blood_type,
+          p.created_at,
+          u.first_name,
+          u.last_name,
+          u.email,
+          u.address
+        FROM patient_profiles p
+        JOIN users u ON u.user_id = p.patient_id
+        WHERE p.patient_id = $1
+        LIMIT 1
+      `,
+      [patientId]
+    );
+
+    await client.query('COMMIT');
+    return result.rows[0] || null;
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
 }
 
 async function getDoctorProfileById(doctorId) {

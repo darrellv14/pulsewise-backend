@@ -6,6 +6,12 @@ const uuidV4Schema = z.string().uuid().regex(uuidV4Regex, 'Harus UUID v4 yang va
 const optionalNullableString = (maxLength) =>
   z.union([z.string().trim().max(maxLength), z.literal(''), z.null()]).optional();
 
+const optionalNullableBoolean = z.union([z.boolean(), z.null()]).optional();
+const bloodTypeSchema = z
+  .enum(['A', 'A+', 'A-', 'B', 'B+', 'B-', 'AB', 'AB+', 'AB-', 'O', 'O+', 'O-'])
+  .nullable()
+  .optional();
+
 const isoDateOrDateTimeString = z
   .string()
   .trim()
@@ -40,10 +46,25 @@ const patientProfileUpdateSchema = z
   .object({
     dateOfBirth: z.union([isoDateOrDateTimeString, z.null()]).optional(),
     sex: optionalNullableString(16),
+    heightCm: z.coerce.number().min(30).max(300).nullable().optional(),
+    isSmoking: optionalNullableBoolean,
+    isElectricSmoking: optionalNullableBoolean,
+    bloodType: bloodTypeSchema,
+    address: optionalNullableString(500),
   })
-  .refine((value) => value.dateOfBirth !== undefined || value.sex !== undefined, {
-    message: 'Minimal salah satu field harus diisi',
-  });
+  .refine(
+    (value) =>
+      value.dateOfBirth !== undefined ||
+      value.sex !== undefined ||
+      value.heightCm !== undefined ||
+      value.isSmoking !== undefined ||
+      value.isElectricSmoking !== undefined ||
+      value.bloodType !== undefined ||
+      value.address !== undefined,
+    {
+      message: 'Minimal salah satu field harus diisi',
+    }
+  );
 
 const doctorProfileUpdateSchema = z
   .object({
