@@ -8,6 +8,31 @@ function ensureEnv(name, fallback) {
   return value;
 }
 
+function parseDatabaseUrl(databaseUrl) {
+  if (!databaseUrl) {
+    return null;
+  }
+
+  try {
+    const parsed = new URL(databaseUrl);
+    const dbName = parsed.pathname ? parsed.pathname.replace(/^\//, '') : null;
+    const sslMode = parsed.searchParams.get('sslmode');
+
+    return {
+      host: parsed.hostname || null,
+      port: parsed.port ? Number(parsed.port) : null,
+      database: dbName || null,
+      user: parsed.username ? decodeURIComponent(parsed.username) : null,
+      password: parsed.password ? decodeURIComponent(parsed.password) : null,
+      sslRequired: sslMode === 'require',
+    };
+  } catch (_error) {
+    return null;
+  }
+}
+
+const parsedDbUrl = parseDatabaseUrl(process.env.DATABASE_URL);
+
 const env = {
   nodeEnv: process.env.NODE_ENV || 'development',
   port: Number(process.env.PORT || 5000),
@@ -22,12 +47,12 @@ const env = {
     senderName: process.env.MAILTRAP_SENDER_NAME || 'PulseWise',
   },
   postgres: {
-    host: ensureEnv('POSTGRES_HOST', 'localhost'),
-    port: Number(process.env.POSTGRES_PORT || 5432),
-    database: ensureEnv('POSTGRES_DB', 'pulsewise'),
-    user: ensureEnv('POSTGRES_USER', 'pulsewise'),
-    password: ensureEnv('POSTGRES_PASSWORD', 'pulsewise123'),
-    ssl: process.env.POSTGRES_SSL === 'true',
+    host: ensureEnv('POSTGRES_HOST', parsedDbUrl?.host || 'localhost'),
+    port: Number(process.env.POSTGRES_PORT || parsedDbUrl?.port || 5432),
+    database: ensureEnv('POSTGRES_DB', parsedDbUrl?.database || 'pulsewise'),
+    user: ensureEnv('POSTGRES_USER', parsedDbUrl?.user || 'pulsewise'),
+    password: ensureEnv('POSTGRES_PASSWORD', parsedDbUrl?.password || 'pulsewise123'),
+    ssl: process.env.POSTGRES_SSL === 'true' || Boolean(parsedDbUrl?.sslRequired),
     sslRejectUnauthorized: process.env.POSTGRES_SSL_REJECT_UNAUTHORIZED === 'true',
   },
 };

@@ -11,6 +11,11 @@
     "parity:capture": "node scripts/dashboard-parity.js capture",
     "parity:capture:django": "node scripts/capture-golden-from-django.js",
     "parity:compare": "node scripts/dashboard-parity.js compare",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate:dev": "prisma migrate dev",
+    "prisma:migrate:deploy": "prisma migrate deploy",
+    "prisma:push": "prisma db push",
+    "prisma:studio": "prisma studio",
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "migrate": "node scripts/migrate.js",
@@ -22,6 +27,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@prisma/client": "6.16.2",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
@@ -42,6 +48,7 @@
     "eslint-config-prettier": "^9.1.0",
     "jest": "^30.3.0",
     "prettier": "^3.6.2",
+    "prisma": "6.16.2",
     "supertest": "^7.2.2"
   }
 }
