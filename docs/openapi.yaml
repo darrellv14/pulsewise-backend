@@ -6,8 +6,10 @@ info:
     Kontrak API utama PulseWise.
     Semua endpoint menggunakan JSON dan response envelope standar.
 servers:
+  - url: https://pulsewise-backend.vercel.app
+    description: Production (Vercel)
   - url: http://localhost:5000
-    description: Local
+    description: Local Development
 
 tags:
   - name: Health
@@ -1277,50 +1279,6 @@ paths:
                       data:
                         $ref: '#/components/schemas/DoctorPatientLink'
 
-  /api/v1/doctors/{doctorId}/patients/link-by-share:
-    post:
-      tags: [DoctorPatients]
-      summary: Link dokter ke pasien menggunakan share code QR (legacy, optional)
-      deprecated: true
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: doctorId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/DoctorLinkByShareRequest'
-      responses:
-        '201':
-          description: Linked by share code
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessEnvelope'
-                  - type: object
-                    properties:
-                      data:
-                        allOf:
-                          - $ref: '#/components/schemas/DoctorPatientLink'
-                          - type: object
-                            properties:
-                              linkedByShareCode:
-                                type: string
-        '404':
-          description: Share code invalid or expired
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorEnvelope'
-
   /api/v1/doctors/{doctorId}/patients/link-by-patient-id:
     post:
       tags: [DoctorPatients]
@@ -1507,45 +1465,6 @@ paths:
                         $ref: '#/components/schemas/DashboardPairingSessionConfirmData'
         '404':
           description: Pairing token invalid or expired
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorEnvelope'
-
-  /api/v1/patients/{patientId}/shares:
-    post:
-      tags: [Patients]
-      summary: Generate share code pasien untuk linking QR/doctor (legacy, optional)
-      deprecated: true
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: patientId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PatientShareCreateRequest'
-      responses:
-        '201':
-          description: Share code created
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessEnvelope'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/PatientShare'
-        '403':
-          description: Forbidden access to patient scope
           content:
             application/json:
               schema:

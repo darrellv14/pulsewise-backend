@@ -17,8 +17,12 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/health",
-              "host": ["{{baseUrl}}"],
-              "path": ["health"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
             }
           },
           "response": [
@@ -30,8 +34,12 @@
                 "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/health",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["health"]
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "health"
+                  ]
                 }
               },
               "status": "OK",
@@ -158,8 +166,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/register",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "register"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
             }
           },
           "response": [
@@ -180,8 +193,13 @@
                 },
                 "url": {
                   "raw": "{{baseUrl}}/auth/register",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["auth", "register"]
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "register"
+                  ]
                 }
               },
               "status": "Created",
@@ -302,8 +320,14 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/verifications/email",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "verifications", "email"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "verifications",
+                "email"
+              ]
             }
           },
           "response": [
@@ -324,8 +348,14 @@
                 },
                 "url": {
                   "raw": "{{baseUrl}}/auth/verifications/email",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["auth", "verifications", "email"]
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "verifications",
+                    "email"
+                  ]
                 }
               },
               "status": "OK",
@@ -444,8 +474,15 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/verifications/email/confirm",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "verifications", "email", "confirm"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "verifications",
+                "email",
+                "confirm"
+              ]
             }
           },
           "response": [
@@ -466,8 +503,15 @@
                 },
                 "url": {
                   "raw": "{{baseUrl}}/auth/verifications/email/confirm",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["auth", "verifications", "email", "confirm"]
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "verifications",
+                    "email",
+                    "confirm"
+                  ]
                 }
               },
               "status": "OK",
@@ -590,8 +634,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/login",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "login"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
             }
           },
           "response": [
@@ -612,8 +661,13 @@
                 },
                 "url": {
                   "raw": "{{baseUrl}}/auth/login",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["auth", "login"]
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login"
+                  ]
                 }
               },
               "status": "OK",
@@ -735,8 +789,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/login",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "login"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
             }
           },
           "response": [
@@ -757,8 +816,13 @@
                 },
                 "url": {
                   "raw": "{{baseUrl}}/auth/login",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["auth", "login"]
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login"
+                  ]
                 }
               },
               "status": "OK",
@@ -861,8 +925,13 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/auth/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "me"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
             }
           },
           "response": [
@@ -879,8 +948,13 @@
                 ],
                 "url": {
                   "raw": "{{baseUrl}}/auth/me",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["auth", "me"]
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "me"
+                  ]
                 }
               },
               "status": "OK",
@@ -987,8 +1061,14 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/oauth/google",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "oauth", "google"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "oauth",
+                "google"
+              ]
             }
           },
           "response": []
@@ -1012,8 +1092,12 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/patients?page=1&limit=20&sortBy=created_at&order=desc",
-              "host": ["{{baseUrl}}"],
-              "path": ["patients"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "patients"
+              ],
               "query": [
                 {
                   "key": "page",
@@ -1048,8 +1132,12 @@
                 ],
                 "url": {
                   "raw": "{{baseUrl}}/patients?page=1&limit=20&sortBy=created_at&order=desc",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["patients"],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "patients"
+                  ],
                   "query": [
                     {
                       "key": "page",
@@ -1182,8 +1270,14 @@
             },
             "url": {
               "raw": "{{baseUrl}}/patients/{{patientId}}/profile",
-              "host": ["{{baseUrl}}"],
-              "path": ["patients", "{{patientId}}", "profile"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "patients",
+                "{{patientId}}",
+                "profile"
+              ]
             }
           },
           "response": [
@@ -1208,8 +1302,14 @@
                 },
                 "url": {
                   "raw": "{{baseUrl}}/patients/{{patientId}}/profile",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["patients", "{{patientId}}", "profile"]
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "patients",
+                    "{{patientId}}",
+                    "profile"
+                  ]
                 }
               },
               "status": "OK",
@@ -1312,8 +1412,14 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/patients/{{patientId}}/profile",
-              "host": ["{{baseUrl}}"],
-              "path": ["patients", "{{patientId}}", "profile"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "patients",
+                "{{patientId}}",
+                "profile"
+              ]
             }
           },
           "response": [
@@ -1330,8 +1436,14 @@
                 ],
                 "url": {
                   "raw": "{{baseUrl}}/patients/{{patientId}}/profile",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["patients", "{{patientId}}", "profile"]
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "patients",
+                    "{{patientId}}",
+                    "profile"
+                  ]
                 }
               },
               "status": "OK",
@@ -1420,144 +1532,6 @@
               "body": "{\n    \"success\": true,\n    \"message\": \"Profil pasien berhasil diambil\",\n    \"data\": {\n        \"patient_id\": \"7ca4213e-79c2-48f7-bea2-b77050906e5f\",\n        \"date_of_birth\": \"1999-12-29T17:00:00.000Z\",\n        \"sex\": \"male\",\n        \"created_at\": \"2026-04-08T18:50:51.663Z\",\n        \"first_name\": \"Frans\",\n        \"last_name\": \"Nicklaus\",\n        \"email\": \"fransnicklaus101004@gmail.com\"\n    }\n}"
             }
           ]
-        },
-        {
-          "name": "POST Create Patient Share (Legacy)",
-          "id": "27b02282-0093-42fa-a06f-2d291264631a",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{patientToken}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"expiresInHours\": 24\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/patients/{{patientId}}/shares",
-              "host": ["{{baseUrl}}"],
-              "path": ["patients", "{{patientId}}", "shares"]
-            }
-          },
-          "response": [
-            {
-              "id": "b4e200fa-b073-46c4-ab68-dd7ee7a599d7",
-              "name": "POST Create Patient Share (Legacy)",
-              "originalRequest": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  },
-                  {
-                    "key": "Authorization",
-                    "value": "Bearer {{patientToken}}"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"expiresInHours\": 24\n}"
-                },
-                "url": {
-                  "raw": "{{baseUrl}}/patients/{{patientId}}/shares",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["patients", "{{patientId}}", "shares"]
-                }
-              },
-              "status": "Created",
-              "code": 201,
-              "_postman_previewlanguage": "json",
-              "header": [
-                {
-                  "key": "Content-Security-Policy",
-                  "value": "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
-                },
-                {
-                  "key": "Cross-Origin-Opener-Policy",
-                  "value": "same-origin"
-                },
-                {
-                  "key": "Cross-Origin-Resource-Policy",
-                  "value": "same-origin"
-                },
-                {
-                  "key": "Origin-Agent-Cluster",
-                  "value": "?1"
-                },
-                {
-                  "key": "Referrer-Policy",
-                  "value": "no-referrer"
-                },
-                {
-                  "key": "Strict-Transport-Security",
-                  "value": "max-age=31536000; includeSubDomains"
-                },
-                {
-                  "key": "X-Content-Type-Options",
-                  "value": "nosniff"
-                },
-                {
-                  "key": "X-DNS-Prefetch-Control",
-                  "value": "off"
-                },
-                {
-                  "key": "X-Download-Options",
-                  "value": "noopen"
-                },
-                {
-                  "key": "X-Frame-Options",
-                  "value": "SAMEORIGIN"
-                },
-                {
-                  "key": "X-Permitted-Cross-Domain-Policies",
-                  "value": "none"
-                },
-                {
-                  "key": "X-XSS-Protection",
-                  "value": "0"
-                },
-                {
-                  "key": "Access-Control-Allow-Origin",
-                  "value": "*"
-                },
-                {
-                  "key": "Content-Type",
-                  "value": "application/json; charset=utf-8"
-                },
-                {
-                  "key": "Content-Length",
-                  "value": "270"
-                },
-                {
-                  "key": "ETag",
-                  "value": "W/\"10e-n144Yf6DHlR1haal1LZEwnQa2U4\""
-                },
-                {
-                  "key": "Date",
-                  "value": "Wed, 08 Apr 2026 18:51:15 GMT"
-                },
-                {
-                  "key": "Connection",
-                  "value": "keep-alive"
-                },
-                {
-                  "key": "Keep-Alive",
-                  "value": "timeout=5"
-                }
-              ],
-              "cookie": [],
-              "responseTime": "2026-04-08T18:51:21.189Z",
-              "body": "{\n    \"success\": true,\n    \"message\": \"Share code pasien berhasil dibuat\",\n    \"data\": {\n        \"shareId\": \"f8040eb6-f3e4-424f-8252-b68d8552b888\",\n        \"patientId\": \"7ca4213e-79c2-48f7-bea2-b77050906e5f\",\n        \"shareCode\": \"PW-5C101EF77797\",\n        \"expiresAt\": \"2026-04-09T18:51:15.045Z\",\n        \"qrPayload\": \"PW-5C101EF77797\"\n    }\n}"
-            }
-          ]
         }
       ],
       "id": "85633ef6-d882-4ce9-8cba-42b3990b2915"
@@ -1578,8 +1552,14 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/doctors/{{doctorId}}/profile",
-              "host": ["{{baseUrl}}"],
-              "path": ["doctors", "{{doctorId}}", "profile"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "doctors",
+                "{{doctorId}}",
+                "profile"
+              ]
             }
           },
           "response": [
@@ -1596,8 +1576,14 @@
                 ],
                 "url": {
                   "raw": "{{baseUrl}}/doctors/{{doctorId}}/profile",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["doctors", "{{doctorId}}", "profile"]
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "doctors",
+                    "{{doctorId}}",
+                    "profile"
+                  ]
                 }
               },
               "status": "OK",
@@ -1708,8 +1694,14 @@
             },
             "url": {
               "raw": "{{baseUrl}}/doctors/{{doctorId}}/profile",
-              "host": ["{{baseUrl}}"],
-              "path": ["doctors", "{{doctorId}}", "profile"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "doctors",
+                "{{doctorId}}",
+                "profile"
+              ]
             }
           },
           "response": [
@@ -1734,8 +1726,14 @@
                 },
                 "url": {
                   "raw": "{{baseUrl}}/doctors/{{doctorId}}/profile",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["doctors", "{{doctorId}}", "profile"]
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "doctors",
+                    "{{doctorId}}",
+                    "profile"
+                  ]
                 }
               },
               "status": "OK",
@@ -1852,8 +1850,14 @@
             },
             "url": {
               "raw": "{{baseUrl}}/doctors/{{doctorId}}/patients",
-              "host": ["{{baseUrl}}"],
-              "path": ["doctors", "{{doctorId}}", "patients"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "doctors",
+                "{{doctorId}}",
+                "patients"
+              ]
             }
           },
           "response": [
@@ -1878,8 +1882,14 @@
                 },
                 "url": {
                   "raw": "{{baseUrl}}/doctors/{{doctorId}}/patients",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["doctors", "{{doctorId}}", "patients"]
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "doctors",
+                    "{{doctorId}}",
+                    "patients"
+                  ]
                 }
               },
               "status": "Created",
@@ -1990,8 +2000,15 @@
             },
             "url": {
               "raw": "{{baseUrl}}/doctors/{{doctorId}}/patients/link-by-patient-id",
-              "host": ["{{baseUrl}}"],
-              "path": ["doctors", "{{doctorId}}", "patients", "link-by-patient-id"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "doctors",
+                "{{doctorId}}",
+                "patients",
+                "link-by-patient-id"
+              ]
             }
           },
           "response": [
@@ -2016,8 +2033,15 @@
                 },
                 "url": {
                   "raw": "{{baseUrl}}/doctors/{{doctorId}}/patients/link-by-patient-id",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["doctors", "{{doctorId}}", "patients", "link-by-patient-id"]
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "doctors",
+                    "{{doctorId}}",
+                    "patients",
+                    "link-by-patient-id"
+                  ]
                 }
               },
               "status": "Created",
@@ -2120,8 +2144,14 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/doctors/{{doctorId}}/patients?page=1&limit=20",
-              "host": ["{{baseUrl}}"],
-              "path": ["doctors", "{{doctorId}}", "patients"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "doctors",
+                "{{doctorId}}",
+                "patients"
+              ],
               "query": [
                 {
                   "key": "page",
@@ -2148,8 +2178,14 @@
                 ],
                 "url": {
                   "raw": "{{baseUrl}}/doctors/{{doctorId}}/patients?page=1&limit=20",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["doctors", "{{doctorId}}", "patients"],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "doctors",
+                    "{{doctorId}}",
+                    "patients"
+                  ],
                   "query": [
                     {
                       "key": "page",
@@ -2264,8 +2300,15 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/doctors/{{doctorId}}/patients/{{patientId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["doctors", "{{doctorId}}", "patients", "{{patientId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "doctors",
+                "{{doctorId}}",
+                "patients",
+                "{{patientId}}"
+              ]
             }
           },
           "response": [
@@ -2282,8 +2325,15 @@
                 ],
                 "url": {
                   "raw": "{{baseUrl}}/doctors/{{doctorId}}/patients/{{patientId}}",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["doctors", "{{doctorId}}", "patients", "{{patientId}}"]
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "doctors",
+                    "{{doctorId}}",
+                    "patients",
+                    "{{patientId}}"
+                  ]
                 }
               },
               "status": "OK",
@@ -2392,8 +2442,15 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients?page=1&limit=20",
-              "host": ["{{baseUrl}}"],
-              "path": ["doctors", "{{doctorId}}", "dashboard", "patients"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "doctors",
+                "{{doctorId}}",
+                "dashboard",
+                "patients"
+              ],
               "query": [
                 {
                   "key": "page",
@@ -2420,8 +2477,15 @@
                 ],
                 "url": {
                   "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients?page=1&limit=20",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["doctors", "{{doctorId}}", "dashboard", "patients"],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "doctors",
+                    "{{doctorId}}",
+                    "dashboard",
+                    "patients"
+                  ],
                   "query": [
                     {
                       "key": "page",
@@ -2536,8 +2600,16 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["doctors", "{{doctorId}}", "dashboard", "patients", "{{patientId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "doctors",
+                "{{doctorId}}",
+                "dashboard",
+                "patients",
+                "{{patientId}}"
+              ]
             }
           },
           "response": [
@@ -2554,8 +2626,16 @@
                 ],
                 "url": {
                   "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["doctors", "{{doctorId}}", "dashboard", "patients", "{{patientId}}"]
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "doctors",
+                    "{{doctorId}}",
+                    "dashboard",
+                    "patients",
+                    "{{patientId}}"
+                  ]
                 }
               },
               "status": "OK",
@@ -2658,7 +2738,9 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/vitals?timePeriod=last_30_days",
-              "host": ["{{baseUrl}}"],
+              "host": [
+                "{{baseUrl}}"
+              ],
               "path": [
                 "doctors",
                 "{{doctorId}}",
@@ -2689,7 +2771,9 @@
                 ],
                 "url": {
                   "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/vitals?timePeriod=last_30_days",
-                  "host": ["{{baseUrl}}"],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
                   "path": [
                     "doctors",
                     "{{doctorId}}",
@@ -2807,7 +2891,9 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/abnormal-report?timePeriod=last_30_days",
-              "host": ["{{baseUrl}}"],
+              "host": [
+                "{{baseUrl}}"
+              ],
               "path": [
                 "doctors",
                 "{{doctorId}}",
@@ -2838,7 +2924,9 @@
                 ],
                 "url": {
                   "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/abnormal-report?timePeriod=last_30_days",
-                  "host": ["{{baseUrl}}"],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
                   "path": [
                     "doctors",
                     "{{doctorId}}",
@@ -2979,8 +3067,15 @@
             },
             "url": {
               "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/pairing-sessions",
-              "host": ["{{baseUrl}}"],
-              "path": ["doctors", "{{doctorId}}", "dashboard", "pairing-sessions"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "doctors",
+                "{{doctorId}}",
+                "dashboard",
+                "pairing-sessions"
+              ]
             }
           },
           "response": [
@@ -3005,8 +3100,15 @@
                 },
                 "url": {
                   "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/pairing-sessions",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["doctors", "{{doctorId}}", "dashboard", "pairing-sessions"]
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "doctors",
+                    "{{doctorId}}",
+                    "dashboard",
+                    "pairing-sessions"
+                  ]
                 }
               },
               "status": "Created",
@@ -3109,7 +3211,9 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/pairing-sessions/{{pairingSessionId}}",
-              "host": ["{{baseUrl}}"],
+              "host": [
+                "{{baseUrl}}"
+              ],
               "path": [
                 "doctors",
                 "{{doctorId}}",
@@ -3133,7 +3237,9 @@
                 ],
                 "url": {
                   "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/pairing-sessions/{{pairingSessionId}}",
-                  "host": ["{{baseUrl}}"],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
                   "path": [
                     "doctors",
                     "{{doctorId}}",
@@ -3247,7 +3353,9 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/pairing-sessions/{{pairingSessionId}}/events",
-              "host": ["{{baseUrl}}"],
+              "host": [
+                "{{baseUrl}}"
+              ],
               "path": [
                 "doctors",
                 "{{doctorId}}",
@@ -3296,8 +3404,14 @@
             },
             "url": {
               "raw": "{{baseUrl}}/dashboard/pairing-sessions/confirm",
-              "host": ["{{baseUrl}}"],
-              "path": ["dashboard", "pairing-sessions", "confirm"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "dashboard",
+                "pairing-sessions",
+                "confirm"
+              ]
             }
           },
           "response": [
@@ -3322,8 +3436,14 @@
                 },
                 "url": {
                   "raw": "{{baseUrl}}/dashboard/pairing-sessions/confirm",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["dashboard", "pairing-sessions", "confirm"]
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "dashboard",
+                    "pairing-sessions",
+                    "confirm"
+                  ]
                 }
               },
               "status": "Created",
@@ -3432,8 +3552,14 @@
                 },
                 "url": {
                   "raw": "{{baseUrl}}/dashboard/pairing-sessions/confirm",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["dashboard", "pairing-sessions", "confirm"]
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "dashboard",
+                    "pairing-sessions",
+                    "confirm"
+                  ]
                 }
               },
               "status": "OK",
