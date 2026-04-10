@@ -1,0 +1,927 @@
+{
+  "metadata": {
+    "source": "django-dashboard-json",
+    "capturedAt": "2026-04-10T08:17:11.372Z",
+    "djangoBaseUrl": "http://127.0.0.1:8000",
+    "doctorId": "8aca6089-3899-4b85-a715-0a63113e846a",
+    "days": 30,
+    "patientCount": 4,
+    "patientIds": [
+      "7ca4213e-79c2-48f7-bea2-b77050906e5f",
+      "b6495a8b-ba2f-4e3f-a882-4e7b221f09d9",
+      "229f4f2c-a907-4c51-877a-c3f867453744",
+      "29130aed-2a9b-4b23-86ca-3f6860e4c16e"
+    ],
+    "djangoUser": "parityadmin",
+    "capturePaths": {
+      "list": "/api/list-patients/",
+      "patientJson": "/{patientId}/json/",
+      "abnormalReport": "/api/{patientId}/generate-abnormal-report/"
+    }
+  },
+  "patients": [
+    {
+      "patientId": "7ca4213e-79c2-48f7-bea2-b77050906e5f",
+      "summary": {
+        "patient": {
+          "patientId": "7ca4213e-79c2-48f7-bea2-b77050906e5f",
+          "firstName": "Frans",
+          "lastName": "Nicklaus",
+          "email": "fransnicklaus101004@gmail.com",
+          "phone": null,
+          "dateOfBirth": "1999-12-28",
+          "age": 26,
+          "sex": "male"
+        },
+        "latestVitals": {
+          "measuredAt": "2026-04-08T18:59:26.968Z",
+          "systolicBp": 128,
+          "diastolicBp": 82,
+          "heartRate": 78,
+          "oxygenSaturation": 97,
+          "weight": 74.2,
+          "height": 176,
+          "bmi": 23.95
+        },
+        "thresholds": {
+          "SPO2_CRITICAL_THRESHOLD": 90,
+          "SPO2_CAUTION_THRESHOLD": 95,
+          "WEIGHT_DAILY_INCREASE_CRITICAL_KG": 3,
+          "HR_NORMAL_MIN": 60,
+          "HR_NORMAL_MAX": 100,
+          "BP_NORMAL_SYSTOLIC_MAX": 119,
+          "BP_NORMAL_DIASTOLIC_MAX": 79,
+          "BP_ELEVATED_SYSTOLIC_MIN": 120,
+          "BP_ELEVATED_SYSTOLIC_MAX": 129,
+          "BP_ELEVATED_DIASTOLIC_MAX": 79,
+          "BP_STAGE1_SYSTOLIC_MIN": 130,
+          "BP_STAGE1_SYSTOLIC_MAX": 139,
+          "BP_STAGE1_DIASTOLIC_MIN": 80,
+          "BP_STAGE1_DIASTOLIC_MAX": 89,
+          "BP_STAGE2_SYSTOLIC_MIN": 140,
+          "BP_STAGE2_DIASTOLIC_MIN": 90
+        }
+      },
+      "vitals": {
+        "series": {
+          "timestamps": [
+            "2026-04-08T18:58:16.178Z",
+            "2026-04-08T18:58:40.086Z",
+            "2026-04-08T18:59:26.968Z"
+          ],
+          "systolicBp": [128, 128, 128],
+          "diastolicBp": [82, 82, 82],
+          "heartRate": [78, 78, 78],
+          "oxygenSaturation": [97, 97, 97],
+          "weight": [74.2, 74.2, 74.2],
+          "height": [176, 176, 176],
+          "bmi": [23.95, 23.95, 23.95]
+        },
+        "latestVitals": {
+          "measuredAt": "2026-04-08T18:59:26.968Z",
+          "systolicBp": 128,
+          "diastolicBp": 82,
+          "heartRate": 78,
+          "oxygenSaturation": 97,
+          "weight": 74.2,
+          "height": 176,
+          "bmi": 23.95
+        },
+        "thresholds": {
+          "SPO2_CRITICAL_THRESHOLD": 90,
+          "SPO2_CAUTION_THRESHOLD": 95,
+          "WEIGHT_DAILY_INCREASE_CRITICAL_KG": 3,
+          "HR_NORMAL_MIN": 60,
+          "HR_NORMAL_MAX": 100,
+          "BP_NORMAL_SYSTOLIC_MAX": 119,
+          "BP_NORMAL_DIASTOLIC_MAX": 79,
+          "BP_ELEVATED_SYSTOLIC_MIN": 120,
+          "BP_ELEVATED_SYSTOLIC_MAX": 129,
+          "BP_ELEVATED_DIASTOLIC_MAX": 79,
+          "BP_STAGE1_SYSTOLIC_MIN": 130,
+          "BP_STAGE1_SYSTOLIC_MAX": 139,
+          "BP_STAGE1_DIASTOLIC_MIN": 80,
+          "BP_STAGE1_DIASTOLIC_MAX": 89,
+          "BP_STAGE2_SYSTOLIC_MIN": 140,
+          "BP_STAGE2_DIASTOLIC_MIN": 90
+        }
+      },
+      "abnormalReport": {
+        "stats": {
+          "systolicBp": {
+            "avg": 128,
+            "min": 128,
+            "max": 128
+          },
+          "diastolicBp": {
+            "avg": 82,
+            "min": 82,
+            "max": 82
+          },
+          "heartRate": {
+            "avg": 78,
+            "min": 78,
+            "max": 78
+          },
+          "oxygenSaturation": {
+            "avg": 97,
+            "min": 97,
+            "max": 97
+          },
+          "weight": {
+            "avg": 74.2,
+            "min": 74.2,
+            "max": 74.2
+          },
+          "bmi": {
+            "avg": 24,
+            "min": 23.95,
+            "max": 23.95
+          }
+        },
+        "abnormalInstances": [
+          {
+            "timestamp": "2026-04-08T18:58:00.000Z",
+            "details": {
+              "Blood Pressure": "128/82 mmHg (Stage 1 Hypertension)"
+            }
+          },
+          {
+            "timestamp": "2026-04-08T18:58:00.000Z",
+            "details": {
+              "Blood Pressure": "128/82 mmHg (Stage 1 Hypertension)"
+            }
+          },
+          {
+            "timestamp": "2026-04-08T18:59:00.000Z",
+            "details": {
+              "Blood Pressure": "128/82 mmHg (Stage 1 Hypertension)"
+            }
+          }
+        ],
+        "thresholds": {
+          "SPO2_CRITICAL_THRESHOLD": 90,
+          "SPO2_CAUTION_THRESHOLD": 95,
+          "WEIGHT_DAILY_INCREASE_CRITICAL_KG": 3,
+          "HR_NORMAL_MIN": 60,
+          "HR_NORMAL_MAX": 100,
+          "BP_NORMAL_SYSTOLIC_MAX": 119,
+          "BP_NORMAL_DIASTOLIC_MAX": 79,
+          "BP_ELEVATED_SYSTOLIC_MIN": 120,
+          "BP_ELEVATED_SYSTOLIC_MAX": 129,
+          "BP_ELEVATED_DIASTOLIC_MAX": 79,
+          "BP_STAGE1_SYSTOLIC_MIN": 130,
+          "BP_STAGE1_SYSTOLIC_MAX": 139,
+          "BP_STAGE1_DIASTOLIC_MIN": 80,
+          "BP_STAGE1_DIASTOLIC_MAX": 89,
+          "BP_STAGE2_SYSTOLIC_MIN": 140,
+          "BP_STAGE2_DIASTOLIC_MIN": 90
+        }
+      }
+    },
+    {
+      "patientId": "b6495a8b-ba2f-4e3f-a882-4e7b221f09d9",
+      "summary": {
+        "patient": {
+          "patientId": "b6495a8b-ba2f-4e3f-a882-4e7b221f09d9",
+          "firstName": "Ari",
+          "lastName": "Pratama",
+          "email": "seed.patient1@pulsewise.local",
+          "phone": "081200000101",
+          "dateOfBirth": "1990-05-11",
+          "age": 35,
+          "sex": "male"
+        },
+        "latestVitals": {
+          "measuredAt": "2026-04-08T09:15:00.000Z",
+          "systolicBp": 116,
+          "diastolicBp": 70,
+          "heartRate": 78,
+          "oxygenSaturation": 98,
+          "weight": 74.11,
+          "height": 170,
+          "bmi": 25.64
+        },
+        "thresholds": {
+          "SPO2_CRITICAL_THRESHOLD": 90,
+          "SPO2_CAUTION_THRESHOLD": 95,
+          "WEIGHT_DAILY_INCREASE_CRITICAL_KG": 3,
+          "HR_NORMAL_MIN": 60,
+          "HR_NORMAL_MAX": 100,
+          "BP_NORMAL_SYSTOLIC_MAX": 119,
+          "BP_NORMAL_DIASTOLIC_MAX": 79,
+          "BP_ELEVATED_SYSTOLIC_MIN": 120,
+          "BP_ELEVATED_SYSTOLIC_MAX": 129,
+          "BP_ELEVATED_DIASTOLIC_MAX": 79,
+          "BP_STAGE1_SYSTOLIC_MIN": 130,
+          "BP_STAGE1_SYSTOLIC_MAX": 139,
+          "BP_STAGE1_DIASTOLIC_MIN": 80,
+          "BP_STAGE1_DIASTOLIC_MAX": 89,
+          "BP_STAGE2_SYSTOLIC_MIN": 140,
+          "BP_STAGE2_DIASTOLIC_MIN": 90
+        }
+      },
+      "vitals": {
+        "series": {
+          "timestamps": [
+            "2026-03-12T09:15:00.000Z",
+            "2026-03-13T07:15:00.000Z",
+            "2026-03-14T08:15:00.000Z",
+            "2026-03-15T09:15:00.000Z",
+            "2026-03-16T07:15:00.000Z",
+            "2026-03-17T08:15:00.000Z",
+            "2026-03-18T09:15:00.000Z",
+            "2026-03-19T07:15:00.000Z",
+            "2026-03-20T08:15:00.000Z",
+            "2026-03-21T09:15:00.000Z",
+            "2026-03-22T07:15:00.000Z",
+            "2026-03-23T08:15:00.000Z",
+            "2026-03-24T09:15:00.000Z",
+            "2026-03-25T07:15:00.000Z",
+            "2026-03-26T08:15:00.000Z",
+            "2026-03-27T09:15:00.000Z",
+            "2026-03-28T07:15:00.000Z",
+            "2026-03-29T08:15:00.000Z",
+            "2026-03-30T09:15:00.000Z",
+            "2026-03-31T07:15:00.000Z",
+            "2026-04-01T08:15:00.000Z",
+            "2026-04-02T09:15:00.000Z",
+            "2026-04-03T07:15:00.000Z",
+            "2026-04-04T08:15:00.000Z",
+            "2026-04-05T09:15:00.000Z",
+            "2026-04-06T07:15:00.000Z",
+            "2026-04-07T08:15:00.000Z",
+            "2026-04-08T09:15:00.000Z"
+          ],
+          "systolicBp": [
+            123, 125, 126, 126, 125, 124, 122, 119, 116, 132, 112, 111, 110, 110, 111, 113, 116,
+            118, 121, 123, 143, 126, 126, 125, 124, 121, 119, 116
+          ],
+          "diastolicBp": [
+            81, 79, 77, 75, 74, 72, 71, 70, 70, 81, 72, 74, 76, 78, 79, 81, 82, 82, 82, 81, 89, 77,
+            75, 73, 72, 71, 70, 70
+          ],
+          "heartRate": [
+            77, 78, 77, 76, 73, 70, 67, 80, 66, 68, 70, 73, 76, 78, 78, 77, 88, 72, 69, 67, 66, 67,
+            69, 72, 75, 91, 78, 78
+          ],
+          "oxygenSaturation": [
+            98, 98, 98, 98, 97, 97, 97, 97, 97, 96, 96, 90, 96, 96, 96, 96, 96, 96, 96, 96, 97, 97,
+            97, 97, 92, 98, 98, 98
+          ],
+          "weight": [
+            72.48, 72.7, 72.87, 73.01, 73.1, 73.14, 73.13, 73.07, 72.98, 72.86, 72.71, 72.56, 72.42,
+            72.29, 72.19, 72.13, 72.12, 72.15, 72.23, 72.36, 72.54, 72.74, 72.98, 73.22, 73.47,
+            73.71, 73.93, 74.11
+          ],
+          "height": [
+            170, 170, 170, 170, 170, 170, 170, 170, 170, 170, 170, 170, 170, 170, 170, 170, 170,
+            170, 170, 170, 170, 170, 170, 170, 170, 170, 170, 170
+          ],
+          "bmi": [
+            25.08, 25.16, 25.21, 25.26, 25.29, 25.31, 25.3, 25.28, 25.25, 25.21, 25.16, 25.11,
+            25.06, 25.01, 24.98, 24.96, 24.96, 24.97, 24.99, 25.04, 25.1, 25.17, 25.25, 25.34,
+            25.42, 25.51, 25.58, 25.64
+          ]
+        },
+        "latestVitals": {
+          "measuredAt": "2026-04-08T09:15:00.000Z",
+          "systolicBp": 116,
+          "diastolicBp": 70,
+          "heartRate": 78,
+          "oxygenSaturation": 98,
+          "weight": 74.11,
+          "height": 170,
+          "bmi": 25.64
+        },
+        "thresholds": {
+          "SPO2_CRITICAL_THRESHOLD": 90,
+          "SPO2_CAUTION_THRESHOLD": 95,
+          "WEIGHT_DAILY_INCREASE_CRITICAL_KG": 3,
+          "HR_NORMAL_MIN": 60,
+          "HR_NORMAL_MAX": 100,
+          "BP_NORMAL_SYSTOLIC_MAX": 119,
+          "BP_NORMAL_DIASTOLIC_MAX": 79,
+          "BP_ELEVATED_SYSTOLIC_MIN": 120,
+          "BP_ELEVATED_SYSTOLIC_MAX": 129,
+          "BP_ELEVATED_DIASTOLIC_MAX": 79,
+          "BP_STAGE1_SYSTOLIC_MIN": 130,
+          "BP_STAGE1_SYSTOLIC_MAX": 139,
+          "BP_STAGE1_DIASTOLIC_MIN": 80,
+          "BP_STAGE1_DIASTOLIC_MAX": 89,
+          "BP_STAGE2_SYSTOLIC_MIN": 140,
+          "BP_STAGE2_DIASTOLIC_MIN": 90
+        }
+      },
+      "abnormalReport": {
+        "stats": {
+          "systolicBp": {
+            "avg": 120.8,
+            "min": 110,
+            "max": 143
+          },
+          "diastolicBp": {
+            "avg": 76.2,
+            "min": 70,
+            "max": 89
+          },
+          "heartRate": {
+            "avg": 74.1,
+            "min": 66,
+            "max": 91
+          },
+          "oxygenSaturation": {
+            "avg": 96.5,
+            "min": 90,
+            "max": 98
+          },
+          "weight": {
+            "avg": 72.8,
+            "min": 72.12,
+            "max": 74.11
+          },
+          "bmi": {
+            "avg": 25.2,
+            "min": 24.96,
+            "max": 25.64
+          }
+        },
+        "abnormalInstances": [
+          {
+            "timestamp": "2026-03-12T09:15:00.000Z",
+            "details": {
+              "Blood Pressure": "123/81 mmHg (Stage 1 Hypertension)"
+            }
+          },
+          {
+            "timestamp": "2026-03-14T08:15:00.000Z",
+            "details": {
+              "Blood Pressure": "126/77 mmHg (Elevated)"
+            }
+          },
+          {
+            "timestamp": "2026-03-15T09:15:00.000Z",
+            "details": {
+              "Blood Pressure": "126/75 mmHg (Elevated)"
+            }
+          },
+          {
+            "timestamp": "2026-03-16T07:15:00.000Z",
+            "details": {
+              "Blood Pressure": "125/74 mmHg (Elevated)"
+            }
+          },
+          {
+            "timestamp": "2026-03-17T08:15:00.000Z",
+            "details": {
+              "Blood Pressure": "124/72 mmHg (Elevated)"
+            }
+          },
+          {
+            "timestamp": "2026-03-18T09:15:00.000Z",
+            "details": {
+              "Blood Pressure": "122/71 mmHg (Elevated)"
+            }
+          },
+          {
+            "timestamp": "2026-03-21T09:15:00.000Z",
+            "details": {
+              "Blood Pressure": "132/81 mmHg (Stage 1 Hypertension)"
+            }
+          },
+          {
+            "timestamp": "2026-03-23T08:15:00.000Z",
+            "details": {
+              "Oxygen Saturation": "90% (Caution)"
+            }
+          },
+          {
+            "timestamp": "2026-03-27T09:15:00.000Z",
+            "details": {
+              "Blood Pressure": "113/81 mmHg (Stage 1 Hypertension)"
+            }
+          },
+          {
+            "timestamp": "2026-03-28T07:15:00.000Z",
+            "details": {
+              "Blood Pressure": "116/82 mmHg (Stage 1 Hypertension)"
+            }
+          },
+          {
+            "timestamp": "2026-03-29T08:15:00.000Z",
+            "details": {
+              "Blood Pressure": "118/82 mmHg (Stage 1 Hypertension)"
+            }
+          },
+          {
+            "timestamp": "2026-03-30T09:15:00.000Z",
+            "details": {
+              "Blood Pressure": "121/82 mmHg (Stage 1 Hypertension)"
+            }
+          },
+          {
+            "timestamp": "2026-03-31T07:15:00.000Z",
+            "details": {
+              "Blood Pressure": "123/81 mmHg (Stage 1 Hypertension)"
+            }
+          },
+          {
+            "timestamp": "2026-04-01T08:15:00.000Z",
+            "details": {
+              "Blood Pressure": "143/89 mmHg (Stage 2 Hypertension)"
+            }
+          },
+          {
+            "timestamp": "2026-04-02T09:15:00.000Z",
+            "details": {
+              "Blood Pressure": "126/77 mmHg (Elevated)"
+            }
+          },
+          {
+            "timestamp": "2026-04-03T07:15:00.000Z",
+            "details": {
+              "Blood Pressure": "126/75 mmHg (Elevated)"
+            }
+          },
+          {
+            "timestamp": "2026-04-04T08:15:00.000Z",
+            "details": {
+              "Blood Pressure": "125/73 mmHg (Elevated)"
+            }
+          },
+          {
+            "timestamp": "2026-04-05T09:15:00.000Z",
+            "details": {
+              "Blood Pressure": "124/72 mmHg (Elevated)",
+              "Oxygen Saturation": "92% (Caution)"
+            }
+          },
+          {
+            "timestamp": "2026-04-06T07:15:00.000Z",
+            "details": {
+              "Blood Pressure": "121/71 mmHg (Elevated)"
+            }
+          }
+        ],
+        "thresholds": {
+          "SPO2_CRITICAL_THRESHOLD": 90,
+          "SPO2_CAUTION_THRESHOLD": 95,
+          "WEIGHT_DAILY_INCREASE_CRITICAL_KG": 3,
+          "HR_NORMAL_MIN": 60,
+          "HR_NORMAL_MAX": 100,
+          "BP_NORMAL_SYSTOLIC_MAX": 119,
+          "BP_NORMAL_DIASTOLIC_MAX": 79,
+          "BP_ELEVATED_SYSTOLIC_MIN": 120,
+          "BP_ELEVATED_SYSTOLIC_MAX": 129,
+          "BP_ELEVATED_DIASTOLIC_MAX": 79,
+          "BP_STAGE1_SYSTOLIC_MIN": 130,
+          "BP_STAGE1_SYSTOLIC_MAX": 139,
+          "BP_STAGE1_DIASTOLIC_MIN": 80,
+          "BP_STAGE1_DIASTOLIC_MAX": 89,
+          "BP_STAGE2_SYSTOLIC_MIN": 140,
+          "BP_STAGE2_DIASTOLIC_MIN": 90
+        }
+      }
+    },
+    {
+      "patientId": "229f4f2c-a907-4c51-877a-c3f867453744",
+      "summary": {
+        "patient": {
+          "patientId": "229f4f2c-a907-4c51-877a-c3f867453744",
+          "firstName": "Nadia",
+          "lastName": "Saraswati",
+          "email": "seed.patient2@pulsewise.local",
+          "phone": "081200000102",
+          "dateOfBirth": "1994-09-02",
+          "age": 31,
+          "sex": "female"
+        },
+        "latestVitals": {
+          "measuredAt": "2026-04-08T09:15:00.000Z",
+          "systolicBp": 116,
+          "diastolicBp": 70,
+          "heartRate": 78,
+          "oxygenSaturation": 98,
+          "weight": 62.11,
+          "height": 160,
+          "bmi": 24.26
+        },
+        "thresholds": {
+          "SPO2_CRITICAL_THRESHOLD": 90,
+          "SPO2_CAUTION_THRESHOLD": 95,
+          "WEIGHT_DAILY_INCREASE_CRITICAL_KG": 3,
+          "HR_NORMAL_MIN": 60,
+          "HR_NORMAL_MAX": 100,
+          "BP_NORMAL_SYSTOLIC_MAX": 119,
+          "BP_NORMAL_DIASTOLIC_MAX": 79,
+          "BP_ELEVATED_SYSTOLIC_MIN": 120,
+          "BP_ELEVATED_SYSTOLIC_MAX": 129,
+          "BP_ELEVATED_DIASTOLIC_MAX": 79,
+          "BP_STAGE1_SYSTOLIC_MIN": 130,
+          "BP_STAGE1_SYSTOLIC_MAX": 139,
+          "BP_STAGE1_DIASTOLIC_MIN": 80,
+          "BP_STAGE1_DIASTOLIC_MAX": 89,
+          "BP_STAGE2_SYSTOLIC_MIN": 140,
+          "BP_STAGE2_DIASTOLIC_MIN": 90
+        }
+      },
+      "vitals": {
+        "series": {
+          "timestamps": [
+            "2026-03-12T09:15:00.000Z",
+            "2026-03-13T07:15:00.000Z",
+            "2026-03-14T08:15:00.000Z",
+            "2026-03-15T09:15:00.000Z",
+            "2026-03-16T07:15:00.000Z",
+            "2026-03-17T08:15:00.000Z",
+            "2026-03-18T09:15:00.000Z",
+            "2026-03-19T07:15:00.000Z",
+            "2026-03-20T08:15:00.000Z",
+            "2026-03-21T09:15:00.000Z",
+            "2026-03-22T07:15:00.000Z",
+            "2026-03-23T08:15:00.000Z",
+            "2026-03-24T09:15:00.000Z",
+            "2026-03-25T07:15:00.000Z",
+            "2026-03-26T08:15:00.000Z",
+            "2026-03-27T09:15:00.000Z",
+            "2026-03-28T07:15:00.000Z",
+            "2026-03-29T08:15:00.000Z",
+            "2026-03-30T09:15:00.000Z",
+            "2026-03-31T07:15:00.000Z",
+            "2026-04-01T08:15:00.000Z",
+            "2026-04-02T09:15:00.000Z",
+            "2026-04-03T07:15:00.000Z",
+            "2026-04-04T08:15:00.000Z",
+            "2026-04-05T09:15:00.000Z",
+            "2026-04-06T07:15:00.000Z",
+            "2026-04-07T08:15:00.000Z",
+            "2026-04-08T09:15:00.000Z"
+          ],
+          "systolicBp": [
+            123, 125, 126, 126, 125, 124, 122, 119, 116, 132, 112, 111, 110, 110, 111, 113, 116,
+            118, 121, 123, 143, 126, 126, 125, 124, 121, 119, 116
+          ],
+          "diastolicBp": [
+            81, 79, 77, 75, 74, 72, 71, 70, 70, 81, 72, 74, 76, 78, 79, 81, 82, 82, 82, 81, 89, 77,
+            75, 73, 72, 71, 70, 70
+          ],
+          "heartRate": [
+            77, 78, 77, 76, 73, 70, 67, 80, 66, 68, 70, 73, 76, 78, 78, 77, 88, 72, 69, 67, 66, 67,
+            69, 72, 75, 91, 78, 78
+          ],
+          "oxygenSaturation": [
+            98, 98, 98, 98, 97, 97, 97, 97, 97, 96, 96, 90, 96, 96, 96, 96, 96, 96, 96, 96, 97, 97,
+            97, 97, 92, 98, 98, 98
+          ],
+          "weight": [
+            60.48, 60.7, 60.87, 61.01, 61.1, 61.14, 61.13, 61.07, 60.98, 60.86, 60.71, 60.56, 60.42,
+            60.29, 60.19, 60.13, 60.12, 60.15, 60.23, 60.36, 60.54, 60.74, 60.98, 61.22, 61.47,
+            61.71, 61.93, 62.11
+          ],
+          "height": [
+            160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160,
+            160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160
+          ],
+          "bmi": [
+            23.62, 23.71, 23.78, 23.83, 23.87, 23.88, 23.88, 23.86, 23.82, 23.77, 23.71, 23.66,
+            23.6, 23.55, 23.51, 23.49, 23.48, 23.5, 23.53, 23.58, 23.65, 23.73, 23.82, 23.91, 24.01,
+            24.11, 24.19, 24.26
+          ]
+        },
+        "latestVitals": {
+          "measuredAt": "2026-04-08T09:15:00.000Z",
+          "systolicBp": 116,
+          "diastolicBp": 70,
+          "heartRate": 78,
+          "oxygenSaturation": 98,
+          "weight": 62.11,
+          "height": 160,
+          "bmi": 24.26
+        },
+        "thresholds": {
+          "SPO2_CRITICAL_THRESHOLD": 90,
+          "SPO2_CAUTION_THRESHOLD": 95,
+          "WEIGHT_DAILY_INCREASE_CRITICAL_KG": 3,
+          "HR_NORMAL_MIN": 60,
+          "HR_NORMAL_MAX": 100,
+          "BP_NORMAL_SYSTOLIC_MAX": 119,
+          "BP_NORMAL_DIASTOLIC_MAX": 79,
+          "BP_ELEVATED_SYSTOLIC_MIN": 120,
+          "BP_ELEVATED_SYSTOLIC_MAX": 129,
+          "BP_ELEVATED_DIASTOLIC_MAX": 79,
+          "BP_STAGE1_SYSTOLIC_MIN": 130,
+          "BP_STAGE1_SYSTOLIC_MAX": 139,
+          "BP_STAGE1_DIASTOLIC_MIN": 80,
+          "BP_STAGE1_DIASTOLIC_MAX": 89,
+          "BP_STAGE2_SYSTOLIC_MIN": 140,
+          "BP_STAGE2_DIASTOLIC_MIN": 90
+        }
+      },
+      "abnormalReport": {
+        "stats": {
+          "systolicBp": {
+            "avg": 120.8,
+            "min": 110,
+            "max": 143
+          },
+          "diastolicBp": {
+            "avg": 76.2,
+            "min": 70,
+            "max": 89
+          },
+          "heartRate": {
+            "avg": 74.1,
+            "min": 66,
+            "max": 91
+          },
+          "oxygenSaturation": {
+            "avg": 96.5,
+            "min": 90,
+            "max": 98
+          },
+          "weight": {
+            "avg": 60.8,
+            "min": 60.12,
+            "max": 62.11
+          },
+          "bmi": {
+            "avg": 23.8,
+            "min": 23.48,
+            "max": 24.26
+          }
+        },
+        "abnormalInstances": [
+          {
+            "timestamp": "2026-03-12T09:15:00.000Z",
+            "details": {
+              "Blood Pressure": "123/81 mmHg (Stage 1 Hypertension)"
+            }
+          },
+          {
+            "timestamp": "2026-03-14T08:15:00.000Z",
+            "details": {
+              "Blood Pressure": "126/77 mmHg (Elevated)"
+            }
+          },
+          {
+            "timestamp": "2026-03-15T09:15:00.000Z",
+            "details": {
+              "Blood Pressure": "126/75 mmHg (Elevated)"
+            }
+          },
+          {
+            "timestamp": "2026-03-16T07:15:00.000Z",
+            "details": {
+              "Blood Pressure": "125/74 mmHg (Elevated)"
+            }
+          },
+          {
+            "timestamp": "2026-03-17T08:15:00.000Z",
+            "details": {
+              "Blood Pressure": "124/72 mmHg (Elevated)"
+            }
+          },
+          {
+            "timestamp": "2026-03-18T09:15:00.000Z",
+            "details": {
+              "Blood Pressure": "122/71 mmHg (Elevated)"
+            }
+          },
+          {
+            "timestamp": "2026-03-21T09:15:00.000Z",
+            "details": {
+              "Blood Pressure": "132/81 mmHg (Stage 1 Hypertension)"
+            }
+          },
+          {
+            "timestamp": "2026-03-23T08:15:00.000Z",
+            "details": {
+              "Oxygen Saturation": "90% (Caution)"
+            }
+          },
+          {
+            "timestamp": "2026-03-27T09:15:00.000Z",
+            "details": {
+              "Blood Pressure": "113/81 mmHg (Stage 1 Hypertension)"
+            }
+          },
+          {
+            "timestamp": "2026-03-28T07:15:00.000Z",
+            "details": {
+              "Blood Pressure": "116/82 mmHg (Stage 1 Hypertension)"
+            }
+          },
+          {
+            "timestamp": "2026-03-29T08:15:00.000Z",
+            "details": {
+              "Blood Pressure": "118/82 mmHg (Stage 1 Hypertension)"
+            }
+          },
+          {
+            "timestamp": "2026-03-30T09:15:00.000Z",
+            "details": {
+              "Blood Pressure": "121/82 mmHg (Stage 1 Hypertension)"
+            }
+          },
+          {
+            "timestamp": "2026-03-31T07:15:00.000Z",
+            "details": {
+              "Blood Pressure": "123/81 mmHg (Stage 1 Hypertension)"
+            }
+          },
+          {
+            "timestamp": "2026-04-01T08:15:00.000Z",
+            "details": {
+              "Blood Pressure": "143/89 mmHg (Stage 2 Hypertension)"
+            }
+          },
+          {
+            "timestamp": "2026-04-02T09:15:00.000Z",
+            "details": {
+              "Blood Pressure": "126/77 mmHg (Elevated)"
+            }
+          },
+          {
+            "timestamp": "2026-04-03T07:15:00.000Z",
+            "details": {
+              "Blood Pressure": "126/75 mmHg (Elevated)"
+            }
+          },
+          {
+            "timestamp": "2026-04-04T08:15:00.000Z",
+            "details": {
+              "Blood Pressure": "125/73 mmHg (Elevated)"
+            }
+          },
+          {
+            "timestamp": "2026-04-05T09:15:00.000Z",
+            "details": {
+              "Blood Pressure": "124/72 mmHg (Elevated)",
+              "Oxygen Saturation": "92% (Caution)"
+            }
+          },
+          {
+            "timestamp": "2026-04-06T07:15:00.000Z",
+            "details": {
+              "Blood Pressure": "121/71 mmHg (Elevated)"
+            }
+          }
+        ],
+        "thresholds": {
+          "SPO2_CRITICAL_THRESHOLD": 90,
+          "SPO2_CAUTION_THRESHOLD": 95,
+          "WEIGHT_DAILY_INCREASE_CRITICAL_KG": 3,
+          "HR_NORMAL_MIN": 60,
+          "HR_NORMAL_MAX": 100,
+          "BP_NORMAL_SYSTOLIC_MAX": 119,
+          "BP_NORMAL_DIASTOLIC_MAX": 79,
+          "BP_ELEVATED_SYSTOLIC_MIN": 120,
+          "BP_ELEVATED_SYSTOLIC_MAX": 129,
+          "BP_ELEVATED_DIASTOLIC_MAX": 79,
+          "BP_STAGE1_SYSTOLIC_MIN": 130,
+          "BP_STAGE1_SYSTOLIC_MAX": 139,
+          "BP_STAGE1_DIASTOLIC_MIN": 80,
+          "BP_STAGE1_DIASTOLIC_MAX": 89,
+          "BP_STAGE2_SYSTOLIC_MIN": 140,
+          "BP_STAGE2_DIASTOLIC_MIN": 90
+        }
+      }
+    },
+    {
+      "patientId": "29130aed-2a9b-4b23-86ca-3f6860e4c16e",
+      "summary": {
+        "patient": {
+          "patientId": "29130aed-2a9b-4b23-86ca-3f6860e4c16e",
+          "firstName": "Darrell",
+          "lastName": "Valentino",
+          "email": "darrell.valentino14@gmail.com",
+          "phone": null,
+          "dateOfBirth": "1999-12-29",
+          "age": 26,
+          "sex": "male"
+        },
+        "latestVitals": {
+          "measuredAt": null,
+          "systolicBp": null,
+          "diastolicBp": null,
+          "heartRate": null,
+          "oxygenSaturation": null,
+          "weight": null,
+          "height": null,
+          "bmi": null
+        },
+        "thresholds": {
+          "SPO2_CRITICAL_THRESHOLD": 90,
+          "SPO2_CAUTION_THRESHOLD": 95,
+          "WEIGHT_DAILY_INCREASE_CRITICAL_KG": 3,
+          "HR_NORMAL_MIN": 60,
+          "HR_NORMAL_MAX": 100,
+          "BP_NORMAL_SYSTOLIC_MAX": 119,
+          "BP_NORMAL_DIASTOLIC_MAX": 79,
+          "BP_ELEVATED_SYSTOLIC_MIN": 120,
+          "BP_ELEVATED_SYSTOLIC_MAX": 129,
+          "BP_ELEVATED_DIASTOLIC_MAX": 79,
+          "BP_STAGE1_SYSTOLIC_MIN": 130,
+          "BP_STAGE1_SYSTOLIC_MAX": 139,
+          "BP_STAGE1_DIASTOLIC_MIN": 80,
+          "BP_STAGE1_DIASTOLIC_MAX": 89,
+          "BP_STAGE2_SYSTOLIC_MIN": 140,
+          "BP_STAGE2_DIASTOLIC_MIN": 90
+        }
+      },
+      "vitals": {
+        "series": {
+          "timestamps": [],
+          "systolicBp": [],
+          "diastolicBp": [],
+          "heartRate": [],
+          "oxygenSaturation": [],
+          "weight": [],
+          "height": [],
+          "bmi": []
+        },
+        "latestVitals": {
+          "measuredAt": null,
+          "systolicBp": null,
+          "diastolicBp": null,
+          "heartRate": null,
+          "oxygenSaturation": null,
+          "weight": null,
+          "height": null,
+          "bmi": null
+        },
+        "thresholds": {
+          "SPO2_CRITICAL_THRESHOLD": 90,
+          "SPO2_CAUTION_THRESHOLD": 95,
+          "WEIGHT_DAILY_INCREASE_CRITICAL_KG": 3,
+          "HR_NORMAL_MIN": 60,
+          "HR_NORMAL_MAX": 100,
+          "BP_NORMAL_SYSTOLIC_MAX": 119,
+          "BP_NORMAL_DIASTOLIC_MAX": 79,
+          "BP_ELEVATED_SYSTOLIC_MIN": 120,
+          "BP_ELEVATED_SYSTOLIC_MAX": 129,
+          "BP_ELEVATED_DIASTOLIC_MAX": 79,
+          "BP_STAGE1_SYSTOLIC_MIN": 130,
+          "BP_STAGE1_SYSTOLIC_MAX": 139,
+          "BP_STAGE1_DIASTOLIC_MIN": 80,
+          "BP_STAGE1_DIASTOLIC_MAX": 89,
+          "BP_STAGE2_SYSTOLIC_MIN": 140,
+          "BP_STAGE2_DIASTOLIC_MIN": 90
+        }
+      },
+      "abnormalReport": {
+        "stats": {
+          "systolicBp": {
+            "avg": null,
+            "min": null,
+            "max": null
+          },
+          "diastolicBp": {
+            "avg": null,
+            "min": null,
+            "max": null
+          },
+          "heartRate": {
+            "avg": null,
+            "min": null,
+            "max": null
+          },
+          "oxygenSaturation": {
+            "avg": null,
+            "min": null,
+            "max": null
+          },
+          "weight": {
+            "avg": null,
+            "min": null,
+            "max": null
+          },
+          "bmi": {
+            "avg": null,
+            "min": null,
+            "max": null
+          }
+        },
+        "abnormalInstances": [],
+        "thresholds": {
+          "SPO2_CRITICAL_THRESHOLD": 90,
+          "SPO2_CAUTION_THRESHOLD": 95,
+          "WEIGHT_DAILY_INCREASE_CRITICAL_KG": 3,
+          "HR_NORMAL_MIN": 60,
+          "HR_NORMAL_MAX": 100,
+          "BP_NORMAL_SYSTOLIC_MAX": 119,
+          "BP_NORMAL_DIASTOLIC_MAX": 79,
+          "BP_ELEVATED_SYSTOLIC_MIN": 120,
+          "BP_ELEVATED_SYSTOLIC_MAX": 129,
+          "BP_ELEVATED_DIASTOLIC_MAX": 79,
+          "BP_STAGE1_SYSTOLIC_MIN": 130,
+          "BP_STAGE1_SYSTOLIC_MAX": 139,
+          "BP_STAGE1_DIASTOLIC_MIN": 80,
+          "BP_STAGE1_DIASTOLIC_MAX": 89,
+          "BP_STAGE2_SYSTOLIC_MIN": 140,
+          "BP_STAGE2_DIASTOLIC_MIN": 90
+        }
+      }
+    }
+  ]
+}

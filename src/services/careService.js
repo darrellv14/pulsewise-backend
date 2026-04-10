@@ -3,8 +3,8 @@ const { NOT_FOUND, FORBIDDEN } = require('../constants/httpStatus');
 const profileRepository = require('../repositories/profileRepository');
 const doctorPatientRepository = require('../repositories/doctorPatientRepository');
 const dashboardRepository = require('../repositories/dashboardRepository');
-const dashboardPairingRepository = require('../repositories/dashboardPairingRepository');
 const patientShareRepository = require('../repositories/patientShareRepository');
+const dashboardPairingService = require('./dashboardPairingService');
 const thresholds = require('../constants/dashboardThresholds');
 
 function buildPagination({ page, limit, totalItems }) {
@@ -38,6 +38,40 @@ function toIso(value) {
 function toDateOnlyIso(value) {
   const iso = toIso(value);
   return iso ? iso.slice(0, 10) : null;
+}
+
+function calculateAge(dateOfBirth) {
+  const dobIso = toDateOnlyIso(dateOfBirth);
+  if (!dobIso) {
+    return null;
+  }
+
+  const dob = new Date(`${dobIso}T00:00:00.000Z`);
+  if (Number.isNaN(dob.getTime())) {
+    return null;
+  }
+
+  const now = new Date();
+  let age = now.getUTCFullYear() - dob.getUTCFullYear();
+  const currentMonth = now.getUTCMonth() + 1;
+  const currentDay = now.getUTCDate();
+  const birthMonth = dob.getUTCMonth() + 1;
+  const birthDay = dob.getUTCDate();
+
+  if (currentMonth < birthMonth || (currentMonth === birthMonth && currentDay < birthDay)) {
+    age -= 1;
+  }
+
+  return age >= 0 ? age : null;
+}
+
+function latestIso(...values) {
+  const normalized = values.map((value) => toIso(value)).filter(Boolean);
+  if (!normalized.length) {
+    return null;
+  }
+
+  return normalized.reduce((max, value) => (value > max ? value : max));
 }
 
 function normalizeMetricType(metricType) {
@@ -120,30 +154,6 @@ function generateShareCode() {
   return `PW-${crypto.randomBytes(6).toString('hex').toUpperCase()}`;
 }
 
-function generateDashboardPairingToken() {
-  return `PWDASH-${crypto.randomBytes(18).toString('hex').toUpperCase()}`;
-}
-
-function hashPairingToken(pairingToken) {
-  return crypto.createHash('sha256').update(String(pairingToken || '').trim()).digest('hex');
-}
-
-function assertPatientActor(actor) {
-  if (!actor) {
-    const error = new Error('Aktor tidak valid');
-    error.statusCode = FORBIDDEN;
-    throw error;
-  }
-
-  if (actor.role !== 'patient') {
-    const error = new Error('Hanya pasien yang dapat mengonfirmasi pairing dashboard');
-    error.statusCode = FORBIDDEN;
-    throw error;
-  }
-
-  return actor.userId;
-}
-
 function buildPeriodRange({ startDate, endDate, timePeriod = 'last_30_days' }) {
   const now = new Date();
 
@@ -186,13 +196,16 @@ function buildPeriodRange({ startDate, endDate, timePeriod = 'last_30_days' }) {
 }
 
 function formatPatientIdentity(row) {
+  const dateOfBirth = toDateOnlyIso(row.date_of_birth);
+
   return {
     patientId: row.patient_id,
     firstName: row.first_name,
     lastName: row.last_name,
     email: row.email,
     phone: row.tel_no || null,
-    dateOfBirth: toDateOnlyIso(row.date_of_birth),
+    dateOfBirth,
+    age: calculateAge(dateOfBirth),
     sex: row.sex || null,
   };
 }
@@ -344,7 +357,10 @@ function buildAbnormalInstances(points) {
     }
 
     if (point.heartRate !== null) {
-      if (point.heartRate > thresholds.HR_NORMAL_MAX || point.heartRate < thresholds.HR_NORMAL_MIN) {
+      if (
+        point.heartRate > thresholds.HR_NORMAL_MAX ||
+        point.heartRate < thresholds.HR_NORMAL_MIN
+      ) {
         details.heartRate = `${point.heartRate} bpm (Outside of Normal Range)`;
       }
     }
@@ -467,7 +483,9 @@ async function createPatientShare({ actor, patientId, expiresInHours = 24 }) {
 async function linkDoctorPatientByShareCode({ actor, doctorId, shareCode }) {
   assertDoctorScope({ actor, doctorId });
 
-  const normalizedCode = String(shareCode || '').trim().toUpperCase();
+  const normalizedCode = String(shareCode || '')
+    .trim()
+    .toUpperCase();
   const share = await patientShareRepository.findActiveShareByCode(normalizedCode);
   if (!share) {
     const error = new Error('Share code tidak valid atau sudah kadaluarsa');
@@ -489,7 +507,12 @@ async function linkDoctorPatientByShareCode({ actor, doctorId, shareCode }) {
   };
 }
 
-async function linkDoctorPatientByPatientId({ actor, doctorId, patientId, source = 'qr_patient_id' }) {
+async function linkDoctorPatientByPatientId({
+  actor,
+  doctorId,
+  patientId,
+  source = 'qr_patient_id',
+}) {
   assertDoctorScope({ actor, doctorId });
 
   return doctorPatientRepository.upsertDoctorPatientLink({
@@ -500,92 +523,31 @@ async function linkDoctorPatientByPatientId({ actor, doctorId, patientId, source
 }
 
 async function createDashboardPairingSession({ actor, doctorId, expiresInSeconds = 90 }) {
-  assertDoctorScope({ actor, doctorId });
-
-  const pairingToken = generateDashboardPairingToken();
-  const pairingTokenHash = hashPairingToken(pairingToken);
-  const expiresAt = new Date(Date.now() + expiresInSeconds * 1000).toISOString();
-
-  const pairingSession = await dashboardPairingRepository.createDashboardPairingSession({
+  return dashboardPairingService.createDashboardPairingSession({
+    actor,
     doctorId,
-    pairingTokenHash,
-    expiresAt,
+    expiresInSeconds,
   });
-
-  return {
-    pairingSessionId: pairingSession.pairing_session_id,
-    doctorId: pairingSession.doctor_id,
-    status: pairingSession.status,
-    expiresAt: toIso(pairingSession.expires_at),
-    pairingToken,
-    qrPayload: pairingToken,
-    pollingPath: `/api/v1/doctors/${doctorId}/dashboard/pairing-sessions/${pairingSession.pairing_session_id}`,
-  };
 }
 
 async function getDashboardPairingSessionStatus({ actor, doctorId, pairingSessionId }) {
-  assertDoctorScope({ actor, doctorId });
-
-  let pairingSession = await dashboardPairingRepository.findDashboardPairingSessionById({
+  return dashboardPairingService.getDashboardPairingSessionStatus({
+    actor,
     doctorId,
     pairingSessionId,
   });
-
-  if (!pairingSession) {
-    const error = new Error('Session pairing dashboard tidak ditemukan');
-    error.statusCode = NOT_FOUND;
-    throw error;
-  }
-
-  if (pairingSession.status === 'pending' && new Date(pairingSession.expires_at).getTime() <= Date.now()) {
-    pairingSession =
-      (await dashboardPairingRepository.markDashboardPairingSessionExpired(pairingSession.pairing_session_id)) ||
-      pairingSession;
-  }
-
-  return {
-    pairingSessionId: pairingSession.pairing_session_id,
-    doctorId: pairingSession.doctor_id,
-    status: pairingSession.status,
-    expiresAt: toIso(pairingSession.expires_at),
-    confirmedAt: toIso(pairingSession.confirmed_at),
-    patientId: pairingSession.confirmed_by_patient_id || null,
-  };
 }
 
-async function confirmDashboardPairingSession({ actor, pairingToken, source = 'qr_dashboard_pairing' }) {
-  const patientId = assertPatientActor(actor);
-
-  const pairingTokenHash = hashPairingToken(pairingToken);
-  const pairingSession = await dashboardPairingRepository.findActiveDashboardPairingSessionByTokenHash(
-    pairingTokenHash
-  );
-
-  if (!pairingSession) {
-    const error = new Error('Pairing token tidak valid atau sudah kadaluarsa');
-    error.statusCode = NOT_FOUND;
-    throw error;
-  }
-
-  const linked = await doctorPatientRepository.upsertDoctorPatientLink({
-    doctorId: pairingSession.doctor_id,
-    patientId,
+async function confirmDashboardPairingSession({
+  actor,
+  pairingToken,
+  source = 'qr_dashboard_pairing',
+}) {
+  return dashboardPairingService.confirmDashboardPairingSession({
+    actor,
+    pairingToken,
     source,
   });
-
-  const confirmedSession = await dashboardPairingRepository.markDashboardPairingSessionConfirmed({
-    pairingSessionId: pairingSession.pairing_session_id,
-    patientId,
-  });
-
-  return {
-    pairingSessionId: confirmedSession?.pairing_session_id || pairingSession.pairing_session_id,
-    status: confirmedSession?.status || 'confirmed',
-    doctorId: pairingSession.doctor_id,
-    patientId,
-    confirmedAt: toIso(confirmedSession?.confirmed_at),
-    doctorPatientLink: linked,
-  };
 }
 
 async function unlinkDoctorPatient({ doctorId, patientId }) {
@@ -621,11 +583,18 @@ async function listDoctorDashboardPatients({ actor, doctorId, query }) {
       lastName: item.last_name,
       email: item.email,
       dateOfBirth: toDateOnlyIso(item.date_of_birth),
+      age: calculateAge(item.date_of_birth),
       sex: item.sex || null,
       latestVitals: {
-        measuredAt: toIso(item.latest_measured_at),
+        measuredAt: latestIso(
+          item.latest_measured_at,
+          item.latest_heart_rate_measured_at,
+          item.latest_oxygen_saturation_measured_at
+        ),
         systolicBp: toNumberOrNull(item.latest_systolic_bp),
         diastolicBp: toNumberOrNull(item.latest_diastolic_bp),
+        heartRate: toNumberOrNull(item.latest_heart_rate),
+        oxygenSaturation: toNumberOrNull(item.latest_oxygen_saturation),
         weight: toNumberOrNull(item.latest_weight),
         height: toNumberOrNull(item.latest_height),
         bmi: toNumberOrNull(item.latest_bmi),

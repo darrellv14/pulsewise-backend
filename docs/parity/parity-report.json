@@ -1,0 +1,42 @@
+{
+  "metadata": {
+    "generatedAt": "2026-04-10T08:32:30.927Z",
+    "nodeBaseUrl": "http://localhost:5000/api/v1",
+    "doctorId": "8aca6089-3899-4b85-a715-0a63113e846a",
+    "sourceDatasetPath": "C:\\Users\\darre\\Downloads\\pulsewise-backend\\docs\\parity\\golden-django-5p-30d.json",
+    "tolerancePath": "C:\\Users\\darre\\Downloads\\pulsewise-backend\\docs\\parity\\parity-tolerance.json",
+    "patientCount": 4
+  },
+  "summary": {
+    "totalPatients": 4,
+    "passedPatients": 4,
+    "failedPatients": 0,
+    "totalMismatches": 0
+  },
+  "patients": [
+    {
+      "patientId": "7ca4213e-79c2-48f7-bea2-b77050906e5f",
+      "passed": true,
+      "mismatchCount": 0,
+      "mismatches": []
+    },
+    {
+      "patientId": "b6495a8b-ba2f-4e3f-a882-4e7b221f09d9",
+      "passed": true,
+      "mismatchCount": 0,
+      "mismatches": []
+    },
+    {
+      "patientId": "229f4f2c-a907-4c51-877a-c3f867453744",
+      "passed": true,
+      "mismatchCount": 0,
+      "mismatches": []
+    },
+    {
+      "patientId": "29130aed-2a9b-4b23-86ca-3f6860e4c16e",
+      "passed": true,
+      "mismatchCount": 0,
+      "mismatches": []
+    }
+  ]
+}

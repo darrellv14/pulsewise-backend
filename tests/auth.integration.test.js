@@ -8,12 +8,10 @@ describe('Auth integration', () => {
   });
 
   test('success: login and fetch current user', async () => {
-    const loginResponse = await request(app)
-      .post('/api/v1/auth/login')
-      .send({
-        email: 'dev@pulsewise.local',
-        password: 'dev12345',
-      });
+    const loginResponse = await request(app).post('/api/v1/auth/login').send({
+      email: 'dev@pulsewise.local',
+      password: 'dev12345',
+    });
 
     expect(loginResponse.status).toBe(200);
     expect(loginResponse.body.success).toBe(true);
@@ -29,11 +27,9 @@ describe('Auth integration', () => {
   });
 
   test('invalid payload: register without required fields', async () => {
-    const response = await request(app)
-      .post('/api/v1/auth/register')
-      .send({
-        username: 'invalid_user_only',
-      });
+    const response = await request(app).post('/api/v1/auth/register').send({
+      username: 'invalid_user_only',
+    });
 
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);

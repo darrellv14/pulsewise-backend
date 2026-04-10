@@ -5,16 +5,19 @@ Dokumen ini merangkum endpoint yang perlu dipakai frontend (mobile + web) supaya
 ## 1) Endpoint Utama Yang Aktif
 
 ### Auth
+
 - POST /api/v1/auth/login
 - GET /api/v1/auth/me
 
 ### Patient/Doctor Profile
+
 - GET /api/v1/patients/{patientId}/profile
 - PUT /api/v1/patients/{patientId}/profile
 - GET /api/v1/doctors/{doctorId}/profile
 - PUT /api/v1/doctors/{doctorId}/profile
 
 ### Relasi Dokter-Pasien (Primary)
+
 - POST /api/v1/doctors/{doctorId}/patients/link-by-patient-id
   - Tujuan: menerima hasil scan QR dari frontend.
   - Body minimal:
@@ -27,6 +30,7 @@ Dokumen ini merangkum endpoint yang perlu dipakai frontend (mobile + web) supaya
 ```
 
 ### Dashboard Dokter
+
 - GET /api/v1/doctors/{doctorId}/dashboard/patients
 - GET /api/v1/doctors/{doctorId}/dashboard/patients/{patientId}
 - GET /api/v1/doctors/{doctorId}/dashboard/patients/{patientId}/vitals
@@ -35,6 +39,7 @@ Dokumen ini merangkum endpoint yang perlu dipakai frontend (mobile + web) supaya
 ## 2) Endpoint Legacy (Opsional)
 
 Endpoint ini masih tersedia untuk kompatibilitas lama, tetapi bukan flow utama frontend terbaru:
+
 - POST /api/v1/patients/{patientId}/shares
 - POST /api/v1/doctors/{doctorId}/patients/link-by-share
 
@@ -45,6 +50,7 @@ Pertanyaan: untuk skenario web menampilkan QR lalu HP scan, apakah perlu session
 Jawaban: ya, rekomendasi terbaik adalah pakai pairing session id jangka pendek.
 
 ### Pola yang direkomendasikan
+
 1. Web dashboard membuat pairing session (misalnya TTL 60-120 detik).
 2. Backend mengembalikan pairingSessionId + pairingToken (short-lived).
 3. Web menampilkan QR berisi pairingToken (bukan data sensitif pasien).
@@ -53,12 +59,19 @@ Jawaban: ya, rekomendasi terbaik adalah pakai pairing session id jangka pendek.
 6. Web subscribe SSE untuk status pairing session, fallback polling bila koneksi SSE terputus.
 
 ### Endpoint backend yang sudah tersedia
+
 - POST /api/v1/doctors/{doctorId}/dashboard/pairing-sessions
 - POST /api/v1/dashboard/pairing-sessions/confirm
 - GET /api/v1/doctors/{doctorId}/dashboard/pairing-sessions/{pairingSessionId}
 - GET /api/v1/doctors/{doctorId}/dashboard/pairing-sessions/{pairingSessionId}/events (SSE)
 
+Catatan status response confirm pairing:
+
+- `201 Created`: pairing baru berhasil dikonfirmasi.
+- `200 OK`: request idempotent karena session sudah masuk status final (misalnya `confirmed`/`expired`/`cancelled`).
+
 ### Kenapa pakai pairing session id
+
 - Mencegah replay QR lama.
 - Bisa di-expire otomatis.
 - Mudah dipantau statusnya (pending/success/expired/cancelled).
@@ -67,11 +80,13 @@ Jawaban: ya, rekomendasi terbaik adalah pakai pairing session id jangka pendek.
 ## 4) Payload Contract Singkat Untuk Frontend
 
 ### Primary QR flow (yang sudah ada saat ini)
+
 - QR berisi string patientId (di-generate frontend).
 - Hasil scan dikirim ke:
   - POST /api/v1/doctors/{doctorId}/patients/link-by-patient-id
 
 ### Desktop pairing flow (yang direkomendasikan untuk ditambah nanti)
+
 - QR idealnya berisi pairing token (bukan patientId mentah), karena konteksnya login/pairing sesi antar device.
 
 ## 5) Source of Truth
@@ -80,3 +95,22 @@ Jawaban: ya, rekomendasi terbaik adalah pakai pairing session id jangka pendek.
 - Postman Main: postman/PulseWise-API.postman_collection.json
 - Postman Smoke: postman/PulseWise-Dashboard-Smoke.postman_collection.json
 - Postman Environment: postman/PulseWise-Local.postman_environment.json
+
+## 6) Integrasi Django (Fase Berjalan)
+
+Status saat ini untuk roadmap integrasi teknis:
+
+- Contract mapping endpoint dashboard dan pairing sudah sinkron (OpenAPI + Postman).
+- Endpoint dashboard-ready di PulseWise sudah siap konsumsi Django.
+- Django dashboard + Chart.js **belum dibuang** dan tetap dipakai sementara untuk validasi parity data/proses.
+
+Step implementasi berikutnya di sisi Django:
+
+1. Login dokter via `POST /api/v1/auth/login` dan simpan JWT di server-side session.
+2. Untuk request data dashboard, kirim header `Authorization: Bearer <jwt>`.
+3. Tangani fallback UI untuk status `401/403` dan timeout agar UX dashboard tetap aman.
+
+Referensi parity wajib:
+
+- `docs/DJANGO_PULSEWISE_PARITY_CHECKLIST.md`
+- `docs/MONGO_TO_POSTGRES_ETL_ACCEPTANCE_PLAN.md`

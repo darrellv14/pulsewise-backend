@@ -1,0 +1,23 @@
+{
+  "description": "Toleransi parity numerik dashboard Django vs PulseWise Node",
+  "number": {
+    "default": 0,
+    "systolicBp": 0,
+    "diastolicBp": 0,
+    "heartRate": 0,
+    "oxygenSaturation": 0,
+    "weight": 0.01,
+    "height": 0.01,
+    "bmi": 0.01,
+    "age": 0,
+    "avg": 0.01,
+    "min": 0.01,
+    "max": 0.01
+  },
+  "timestamp": {
+    "seconds": 60
+  },
+  "array": {
+    "allowTrailingNullPadding": false
+  }
+}

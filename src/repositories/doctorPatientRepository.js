@@ -56,6 +56,20 @@ async function upsertDoctorPatientLink({ doctorId, patientId, source }) {
   return result.rows[0] || null;
 }
 
+async function findDoctorPatientLink({ doctorId, patientId }) {
+  const query = `
+    SELECT doctor_id, patient_id, source, linked_at, is_active
+    FROM doctor_patients
+    WHERE doctor_id = $1
+      AND patient_id = $2
+      AND is_active = TRUE
+    LIMIT 1
+  `;
+
+  const result = await pool.query(query, [doctorId, patientId]);
+  return result.rows[0] || null;
+}
+
 async function deactivateDoctorPatientLink({ doctorId, patientId }) {
   const query = `
     UPDATE doctor_patients
@@ -71,5 +85,6 @@ async function deactivateDoctorPatientLink({ doctorId, patientId }) {
 module.exports = {
   listDoctorPatients,
   upsertDoctorPatientLink,
+  findDoctorPatientLink,
   deactivateDoctorPatientLink,
 };

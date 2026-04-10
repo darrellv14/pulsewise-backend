@@ -1,5 +1,5 @@
-const env = require("./config/env");
-const app = require("./app");
+const env = require('./config/env');
+const app = require('./app');
 
 const PORT = env.port;
 

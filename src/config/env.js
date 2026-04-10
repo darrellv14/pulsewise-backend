@@ -27,6 +27,8 @@ const env = {
     database: ensureEnv('POSTGRES_DB', 'pulsewise'),
     user: ensureEnv('POSTGRES_USER', 'pulsewise'),
     password: ensureEnv('POSTGRES_PASSWORD', 'pulsewise123'),
+    ssl: process.env.POSTGRES_SSL === 'true',
+    sslRejectUnauthorized: process.env.POSTGRES_SSL_REJECT_UNAUTHORIZED === 'true',
   },
 };
 

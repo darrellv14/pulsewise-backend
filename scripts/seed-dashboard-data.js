@@ -41,9 +41,13 @@ function getPool() {
 }
 
 async function ensureRoleId(client, roleCode) {
-  const roleResult = await client.query('SELECT role_id FROM roles WHERE code = $1 LIMIT 1', [roleCode]);
+  const roleResult = await client.query('SELECT role_id FROM roles WHERE code = $1 LIMIT 1', [
+    roleCode,
+  ]);
   if (roleResult.rowCount === 0) {
-    throw new Error(`Role ${roleCode} tidak ditemukan. Jalankan migration/seed roles terlebih dahulu.`);
+    throw new Error(
+      `Role ${roleCode} tidak ditemukan. Jalankan migration/seed roles terlebih dahulu.`
+    );
   }
 
   return roleResult.rows[0].role_id;
@@ -153,7 +157,7 @@ function computeSeedMetrics(dayIndex, patientConfig) {
 
   const weight = Number((patientConfig.baseWeightKg + dayWave * 0.8 + longTrend).toFixed(2));
   const height = patientConfig.heightCm;
-  const bmi = Number((weight / ((height / 100) ** 2)).toFixed(2));
+  const bmi = Number((weight / (height / 100) ** 2).toFixed(2));
 
   const elevatedBp = dayIndex % 11 === 0;
   const elevatedHeart = dayIndex % 9 === 0;
@@ -288,7 +292,9 @@ async function run() {
     await client.query('COMMIT');
 
     console.log('[seed:dashboard] done');
-    console.log(`[seed:dashboard] doctor login: ${(process.env.PULSEWISE_DOCTOR_EMAIL || 'doctor@pulsewise.local')} / dev12345`);
+    console.log(
+      `[seed:dashboard] doctor login: ${process.env.PULSEWISE_DOCTOR_EMAIL || 'doctor@pulsewise.local'} / dev12345`
+    );
     console.log('[seed:dashboard] patients:');
     for (const patient of seededPatients) {
       console.log(`  - ${patient.fullName} (${patient.email}) userId=${patient.userId}`);

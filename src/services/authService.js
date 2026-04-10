@@ -54,7 +54,9 @@ function hashOtpCode(otp) {
 
 async function register(payload) {
   const username = String(payload.username || '').trim();
-  const email = String(payload.email || '').trim().toLowerCase();
+  const email = String(payload.email || '')
+    .trim()
+    .toLowerCase();
   const password = String(payload.password || '');
   const firstName = payload.firstName ? String(payload.firstName).trim() : null;
   const lastName = payload.lastName ? String(payload.lastName).trim() : null;
@@ -92,7 +94,9 @@ async function register(payload) {
 }
 
 async function sendEmailVerification(email) {
-  const normalizedEmail = String(email || '').trim().toLowerCase();
+  const normalizedEmail = String(email || '')
+    .trim()
+    .toLowerCase();
   const user = await userRepository.findUserByEmail(normalizedEmail);
 
   if (!user) {
@@ -104,24 +108,36 @@ async function sendEmailVerification(email) {
   const otp = generateOtpCode();
   const expiresAt = new Date(Date.now() + env.otpExpiresMinutes * 60 * 1000).toISOString();
 
-  await userRepository.createEmailVerification({
+  const verification = await userRepository.createEmailVerification({
     userId: user.user_id,
     email: normalizedEmail,
     otpCodeHash: hashOtpCode(otp),
     expiresAt,
   });
 
+  try {
+    await sendOtpEmail({
+      toEmail: normalizedEmail,
+      otpCode: otp,
+      expiresInMinutes: env.otpExpiresMinutes,
+    });
+  } catch (error) {
+    try {
+      await userRepository.deleteEmailVerification(verification.verification_id);
+    } catch (cleanupError) {
+      if (env.nodeEnv !== 'test') {
+        console.error('[sendEmailVerification] gagal rollback email verification', cleanupError);
+      }
+    }
+
+    throw error;
+  }
+
   const response = {
     delivery: 'email',
     expiresInMinutes: env.otpExpiresMinutes,
     nextStep: 'VERIFY_OTP',
   };
-
-  await sendOtpEmail({
-    toEmail: normalizedEmail,
-    otpCode: otp,
-    expiresInMinutes: env.otpExpiresMinutes,
-  });
 
   // Opsi debug lokal bila diperlukan testing manual cepat tanpa akses inbox.
   if (env.otpDebugExpose) {
@@ -132,7 +148,9 @@ async function sendEmailVerification(email) {
 }
 
 async function confirmEmailVerification(email, otp) {
-  const normalizedEmail = String(email || '').trim().toLowerCase();
+  const normalizedEmail = String(email || '')
+    .trim()
+    .toLowerCase();
   const verification = await userRepository.findLatestValidEmailVerification(normalizedEmail);
 
   if (!verification) {
@@ -164,7 +182,9 @@ async function confirmEmailVerification(email, otp) {
 }
 
 async function login(email, password) {
-  const normalizedEmail = String(email || '').trim().toLowerCase();
+  const normalizedEmail = String(email || '')
+    .trim()
+    .toLowerCase();
   const user = await userRepository.findUserByEmail(normalizedEmail);
   if (!user) {
     const error = new Error('Email atau password salah');

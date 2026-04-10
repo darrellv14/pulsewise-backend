@@ -42,7 +42,9 @@ async function seedUser(client, { username, email, role, firstName, lastName, pa
     lastName,
   ]);
 
-  const roleResult = await client.query('SELECT role_id FROM roles WHERE code = $1 LIMIT 1', [role]);
+  const roleResult = await client.query('SELECT role_id FROM roles WHERE code = $1 LIMIT 1', [
+    role,
+  ]);
   if (roleResult.rowCount === 0) {
     throw new Error(`Role ${role} tidak ditemukan`);
   }

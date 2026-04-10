@@ -40,7 +40,9 @@ async function run() {
       .sort((a, b) => a.localeCompare(b));
 
     for (const fileName of files) {
-      const alreadyRun = await client.query('SELECT 1 FROM schema_migrations WHERE name = $1', [fileName]);
+      const alreadyRun = await client.query('SELECT 1 FROM schema_migrations WHERE name = $1', [
+        fileName,
+      ]);
 
       if (alreadyRun.rowCount > 0) {
         console.log(`[migrate] skip ${fileName}`);

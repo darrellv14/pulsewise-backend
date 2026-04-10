@@ -1,5 +1,5 @@
 const { success } = require('../utils/response');
-const phase2Service = require('../services/phase2Service');
+const careService = require('../services/careService');
 const { CREATED } = require('../constants/httpStatus');
 
 const DASHBOARD_PAIRING_TERMINAL_STATUSES = new Set(['confirmed', 'expired', 'cancelled']);
@@ -13,7 +13,7 @@ function writeSseEvent(res, eventName, payload) {
 
 async function listPatients(req, res, next) {
   try {
-    const data = await phase2Service.listPatients(req.query);
+    const data = await careService.listPatients(req.query);
     return success(res, 'Daftar pasien berhasil diambil', data);
   } catch (error) {
     return next(error);
@@ -22,7 +22,7 @@ async function listPatients(req, res, next) {
 
 async function getPatientProfile(req, res, next) {
   try {
-    const data = await phase2Service.getPatientProfile(req.params.patientId);
+    const data = await careService.getPatientProfile(req.params.patientId);
     return success(res, 'Profil pasien berhasil diambil', data);
   } catch (error) {
     return next(error);
@@ -31,7 +31,7 @@ async function getPatientProfile(req, res, next) {
 
 async function updatePatientProfile(req, res, next) {
   try {
-    const data = await phase2Service.updatePatientProfile(req.params.patientId, req.body);
+    const data = await careService.updatePatientProfile(req.params.patientId, req.body);
     return success(res, 'Profil pasien berhasil diperbarui', data);
   } catch (error) {
     return next(error);
@@ -40,7 +40,7 @@ async function updatePatientProfile(req, res, next) {
 
 async function getDoctorProfile(req, res, next) {
   try {
-    const data = await phase2Service.getDoctorProfile(req.params.doctorId);
+    const data = await careService.getDoctorProfile(req.params.doctorId);
     return success(res, 'Profil dokter berhasil diambil', data);
   } catch (error) {
     return next(error);
@@ -49,7 +49,7 @@ async function getDoctorProfile(req, res, next) {
 
 async function updateDoctorProfile(req, res, next) {
   try {
-    const data = await phase2Service.updateDoctorProfile(req.params.doctorId, req.body);
+    const data = await careService.updateDoctorProfile(req.params.doctorId, req.body);
     return success(res, 'Profil dokter berhasil diperbarui', data);
   } catch (error) {
     return next(error);
@@ -58,7 +58,7 @@ async function updateDoctorProfile(req, res, next) {
 
 async function listDoctorPatients(req, res, next) {
   try {
-    const data = await phase2Service.listDoctorPatients({
+    const data = await careService.listDoctorPatients({
       doctorId: req.params.doctorId,
       page: req.query.page,
       limit: req.query.limit,
@@ -72,7 +72,7 @@ async function listDoctorPatients(req, res, next) {
 
 async function linkDoctorPatient(req, res, next) {
   try {
-    const data = await phase2Service.linkDoctorPatient({
+    const data = await careService.linkDoctorPatient({
       doctorId: req.params.doctorId,
       patientId: req.body.patientId,
       source: req.body.source,
@@ -86,7 +86,7 @@ async function linkDoctorPatient(req, res, next) {
 
 async function createPatientShare(req, res, next) {
   try {
-    const data = await phase2Service.createPatientShare({
+    const data = await careService.createPatientShare({
       actor: req.user,
       patientId: req.params.patientId,
       expiresInHours: req.body.expiresInHours,
@@ -100,7 +100,7 @@ async function createPatientShare(req, res, next) {
 
 async function linkDoctorPatientByShareCode(req, res, next) {
   try {
-    const data = await phase2Service.linkDoctorPatientByShareCode({
+    const data = await careService.linkDoctorPatientByShareCode({
       actor: req.user,
       doctorId: req.params.doctorId,
       shareCode: req.body.shareCode,
@@ -114,7 +114,7 @@ async function linkDoctorPatientByShareCode(req, res, next) {
 
 async function linkDoctorPatientByPatientId(req, res, next) {
   try {
-    const data = await phase2Service.linkDoctorPatientByPatientId({
+    const data = await careService.linkDoctorPatientByPatientId({
       actor: req.user,
       doctorId: req.params.doctorId,
       patientId: req.body.patientId,
@@ -129,7 +129,7 @@ async function linkDoctorPatientByPatientId(req, res, next) {
 
 async function createDashboardPairingSession(req, res, next) {
   try {
-    const data = await phase2Service.createDashboardPairingSession({
+    const data = await careService.createDashboardPairingSession({
       actor: req.user,
       doctorId: req.params.doctorId,
       expiresInSeconds: req.body.expiresInSeconds,
@@ -143,7 +143,7 @@ async function createDashboardPairingSession(req, res, next) {
 
 async function getDashboardPairingSessionStatus(req, res, next) {
   try {
-    const data = await phase2Service.getDashboardPairingSessionStatus({
+    const data = await careService.getDashboardPairingSessionStatus({
       actor: req.user,
       doctorId: req.params.doctorId,
       pairingSessionId: req.params.pairingSessionId,
@@ -172,7 +172,7 @@ async function streamDashboardPairingSessionStatus(req, res, next) {
   };
 
   const sendCurrentStatus = async () => {
-    const statusData = await phase2Service.getDashboardPairingSessionStatus({
+    const statusData = await careService.getDashboardPairingSessionStatus({
       actor: req.user,
       doctorId: req.params.doctorId,
       pairingSessionId: req.params.pairingSessionId,
@@ -241,13 +241,21 @@ async function streamDashboardPairingSessionStatus(req, res, next) {
 
 async function confirmDashboardPairingSession(req, res, next) {
   try {
-    const data = await phase2Service.confirmDashboardPairingSession({
+    const data = await careService.confirmDashboardPairingSession({
       actor: req.user,
       pairingToken: req.body.pairingToken,
       source: req.body.source,
     });
 
-    return success(res, 'Pairing dashboard berhasil dikonfirmasi dari mobile', data, CREATED);
+    const statusCode = data.httpStatus || CREATED;
+    const { httpStatus: _httpStatus, ...responseData } = data;
+
+    return success(
+      res,
+      'Pairing dashboard berhasil dikonfirmasi dari mobile',
+      responseData,
+      statusCode
+    );
   } catch (error) {
     return next(error);
   }
@@ -255,7 +263,7 @@ async function confirmDashboardPairingSession(req, res, next) {
 
 async function unlinkDoctorPatient(req, res, next) {
   try {
-    const data = await phase2Service.unlinkDoctorPatient({
+    const data = await careService.unlinkDoctorPatient({
       doctorId: req.params.doctorId,
       patientId: req.params.patientId,
     });
@@ -268,7 +276,7 @@ async function unlinkDoctorPatient(req, res, next) {
 
 async function listDoctorDashboardPatients(req, res, next) {
   try {
-    const data = await phase2Service.listDoctorDashboardPatients({
+    const data = await careService.listDoctorDashboardPatients({
       actor: req.user,
       doctorId: req.params.doctorId,
       query: req.query,
@@ -282,7 +290,7 @@ async function listDoctorDashboardPatients(req, res, next) {
 
 async function getDoctorDashboardPatientSummary(req, res, next) {
   try {
-    const data = await phase2Service.getDoctorDashboardPatientSummary({
+    const data = await careService.getDoctorDashboardPatientSummary({
       actor: req.user,
       doctorId: req.params.doctorId,
       patientId: req.params.patientId,
@@ -296,7 +304,7 @@ async function getDoctorDashboardPatientSummary(req, res, next) {
 
 async function getDoctorDashboardPatientVitals(req, res, next) {
   try {
-    const data = await phase2Service.getDoctorDashboardPatientVitals({
+    const data = await careService.getDoctorDashboardPatientVitals({
       actor: req.user,
       doctorId: req.params.doctorId,
       patientId: req.params.patientId,
@@ -311,7 +319,7 @@ async function getDoctorDashboardPatientVitals(req, res, next) {
 
 async function getDoctorDashboardAbnormalReport(req, res, next) {
   try {
-    const data = await phase2Service.getDoctorDashboardAbnormalReport({
+    const data = await careService.getDoctorDashboardAbnormalReport({
       actor: req.user,
       doctorId: req.params.doctorId,
       patientId: req.params.patientId,

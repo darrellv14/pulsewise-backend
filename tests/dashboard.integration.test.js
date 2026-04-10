@@ -23,6 +23,36 @@ describe('Doctor dashboard endpoint guards', () => {
     expect(response.body.message).toBe('Token tidak ditemukan');
   });
 
+  test('unauthorized: dashboard patient list with malformed token', async () => {
+    const response = await request(app)
+      .get(`/api/v1/doctors/${doctorId}/dashboard/patients`)
+      .set('Authorization', 'Bearer token-invalid-format');
+
+    expect(response.status).toBe(401);
+    expect(response.body.success).toBe(false);
+    expect(response.body.message).toBe('Token tidak valid');
+  });
+
+  test('unauthorized: dashboard patient list with expired token', async () => {
+    const expiredToken = jwt.sign(
+      {
+        userId: doctorId,
+        email: 'doctor@example.com',
+        role: 'doctor',
+      },
+      env.jwtSecret,
+      { expiresIn: -1 }
+    );
+
+    const response = await request(app)
+      .get(`/api/v1/doctors/${doctorId}/dashboard/patients`)
+      .set('Authorization', `Bearer ${expiredToken}`);
+
+    expect(response.status).toBe(401);
+    expect(response.body.success).toBe(false);
+    expect(response.body.message).toBe('Token tidak valid');
+  });
+
   test('forbidden: patient role cannot access doctor dashboard', async () => {
     const token = issueToken({
       userId: doctorId,

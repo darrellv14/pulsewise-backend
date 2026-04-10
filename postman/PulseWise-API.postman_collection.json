@@ -38,9 +38,7 @@
           ],
           "request": {
             "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"username\": \"{{patientUsername}}\",\n  \"email\": \"{{patientEmail}}\",\n  \"password\": \"{{patientPassword}}\",\n  \"firstName\": \"{{patientFirstName}}\",\n  \"lastName\": \"{{patientLastName}}\",\n  \"role\": \"patient\"\n}"
@@ -65,9 +63,7 @@
           ],
           "request": {
             "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"{{patientEmail}}\"\n}"
@@ -82,17 +78,13 @@
               "listen": "test",
               "script": {
                 "type": "text/javascript",
-                "exec": [
-                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
-                ]
+                "exec": ["pm.test('Status 200', function () { pm.response.to.have.status(200); });"]
               }
             }
           ],
           "request": {
             "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"{{patientEmail}}\",\n  \"otp\": \"{{otpCode}}\"\n}"
@@ -119,9 +111,7 @@
           ],
           "request": {
             "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"{{patientEmail}}\",\n  \"password\": \"{{patientPassword}}\"\n}"
@@ -147,9 +137,7 @@
           ],
           "request": {
             "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"{{doctorEmail}}\",\n  \"password\": \"{{doctorPassword}}\"\n}"
@@ -161,9 +149,7 @@
           "name": "GET Auth Me",
           "request": {
             "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{patientToken}}" }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{patientToken}}" }],
             "url": "{{baseUrl}}/auth/me"
           }
         },
@@ -171,9 +157,7 @@
           "name": "POST OAuth Google Login",
           "request": {
             "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"idToken\": \"{{googleIdToken}}\",\n  \"role\": \"patient\"\n}"
@@ -184,15 +168,13 @@
       ]
     },
     {
-      "name": "Phase 2 - Patient",
+      "name": "Care - Patient",
       "item": [
         {
           "name": "GET Patients",
           "request": {
             "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{doctorToken}}" }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{doctorToken}}" }],
             "url": {
               "raw": "{{baseUrl}}/patients?page=1&limit=20&sortBy=created_at&order=desc",
               "host": ["{{baseUrl}}"],
@@ -210,9 +192,7 @@
           "name": "GET Patient Profile",
           "request": {
             "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{patientToken}}" }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{patientToken}}" }],
             "url": "{{baseUrl}}/patients/{{patientId}}/profile"
           }
         },
@@ -249,15 +229,13 @@
       ]
     },
     {
-      "name": "Phase 2 - Doctor",
+      "name": "Care - Doctor",
       "item": [
         {
           "name": "GET Doctor Profile",
           "request": {
             "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{doctorToken}}" }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{doctorToken}}" }],
             "url": "{{baseUrl}}/doctors/{{doctorId}}/profile"
           }
         },
@@ -279,7 +257,7 @@
       ]
     },
     {
-      "name": "Phase 2 - Doctor Patients",
+      "name": "Care - Doctor Patients",
       "item": [
         {
           "name": "POST Link Doctor Patient",
@@ -330,9 +308,7 @@
           "name": "GET Doctor Patients",
           "request": {
             "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{doctorToken}}" }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{doctorToken}}" }],
             "url": {
               "raw": "{{baseUrl}}/doctors/{{doctorId}}/patients?page=1&limit=20",
               "host": ["{{baseUrl}}"],
@@ -348,24 +324,20 @@
           "name": "DELETE Doctor Patient Link",
           "request": {
             "method": "DELETE",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{doctorToken}}" }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{doctorToken}}" }],
             "url": "{{baseUrl}}/doctors/{{doctorId}}/patients/{{patientId}}"
           }
         }
       ]
     },
     {
-      "name": "Phase 2 - Doctor Dashboard",
+      "name": "Care - Doctor Dashboard",
       "item": [
         {
           "name": "GET Dashboard Patients",
           "request": {
             "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{doctorToken}}" }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{doctorToken}}" }],
             "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients?page=1&limit=20"
           }
         },
@@ -373,9 +345,7 @@
           "name": "GET Dashboard Patient Summary",
           "request": {
             "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{doctorToken}}" }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{doctorToken}}" }],
             "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}"
           }
         },
@@ -383,9 +353,7 @@
           "name": "GET Dashboard Patient Vitals",
           "request": {
             "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{doctorToken}}" }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{doctorToken}}" }],
             "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/vitals?timePeriod=last_30_days"
           }
         },
@@ -393,9 +361,7 @@
           "name": "GET Dashboard Abnormal Report",
           "request": {
             "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{doctorToken}}" }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{doctorToken}}" }],
             "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/abnormal-report?timePeriod=last_30_days"
           }
         },
@@ -432,9 +398,7 @@
           "name": "GET Dashboard Pairing Session Status",
           "request": {
             "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{doctorToken}}" }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{doctorToken}}" }],
             "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/pairing-sessions/{{pairingSessionId}}"
           }
         },
@@ -451,6 +415,20 @@
         },
         {
           "name": "POST Confirm Dashboard Pairing (Mobile Patient)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 or 201', function () { pm.expect([200, 201]).to.include(pm.response.code); });",
+                  "const json = pm.response.json();",
+                  "pm.test('Final status returned', function () { pm.expect(['confirmed', 'expired', 'cancelled']).to.include(json?.data?.status); });",
+                  "if (json?.data?.pairingSessionId) { pm.environment.set('pairingSessionId', json.data.pairingSessionId); }"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -462,6 +440,34 @@
               "raw": "{\n  \"pairingToken\": \"{{pairingToken}}\",\n  \"source\": \"qr_dashboard_pairing\"\n}"
             },
             "url": "{{baseUrl}}/dashboard/pairing-sessions/confirm"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Biometrics",
+      "item": [
+        {
+          "name": "POST Ingest Biometrics",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"source\": \"health_connect\",\n  \"readings\": [\n    {\n      \"metricType\": \"heart_rate\",\n      \"valueNumeric\": 78,\n      \"unit\": \"bpm\",\n      \"measuredAt\": \"2026-04-10T08:00:00.000Z\"\n    },\n    {\n      \"metricType\": \"oxygen_saturation\",\n      \"valueNumeric\": 97,\n      \"unit\": \"%\",\n      \"measuredAt\": \"2026-04-10T08:00:00.000Z\"\n    }\n  ]\n}"
+            },
+            "url": "{{baseUrl}}/biometrics"
+          }
+        },
+        {
+          "name": "GET Biometrics History",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{patientToken}}" }],
+            "url": "{{baseUrl}}/biometrics?page=1&limit=50"
           }
         }
       ]

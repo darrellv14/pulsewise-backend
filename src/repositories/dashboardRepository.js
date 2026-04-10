@@ -15,6 +15,10 @@ async function listDoctorDashboardPatients({ doctorId, q, limit, offset }) {
       latest_dm.measured_at AS latest_measured_at,
       latest_dm.systolic_bp AS latest_systolic_bp,
       latest_dm.diastolic_bp AS latest_diastolic_bp,
+      latest_hr.value_numeric AS latest_heart_rate,
+      latest_hr.measured_at AS latest_heart_rate_measured_at,
+      latest_spo2.value_numeric AS latest_oxygen_saturation,
+      latest_spo2.measured_at AS latest_oxygen_saturation_measured_at,
       latest_dm.weight AS latest_weight,
       latest_dm.height AS latest_height,
       latest_dm.bmi AS latest_bmi
@@ -35,6 +39,26 @@ async function listDoctorDashboardPatients({ doctorId, q, limit, offset }) {
       ORDER BY dm.time_stamp DESC
       LIMIT 1
     ) latest_dm ON TRUE
+    LEFT JOIN LATERAL (
+      SELECT
+        vsr.value_numeric,
+        vsr.measured_at
+      FROM vital_sign_readings vsr
+      WHERE vsr.user_id = dp.patient_id
+        AND LOWER(vsr.metric_type) IN ('heart_rate', 'heartrate', 'hr', 'pulse')
+      ORDER BY vsr.measured_at DESC
+      LIMIT 1
+    ) latest_hr ON TRUE
+    LEFT JOIN LATERAL (
+      SELECT
+        vsr.value_numeric,
+        vsr.measured_at
+      FROM vital_sign_readings vsr
+      WHERE vsr.user_id = dp.patient_id
+        AND LOWER(vsr.metric_type) IN ('oxygen_saturation', 'spo2', 'sp02', 'oxygen')
+      ORDER BY vsr.measured_at DESC
+      LIMIT 1
+    ) latest_spo2 ON TRUE
     WHERE dp.doctor_id = $1
       AND dp.is_active = TRUE
       AND ($2::BOOLEAN = FALSE OR (
@@ -43,7 +67,14 @@ async function listDoctorDashboardPatients({ doctorId, q, limit, offset }) {
         u.email ILIKE $3 OR
         u.user_id::TEXT ILIKE $3
       ))
-    ORDER BY COALESCE(latest_dm.measured_at, dp.linked_at) DESC, u.first_name ASC
+    ORDER BY COALESCE(
+      GREATEST(
+        COALESCE(latest_dm.measured_at, '-infinity'::timestamptz),
+        COALESCE(latest_hr.measured_at, '-infinity'::timestamptz),
+        COALESCE(latest_spo2.measured_at, '-infinity'::timestamptz)
+      ),
+      dp.linked_at
+    ) DESC, u.first_name ASC
     LIMIT $4 OFFSET $5
   `;
 

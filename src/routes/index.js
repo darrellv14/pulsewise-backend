@@ -1,12 +1,14 @@
 const express = require('express');
 const healthRoutes = require('./healthRoutes');
 const authRoutes = require('./authRoutes');
-const phase2Routes = require('./phase2Routes');
+const careRoutes = require('./careRoutes');
+const biometricRoutes = require('./biometricRoutes');
 
 const router = express.Router();
 
 router.use('/', healthRoutes);
 router.use('/auth', authRoutes);
-router.use('/', phase2Routes);
+router.use('/', careRoutes);
+router.use('/', biometricRoutes);
 
 module.exports = router;

@@ -94,10 +94,10 @@ async function createUserWithRole({
       throw error;
     }
 
-    await client.query(
-      'INSERT INTO user_roles (user_id, role_id) VALUES ($1, $2)',
-      [userResult.rows[0].user_id, roleResult.rows[0].role_id]
-    );
+    await client.query('INSERT INTO user_roles (user_id, role_id) VALUES ($1, $2)', [
+      userResult.rows[0].user_id,
+      roleResult.rows[0].role_id,
+    ]);
 
     await client.query('COMMIT');
 
@@ -164,6 +164,14 @@ async function consumeEmailVerification(verificationId) {
   );
 }
 
+async function deleteEmailVerification(verificationId) {
+  const result = await pool.query('DELETE FROM email_verifications WHERE verification_id = $1', [
+    verificationId,
+  ]);
+
+  return result.rowCount > 0;
+}
+
 async function activateUserByEmail(email) {
   const query = `
     UPDATE users
@@ -189,7 +197,11 @@ async function createOrGetGoogleUser({ email, firstName, lastName, role, passwor
     return await findUserByEmail(email);
   }
 
-  const usernameBase = email.split('@')[0].replace(/[^a-zA-Z0-9_]/g, '').slice(0, 32) || 'googleuser';
+  const usernameBase =
+    email
+      .split('@')[0]
+      .replace(/[^a-zA-Z0-9_]/g, '')
+      .slice(0, 32) || 'googleuser';
   const username = `${usernameBase}_${Date.now().toString().slice(-6)}`;
   return createUserWithRole({
     username,
@@ -210,6 +222,7 @@ module.exports = {
   createEmailVerification,
   findLatestValidEmailVerification,
   consumeEmailVerification,
+  deleteEmailVerification,
   activateUserByEmail,
   createOrGetGoogleUser,
 };

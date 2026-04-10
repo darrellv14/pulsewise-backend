@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const request = require('supertest');
 const env = require('../src/config/env');
 
-jest.mock('../src/services/phase2Service', () => ({
+jest.mock('../src/services/careService', () => ({
   listDoctorDashboardPatients: jest.fn(),
   getDoctorDashboardPatientSummary: jest.fn(),
   getDoctorDashboardPatientVitals: jest.fn(),
@@ -13,7 +13,7 @@ jest.mock('../src/services/phase2Service', () => ({
   confirmDashboardPairingSession: jest.fn(),
 }));
 
-const phase2Service = require('../src/services/phase2Service');
+const careService = require('../src/services/careService');
 const app = require('../src/app');
 
 function issueDoctorToken(doctorId) {
@@ -52,7 +52,7 @@ describe('Dashboard API contract', () => {
   });
 
   test('GET dashboard patients returns expected envelope contract', async () => {
-    phase2Service.listDoctorDashboardPatients.mockResolvedValue({
+    careService.listDoctorDashboardPatients.mockResolvedValue({
       items: [
         {
           patientId,
@@ -60,11 +60,14 @@ describe('Dashboard API contract', () => {
           lastName: 'Saraswati',
           email: 'seed.patient2@pulsewise.local',
           dateOfBirth: '1994-09-03',
+          age: 31,
           sex: 'female',
           latestVitals: {
             measuredAt: '2026-04-08T09:15:00.000Z',
             systolicBp: 122,
             diastolicBp: 80,
+            heartRate: 79,
+            oxygenSaturation: 98,
             weight: 61.2,
             height: 160,
             bmi: 23.9,
@@ -92,7 +95,7 @@ describe('Dashboard API contract', () => {
   });
 
   test('GET dashboard patient summary returns expected keys', async () => {
-    phase2Service.getDoctorDashboardPatientSummary.mockResolvedValue({
+    careService.getDoctorDashboardPatientSummary.mockResolvedValue({
       patient: {
         patientId,
         firstName: 'Nadia',
@@ -100,6 +103,7 @@ describe('Dashboard API contract', () => {
         email: 'seed.patient2@pulsewise.local',
         phone: '081200000102',
         dateOfBirth: '1994-09-03',
+        age: 31,
         sex: 'female',
       },
       latestVitals: {
@@ -129,7 +133,7 @@ describe('Dashboard API contract', () => {
   });
 
   test('POST link by scanned patientId returns expected envelope contract', async () => {
-    phase2Service.linkDoctorPatientByPatientId.mockResolvedValue({
+    careService.linkDoctorPatientByPatientId.mockResolvedValue({
       doctor_id: doctorId,
       patient_id: patientId,
       source: 'qr_patient_id',
@@ -152,7 +156,7 @@ describe('Dashboard API contract', () => {
   });
 
   test('POST create dashboard pairing session returns token payload', async () => {
-    phase2Service.createDashboardPairingSession.mockResolvedValue({
+    careService.createDashboardPairingSession.mockResolvedValue({
       pairingSessionId,
       doctorId,
       status: 'pending',
@@ -177,7 +181,7 @@ describe('Dashboard API contract', () => {
   });
 
   test('GET pairing session events streams SSE payload', async () => {
-    phase2Service.getDashboardPairingSessionStatus.mockResolvedValue({
+    careService.getDashboardPairingSessionStatus.mockResolvedValue({
       pairingSessionId,
       doctorId,
       status: 'confirmed',
@@ -197,7 +201,7 @@ describe('Dashboard API contract', () => {
   });
 
   test('POST confirm dashboard pairing session returns expected envelope', async () => {
-    phase2Service.confirmDashboardPairingSession.mockResolvedValue({
+    careService.confirmDashboardPairingSession.mockResolvedValue({
       pairingSessionId,
       status: 'confirmed',
       doctorId,
@@ -222,5 +226,29 @@ describe('Dashboard API contract', () => {
     expect(response.body.data).toHaveProperty('pairingSessionId');
     expect(response.body.data).toHaveProperty('status', 'confirmed');
     expect(response.body.data).toHaveProperty('doctorPatientLink');
+  });
+
+  test('POST confirm dashboard pairing session supports idempotent 200 response', async () => {
+    careService.confirmDashboardPairingSession.mockResolvedValue({
+      pairingSessionId,
+      status: 'expired',
+      doctorId,
+      patientId: null,
+      confirmedAt: null,
+      doctorPatientLink: null,
+      httpStatus: 200,
+    });
+
+    const response = await request(app)
+      .post('/api/v1/dashboard/pairing-sessions/confirm')
+      .set('Authorization', `Bearer ${patientToken}`)
+      .send({
+        pairingToken: 'PWDASH-ABCDEF0123456789ABCDEF0123456789',
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
+    expect(response.body.data).toHaveProperty('status', 'expired');
+    expect(response.body.data).not.toHaveProperty('httpStatus');
   });
 });

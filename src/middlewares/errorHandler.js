@@ -1,4 +1,5 @@
 const { INTERNAL_SERVER_ERROR } = require('../constants/httpStatus');
+const { fail } = require('../utils/response');
 
 function errorHandler(err, req, res, next) {
   const statusCode = err.statusCode || INTERNAL_SERVER_ERROR;
@@ -8,10 +9,7 @@ function errorHandler(err, req, res, next) {
     console.error('[errorHandler]', err);
   }
 
-  res.status(statusCode).json({
-    success: false,
-    message,
-  });
+  return fail(res, message, statusCode, err.details || null);
 }
 
 module.exports = errorHandler;

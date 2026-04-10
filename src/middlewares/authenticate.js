@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const { UNAUTHORIZED } = require('../constants/httpStatus');
 const env = require('../config/env');
+const { fail } = require('../utils/response');
 
 function authenticate(req, res, next) {
   try {
@@ -8,20 +9,14 @@ function authenticate(req, res, next) {
     const [scheme, token] = authHeader.split(' ');
 
     if (scheme !== 'Bearer' || !token) {
-      return res.status(UNAUTHORIZED).json({
-        success: false,
-        message: 'Token tidak ditemukan',
-      });
+      return fail(res, 'Token tidak ditemukan', UNAUTHORIZED);
     }
 
     const decoded = jwt.verify(token, env.jwtSecret);
     req.user = decoded;
     return next();
   } catch (error) {
-    return res.status(UNAUTHORIZED).json({
-      success: false,
-      message: 'Token tidak valid',
-    });
+    return fail(res, 'Token tidak valid', UNAUTHORIZED);
   }
 }
 

@@ -1,34 +1,40 @@
-const Joi = require('joi');
+const { z } = require('zod');
 
-const allowedRoles = ['patient', 'doctor', 'admin'];
-const emailRule = Joi.string().trim().email({ tlds: { allow: false } }).max(255);
+const optionalNullableString = (maxLength) =>
+  z.union([z.string().trim().max(maxLength), z.literal(''), z.null()]).optional();
 
-const registerSchema = Joi.object({
-  username: Joi.string().trim().min(3).max(100).required(),
-  email: emailRule.required(),
-  password: Joi.string().min(8).max(128).required(),
-  firstName: Joi.string().trim().max(100).allow('', null),
-  lastName: Joi.string().trim().max(100).allow('', null),
-  role: Joi.string().valid(...allowedRoles).default('patient'),
+const emailRule = z.string().trim().email().max(255);
+
+const registerSchema = z.object({
+  username: z.string().trim().min(3).max(100),
+  email: emailRule,
+  password: z.string().min(8).max(128),
+  firstName: optionalNullableString(100),
+  lastName: optionalNullableString(100),
+  role: z.enum(['patient', 'doctor', 'admin']).default('patient'),
 });
 
-const loginSchema = Joi.object({
-  email: emailRule.required(),
-  password: Joi.string().required(),
+const loginSchema = z.object({
+  email: emailRule,
+  password: z.string(),
 });
 
-const sendEmailVerificationSchema = Joi.object({
-  email: emailRule.required(),
+const sendEmailVerificationSchema = z.object({
+  email: emailRule,
 });
 
-const confirmEmailVerificationSchema = Joi.object({
-  email: emailRule.required(),
-  otp: Joi.string().trim().length(6).pattern(/^[0-9]+$/).required(),
+const confirmEmailVerificationSchema = z.object({
+  email: emailRule,
+  otp: z
+    .string()
+    .trim()
+    .length(6)
+    .regex(/^[0-9]+$/, 'OTP harus berisi angka'),
 });
 
-const googleOauthSchema = Joi.object({
-  idToken: Joi.string().required(),
-  role: Joi.string().valid('patient', 'doctor').default('patient'),
+const googleOauthSchema = z.object({
+  idToken: z.string(),
+  role: z.enum(['patient', 'doctor']).default('patient'),
 });
 
 module.exports = {
