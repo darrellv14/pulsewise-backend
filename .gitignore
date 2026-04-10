@@ -4,3 +4,5 @@ node_modules/
 *.log
 .analysis/
 IMPLEMENTATION_PLAN.md
+doctor-login.json
+patient-login.json
