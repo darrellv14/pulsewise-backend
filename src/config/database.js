@@ -8,11 +8,9 @@ function normalizeConnectionString(connectionString) {
 
   try {
     const parsed = new URL(connectionString);
-    const sslMode = parsed.searchParams.get('sslmode');
-
-    if (sslMode === 'require' && !parsed.searchParams.has('uselibpqcompat')) {
-      parsed.searchParams.set('uselibpqcompat', 'true');
-    }
+    // Keep SSL handling in one place (pool ssl config) to avoid URL-level sslmode conflicts.
+    parsed.searchParams.delete('sslmode');
+    parsed.searchParams.delete('uselibpqcompat');
 
     return parsed.toString();
   } catch (_error) {
