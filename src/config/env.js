@@ -33,9 +33,19 @@ function parseDatabaseUrl(databaseUrl) {
 
 const parsedDbUrl = parseDatabaseUrl(process.env.DATABASE_URL);
 
+function pickPostgresValue(envName, parsedValue, fallback) {
+  if (parsedValue !== undefined && parsedValue !== null && String(parsedValue).trim() !== '') {
+    return parsedValue;
+  }
+
+  return process.env[envName] || fallback;
+}
+
 const env = {
   nodeEnv: process.env.NODE_ENV || 'development',
   port: Number(process.env.PORT || 5000),
+  databaseUrl: process.env.DATABASE_URL || '',
+  directUrl: process.env.DIRECT_URL || '',
   jwtSecret: ensureEnv('JWT_SECRET', 'replace_with_strong_secret'),
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '1d',
   otpExpiresMinutes: Number(process.env.OTP_EXPIRES_MINUTES || 10),
@@ -47,11 +57,14 @@ const env = {
     senderName: process.env.MAILTRAP_SENDER_NAME || 'PulseWise',
   },
   postgres: {
-    host: ensureEnv('POSTGRES_HOST', parsedDbUrl?.host || 'localhost'),
-    port: Number(process.env.POSTGRES_PORT || parsedDbUrl?.port || 5432),
-    database: ensureEnv('POSTGRES_DB', parsedDbUrl?.database || 'pulsewise'),
-    user: ensureEnv('POSTGRES_USER', parsedDbUrl?.user || 'pulsewise'),
-    password: ensureEnv('POSTGRES_PASSWORD', parsedDbUrl?.password || 'pulsewise123'),
+    host: ensureEnv('POSTGRES_HOST', pickPostgresValue('POSTGRES_HOST', parsedDbUrl?.host, 'localhost')),
+    port: Number(pickPostgresValue('POSTGRES_PORT', parsedDbUrl?.port, 5432)),
+    database: ensureEnv('POSTGRES_DB', pickPostgresValue('POSTGRES_DB', parsedDbUrl?.database, 'pulsewise')),
+    user: ensureEnv('POSTGRES_USER', pickPostgresValue('POSTGRES_USER', parsedDbUrl?.user, 'pulsewise')),
+    password: ensureEnv(
+      'POSTGRES_PASSWORD',
+      pickPostgresValue('POSTGRES_PASSWORD', parsedDbUrl?.password, 'pulsewise123')
+    ),
     ssl: process.env.POSTGRES_SSL === 'true' || Boolean(parsedDbUrl?.sslRequired),
     sslRejectUnauthorized: process.env.POSTGRES_SSL_REJECT_UNAUTHORIZED === 'true',
   },
