@@ -1,6 +1,6 @@
 const prisma = require('../config/prisma');
 const { FORBIDDEN, NOT_FOUND, CONFLICT } = require('../constants/httpStatus');
-const { buildPagination } = require('../utils/pagination');
+const { buildPagination, normalizePaginationInput } = require('../utils/pagination');
 
 function createHttpError(message, statusCode, details = null) {
   const error = new Error(message);
@@ -152,8 +152,7 @@ async function assertNoDuplicateReminderTime(
 
 async function listMedications({ actor, userId, query }) {
   assertPatientScope({ actor, userId });
-  const page = query?.page || 1;
-  const limit = query?.limit || 20;
+  const { page, limit } = normalizePaginationInput(query);
   const skip = (page - 1) * limit;
 
   const [medications, totalItems] = await Promise.all([
@@ -361,8 +360,7 @@ async function deleteMedication({ actor, userId, medicationId }) {
 
 async function listRemindersByMedication({ actor, userId, medicationId, query }) {
   assertPatientScope({ actor, userId });
-  const page = query?.page || 1;
-  const limit = query?.limit || 20;
+  const { page, limit } = normalizePaginationInput(query);
   const skip = (page - 1) * limit;
 
   await ensureMedicationOwnership(prisma, { medicationId, userId });
@@ -474,8 +472,7 @@ async function deleteReminder({ actor, userId, reminderId }) {
 
 async function listMedicationLogs({ actor, userId, medicationId, query }) {
   assertPatientScope({ actor, userId });
-  const page = query?.page || 1;
-  const limit = query?.limit || 20;
+  const { page, limit } = normalizePaginationInput(query);
   const skip = (page - 1) * limit;
 
   await ensureMedicationOwnership(prisma, { medicationId, userId });

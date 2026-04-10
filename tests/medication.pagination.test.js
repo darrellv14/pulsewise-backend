@@ -157,4 +157,28 @@ describe('medication pagination', () => {
     });
     expect(result.items[0].medicationTime).toBe('08:15');
   });
+
+  test('listMedications coerces string pagination input before Prisma call', async () => {
+    prisma.medication.findMany.mockResolvedValue([]);
+    prisma.medication.count.mockResolvedValue(0);
+
+    const result = await medicationService.listMedications({
+      actor: { userId: 'user-1', role: 'patient' },
+      userId: 'user-1',
+      query: { page: '1', limit: '20' },
+    });
+
+    expect(prisma.medication.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        skip: 0,
+        take: 20,
+      })
+    );
+    expect(result.pagination).toEqual({
+      page: 1,
+      limit: 20,
+      totalItems: 0,
+      totalPages: 1,
+    });
+  });
 });

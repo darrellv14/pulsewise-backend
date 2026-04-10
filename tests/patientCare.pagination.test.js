@@ -84,4 +84,29 @@ describe('patient care pagination', () => {
     });
     expect(result.items[0].diaryId).toBe('diary-1');
   });
+
+  test('listEmergencyContacts coerces string pagination input', async () => {
+    patientCareRepository.listEmergencyContacts.mockResolvedValue({
+      items: [],
+      totalItems: 0,
+    });
+
+    const result = await patientCareService.listEmergencyContacts({
+      actor: { userId: 'user-1', role: 'patient' },
+      userId: 'user-1',
+      query: { page: '1', limit: '20' },
+    });
+
+    expect(patientCareRepository.listEmergencyContacts).toHaveBeenCalledWith({
+      userId: 'user-1',
+      limit: 20,
+      offset: 0,
+    });
+    expect(result.pagination).toEqual({
+      page: 1,
+      limit: 20,
+      totalItems: 0,
+      totalPages: 1,
+    });
+  });
 });

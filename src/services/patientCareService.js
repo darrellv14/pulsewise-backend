@@ -2,7 +2,7 @@ const crypto = require('crypto');
 const { BAD_REQUEST, FORBIDDEN, NOT_FOUND, INTERNAL_SERVER_ERROR } = require('../constants/httpStatus');
 const env = require('../config/env');
 const patientCareRepository = require('../repositories/patientCareRepository');
-const { buildPagination } = require('../utils/pagination');
+const { buildPagination, normalizePaginationInput } = require('../utils/pagination');
 
 function createHttpError(message, statusCode, details = null) {
   const error = new Error(message);
@@ -226,8 +226,7 @@ function assertAvatarUploadResult(payload, envConfig, cloudinaryConfig) {
 
 async function listEmergencyContacts({ actor, userId, query }) {
   assertUserScope({ actor, userId });
-  const page = query?.page || 1;
-  const limit = query?.limit || 20;
+  const { page, limit } = normalizePaginationInput(query);
   const offset = (page - 1) * limit;
 
   const result = await patientCareRepository.listEmergencyContacts({
@@ -300,8 +299,7 @@ async function upsertHeartDiary({ actor, userId, payload }) {
 
 async function listHeartDiaries({ actor, userId, query }) {
   assertUserScope({ actor, userId });
-  const page = query?.page || 1;
-  const limit = query?.limit || 20;
+  const { page, limit } = normalizePaginationInput(query);
   const offset = (page - 1) * limit;
 
   const result = await patientCareRepository.listHeartDiaries({
