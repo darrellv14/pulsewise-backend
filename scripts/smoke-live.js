@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ override: true });
 
 const BASE_URL = process.env.SMOKE_BASE_URL || 'http://localhost:5000/api/v1';
 const DOCTOR_EMAIL = process.env.SMOKE_DOCTOR_EMAIL || 'doctor@pulsewise.local';
