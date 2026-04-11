@@ -570,6 +570,17 @@ components:
           format: date
           example: '2026-04-10'
 
+    DailyBodyMetricCreateByDateRequest:
+      allOf:
+        - $ref: '#/components/schemas/DailyBodyMetricCreateRequest'
+        - type: object
+          required: [diaryDate]
+          properties:
+            diaryDate:
+              type: string
+              format: date
+              example: '2026-04-10'
+
     DailyBodyMetricCreateRequest:
       type: object
       minProperties: 1
@@ -628,6 +639,17 @@ components:
           type: string
           format: date-time
 
+    DailySymptomCreateByDateRequest:
+      allOf:
+        - $ref: '#/components/schemas/DailySymptomCreateRequest'
+        - type: object
+          required: [diaryDate]
+          properties:
+            diaryDate:
+              type: string
+              format: date
+              example: '2026-04-10'
+
     DailyActivityCreateRequest:
       type: object
       required: [name]
@@ -658,6 +680,17 @@ components:
           type: string
           format: date-time
 
+    DailyActivityCreateByDateRequest:
+      allOf:
+        - $ref: '#/components/schemas/DailyActivityCreateRequest'
+        - type: object
+          required: [diaryDate]
+          properties:
+            diaryDate:
+              type: string
+              format: date
+              example: '2026-04-10'
+
     DailyConsumptionCreateRequest:
       type: object
       properties:
@@ -680,6 +713,17 @@ components:
         timeStamp:
           type: string
           format: date-time
+
+    DailyConsumptionCreateByDateRequest:
+      allOf:
+        - $ref: '#/components/schemas/DailyConsumptionCreateRequest'
+        - type: object
+          required: [diaryDate]
+          properties:
+            diaryDate:
+              type: string
+              format: date
+              example: '2026-04-10'
 
     HeartDiaryDetail:
       allOf:
@@ -2787,6 +2831,168 @@ paths:
                     properties:
                       data:
                         $ref: '#/components/schemas/HeartDiary'
+
+  /api/v1/users/{userId}/diaries/by-date:
+    get:
+      tags: [Patient Care]
+      summary: Get detailed heart diary record by date
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Detail heart diary berdasarkan tanggal, atau null jika belum ada
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        nullable: true
+                        allOf:
+                          - $ref: '#/components/schemas/HeartDiaryDetail'
+
+  /api/v1/users/{userId}/diaries/by-date/body-metrics:
+    post:
+      tags: [Patient Care]
+      summary: Add daily body metric entry by diary date
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DailyBodyMetricCreateByDateRequest'
+      responses:
+        '201':
+          description: Body metric berhasil ditambahkan
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/DailyBodyMetric'
+
+  /api/v1/users/{userId}/diaries/by-date/symptoms:
+    post:
+      tags: [Patient Care]
+      summary: Add daily symptom entry by diary date
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DailySymptomCreateByDateRequest'
+      responses:
+        '201':
+          description: Symptom berhasil ditambahkan
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/DailySymptom'
+
+  /api/v1/users/{userId}/diaries/by-date/activities:
+    post:
+      tags: [Patient Care]
+      summary: Add daily activity entry by diary date
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DailyActivityCreateByDateRequest'
+      responses:
+        '201':
+          description: Activity berhasil ditambahkan
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/DailyActivity'
+
+  /api/v1/users/{userId}/diaries/by-date/consumptions:
+    post:
+      tags: [Patient Care]
+      summary: Add daily intake entry by diary date
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DailyConsumptionCreateByDateRequest'
+      responses:
+        '201':
+          description: Consumption berhasil ditambahkan
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/DailyConsumption'
 
   /api/v1/users/{userId}/diaries/{diaryId}:
     get:

@@ -941,6 +941,168 @@
           }
         },
         {
+          "name": "GET Heart Diary By Date",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "if (json?.data?.diaryId) { pm.environment.set('diaryId', json.data.diaryId); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{patientToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/users/{{patientId}}/diaries/by-date?date=2026-04-10"
+          }
+        },
+        {
+          "name": "POST Diary Body Metric By Date",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });",
+                  "const json = pm.response.json();",
+                  "if (json?.data?.diaryId) { pm.environment.set('diaryId', json.data.diaryId); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{patientToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"diaryDate\": \"2026-04-10\",\n  \"conditionTag\": \"morning\",\n  \"bodyWeight\": 73.2,\n  \"systolicPressure\": 122,\n  \"diastolicPressure\": 78,\n  \"timeStamp\": \"2026-04-10T07:10:00.000Z\"\n}"
+            },
+            "url": "{{baseUrl}}/users/{{patientId}}/diaries/by-date/body-metrics"
+          }
+        },
+        {
+          "name": "POST Diary Symptom By Date",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });",
+                  "const json = pm.response.json();",
+                  "if (json?.data?.diaryId) { pm.environment.set('diaryId', json.data.diaryId); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{patientToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"diaryDate\": \"2026-04-10\",\n  \"symptomName\": \"Pusing\",\n  \"intensity\": 4,\n  \"note\": \"Muncul setelah bangun tidur\"\n}"
+            },
+            "url": "{{baseUrl}}/users/{{patientId}}/diaries/by-date/symptoms"
+          }
+        },
+        {
+          "name": "POST Diary Activity By Date",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });",
+                  "const json = pm.response.json();",
+                  "if (json?.data?.diaryId) { pm.environment.set('diaryId', json.data.diaryId); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{patientToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"diaryDate\": \"2026-04-10\",\n  \"name\": \"Jalan kaki\",\n  \"duration\": 30,\n  \"heartRate\": 98,\n  \"userFeeling\": \"lebih baik\"\n}"
+            },
+            "url": "{{baseUrl}}/users/{{patientId}}/diaries/by-date/activities"
+          }
+        },
+        {
+          "name": "POST Diary Consumption By Date",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });",
+                  "const json = pm.response.json();",
+                  "if (json?.data?.diaryId) { pm.environment.set('diaryId', json.data.diaryId); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{patientToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"diaryDate\": \"2026-04-10\",\n  \"type\": \"food\",\n  \"name\": \"Oatmeal\",\n  \"portion\": \"1 mangkuk\"\n}"
+            },
+            "url": "{{baseUrl}}/users/{{patientId}}/diaries/by-date/consumptions"
+          }
+        },
+        {
           "name": "GET Heart Diary Detail",
           "request": {
             "method": "GET",

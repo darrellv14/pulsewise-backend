@@ -128,6 +128,21 @@ async function upsertHeartDiary({ userId, diaryDate }) {
   return result.rows[0] || null;
 }
 
+async function getHeartDiaryByDate({ userId, diaryDate }) {
+  const result = await pool.query(
+    `
+      SELECT diary_id, user_id, diary_date, created_at
+      FROM heart_diaries
+      WHERE user_id = $1
+        AND diary_date = $2
+      LIMIT 1
+    `,
+    [userId, diaryDate]
+  );
+
+  return result.rows[0] || null;
+}
+
 async function getHeartDiary({ userId, diaryId }) {
   const result = await pool.query(
     `
@@ -315,6 +330,7 @@ module.exports = {
   updateEmergencyContact,
   deleteEmergencyContact,
   upsertHeartDiary,
+  getHeartDiaryByDate,
   listHeartDiaries,
   getHeartDiary,
   listDailyBodyMetrics,

@@ -102,6 +102,20 @@ async function getHeartDiaryDetail(req, res, next) {
   }
 }
 
+async function getHeartDiaryByDate(req, res, next) {
+  try {
+    const data = await patientCareService.getHeartDiaryByDate({
+      actor: req.user,
+      userId: req.params.userId,
+      diaryDate: req.query.date,
+    });
+
+    return success(res, 'Detail heart diary berdasarkan tanggal berhasil diambil', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
 async function createDailyBodyMetric(req, res, next) {
   try {
     const data = await patientCareService.createDailyBodyMetric({
@@ -112,6 +126,20 @@ async function createDailyBodyMetric(req, res, next) {
     });
 
     return success(res, 'Body metric diary berhasil ditambahkan', data, CREATED);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function createDailyBodyMetricByDate(req, res, next) {
+  try {
+    const data = await patientCareService.createDailyBodyMetricByDate({
+      actor: req.user,
+      userId: req.params.userId,
+      payload: req.body,
+    });
+
+    return success(res, 'Body metric diary berdasarkan tanggal berhasil ditambahkan', data, CREATED);
   } catch (error) {
     return next(error);
   }
@@ -132,6 +160,20 @@ async function createDailySymptom(req, res, next) {
   }
 }
 
+async function createDailySymptomByDate(req, res, next) {
+  try {
+    const data = await patientCareService.createDailySymptomByDate({
+      actor: req.user,
+      userId: req.params.userId,
+      payload: req.body,
+    });
+
+    return success(res, 'Symptom diary berdasarkan tanggal berhasil ditambahkan', data, CREATED);
+  } catch (error) {
+    return next(error);
+  }
+}
+
 async function createDailyActivity(req, res, next) {
   try {
     const data = await patientCareService.createDailyActivity({
@@ -147,6 +189,20 @@ async function createDailyActivity(req, res, next) {
   }
 }
 
+async function createDailyActivityByDate(req, res, next) {
+  try {
+    const data = await patientCareService.createDailyActivityByDate({
+      actor: req.user,
+      userId: req.params.userId,
+      payload: req.body,
+    });
+
+    return success(res, 'Activity diary berdasarkan tanggal berhasil ditambahkan', data, CREATED);
+  } catch (error) {
+    return next(error);
+  }
+}
+
 async function createDailyConsumption(req, res, next) {
   try {
     const data = await patientCareService.createDailyConsumption({
@@ -157,6 +213,20 @@ async function createDailyConsumption(req, res, next) {
     });
 
     return success(res, 'Consumption diary berhasil ditambahkan', data, CREATED);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function createDailyConsumptionByDate(req, res, next) {
+  try {
+    const data = await patientCareService.createDailyConsumptionByDate({
+      actor: req.user,
+      userId: req.params.userId,
+      payload: req.body,
+    });
+
+    return success(res, 'Consumption diary berdasarkan tanggal berhasil ditambahkan', data, CREATED);
   } catch (error) {
     return next(error);
   }
@@ -199,10 +269,15 @@ module.exports = {
   upsertHeartDiary,
   listHeartDiaries,
   getHeartDiaryDetail,
+  getHeartDiaryByDate,
   createDailyBodyMetric,
+  createDailyBodyMetricByDate,
   createDailySymptom,
+  createDailySymptomByDate,
   createDailyActivity,
+  createDailyActivityByDate,
   createDailyConsumption,
+  createDailyConsumptionByDate,
   createAvatarUploadSignature,
   saveAvatarUploadResult,
 };

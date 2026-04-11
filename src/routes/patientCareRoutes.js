@@ -9,11 +9,16 @@ const {
   emergencyContactUpdateSchema,
   diaryParamsSchema,
   heartDiaryCreateSchema,
+  heartDiaryByDateQuerySchema,
   heartDiaryQuerySchema,
   bodyMetricCreateSchema,
+  bodyMetricCreateByDateSchema,
   symptomCreateSchema,
+  symptomCreateByDateSchema,
   activityCreateSchema,
+  activityCreateByDateSchema,
   consumptionCreateSchema,
+  consumptionCreateByDateSchema,
   emergencyContactListQuerySchema,
   avatarSignatureQuerySchema,
   avatarSaveSchema,
@@ -62,6 +67,41 @@ router.post(
   validateRequest(userIdParamSchema, 'params'),
   validateRequest(heartDiaryCreateSchema),
   patientCareController.upsertHeartDiary
+);
+router.get(
+  '/users/:userId/diaries/by-date',
+  authenticate,
+  validateRequest(userIdParamSchema, 'params'),
+  validateRequest(heartDiaryByDateQuerySchema, 'query'),
+  patientCareController.getHeartDiaryByDate
+);
+router.post(
+  '/users/:userId/diaries/by-date/body-metrics',
+  authenticate,
+  validateRequest(userIdParamSchema, 'params'),
+  validateRequest(bodyMetricCreateByDateSchema),
+  patientCareController.createDailyBodyMetricByDate
+);
+router.post(
+  '/users/:userId/diaries/by-date/symptoms',
+  authenticate,
+  validateRequest(userIdParamSchema, 'params'),
+  validateRequest(symptomCreateByDateSchema),
+  patientCareController.createDailySymptomByDate
+);
+router.post(
+  '/users/:userId/diaries/by-date/activities',
+  authenticate,
+  validateRequest(userIdParamSchema, 'params'),
+  validateRequest(activityCreateByDateSchema),
+  patientCareController.createDailyActivityByDate
+);
+router.post(
+  '/users/:userId/diaries/by-date/consumptions',
+  authenticate,
+  validateRequest(userIdParamSchema, 'params'),
+  validateRequest(consumptionCreateByDateSchema),
+  patientCareController.createDailyConsumptionByDate
 );
 router.get(
   '/users/:userId/diaries/:diaryId',

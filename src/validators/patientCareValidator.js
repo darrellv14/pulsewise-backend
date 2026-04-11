@@ -55,6 +55,10 @@ const heartDiaryCreateSchema = z.object({
   diaryDate: dateSchema,
 });
 
+const heartDiaryByDateQuerySchema = z.object({
+  date: dateSchema,
+});
+
 const emergencyContactListQuerySchema = paginationQuerySchema;
 
 const heartDiaryQuerySchema = paginationQuerySchema
@@ -76,15 +80,32 @@ const heartDiaryQuerySchema = paginationQuerySchema
     }
   );
 
-const bodyMetricCreateSchema = z
-  .object({
-    conditionTag: optionalNullableString(64),
-    bodyHeight: z.coerce.number().min(30).max(300).nullable().optional(),
-    bodyWeight: z.coerce.number().min(1).max(500).nullable().optional(),
-    bmi: z.coerce.number().min(1).max(100).nullable().optional(),
-    systolicPressure: z.coerce.number().int().min(50).max(300).nullable().optional(),
-    diastolicPressure: z.coerce.number().int().min(30).max(250).nullable().optional(),
-    timeStamp: dateTimeSchema.optional(),
+const bodyMetricCreateBaseSchema = z.object({
+  conditionTag: optionalNullableString(64),
+  bodyHeight: z.coerce.number().min(30).max(300).nullable().optional(),
+  bodyWeight: z.coerce.number().min(1).max(500).nullable().optional(),
+  bmi: z.coerce.number().min(1).max(100).nullable().optional(),
+  systolicPressure: z.coerce.number().int().min(50).max(300).nullable().optional(),
+  diastolicPressure: z.coerce.number().int().min(30).max(250).nullable().optional(),
+  timeStamp: dateTimeSchema.optional(),
+});
+
+const bodyMetricCreateSchema = bodyMetricCreateBaseSchema.refine(
+    (value) =>
+      value.bodyHeight !== undefined ||
+      value.bodyWeight !== undefined ||
+      value.bmi !== undefined ||
+      value.systolicPressure !== undefined ||
+      value.diastolicPressure !== undefined ||
+      value.conditionTag !== undefined,
+    {
+      message: 'Minimal satu metrik harus diisi',
+    }
+  );
+
+const bodyMetricCreateByDateSchema = bodyMetricCreateBaseSchema
+  .extend({
+    diaryDate: dateSchema,
   })
   .refine(
     (value) =>
@@ -106,6 +127,10 @@ const symptomCreateSchema = z.object({
   timeStamp: dateTimeSchema.optional(),
 });
 
+const symptomCreateByDateSchema = symptomCreateSchema.extend({
+  diaryDate: dateSchema,
+});
+
 const activityCreateSchema = z.object({
   name: z.string().trim().min(1).max(120),
   duration: z.coerce.number().int().min(1).max(1440).nullable().optional(),
@@ -115,12 +140,20 @@ const activityCreateSchema = z.object({
   timeStamp: dateTimeSchema.optional(),
 });
 
+const activityCreateByDateSchema = activityCreateSchema.extend({
+  diaryDate: dateSchema,
+});
+
 const consumptionCreateSchema = z.object({
   type: optionalNullableString(50),
   name: optionalNullableString(120),
   portion: optionalNullableString(80),
   note: optionalNullableString(2000),
   timeStamp: dateTimeSchema.optional(),
+});
+
+const consumptionCreateByDateSchema = consumptionCreateSchema.extend({
+  diaryDate: dateSchema,
 });
 
 const avatarSignatureQuerySchema = z.object({
@@ -151,11 +184,16 @@ module.exports = {
   emergencyContactUpdateSchema,
   diaryParamsSchema,
   heartDiaryCreateSchema,
+  heartDiaryByDateQuerySchema,
   heartDiaryQuerySchema,
   bodyMetricCreateSchema,
+  bodyMetricCreateByDateSchema,
   symptomCreateSchema,
+  symptomCreateByDateSchema,
   activityCreateSchema,
+  activityCreateByDateSchema,
   consumptionCreateSchema,
+  consumptionCreateByDateSchema,
   emergencyContactListQuerySchema,
   avatarSignatureQuerySchema,
   avatarSaveSchema,

@@ -111,6 +111,23 @@ function mapDiary(row) {
   };
 }
 
+async function mapHeartDiaryDetail(row) {
+  const [metrics, symptoms, activities, consumptions] = await Promise.all([
+    patientCareRepository.listDailyBodyMetrics(row.diary_id),
+    patientCareRepository.listDailySymptoms(row.diary_id),
+    patientCareRepository.listDailyActivities(row.diary_id),
+    patientCareRepository.listDailyConsumptions(row.diary_id),
+  ]);
+
+  return {
+    ...mapDiary(row),
+    bodyMetrics: metrics.map(mapBodyMetric),
+    symptoms: symptoms.map(mapSymptom),
+    activities: activities.map(mapActivity),
+    consumptions: consumptions.map(mapConsumption),
+  };
+}
+
 function parseCloudinaryUrl(cloudinaryUrl) {
   if (!cloudinaryUrl) {
     return null;
@@ -324,20 +341,25 @@ async function getHeartDiaryDetail({ actor, userId, diaryId }) {
     throw createHttpError('Heart diary tidak ditemukan', NOT_FOUND);
   }
 
-  const [metrics, symptoms, activities, consumptions] = await Promise.all([
-    patientCareRepository.listDailyBodyMetrics(diaryId),
-    patientCareRepository.listDailySymptoms(diaryId),
-    patientCareRepository.listDailyActivities(diaryId),
-    patientCareRepository.listDailyConsumptions(diaryId),
-  ]);
+  return mapHeartDiaryDetail(diary);
+}
 
-  return {
-    ...mapDiary(diary),
-    bodyMetrics: metrics.map(mapBodyMetric),
-    symptoms: symptoms.map(mapSymptom),
-    activities: activities.map(mapActivity),
-    consumptions: consumptions.map(mapConsumption),
-  };
+async function getHeartDiaryByDate({ actor, userId, diaryDate }) {
+  assertUserScope({ actor, userId });
+
+  const diary = await patientCareRepository.getHeartDiaryByDate({ userId, diaryDate });
+  if (!diary) {
+    return null;
+  }
+
+  return mapHeartDiaryDetail(diary);
+}
+
+async function ensureHeartDiaryByDate({ userId, diaryDate }) {
+  return patientCareRepository.upsertHeartDiary({
+    userId,
+    diaryDate,
+  });
 }
 
 async function createDailyBodyMetric({ actor, userId, diaryId, payload }) {
@@ -350,6 +372,28 @@ async function createDailyBodyMetric({ actor, userId, diaryId, payload }) {
 
   const created = await patientCareRepository.createDailyBodyMetric({
     diaryId,
+    conditionTag: payload.conditionTag || null,
+    bodyHeight: payload.bodyHeight,
+    bodyWeight: payload.bodyWeight,
+    bmi: payload.bmi,
+    systolicPressure: payload.systolicPressure,
+    diastolicPressure: payload.diastolicPressure,
+    timeStamp: payload.timeStamp || null,
+  });
+
+  return mapBodyMetric(created);
+}
+
+async function createDailyBodyMetricByDate({ actor, userId, payload }) {
+  assertUserScope({ actor, userId });
+
+  const diary = await ensureHeartDiaryByDate({
+    userId,
+    diaryDate: payload.diaryDate,
+  });
+
+  const created = await patientCareRepository.createDailyBodyMetric({
+    diaryId: diary.diary_id,
     conditionTag: payload.conditionTag || null,
     bodyHeight: payload.bodyHeight,
     bodyWeight: payload.bodyWeight,
@@ -381,6 +425,25 @@ async function createDailySymptom({ actor, userId, diaryId, payload }) {
   return mapSymptom(created);
 }
 
+async function createDailySymptomByDate({ actor, userId, payload }) {
+  assertUserScope({ actor, userId });
+
+  const diary = await ensureHeartDiaryByDate({
+    userId,
+    diaryDate: payload.diaryDate,
+  });
+
+  const created = await patientCareRepository.createDailySymptom({
+    diaryId: diary.diary_id,
+    symptomName: payload.symptomName,
+    intensity: payload.intensity,
+    note: payload.note || null,
+    timeStamp: payload.timeStamp || null,
+  });
+
+  return mapSymptom(created);
+}
+
 async function createDailyActivity({ actor, userId, diaryId, payload }) {
   assertUserScope({ actor, userId });
 
@@ -402,6 +465,27 @@ async function createDailyActivity({ actor, userId, diaryId, payload }) {
   return mapActivity(created);
 }
 
+async function createDailyActivityByDate({ actor, userId, payload }) {
+  assertUserScope({ actor, userId });
+
+  const diary = await ensureHeartDiaryByDate({
+    userId,
+    diaryDate: payload.diaryDate,
+  });
+
+  const created = await patientCareRepository.createDailyActivity({
+    diaryId: diary.diary_id,
+    name: payload.name,
+    duration: payload.duration,
+    heartRate: payload.heartRate,
+    userFeeling: payload.userFeeling || null,
+    note: payload.note || null,
+    timeStamp: payload.timeStamp || null,
+  });
+
+  return mapActivity(created);
+}
+
 async function createDailyConsumption({ actor, userId, diaryId, payload }) {
   assertUserScope({ actor, userId });
 
@@ -412,6 +496,26 @@ async function createDailyConsumption({ actor, userId, diaryId, payload }) {
 
   const created = await patientCareRepository.createDailyConsumption({
     diaryId,
+    type: payload.type || null,
+    name: payload.name || null,
+    portion: payload.portion || null,
+    note: payload.note || null,
+    timeStamp: payload.timeStamp || null,
+  });
+
+  return mapConsumption(created);
+}
+
+async function createDailyConsumptionByDate({ actor, userId, payload }) {
+  assertUserScope({ actor, userId });
+
+  const diary = await ensureHeartDiaryByDate({
+    userId,
+    diaryDate: payload.diaryDate,
+  });
+
+  const created = await patientCareRepository.createDailyConsumption({
+    diaryId: diary.diary_id,
     type: payload.type || null,
     name: payload.name || null,
     portion: payload.portion || null,
@@ -480,10 +584,15 @@ module.exports = {
   upsertHeartDiary,
   listHeartDiaries,
   getHeartDiaryDetail,
+  getHeartDiaryByDate,
   createDailyBodyMetric,
+  createDailyBodyMetricByDate,
   createDailySymptom,
+  createDailySymptomByDate,
   createDailyActivity,
+  createDailyActivityByDate,
   createDailyConsumption,
+  createDailyConsumptionByDate,
   createAvatarUploadSignature,
   saveAvatarUploadResult,
 };
