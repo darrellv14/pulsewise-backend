@@ -407,6 +407,8 @@ components:
           type: string
         contactNumber:
           type: string
+        isPriority:
+          type: boolean
         createdAt:
           type: string
           format: date-time
@@ -423,6 +425,9 @@ components:
           type: string
           minLength: 3
           maxLength: 50
+        isPriority:
+          type: boolean
+          default: false
 
     EmergencyContactUpdateRequest:
       type: object
@@ -436,6 +441,8 @@ components:
           type: string
           nullable: true
           maxLength: 50
+        isPriority:
+          type: boolean
 
     HeartDiary:
       type: object

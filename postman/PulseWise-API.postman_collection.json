@@ -867,7 +867,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"contactLabel\": \"Ibu\",\n  \"contactNumber\": \"081234567890\"\n}"
+              "raw": "{\n  \"contactLabel\": \"Ibu\",\n  \"contactNumber\": \"081234567890\",\n  \"isPriority\": true\n}"
             },
             "url": "{{baseUrl}}/users/{{patientId}}/emergency-contacts"
           }
@@ -888,7 +888,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"contactLabel\": \"Ayah\"\n}"
+              "raw": "{\n  \"contactLabel\": \"Ayah\",\n  \"isPriority\": false\n}"
             },
             "url": "{{baseUrl}}/users/{{patientId}}/emergency-contacts/{{emergencyContactId}}"
           }

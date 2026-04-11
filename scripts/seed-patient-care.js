@@ -51,10 +51,10 @@ async function seedEmergencyContacts(client, userId) {
 
   await client.query(
     `
-      INSERT INTO emergency_contacts (user_id, contact_label, contact_number)
+      INSERT INTO emergency_contacts (user_id, contact_label, contact_number, is_priority)
       VALUES
-        ($1, 'Ayah', '081200000001'),
-        ($1, 'Ibu', '081200000002')
+        ($1, 'Ayah', '081200000001', FALSE),
+        ($1, 'Ibu', '081200000002', TRUE)
     `,
     [userId]
   );

@@ -4,10 +4,10 @@ async function listEmergencyContacts({ userId, limit, offset }) {
   const [itemsResult, totalResult] = await Promise.all([
     pool.query(
       `
-      SELECT emergency_contact_id, user_id, contact_label, contact_number, created_at
+      SELECT emergency_contact_id, user_id, contact_label, contact_number, is_priority, created_at
       FROM emergency_contacts
       WHERE user_id = $1
-      ORDER BY created_at DESC
+      ORDER BY is_priority DESC, created_at DESC
       LIMIT $2 OFFSET $3
     `,
       [userId, limit, offset]
@@ -71,30 +71,61 @@ async function listHeartDiaries({ userId, startDate, endDate, limit, offset }) {
   };
 }
 
-async function createEmergencyContact({ userId, contactLabel, contactNumber }) {
+async function findPriorityEmergencyContact({ userId, excludeEmergencyContactId = null }) {
+  const values = [userId];
+  let excludeClause = '';
+
+  if (excludeEmergencyContactId) {
+    values.push(excludeEmergencyContactId);
+    excludeClause = `AND emergency_contact_id <> $${values.length}`;
+  }
+
   const result = await pool.query(
     `
-      INSERT INTO emergency_contacts (user_id, contact_label, contact_number)
-      VALUES ($1, $2, $3)
-      RETURNING emergency_contact_id, user_id, contact_label, contact_number, created_at
+      SELECT emergency_contact_id, user_id, contact_label, contact_number, is_priority, created_at
+      FROM emergency_contacts
+      WHERE user_id = $1
+        AND is_priority = TRUE
+        ${excludeClause}
+      LIMIT 1
     `,
-    [userId, contactLabel, contactNumber]
+    values
   );
 
   return result.rows[0] || null;
 }
 
-async function updateEmergencyContact({ userId, emergencyContactId, contactLabel, contactNumber }) {
+async function createEmergencyContact({ userId, contactLabel, contactNumber, isPriority }) {
+  const result = await pool.query(
+    `
+      INSERT INTO emergency_contacts (user_id, contact_label, contact_number, is_priority)
+      VALUES ($1, $2, $3, $4)
+      RETURNING emergency_contact_id, user_id, contact_label, contact_number, is_priority, created_at
+    `,
+    [userId, contactLabel, contactNumber, isPriority]
+  );
+
+  return result.rows[0] || null;
+}
+
+async function updateEmergencyContact({
+  userId,
+  emergencyContactId,
+  contactLabel,
+  contactNumber,
+  isPriority,
+}) {
   const result = await pool.query(
     `
       UPDATE emergency_contacts
       SET contact_label = COALESCE($1, contact_label),
-          contact_number = COALESCE($2, contact_number)
-      WHERE emergency_contact_id = $3
-        AND user_id = $4
-      RETURNING emergency_contact_id, user_id, contact_label, contact_number, created_at
+          contact_number = COALESCE($2, contact_number),
+          is_priority = COALESCE($3, is_priority)
+      WHERE emergency_contact_id = $4
+        AND user_id = $5
+      RETURNING emergency_contact_id, user_id, contact_label, contact_number, is_priority, created_at
     `,
-    [contactLabel, contactNumber, emergencyContactId, userId]
+    [contactLabel, contactNumber, isPriority, emergencyContactId, userId]
   );
 
   return result.rows[0] || null;
@@ -326,6 +357,7 @@ async function updateUserAvatar({ userId, avatarPhoto }) {
 
 module.exports = {
   listEmergencyContacts,
+  findPriorityEmergencyContact,
   createEmergencyContact,
   updateEmergencyContact,
   deleteEmergencyContact,

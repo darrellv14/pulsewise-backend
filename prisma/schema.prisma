@@ -58,6 +58,7 @@ model EmergencyContact {
   userId             String   @map("user_id") @db.Uuid
   contactLabel       String   @map("contact_label") @db.VarChar(100)
   contactNumber      String   @map("contact_number") @db.VarChar(50)
+  isPriority         Boolean  @default(false) @map("is_priority")
   createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   user               User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
 

@@ -35,16 +35,24 @@ const emergencyContactParamsSchema = z.object({
 const emergencyContactCreateSchema = z.object({
   contactLabel: z.string().trim().min(1).max(100),
   contactNumber: z.string().trim().min(3).max(50),
+  isPriority: z.boolean().optional().default(false),
 });
 
 const emergencyContactUpdateSchema = z
   .object({
     contactLabel: optionalNullableString(100),
     contactNumber: optionalNullableString(50),
+    isPriority: z.boolean().optional(),
   })
-  .refine((value) => value.contactLabel !== undefined || value.contactNumber !== undefined, {
-    message: 'Minimal satu field harus diisi',
-  });
+  .refine(
+    (value) =>
+      value.contactLabel !== undefined ||
+      value.contactNumber !== undefined ||
+      value.isPriority !== undefined,
+    {
+      message: 'Minimal satu field harus diisi',
+    }
+  );
 
 const diaryParamsSchema = z.object({
   userId: uuidV4Schema,

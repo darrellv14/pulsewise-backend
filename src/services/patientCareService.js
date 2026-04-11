@@ -1,5 +1,11 @@
 const crypto = require('crypto');
-const { BAD_REQUEST, FORBIDDEN, NOT_FOUND, INTERNAL_SERVER_ERROR } = require('../constants/httpStatus');
+const {
+  BAD_REQUEST,
+  FORBIDDEN,
+  NOT_FOUND,
+  CONFLICT,
+  INTERNAL_SERVER_ERROR,
+} = require('../constants/httpStatus');
 const env = require('../config/env');
 const patientCareRepository = require('../repositories/patientCareRepository');
 const { buildPagination, normalizePaginationInput } = require('../utils/pagination');
@@ -48,8 +54,16 @@ function mapEmergencyContact(row) {
     userId: row.user_id,
     contactLabel: row.contact_label,
     contactNumber: row.contact_number,
+    isPriority: Boolean(row.is_priority),
     createdAt: toIso(row.created_at),
   };
+}
+
+function isEmergencyPriorityConflictError(error) {
+  return (
+    error?.code === '23505' &&
+    String(error?.constraint || '').includes('uq_emergency_contacts_single_priority_per_user')
+  );
 }
 
 function mapBodyMetric(row) {
@@ -260,11 +274,31 @@ async function listEmergencyContacts({ actor, userId, query }) {
 async function createEmergencyContact({ actor, userId, payload }) {
   assertUserScope({ actor, userId });
 
-  const created = await patientCareRepository.createEmergencyContact({
-    userId,
-    contactLabel: payload.contactLabel,
-    contactNumber: payload.contactNumber,
-  });
+  if (payload.isPriority) {
+    const existingPriority = await patientCareRepository.findPriorityEmergencyContact({ userId });
+    if (existingPriority) {
+      throw createHttpError(
+        'Hanya satu emergency contact yang boleh menjadi prioritas',
+        CONFLICT
+      );
+    }
+  }
+
+  let created;
+  try {
+    created = await patientCareRepository.createEmergencyContact({
+      userId,
+      contactLabel: payload.contactLabel,
+      contactNumber: payload.contactNumber,
+      isPriority: payload.isPriority,
+    });
+  } catch (error) {
+    if (isEmergencyPriorityConflictError(error)) {
+      throw createHttpError('Hanya satu emergency contact yang boleh menjadi prioritas', CONFLICT);
+    }
+
+    throw error;
+  }
 
   return mapEmergencyContact(created);
 }
@@ -272,12 +306,35 @@ async function createEmergencyContact({ actor, userId, payload }) {
 async function updateEmergencyContact({ actor, userId, emergencyContactId, payload }) {
   assertUserScope({ actor, userId });
 
-  const updated = await patientCareRepository.updateEmergencyContact({
-    userId,
-    emergencyContactId,
-    contactLabel: payload.contactLabel !== undefined ? payload.contactLabel : null,
-    contactNumber: payload.contactNumber !== undefined ? payload.contactNumber : null,
-  });
+  if (payload.isPriority) {
+    const existingPriority = await patientCareRepository.findPriorityEmergencyContact({
+      userId,
+      excludeEmergencyContactId: emergencyContactId,
+    });
+    if (existingPriority) {
+      throw createHttpError(
+        'Hanya satu emergency contact yang boleh menjadi prioritas',
+        CONFLICT
+      );
+    }
+  }
+
+  let updated;
+  try {
+    updated = await patientCareRepository.updateEmergencyContact({
+      userId,
+      emergencyContactId,
+      contactLabel: payload.contactLabel !== undefined ? payload.contactLabel : null,
+      contactNumber: payload.contactNumber !== undefined ? payload.contactNumber : null,
+      isPriority: payload.isPriority !== undefined ? payload.isPriority : null,
+    });
+  } catch (error) {
+    if (isEmergencyPriorityConflictError(error)) {
+      throw createHttpError('Hanya satu emergency contact yang boleh menjadi prioritas', CONFLICT);
+    }
+
+    throw error;
+  }
 
   if (!updated) {
     throw createHttpError('Emergency contact tidak ditemukan', NOT_FOUND);
