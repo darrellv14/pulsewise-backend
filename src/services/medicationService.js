@@ -1,5 +1,5 @@
 const prisma = require('../config/prisma');
-const { FORBIDDEN, NOT_FOUND, CONFLICT } = require('../constants/httpStatus');
+const { BAD_REQUEST, FORBIDDEN, NOT_FOUND, CONFLICT } = require('../constants/httpStatus');
 const { buildPagination, normalizePaginationInput } = require('../utils/pagination');
 
 function createHttpError(message, statusCode, details = null) {
@@ -41,12 +41,131 @@ function formatTimeValue(timeValue) {
   return `${hours}:${minutes}`;
 }
 
+function toNullableNumber(value) {
+  if (value === undefined || value === null) {
+    return null;
+  }
+
+  return Number(value);
+}
+
+function uniqueSortedStrings(values) {
+  return [...new Set(values)].sort((left, right) => left.localeCompare(right));
+}
+
+function uniqueSortedNumbers(values) {
+  return [...new Set(values)].sort((left, right) => left - right);
+}
+
+function extractIntakeTimes(reminders) {
+  return uniqueSortedStrings(
+    (reminders || []).map((reminder) => formatTimeValue(reminder.scheduleTime)).filter(Boolean)
+  );
+}
+
+function extractDaysOfWeek(reminders) {
+  const days = (reminders || [])
+    .map((reminder) => reminder.dayOfWeek)
+    .filter((day) => day !== undefined && day !== null);
+
+  return uniqueSortedNumbers(days);
+}
+
+function buildReminderEntries({ frequency, intakeTimes, daysOfWeek }) {
+  if (frequency === 'daily') {
+    return intakeTimes.map((time) => ({
+      scheduleTime: toPrismaTime(time),
+      dayOfWeek: null,
+    }));
+  }
+
+  const entries = [];
+  for (const dayOfWeek of daysOfWeek) {
+    for (const time of intakeTimes) {
+      entries.push({
+        scheduleTime: toPrismaTime(time),
+        dayOfWeek,
+      });
+    }
+  }
+
+  return entries;
+}
+
+function validateMedicationScheduleState({ frequency, intakeTimes, numOfDays, daysOfWeek }) {
+  if (!frequency) {
+    throw createHttpError('frequency medication wajib diisi', BAD_REQUEST);
+  }
+
+  if (!Array.isArray(intakeTimes) || intakeTimes.length === 0) {
+    throw createHttpError('Minimal satu intakeTimes wajib diisi', BAD_REQUEST);
+  }
+
+  if (frequency === 'daily') {
+    if (!Number.isInteger(numOfDays) || numOfDays < 1 || numOfDays > 10) {
+      throw createHttpError('Medication daily wajib memakai numOfDays antara 1 sampai 10', BAD_REQUEST);
+    }
+
+    if (daysOfWeek && daysOfWeek.length > 0) {
+      throw createHttpError('Medication daily tidak boleh memakai daysOfWeek', BAD_REQUEST);
+    }
+
+    return {
+      frequency,
+      numOfDays,
+      daysOfWeek: [],
+      intakeTimes: uniqueSortedStrings(intakeTimes),
+    };
+  }
+
+  if (frequency === 'weekly') {
+    if (!Array.isArray(daysOfWeek) || daysOfWeek.length === 0) {
+      throw createHttpError('Medication weekly wajib memakai minimal satu daysOfWeek', BAD_REQUEST);
+    }
+
+    if (numOfDays !== undefined && numOfDays !== null) {
+      throw createHttpError('Medication weekly tidak memakai numOfDays', BAD_REQUEST);
+    }
+
+    return {
+      frequency,
+      numOfDays: null,
+      daysOfWeek: uniqueSortedNumbers(daysOfWeek),
+      intakeTimes: uniqueSortedStrings(intakeTimes),
+    };
+  }
+
+  throw createHttpError('frequency medication tidak valid', BAD_REQUEST);
+}
+
+function hasMedicationSchedulePayload(payload) {
+  return (
+    payload.frequency !== undefined ||
+    payload.intakeTimes !== undefined ||
+    payload.daysOfWeek !== undefined ||
+    payload.numOfDays !== undefined
+  );
+}
+
+function assertReminderCompatibleWithMedication(medication, dayOfWeek) {
+  const normalizedDayOfWeek = dayOfWeek ?? null;
+
+  if (medication.frequency === 'daily' && normalizedDayOfWeek !== null) {
+    throw createHttpError('Reminder medication daily tidak boleh memakai dayOfWeek', BAD_REQUEST);
+  }
+
+  if (medication.frequency === 'weekly' && normalizedDayOfWeek === null) {
+    throw createHttpError('Reminder medication weekly wajib memakai dayOfWeek', BAD_REQUEST);
+  }
+}
+
 function toReminderDto(reminder) {
   return {
     reminderId: reminder.reminderId,
     userId: reminder.userId,
     medicationId: reminder.medicationId,
     scheduleTime: formatTimeValue(reminder.scheduleTime),
+    dayOfWeek: reminder.dayOfWeek ?? null,
     createdAt: reminder.createdAt.toISOString(),
   };
 }
@@ -90,6 +209,16 @@ function toMedicationDto(medication) {
     name: medication.name,
     description: medication.description,
     conditionTag: medication.conditionTag,
+    form: medication.form || null,
+    color: medication.color || null,
+    singleDose: toNullableNumber(medication.singleDose),
+    singleDoseUnit: medication.singleDoseUnit || null,
+    startDate: toDateOnlyValue(medication.startDate),
+    frequency: medication.frequency,
+    numOfDays: medication.numOfDays ?? null,
+    daysOfWeek: medication.frequency === 'weekly' ? extractDaysOfWeek(medication.reminders) : [],
+    intakeTimes: extractIntakeTimes(medication.reminders),
+    note: medication.note || null,
     createdAt: medication.createdAt.toISOString(),
     reminders: (medication.reminders || []).map(toReminderDto),
   };
@@ -130,13 +259,14 @@ async function ensureMedicationOwnership(tx, { medicationId, userId }) {
 
 async function assertNoDuplicateReminderTime(
   tx,
-  { userId, medicationId, scheduleTime, excludeReminderId }
+  { userId, medicationId, scheduleTime, dayOfWeek, excludeReminderId }
 ) {
   const duplicated = await tx.reminder.findFirst({
     where: {
       userId,
       medicationId,
       scheduleTime,
+      dayOfWeek: dayOfWeek ?? null,
       reminderId: excludeReminderId
         ? {
             not: excludeReminderId,
@@ -162,9 +292,7 @@ async function listMedications({ actor, userId, query }) {
       },
       include: {
         reminders: {
-          orderBy: {
-            scheduleTime: 'asc',
-          },
+          orderBy: [{ dayOfWeek: 'asc' }, { scheduleTime: 'asc' }],
         },
       },
       orderBy: {
@@ -196,9 +324,7 @@ async function getMedicationById({ actor, userId, medicationId }) {
     },
     include: {
       reminders: {
-        orderBy: {
-          scheduleTime: 'asc',
-        },
+        orderBy: [{ dayOfWeek: 'asc' }, { scheduleTime: 'asc' }],
       },
     },
   });
@@ -213,7 +339,13 @@ async function getMedicationById({ actor, userId, medicationId }) {
 async function createMedication({ actor, userId, payload }) {
   assertPatientScope({ actor, userId });
 
-  const remindersPayload = payload.reminders || [];
+  const scheduleState = validateMedicationScheduleState({
+    frequency: payload.frequency,
+    intakeTimes: payload.intakeTimes,
+    daysOfWeek: payload.daysOfWeek,
+    numOfDays: payload.numOfDays,
+  });
+  const remindersPayload = buildReminderEntries(scheduleState);
 
   const medication = await prisma.$transaction(async (tx) => {
     const createdMedication = await tx.medication.create({
@@ -222,23 +354,24 @@ async function createMedication({ actor, userId, payload }) {
         name: payload.name.trim(),
         description: normalizeNullableText(payload.description),
         conditionTag: normalizeNullableText(payload.conditionTag),
+        form: normalizeNullableText(payload.form),
+        color: normalizeNullableText(payload.color),
+        singleDose: payload.singleDose ?? null,
+        singleDoseUnit: normalizeNullableText(payload.singleDoseUnit),
+        startDate: toPrismaDate(payload.startDate),
+        frequency: scheduleState.frequency,
+        numOfDays: scheduleState.numOfDays,
+        note: normalizeNullableText(payload.note),
       },
     });
 
     if (remindersPayload.length > 0) {
-      for (const reminderPayload of remindersPayload) {
-        await assertNoDuplicateReminderTime(tx, {
-          userId,
-          medicationId: createdMedication.medicationId,
-          scheduleTime: toPrismaTime(reminderPayload.scheduleTime),
-        });
-      }
-
       await tx.reminder.createMany({
         data: remindersPayload.map((reminderPayload) => ({
           userId,
           medicationId: createdMedication.medicationId,
-          scheduleTime: toPrismaTime(reminderPayload.scheduleTime),
+          scheduleTime: reminderPayload.scheduleTime,
+          dayOfWeek: reminderPayload.dayOfWeek,
         })),
       });
     }
@@ -249,9 +382,7 @@ async function createMedication({ actor, userId, payload }) {
       },
       include: {
         reminders: {
-          orderBy: {
-            scheduleTime: 'asc',
-          },
+          orderBy: [{ dayOfWeek: 'asc' }, { scheduleTime: 'asc' }],
         },
       },
     });
@@ -264,9 +395,24 @@ async function updateMedication({ actor, userId, medicationId, payload }) {
   assertPatientScope({ actor, userId });
 
   const medication = await prisma.$transaction(async (tx) => {
-    await ensureMedicationOwnership(tx, { medicationId, userId });
+    const currentMedication = await tx.medication.findFirst({
+      where: {
+        medicationId,
+        userId,
+      },
+      include: {
+        reminders: {
+          orderBy: [{ dayOfWeek: 'asc' }, { scheduleTime: 'asc' }],
+        },
+      },
+    });
+
+    if (!currentMedication) {
+      throw createHttpError('Medication tidak ditemukan', NOT_FOUND);
+    }
 
     const medicationData = {};
+    const scheduleTouched = hasMedicationSchedulePayload(payload);
 
     if (payload.name !== undefined) {
       medicationData.name = payload.name.trim();
@@ -280,6 +426,70 @@ async function updateMedication({ actor, userId, medicationId, payload }) {
       medicationData.conditionTag = normalizeNullableText(payload.conditionTag);
     }
 
+    if (payload.form !== undefined) {
+      medicationData.form = normalizeNullableText(payload.form);
+    }
+
+    if (payload.color !== undefined) {
+      medicationData.color = normalizeNullableText(payload.color);
+    }
+
+    if (payload.singleDose !== undefined) {
+      medicationData.singleDose = payload.singleDose;
+    }
+
+    if (payload.singleDoseUnit !== undefined) {
+      medicationData.singleDoseUnit = normalizeNullableText(payload.singleDoseUnit);
+    }
+
+    if (payload.startDate !== undefined) {
+      medicationData.startDate = toPrismaDate(payload.startDate);
+    }
+
+    if (payload.note !== undefined) {
+      medicationData.note = normalizeNullableText(payload.note);
+    }
+
+    if (scheduleTouched) {
+      const nextScheduleState = validateMedicationScheduleState({
+        frequency: payload.frequency !== undefined ? payload.frequency : currentMedication.frequency,
+        intakeTimes:
+          payload.intakeTimes !== undefined
+            ? payload.intakeTimes
+            : extractIntakeTimes(currentMedication.reminders),
+        daysOfWeek:
+          payload.daysOfWeek !== undefined
+            ? payload.daysOfWeek
+            : currentMedication.frequency === 'weekly'
+              ? extractDaysOfWeek(currentMedication.reminders)
+              : undefined,
+        numOfDays:
+          payload.numOfDays !== undefined ? payload.numOfDays : currentMedication.numOfDays,
+      });
+
+      medicationData.frequency = nextScheduleState.frequency;
+      medicationData.numOfDays = nextScheduleState.numOfDays;
+
+      await tx.reminder.deleteMany({
+        where: {
+          userId,
+          medicationId,
+        },
+      });
+
+      const reminderEntries = buildReminderEntries(nextScheduleState);
+      if (reminderEntries.length > 0) {
+        await tx.reminder.createMany({
+          data: reminderEntries.map((entry) => ({
+            userId,
+            medicationId,
+            scheduleTime: entry.scheduleTime,
+            dayOfWeek: entry.dayOfWeek,
+          })),
+        });
+      }
+    }
+
     if (Object.keys(medicationData).length > 0) {
       await tx.medication.update({
         where: {
@@ -289,46 +499,13 @@ async function updateMedication({ actor, userId, medicationId, payload }) {
       });
     }
 
-    if (payload.reminders !== undefined) {
-      const remindersPayload = payload.reminders;
-
-      if (remindersPayload.length > 0) {
-        for (const reminderPayload of remindersPayload) {
-          await assertNoDuplicateReminderTime(tx, {
-            userId,
-            medicationId,
-            scheduleTime: toPrismaTime(reminderPayload.scheduleTime),
-          });
-        }
-      }
-
-      await tx.reminder.deleteMany({
-        where: {
-          userId,
-          medicationId,
-        },
-      });
-
-      if (remindersPayload.length > 0) {
-        await tx.reminder.createMany({
-          data: remindersPayload.map((reminderPayload) => ({
-            userId,
-            medicationId,
-            scheduleTime: toPrismaTime(reminderPayload.scheduleTime),
-          })),
-        });
-      }
-    }
-
     return tx.medication.findUnique({
       where: {
         medicationId,
       },
       include: {
         reminders: {
-          orderBy: {
-            scheduleTime: 'asc',
-          },
+          orderBy: [{ dayOfWeek: 'asc' }, { scheduleTime: 'asc' }],
         },
       },
     });
@@ -373,9 +550,7 @@ async function listRemindersByMedication({ actor, userId, medicationId, query })
   const [reminders, totalItems] = await Promise.all([
     prisma.reminder.findMany({
       where,
-      orderBy: {
-        scheduleTime: 'asc',
-      },
+      orderBy: [{ dayOfWeek: 'asc' }, { scheduleTime: 'asc' }],
       skip,
       take: limit,
     }),
@@ -394,13 +569,16 @@ async function createReminder({ actor, userId, medicationId, payload }) {
   assertPatientScope({ actor, userId });
 
   const reminder = await prisma.$transaction(async (tx) => {
-    await ensureMedicationOwnership(tx, { medicationId, userId });
+    const medication = await ensureMedicationOwnership(tx, { medicationId, userId });
+    const dayOfWeek = payload.dayOfWeek ?? null;
 
+    assertReminderCompatibleWithMedication(medication, dayOfWeek);
     const scheduleTime = toPrismaTime(payload.scheduleTime);
     await assertNoDuplicateReminderTime(tx, {
       userId,
       medicationId,
       scheduleTime,
+      dayOfWeek,
     });
 
     return tx.reminder.create({
@@ -408,6 +586,7 @@ async function createReminder({ actor, userId, medicationId, payload }) {
         userId,
         medicationId,
         scheduleTime,
+        dayOfWeek,
       },
     });
   });
@@ -430,11 +609,19 @@ async function updateReminder({ actor, userId, reminderId, payload }) {
       throw createHttpError('Reminder tidak ditemukan', NOT_FOUND);
     }
 
+    const medication = await ensureMedicationOwnership(tx, {
+      medicationId: currentReminder.medicationId,
+      userId,
+    });
+    const dayOfWeek = payload.dayOfWeek !== undefined ? payload.dayOfWeek : currentReminder.dayOfWeek;
+
+    assertReminderCompatibleWithMedication(medication, dayOfWeek);
     const scheduleTime = toPrismaTime(payload.scheduleTime);
     await assertNoDuplicateReminderTime(tx, {
       userId,
       medicationId: currentReminder.medicationId,
       scheduleTime,
+      dayOfWeek,
       excludeReminderId: reminderId,
     });
 
@@ -444,6 +631,7 @@ async function updateReminder({ actor, userId, reminderId, payload }) {
       },
       data: {
         scheduleTime,
+        dayOfWeek,
       },
     });
   });

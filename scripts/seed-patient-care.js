@@ -134,8 +134,21 @@ async function seedMedicationLogs(client, userId) {
   if (!medicationId) {
     const created = await client.query(
       `
-        INSERT INTO medications (user_id, name, description, condition_tag)
-        VALUES ($1, 'Aspirin', 'Seed patient care', 'heart')
+        INSERT INTO medications (
+          user_id,
+          name,
+          description,
+          condition_tag,
+          form,
+          color,
+          single_dose,
+          single_dose_unit,
+          start_date,
+          frequency,
+          num_of_days,
+          note
+        )
+        VALUES ($1, 'Aspirin', 'Seed patient care', 'heart', 'tablet', 'white', 1, 'tablet', CURRENT_DATE, 'daily', 7, 'Setelah makan')
         RETURNING medication_id
       `,
       [userId]
@@ -143,6 +156,38 @@ async function seedMedicationLogs(client, userId) {
 
     medicationId = created.rows[0].medication_id;
   }
+
+  await client.query(
+    `
+      UPDATE medications
+      SET
+        form = 'tablet',
+        color = 'white',
+        single_dose = 1,
+        single_dose_unit = 'tablet',
+        start_date = COALESCE(start_date, CURRENT_DATE),
+        frequency = 'daily',
+        num_of_days = 7,
+        note = 'Setelah makan'
+      WHERE medication_id = $1
+    `,
+    [medicationId]
+  );
+
+  await client.query('DELETE FROM medication_schedules WHERE user_id = $1 AND medication_id = $2', [
+    userId,
+    medicationId,
+  ]);
+
+  await client.query(
+    `
+      INSERT INTO medication_schedules (user_id, medication_id, schedule_time, day_of_week)
+      VALUES
+        ($1, $2, '08:00', NULL),
+        ($1, $2, '20:00', NULL)
+    `,
+    [userId, medicationId]
+  );
 
   await client.query('DELETE FROM medication_logs WHERE user_id = $1 AND medication_id = $2', [
     userId,

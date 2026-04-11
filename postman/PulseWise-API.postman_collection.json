@@ -269,7 +269,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"dateOfBirth\": \"1999-12-30\",\n  \"sex\": \"male\",\n  \"heightCm\": 172.5,\n  \"isSmoking\": false,\n  \"isElectricSmoking\": false,\n  \"bloodType\": \"O+\",\n  \"address\": \"Jalan Sukamaju No. 88, Surabaya\"\n}"
+              "raw": "{\n  \"dateOfBirth\": \"2001-09-11\",\n  \"sex\": \"male\",\n  \"heightCm\": 172.5,\n  \"isSmoking\": false,\n  \"isElectricSmoking\": false,\n  \"bloodType\": \"O+\",\n  \"address\": \"WTC NYC\"\n}"
             },
             "url": "{{baseUrl}}/patients/{{patientId}}/profile"
           }
@@ -657,7 +657,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Aspirin\",\n  \"description\": \"Obat harian\",\n  \"conditionTag\": \"heart\",\n  \"reminders\": [\n    {\n      \"scheduleTime\": \"08:00\"\n    },\n    {\n      \"scheduleTime\": \"20:00\"\n    }\n  ]\n}"
+              "raw": "{\n  \"name\": \"Aspirin\",\n  \"form\": \"tablet\",\n  \"color\": \"white\",\n  \"singleDose\": 1,\n  \"singleDoseUnit\": \"tablet\",\n  \"startDate\": \"2026-04-11\",\n  \"frequency\": \"daily\",\n  \"numOfDays\": 7,\n  \"intakeTimes\": [\"08:00\", \"20:00\"],\n  \"note\": \"Setelah makan\"\n}"
             },
             "url": "{{baseUrl}}/users/{{patientId}}/medications"
           }
@@ -691,7 +691,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"description\": \"Obat rutin setelah sarapan\",\n  \"reminders\": [\n    {\n      \"scheduleTime\": \"09:00\"\n    },\n    {\n      \"scheduleTime\": \"21:00\"\n    }\n  ]\n}"
+              "raw": "{\n  \"form\": \"capsule\",\n  \"color\": \"red\",\n  \"singleDose\": 2,\n  \"singleDoseUnit\": \"capsule\",\n  \"startDate\": \"2026-04-11\",\n  \"frequency\": \"weekly\",\n  \"daysOfWeek\": [1, 3, 5],\n  \"intakeTimes\": [\"08:00\"],\n  \"note\": null\n}"
             },
             "url": "{{baseUrl}}/users/{{patientId}}/medications/{{medicationId}}"
           }
@@ -738,7 +738,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"scheduleTime\": \"13:30\"\n}"
+              "raw": "{\n  \"scheduleTime\": \"13:30\",\n  \"dayOfWeek\": 1\n}"
             },
             "url": "{{baseUrl}}/users/{{patientId}}/medications/{{medicationId}}/reminders"
           }
@@ -759,7 +759,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"scheduleTime\": \"14:00\"\n}"
+              "raw": "{\n  \"scheduleTime\": \"14:00\",\n  \"dayOfWeek\": 3\n}"
             },
             "url": "{{baseUrl}}/users/{{patientId}}/reminders/{{reminderId}}"
           }

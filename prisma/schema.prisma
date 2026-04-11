@@ -141,14 +141,22 @@ model DailyConsumption {
 }
 
 model Medication {
-  medicationId  String          @id @default(dbgenerated("gen_random_uuid()")) @map("medication_id") @db.Uuid
-  userId        String          @map("user_id") @db.Uuid
-  name          String          @db.VarChar(120)
-  description   String?
-  conditionTag  String?         @map("condition_tag") @db.VarChar(64)
-  createdAt     DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
-  user          User            @relation(fields: [userId], references: [userId], onDelete: Cascade)
-  reminders     Reminder[]
+  medicationId   String          @id @default(dbgenerated("gen_random_uuid()")) @map("medication_id") @db.Uuid
+  userId         String          @map("user_id") @db.Uuid
+  name           String          @db.VarChar(120)
+  description    String?
+  conditionTag   String?         @map("condition_tag") @db.VarChar(64)
+  form           String?         @db.VarChar(50)
+  color          String?         @db.VarChar(50)
+  singleDose     Decimal?        @map("single_dose") @db.Decimal(10, 2)
+  singleDoseUnit String?         @map("single_dose_unit") @db.VarChar(32)
+  startDate      DateTime?       @map("start_date") @db.Date
+  frequency      String          @default("daily") @db.VarChar(16)
+  numOfDays      Int?            @map("num_of_days") @db.SmallInt
+  note           String?
+  createdAt      DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  user           User            @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  reminders      Reminder[]
   medicationLogs MedicationLog[]
 
   @@index([userId], map: "idx_medications_user")
@@ -156,13 +164,14 @@ model Medication {
 }
 
 model Reminder {
-  reminderId    String     @id @default(dbgenerated("gen_random_uuid()")) @map("schedule_id") @db.Uuid
-  userId        String     @map("user_id") @db.Uuid
-  medicationId  String     @map("medication_id") @db.Uuid
-  scheduleTime  DateTime   @map("schedule_time") @db.Time(6)
-  createdAt     DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
-  user          User       @relation(fields: [userId], references: [userId], onDelete: Cascade)
-  medication    Medication @relation(fields: [medicationId], references: [medicationId], onDelete: Cascade)
+  reminderId   String     @id @default(dbgenerated("gen_random_uuid()")) @map("schedule_id") @db.Uuid
+  userId       String     @map("user_id") @db.Uuid
+  medicationId String     @map("medication_id") @db.Uuid
+  scheduleTime DateTime   @map("schedule_time") @db.Time(6)
+  dayOfWeek    Int?       @map("day_of_week") @db.SmallInt
+  createdAt    DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
+  user         User       @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  medication   Medication @relation(fields: [medicationId], references: [medicationId], onDelete: Cascade)
 
   @@index([userId, medicationId], map: "idx_medication_schedules_user_medication")
   @@map("medication_schedules")

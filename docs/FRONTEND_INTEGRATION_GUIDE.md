@@ -16,6 +16,23 @@ Dokumen ini merangkum endpoint yang perlu dipakai frontend (mobile + web) supaya
 - GET /api/v1/doctors/{doctorId}/profile
 - PUT /api/v1/doctors/{doctorId}/profile
 
+Catatan onboarding patient:
+- UI onboarding boleh dibuat 1 flow.
+- Proses backend tetap dipecah jadi 2 call:
+  1. `POST /api/v1/auth/register`
+  2. `PUT /api/v1/patients/{patientId}/profile`
+- `PUT /api/v1/patients/{patientId}/profile` gunakan field English yang canonical berikut:
+
+```json
+{
+  "dateOfBirth": "2001-09-11",
+  "sex": "male",
+  "address": "WTC NYC",
+  "bloodType": "O+",
+  "heightCm": 172.5
+}
+```
+
 ### Relasi Dokter-Pasien (Primary)
 
 - POST /api/v1/doctors/{doctorId}/patients/link-by-patient-id

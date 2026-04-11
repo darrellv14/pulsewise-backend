@@ -275,6 +275,9 @@ components:
     PatientProfileUpdateRequest:
       type: object
       minProperties: 1
+      description: >
+        Dipakai sebagai proses kedua setelah register/login berhasil pada flow onboarding patient.
+        Gunakan field English yang canonical agar kontrak FE dan BE tetap sederhana.
       properties:
         dateOfBirth:
           type: string
@@ -321,6 +324,42 @@ components:
         conditionTag:
           type: string
           nullable: true
+        form:
+          type: string
+          nullable: true
+        color:
+          type: string
+          nullable: true
+        singleDose:
+          type: number
+          nullable: true
+        singleDoseUnit:
+          type: string
+          nullable: true
+        startDate:
+          type: string
+          format: date
+          nullable: true
+        frequency:
+          type: string
+          enum: [daily, weekly]
+        numOfDays:
+          type: integer
+          nullable: true
+        daysOfWeek:
+          type: array
+          items:
+            type: integer
+            minimum: 1
+            maximum: 7
+        intakeTimes:
+          type: array
+          items:
+            type: string
+            pattern: '^([01]\\d|2[0-3]):([0-5]\\d)$'
+        note:
+          type: string
+          nullable: true
         createdAt:
           type: string
           format: date-time
@@ -344,6 +383,11 @@ components:
         scheduleTime:
           type: string
           example: '08:00'
+        dayOfWeek:
+          type: integer
+          nullable: true
+          minimum: 1
+          maximum: 7
         createdAt:
           type: string
           format: date-time
@@ -356,6 +400,11 @@ components:
           type: string
           pattern: '^([01]\\d|2[0-3]):([0-5]\\d)$'
           example: '08:00'
+        dayOfWeek:
+          type: integer
+          nullable: true
+          minimum: 1
+          maximum: 7
 
     MedicationLog:
       type: object
@@ -820,7 +869,7 @@ components:
 
     MedicationCreateRequest:
       type: object
-      required: [name]
+      required: [name, startDate, frequency, intakeTimes]
       properties:
         name:
           type: string
@@ -832,11 +881,48 @@ components:
         conditionTag:
           type: string
           nullable: true
-        reminders:
+        form:
+          type: string
+          nullable: true
+          maxLength: 50
+        color:
+          type: string
+          nullable: true
+          maxLength: 50
+        singleDose:
+          type: number
+          nullable: true
+        singleDoseUnit:
+          type: string
+          nullable: true
+          maxLength: 32
+        startDate:
+          type: string
+          format: date
+        frequency:
+          type: string
+          enum: [daily, weekly]
+        numOfDays:
+          type: integer
+          nullable: true
+          minimum: 1
+          maximum: 10
+        daysOfWeek:
           type: array
+          items:
+            type: integer
+            minimum: 1
+            maximum: 7
+        intakeTimes:
+          type: array
+          minItems: 1
           maxItems: 24
           items:
-            $ref: '#/components/schemas/ReminderInput'
+            type: string
+            pattern: '^([01]\\d|2[0-3]):([0-5]\\d)$'
+        note:
+          type: string
+          nullable: true
 
     MedicationUpdateRequest:
       type: object
@@ -852,11 +938,48 @@ components:
         conditionTag:
           type: string
           nullable: true
-        reminders:
+        form:
+          type: string
+          nullable: true
+          maxLength: 50
+        color:
+          type: string
+          nullable: true
+          maxLength: 50
+        singleDose:
+          type: number
+          nullable: true
+        singleDoseUnit:
+          type: string
+          nullable: true
+          maxLength: 32
+        startDate:
+          type: string
+          format: date
+        frequency:
+          type: string
+          enum: [daily, weekly]
+        numOfDays:
+          type: integer
+          nullable: true
+          minimum: 1
+          maximum: 10
+        daysOfWeek:
           type: array
+          items:
+            type: integer
+            minimum: 1
+            maximum: 7
+        intakeTimes:
+          type: array
+          minItems: 1
           maxItems: 24
           items:
-            $ref: '#/components/schemas/ReminderInput'
+            type: string
+            pattern: '^([01]\\d|2[0-3]):([0-5]\\d)$'
+        note:
+          type: string
+          nullable: true
 
     DoctorProfileUpdateRequest:
       type: object
@@ -1700,6 +1823,10 @@ paths:
     put:
       tags: [Patients]
       summary: Update patient profile (Phase 2 target)
+      description: >
+        Untuk onboarding patient, FE bisa tetap memakai satu flow UI. Setelah register/login
+        berhasil, kirim biodata ke endpoint ini sebagai proses kedua. Payload memakai field
+        English yang canonical: `dateOfBirth`, `sex`, `heightCm`, `bloodType`, dan `address`.
       security:
         - BearerAuth: []
       parameters:

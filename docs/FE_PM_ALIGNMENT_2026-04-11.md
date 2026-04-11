@@ -80,31 +80,18 @@ Flow yang disarankan:
 2. email verification / login
 3. `PUT /api/v1/patients/{patientId}/profile`
 
-## Yang Perlu Redesign Sebelum Dikerjakan
+Catatan implementasi FE:
+- boleh tetap 1 layar onboarding
+- saat submit, FE cukup pecah jadi 2 request berurutan
+- payload dan response profile tetap memakai field English yang canonical (`dateOfBirth`, `sex`, `heightCm`, `bloodType`, `address`)
+
+## Yang Sudah Dieksekusi Lanjutan
 
 ### 3. Medication V2
 
-Request FE valid dari sisi produk, tetapi model medication yang sekarang belum cukup untuk menampung:
-- bentuk obat
-- warna
-- single dose
-- single dose unit
-- start date
-- frequency harian/mingguan
-- durasi hari
-- pilihan hari mingguan
-- intake times
-- catatan
+Medication sudah dipindahkan ke kontrak V2 untuk `POST/GET/PUT /api/v1/users/{userId}/medications`.
 
-Kontrak medication sekarang masih sederhana:
-- `name`
-- `description`
-- `conditionTag`
-- `reminders`
-
-Karena itu medication tidak disarankan diubah dengan sekadar menambah field ke endpoint existing tanpa desain ulang.
-
-### Usulan Kontrak Medication V2
+Kontrak V2 yang dipakai:
 
 ```json
 {
@@ -139,11 +126,13 @@ Contoh weekly:
 
 Catatan desain:
 - `daysOfWeek` lebih disarankan sebagai array integer daripada object `senin: true`
+- mapping `daysOfWeek` yang dipakai: `1=Monday`, `2=Tuesday`, `3=Wednesday`, `4=Thursday`, `5=Friday`, `6=Saturday`, `7=Sunday`
 - `intakeTimes` lebih bersih jika dipisah dari medication utama sebagai schedule entries
 - `singleDoseUnit` lebih aman jika dibatasi ke enum ringan
+- endpoint reminder tetap tersedia sebagai low-level schedule API, dan sekarang juga mendukung `dayOfWeek`
 
 ## Prioritas Implementasi
 
 1. Emergency contact priority: quick win, sudah dikerjakan
 2. Patient profile onboarding: sudah tersedia, FE cukup pakai endpoint profile existing
-3. Medication V2: perlu alignment produk + redesign schema + migration
+3. Medication V2: sudah diimplementasikan dengan kontrak daily/weekly

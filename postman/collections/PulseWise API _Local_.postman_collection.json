@@ -3361,7 +3361,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Aspirin\",\n  \"description\": \"Obat harian\",\n  \"conditionTag\": \"heart\",\n  \"reminders\": [\n    {\n      \"scheduleTime\": \"08:00\"\n    },\n    {\n      \"scheduleTime\": \"20:00\"\n    }\n  ]\n}"
+              "raw": "{\n  \"name\": \"Aspirin\",\n  \"form\": \"tablet\",\n  \"color\": \"white\",\n  \"singleDose\": 1,\n  \"singleDoseUnit\": \"tablet\",\n  \"startDate\": \"2026-04-11\",\n  \"frequency\": \"daily\",\n  \"numOfDays\": 7,\n  \"intakeTimes\": [\"08:00\", \"20:00\"],\n  \"note\": \"Setelah makan\"\n}"
             },
             "url": "{{baseUrl}}/users/{{patientId}}/medications"
           }
@@ -3395,7 +3395,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"description\": \"Obat rutin setelah sarapan\",\n  \"reminders\": [\n    {\n      \"scheduleTime\": \"09:00\"\n    },\n    {\n      \"scheduleTime\": \"21:00\"\n    }\n  ]\n}"
+              "raw": "{\n  \"form\": \"capsule\",\n  \"color\": \"red\",\n  \"singleDose\": 2,\n  \"singleDoseUnit\": \"capsule\",\n  \"startDate\": \"2026-04-11\",\n  \"frequency\": \"weekly\",\n  \"daysOfWeek\": [1, 3, 5],\n  \"intakeTimes\": [\"08:00\"],\n  \"note\": null\n}"
             },
             "url": "{{baseUrl}}/users/{{patientId}}/medications/{{medicationId}}"
           }
@@ -3442,7 +3442,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"scheduleTime\": \"13:30\"\n}"
+              "raw": "{\n  \"scheduleTime\": \"13:30\",\n  \"dayOfWeek\": 1\n}"
             },
             "url": "{{baseUrl}}/users/{{patientId}}/medications/{{medicationId}}/reminders"
           }
@@ -3463,7 +3463,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"scheduleTime\": \"14:00\"\n}"
+              "raw": "{\n  \"scheduleTime\": \"14:00\",\n  \"dayOfWeek\": 3\n}"
             },
             "url": "{{baseUrl}}/users/{{patientId}}/reminders/{{reminderId}}"
           }
