@@ -967,14 +967,14 @@
           }
         },
         {
-          "name": "POST Diary Body Metric By Date",
+          "name": "PUT Diary Body Metric By Date",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });",
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
                   "const json = pm.response.json();",
                   "if (json?.data?.diaryId) { pm.environment.set('diaryId', json.data.diaryId); }"
                 ]
@@ -982,7 +982,7 @@
             }
           ],
           "request": {
-            "method": "POST",
+            "method": "PUT",
             "header": [
               {
                 "key": "Content-Type",
@@ -995,7 +995,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"diaryDate\": \"2026-04-10\",\n  \"conditionTag\": \"morning\",\n  \"bodyWeight\": 73.2,\n  \"systolicPressure\": 122,\n  \"diastolicPressure\": 78,\n  \"timeStamp\": \"2026-04-10T07:10:00.000Z\"\n}"
+              "raw": "{\n  \"diaryDate\": \"2026-04-10\",\n  \"bodyWeight\": 73.2,\n  \"systolicPressure\": 122\n}"
             },
             "url": "{{baseUrl}}/users/{{patientId}}/diaries/by-date/body-metrics"
           }
@@ -1029,7 +1029,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"diaryDate\": \"2026-04-10\",\n  \"symptomName\": \"Pusing\",\n  \"intensity\": 4,\n  \"note\": \"Muncul setelah bangun tidur\"\n}"
+              "raw": "{\n  \"diaryDate\": \"2026-04-10\",\n  \"symptomName\": \"Pusing\",\n  \"intensity\": 4,\n  \"time\": \"07:30\",\n  \"note\": \"Muncul setelah bangun tidur\"\n}"
             },
             "url": "{{baseUrl}}/users/{{patientId}}/diaries/by-date/symptoms"
           }
@@ -1097,7 +1097,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"diaryDate\": \"2026-04-10\",\n  \"type\": \"food\",\n  \"name\": \"Oatmeal\",\n  \"portion\": \"1 mangkuk\"\n}"
+              "raw": "{\n  \"diaryDate\": \"2026-04-10\",\n  \"type\": \"medication\",\n  \"name\": \"Aspirin\",\n  \"portion\": \"1 tablet\",\n  \"time\": \"21:15\",\n  \"note\": \"Sesudah makan malam\"\n}"
             },
             "url": "{{baseUrl}}/users/{{patientId}}/diaries/by-date/consumptions"
           }

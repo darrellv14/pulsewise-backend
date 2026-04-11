@@ -212,6 +212,30 @@ async function listDailyBodyMetrics(diaryId) {
   return result.rows;
 }
 
+async function getLatestDailyBodyMetric(diaryId) {
+  const result = await pool.query(
+    `
+      SELECT
+        metric_id,
+        diary_id,
+        condition_tag,
+        body_height,
+        body_weight,
+        bmi,
+        systolic_pressure,
+        diastolic_pressure,
+        time_stamp
+      FROM daily_metrics
+      WHERE diary_id = $1
+      ORDER BY time_stamp DESC, metric_id DESC
+      LIMIT 1
+    `,
+    [diaryId]
+  );
+
+  return result.rows[0] || null;
+}
+
 async function listDailySymptoms(diaryId) {
   const result = await pool.query(
     `
@@ -293,6 +317,72 @@ async function createDailyBodyMetric({
   return result.rows[0] || null;
 }
 
+async function updateDailyBodyMetric({
+  metricId,
+  conditionTag,
+  bodyHeight,
+  bodyWeight,
+  bmi,
+  systolicPressure,
+  diastolicPressure,
+  timeStamp,
+}) {
+  const updates = [];
+  const values = [];
+
+  if (conditionTag !== undefined) {
+    updates.push(`condition_tag = $${values.length + 1}`);
+    values.push(conditionTag);
+  }
+
+  if (bodyHeight !== undefined) {
+    updates.push(`body_height = $${values.length + 1}`);
+    values.push(bodyHeight);
+  }
+
+  if (bodyWeight !== undefined) {
+    updates.push(`body_weight = $${values.length + 1}`);
+    values.push(bodyWeight);
+  }
+
+  if (bmi !== undefined) {
+    updates.push(`bmi = $${values.length + 1}`);
+    values.push(bmi);
+  }
+
+  if (systolicPressure !== undefined) {
+    updates.push(`systolic_pressure = $${values.length + 1}`);
+    values.push(systolicPressure);
+  }
+
+  if (diastolicPressure !== undefined) {
+    updates.push(`diastolic_pressure = $${values.length + 1}`);
+    values.push(diastolicPressure);
+  }
+
+  if (timeStamp !== undefined) {
+    updates.push(`time_stamp = COALESCE($${values.length + 1}, time_stamp)`);
+    values.push(timeStamp);
+  }
+
+  if (!updates.length) {
+    return null;
+  }
+
+  values.push(metricId);
+  const result = await pool.query(
+    `
+      UPDATE daily_metrics
+      SET ${updates.join(', ')}
+      WHERE metric_id = $${values.length}
+      RETURNING metric_id, diary_id, condition_tag, body_height, body_weight, bmi, systolic_pressure, diastolic_pressure, time_stamp
+    `,
+    values
+  );
+
+  return result.rows[0] || null;
+}
+
 async function createDailySymptom({ diaryId, symptomName, intensity, note, timeStamp }) {
   const result = await pool.query(
     `
@@ -366,10 +456,12 @@ module.exports = {
   listHeartDiaries,
   getHeartDiary,
   listDailyBodyMetrics,
+  getLatestDailyBodyMetric,
   listDailySymptoms,
   listDailyActivities,
   listDailyConsumptions,
   createDailyBodyMetric,
+  updateDailyBodyMetric,
   createDailySymptom,
   createDailyActivity,
   createDailyConsumption,

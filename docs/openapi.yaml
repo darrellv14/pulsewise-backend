@@ -558,6 +558,10 @@ components:
         note:
           type: string
           nullable: true
+        time:
+          type: string
+          nullable: true
+          example: '07:30'
         timeStamp:
           type: string
           format: date-time
@@ -612,6 +616,10 @@ components:
         note:
           type: string
           nullable: true
+        time:
+          type: string
+          nullable: true
+          example: '21:15'
         timeStamp:
           type: string
           format: date-time
@@ -631,6 +639,10 @@ components:
         - $ref: '#/components/schemas/DailyBodyMetricCreateRequest'
         - type: object
           required: [diaryDate]
+          description: >
+            Upsert body metric harian. Jika diary pada tanggal tersebut sudah punya body metric,
+            field yang dikirim akan memperbarui record terakhir dan field yang tidak dikirim akan
+            dipertahankan.
           properties:
             diaryDate:
               type: string
@@ -705,6 +717,10 @@ components:
               type: string
               format: date
               example: '2026-04-10'
+            time:
+              type: string
+              pattern: ^([01]\d|2[0-3]):([0-5]\d)$
+              example: '07:30'
 
     DailyActivityCreateRequest:
       type: object
@@ -780,6 +796,10 @@ components:
               type: string
               format: date
               example: '2026-04-10'
+            time:
+              type: string
+              pattern: ^([01]\d|2[0-3]):([0-5]\d)$
+              example: '21:15'
 
     HeartDiaryDetail:
       allOf:
@@ -3001,9 +3021,9 @@ paths:
                           - $ref: '#/components/schemas/HeartDiaryDetail'
 
   /api/v1/users/{userId}/diaries/by-date/body-metrics:
-    post:
+    put:
       tags: [Patient Care]
-      summary: Add daily body metric entry by diary date
+      summary: Upsert daily body metric entry by diary date
       security:
         - BearerAuth: []
       parameters:
@@ -3020,8 +3040,8 @@ paths:
             schema:
               $ref: '#/components/schemas/DailyBodyMetricCreateByDateRequest'
       responses:
-        '201':
-          description: Body metric berhasil ditambahkan
+        '200':
+          description: Body metric berhasil disimpan
           content:
             application/json:
               schema:
@@ -3035,7 +3055,7 @@ paths:
   /api/v1/users/{userId}/diaries/by-date/symptoms:
     post:
       tags: [Patient Care]
-      summary: Add daily symptom entry by diary date
+      summary: Add daily symptom entry by diary date with optional time input
       security:
         - BearerAuth: []
       parameters:
@@ -3099,7 +3119,7 @@ paths:
   /api/v1/users/{userId}/diaries/by-date/consumptions:
     post:
       tags: [Patient Care]
-      summary: Add daily intake entry by diary date
+      summary: Add daily intake entry by diary date with optional time input
       security:
         - BearerAuth: []
       parameters:

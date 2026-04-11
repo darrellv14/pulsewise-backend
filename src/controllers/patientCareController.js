@@ -139,7 +139,7 @@ async function createDailyBodyMetricByDate(req, res, next) {
       payload: req.body,
     });
 
-    return success(res, 'Body metric diary berdasarkan tanggal berhasil ditambahkan', data, CREATED);
+    return success(res, 'Body metric diary berdasarkan tanggal berhasil disimpan', data);
   } catch (error) {
     return next(error);
   }

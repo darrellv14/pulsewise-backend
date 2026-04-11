@@ -75,7 +75,7 @@ router.get(
   validateRequest(heartDiaryByDateQuerySchema, 'query'),
   patientCareController.getHeartDiaryByDate
 );
-router.post(
+router.put(
   '/users/:userId/diaries/by-date/body-metrics',
   authenticate,
   validateRequest(userIdParamSchema, 'params'),

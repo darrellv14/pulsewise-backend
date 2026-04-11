@@ -11,6 +11,10 @@ const dateTimeSchema = z
   .string()
   .trim()
   .refine((value) => !Number.isNaN(Date.parse(value)), 'Datetime tidak valid');
+const timeOnlySchema = z
+  .string()
+  .trim()
+  .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Format waktu harus HH:mm');
 
 const optionalNullableString = (maxLength) =>
   z.union([z.string().trim().max(maxLength), z.literal(''), z.null()]).optional();
@@ -137,6 +141,7 @@ const symptomCreateSchema = z.object({
 
 const symptomCreateByDateSchema = symptomCreateSchema.extend({
   diaryDate: dateSchema,
+  time: timeOnlySchema.optional(),
 });
 
 const activityCreateSchema = z.object({
@@ -162,6 +167,7 @@ const consumptionCreateSchema = z.object({
 
 const consumptionCreateByDateSchema = consumptionCreateSchema.extend({
   diaryDate: dateSchema,
+  time: timeOnlySchema.optional(),
 });
 
 const avatarSignatureQuerySchema = z.object({

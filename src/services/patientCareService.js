@@ -48,6 +48,46 @@ function toDateOnly(value) {
   return iso ? iso.slice(0, 10) : null;
 }
 
+function toTimeOnly(value) {
+  const iso = toIso(value);
+  return iso ? iso.slice(11, 16) : null;
+}
+
+function hasOwn(object, key) {
+  return Object.prototype.hasOwnProperty.call(object, key);
+}
+
+function normalizeNullableText(value) {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  if (value === null) {
+    return null;
+  }
+
+  const normalized = String(value).trim();
+  return normalized === '' ? null : normalized;
+}
+
+function combineDateAndTime(diaryDate, time) {
+  const [year, month, day] = diaryDate.split('-').map(Number);
+  const [hours, minutes] = time.split(':').map(Number);
+  return new Date(Date.UTC(year, month - 1, day, hours, minutes, 0, 0)).toISOString();
+}
+
+function resolveDiaryEntryTimestamp({ diaryDate, time, timeStamp }) {
+  if (timeStamp) {
+    return timeStamp;
+  }
+
+  if (time) {
+    return combineDateAndTime(diaryDate, time);
+  }
+
+  return null;
+}
+
 function mapEmergencyContact(row) {
   return {
     emergencyContactId: row.emergency_contact_id,
@@ -87,6 +127,7 @@ function mapSymptom(row) {
     symptomName: row.symptom_name,
     intensity: row.intensity,
     note: row.note,
+    time: toTimeOnly(row.time_stamp),
     timeStamp: toIso(row.time_stamp),
   };
 }
@@ -112,6 +153,7 @@ function mapConsumption(row) {
     name: row.name,
     portion: row.portion,
     note: row.note,
+    time: toTimeOnly(row.time_stamp),
     timeStamp: toIso(row.time_stamp),
   };
 }
@@ -449,18 +491,40 @@ async function createDailyBodyMetricByDate({ actor, userId, payload }) {
     diaryDate: payload.diaryDate,
   });
 
-  const created = await patientCareRepository.createDailyBodyMetric({
-    diaryId: diary.diary_id,
-    conditionTag: payload.conditionTag || null,
-    bodyHeight: payload.bodyHeight,
-    bodyWeight: payload.bodyWeight,
-    bmi: payload.bmi,
-    systolicPressure: payload.systolicPressure,
-    diastolicPressure: payload.diastolicPressure,
-    timeStamp: payload.timeStamp || null,
+  const existingMetric = await patientCareRepository.getLatestDailyBodyMetric(diary.diary_id);
+  const resolvedTimeStamp = payload.timeStamp || null;
+
+  if (!existingMetric) {
+    const created = await patientCareRepository.createDailyBodyMetric({
+      diaryId: diary.diary_id,
+      conditionTag: normalizeNullableText(payload.conditionTag),
+      bodyHeight: payload.bodyHeight,
+      bodyWeight: payload.bodyWeight,
+      bmi: payload.bmi,
+      systolicPressure: payload.systolicPressure,
+      diastolicPressure: payload.diastolicPressure,
+      timeStamp: resolvedTimeStamp,
+    });
+
+    return mapBodyMetric(created);
+  }
+
+  const updated = await patientCareRepository.updateDailyBodyMetric({
+    metricId: existingMetric.metric_id,
+    conditionTag: hasOwn(payload, 'conditionTag')
+      ? normalizeNullableText(payload.conditionTag)
+      : undefined,
+    bodyHeight: hasOwn(payload, 'bodyHeight') ? payload.bodyHeight : undefined,
+    bodyWeight: hasOwn(payload, 'bodyWeight') ? payload.bodyWeight : undefined,
+    bmi: hasOwn(payload, 'bmi') ? payload.bmi : undefined,
+    systolicPressure: hasOwn(payload, 'systolicPressure') ? payload.systolicPressure : undefined,
+    diastolicPressure: hasOwn(payload, 'diastolicPressure')
+      ? payload.diastolicPressure
+      : undefined,
+    timeStamp: hasOwn(payload, 'timeStamp') ? resolvedTimeStamp : undefined,
   });
 
-  return mapBodyMetric(created);
+  return mapBodyMetric(updated);
 }
 
 async function createDailySymptom({ actor, userId, diaryId, payload }) {
@@ -494,8 +558,12 @@ async function createDailySymptomByDate({ actor, userId, payload }) {
     diaryId: diary.diary_id,
     symptomName: payload.symptomName,
     intensity: payload.intensity,
-    note: payload.note || null,
-    timeStamp: payload.timeStamp || null,
+    note: normalizeNullableText(payload.note),
+    timeStamp: resolveDiaryEntryTimestamp({
+      diaryDate: payload.diaryDate,
+      time: payload.time,
+      timeStamp: payload.timeStamp,
+    }),
   });
 
   return mapSymptom(created);
@@ -573,11 +641,15 @@ async function createDailyConsumptionByDate({ actor, userId, payload }) {
 
   const created = await patientCareRepository.createDailyConsumption({
     diaryId: diary.diary_id,
-    type: payload.type || null,
-    name: payload.name || null,
-    portion: payload.portion || null,
-    note: payload.note || null,
-    timeStamp: payload.timeStamp || null,
+    type: normalizeNullableText(payload.type),
+    name: normalizeNullableText(payload.name),
+    portion: normalizeNullableText(payload.portion),
+    note: normalizeNullableText(payload.note),
+    timeStamp: resolveDiaryEntryTimestamp({
+      diaryDate: payload.diaryDate,
+      time: payload.time,
+      timeStamp: payload.timeStamp,
+    }),
   });
 
   return mapConsumption(created);
