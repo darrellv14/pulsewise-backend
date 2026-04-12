@@ -202,8 +202,9 @@ async function seedOneDay(client, patientId, diaryDate, measuredAt, metrics) {
         bmi,
         systolic_pressure,
         diastolic_pressure,
+        heart_rate,
         time_stamp
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
     `,
     [
       diaryId,
@@ -212,6 +213,7 @@ async function seedOneDay(client, patientId, diaryDate, measuredAt, metrics) {
       metrics.bmi,
       metrics.systolic,
       metrics.diastolic,
+      metrics.heartRate,
       measuredAt,
     ]
   );

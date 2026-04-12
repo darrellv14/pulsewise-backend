@@ -77,6 +77,7 @@ CREATE TABLE IF NOT EXISTS daily_metrics (
   bmi NUMERIC(5,2),
   systolic_pressure INTEGER,
   diastolic_pressure INTEGER,
+  heart_rate INTEGER,
   time_stamp TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 

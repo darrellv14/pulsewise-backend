@@ -225,10 +225,12 @@ describe('patient care by-date flow', () => {
       bodyMetricCreateByDateSchema.parse({
         diaryDate: '2026-04-11',
         bodyWeight: 73.2,
+        heartRate: 78,
       })
     ).toEqual({
       diaryDate: '2026-04-11',
       bodyWeight: 73.2,
+      heartRate: 78,
     });
   });
 
@@ -248,6 +250,7 @@ describe('patient care by-date flow', () => {
       bmi: '25.10',
       systolic_pressure: 120,
       diastolic_pressure: 80,
+      heart_rate: 76,
       time_stamp: '2026-04-11T07:00:00.000Z',
     });
     patientCareRepository.updateDailyBodyMetric.mockResolvedValue({
@@ -259,6 +262,7 @@ describe('patient care by-date flow', () => {
       bmi: '25.10',
       systolic_pressure: 120,
       diastolic_pressure: 80,
+      heart_rate: 76,
       time_stamp: '2026-04-11T07:00:00.000Z',
     });
 
@@ -280,6 +284,7 @@ describe('patient care by-date flow', () => {
       bmi: undefined,
       systolicPressure: undefined,
       diastolicPressure: undefined,
+      heartRate: undefined,
       timeStamp: undefined,
     });
     expect(patientCareRepository.createDailyBodyMetric).not.toHaveBeenCalled();
@@ -287,6 +292,7 @@ describe('patient care by-date flow', () => {
       metricId: 'metric-1',
       diaryId: 'diary-1',
       bodyWeight: 73.2,
+      heartRate: 76,
     });
   });
 });

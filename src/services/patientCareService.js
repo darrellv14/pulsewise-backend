@@ -116,6 +116,7 @@ function mapBodyMetric(row) {
     bmi: row.bmi !== null ? Number(row.bmi) : null,
     systolicPressure: row.systolic_pressure,
     diastolicPressure: row.diastolic_pressure,
+    heartRate: row.heart_rate,
     timeStamp: toIso(row.time_stamp),
   };
 }
@@ -477,6 +478,7 @@ async function createDailyBodyMetric({ actor, userId, diaryId, payload }) {
     bmi: payload.bmi,
     systolicPressure: payload.systolicPressure,
     diastolicPressure: payload.diastolicPressure,
+    heartRate: payload.heartRate,
     timeStamp: payload.timeStamp || null,
   });
 
@@ -503,6 +505,7 @@ async function createDailyBodyMetricByDate({ actor, userId, payload }) {
       bmi: payload.bmi,
       systolicPressure: payload.systolicPressure,
       diastolicPressure: payload.diastolicPressure,
+      heartRate: payload.heartRate,
       timeStamp: resolvedTimeStamp,
     });
 
@@ -521,6 +524,7 @@ async function createDailyBodyMetricByDate({ actor, userId, payload }) {
     diastolicPressure: hasOwn(payload, 'diastolicPressure')
       ? payload.diastolicPressure
       : undefined,
+    heartRate: hasOwn(payload, 'heartRate') ? payload.heartRate : undefined,
     timeStamp: hasOwn(payload, 'timeStamp') ? resolvedTimeStamp : undefined,
   });
 

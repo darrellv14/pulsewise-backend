@@ -3699,7 +3699,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"diaryDate\": \"2026-04-10\",\n  \"bodyWeight\": 73.2,\n  \"systolicPressure\": 122\n}"
+              "raw": "{\n  \"diaryDate\": \"2026-04-10\",\n  \"bodyWeight\": 73.2,\n  \"systolicPressure\": 122,\n  \"diastolicPressure\": 78,\n  \"heartRate\": 76,\n  \"timeStamp\": \"2026-04-10T07:10:00.000Z\"\n}"
             },
             "url": "{{baseUrl}}/users/{{patientId}}/diaries/by-date/body-metrics"
           }
@@ -3835,7 +3835,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"conditionTag\": \"morning\",\n  \"bodyWeight\": 73.2,\n  \"systolicPressure\": 122,\n  \"diastolicPressure\": 78,\n  \"timeStamp\": \"2026-04-10T07:10:00.000Z\"\n}"
+              "raw": "{\n  \"conditionTag\": \"morning\",\n  \"bodyWeight\": 73.2,\n  \"systolicPressure\": 122,\n  \"diastolicPressure\": 78,\n  \"heartRate\": 76,\n  \"timeStamp\": \"2026-04-10T07:10:00.000Z\"\n}"
             },
             "url": "{{baseUrl}}/users/{{patientId}}/diaries/{{diaryId}}/body-metrics"
           }

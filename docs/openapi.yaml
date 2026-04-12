@@ -536,6 +536,9 @@ components:
         diastolicPressure:
           type: integer
           nullable: true
+        heartRate:
+          type: integer
+          nullable: true
         timeStamp:
           type: string
           format: date-time
@@ -680,6 +683,11 @@ components:
         diastolicPressure:
           type: integer
           minimum: 30
+          maximum: 250
+          nullable: true
+        heartRate:
+          type: integer
+          minimum: 20
           maximum: 250
           nullable: true
         timeStamp:

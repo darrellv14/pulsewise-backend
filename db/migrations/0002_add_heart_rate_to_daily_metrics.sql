@@ -1,0 +1,2 @@
+ALTER TABLE daily_metrics
+ADD COLUMN IF NOT EXISTS heart_rate INTEGER;

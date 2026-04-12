@@ -99,6 +99,7 @@ const bodyMetricCreateBaseSchema = z.object({
   bmi: z.coerce.number().min(1).max(100).nullable().optional(),
   systolicPressure: z.coerce.number().int().min(50).max(300).nullable().optional(),
   diastolicPressure: z.coerce.number().int().min(30).max(250).nullable().optional(),
+  heartRate: z.coerce.number().int().min(20).max(250).nullable().optional(),
   timeStamp: dateTimeSchema.optional(),
 });
 
@@ -109,6 +110,7 @@ const bodyMetricCreateSchema = bodyMetricCreateBaseSchema.refine(
       value.bmi !== undefined ||
       value.systolicPressure !== undefined ||
       value.diastolicPressure !== undefined ||
+      value.heartRate !== undefined ||
       value.conditionTag !== undefined,
     {
       message: 'Minimal satu metrik harus diisi',
@@ -126,6 +128,7 @@ const bodyMetricCreateByDateSchema = bodyMetricCreateBaseSchema
       value.bmi !== undefined ||
       value.systolicPressure !== undefined ||
       value.diastolicPressure !== undefined ||
+      value.heartRate !== undefined ||
       value.conditionTag !== undefined,
     {
       message: 'Minimal satu metrik harus diisi',

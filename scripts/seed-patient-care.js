@@ -83,10 +83,11 @@ async function seedHeartDiaries(client, userId) {
           bmi,
           systolic_pressure,
           diastolic_pressure,
+          heart_rate,
           time_stamp
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       `,
-      [diaryId, 'daily-check', 172, 69.5, 23.5, 122, 80, atUtc(diaryDate, 8, 0)]
+      [diaryId, 'daily-check', 172, 69.5, 23.5, 122, 80, 76, atUtc(diaryDate, 8, 0)]
     );
 
     await client.query(

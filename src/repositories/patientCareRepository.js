@@ -201,6 +201,7 @@ async function listDailyBodyMetrics(diaryId) {
         bmi,
         systolic_pressure,
         diastolic_pressure,
+        heart_rate,
         time_stamp
       FROM daily_metrics
       WHERE diary_id = $1
@@ -224,6 +225,7 @@ async function getLatestDailyBodyMetric(diaryId) {
         bmi,
         systolic_pressure,
         diastolic_pressure,
+        heart_rate,
         time_stamp
       FROM daily_metrics
       WHERE diary_id = $1
@@ -286,6 +288,7 @@ async function createDailyBodyMetric({
   bmi,
   systolicPressure,
   diastolicPressure,
+  heartRate,
   timeStamp,
 }) {
   const result = await pool.query(
@@ -298,9 +301,10 @@ async function createDailyBodyMetric({
         bmi,
         systolic_pressure,
         diastolic_pressure,
+        heart_rate,
         time_stamp
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, COALESCE($8, NOW()))
-      RETURNING metric_id, diary_id, condition_tag, body_height, body_weight, bmi, systolic_pressure, diastolic_pressure, time_stamp
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, COALESCE($9, NOW()))
+      RETURNING metric_id, diary_id, condition_tag, body_height, body_weight, bmi, systolic_pressure, diastolic_pressure, heart_rate, time_stamp
     `,
     [
       diaryId,
@@ -310,6 +314,7 @@ async function createDailyBodyMetric({
       bmi,
       systolicPressure,
       diastolicPressure,
+      heartRate,
       timeStamp,
     ]
   );
@@ -325,6 +330,7 @@ async function updateDailyBodyMetric({
   bmi,
   systolicPressure,
   diastolicPressure,
+  heartRate,
   timeStamp,
 }) {
   const updates = [];
@@ -360,6 +366,11 @@ async function updateDailyBodyMetric({
     values.push(diastolicPressure);
   }
 
+  if (heartRate !== undefined) {
+    updates.push(`heart_rate = $${values.length + 1}`);
+    values.push(heartRate);
+  }
+
   if (timeStamp !== undefined) {
     updates.push(`time_stamp = COALESCE($${values.length + 1}, time_stamp)`);
     values.push(timeStamp);
@@ -375,7 +386,7 @@ async function updateDailyBodyMetric({
       UPDATE daily_metrics
       SET ${updates.join(', ')}
       WHERE metric_id = $${values.length}
-      RETURNING metric_id, diary_id, condition_tag, body_height, body_weight, bmi, systolic_pressure, diastolic_pressure, time_stamp
+      RETURNING metric_id, diary_id, condition_tag, body_height, body_weight, bmi, systolic_pressure, diastolic_pressure, heart_rate, time_stamp
     `,
     values
   );
