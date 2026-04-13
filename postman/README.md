@@ -30,6 +30,7 @@ Import **hanya** file berikut:
    - `POST Confirm Dashboard Pairing (Mobile Patient)`
    - `GET Dashboard Pairing Session Status` (fallback/polling)
 5. Di folder **Biometrics**, jalankan `POST Ingest Biometrics` lalu `GET Biometrics History` untuk verifikasi ingestion time-series.
+6. Di folder **Medication & Reminder**, gunakan `GET Medication Calendar` untuk mengambil feed kalender lintas-obat berbasis rentang tanggal (`from`/`to`).
 
 ## Endpoint QR Yang Primary vs Legacy
 

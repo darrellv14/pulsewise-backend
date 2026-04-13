@@ -5,7 +5,7 @@ generator client {
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
 }
 
 model Role {
@@ -182,6 +182,7 @@ model MedicationLog {
   medicationLogId String     @id @default(dbgenerated("gen_random_uuid()")) @map("medication_log_id") @db.Uuid
   userId          String     @map("user_id") @db.Uuid
   medicationId    String     @map("medication_id") @db.Uuid
+  status          String     @default("taken") @db.VarChar(16)
   medicationTime  DateTime?  @map("medication_time") @db.Time(6)
   medicationDate  DateTime   @map("medication_date") @db.Date
   createdAt       DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)

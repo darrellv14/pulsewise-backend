@@ -31,7 +31,24 @@ function parseDatabaseUrl(databaseUrl) {
   }
 }
 
-const parsedDbUrl = parseDatabaseUrl(process.env.DATABASE_URL);
+function getDirectDatabaseUrl() {
+  if (process.env.DIRECT_DATABASE_URL) {
+    return process.env.DIRECT_DATABASE_URL;
+  }
+
+  if (process.env.DIRECT_URL) {
+    return process.env.DIRECT_URL;
+  }
+
+  if (process.env.DATABASE_URL && !process.env.DATABASE_URL.startsWith('prisma://')) {
+    return process.env.DATABASE_URL;
+  }
+
+  return '';
+}
+
+const directDatabaseUrl = getDirectDatabaseUrl();
+const parsedDbUrl = parseDatabaseUrl(directDatabaseUrl);
 
 function pickPostgresValue(envName, parsedValue, fallback) {
   if (parsedValue !== undefined && parsedValue !== null && String(parsedValue).trim() !== '') {
@@ -45,7 +62,7 @@ const env = {
   nodeEnv: process.env.NODE_ENV || 'development',
   port: Number(process.env.PORT || 5000),
   databaseUrl: process.env.DATABASE_URL || '',
-  directUrl: process.env.DIRECT_URL || '',
+  directUrl: directDatabaseUrl,
   jwtSecret: ensureEnv('JWT_SECRET', 'replace_with_strong_secret'),
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '1d',
   otpExpiresMinutes: Number(process.env.OTP_EXPIRES_MINUTES || 10),

@@ -629,6 +629,19 @@
           }
         },
         {
+          "name": "GET Medication Calendar",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{patientToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/users/{{patientId}}/medications/calendar?from=2026-04-01&to=2026-04-30"
+          }
+        },
+        {
           "name": "POST Create Medication",
           "event": [
             {
@@ -813,13 +826,13 @@
                 "value": "Bearer {{patientToken}}"
               }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"medicationDate\": \"2026-04-10\",\n  \"medicationTime\": \"08:15\"\n}"
-            },
-            "url": "{{baseUrl}}/users/{{patientId}}/medications/{{medicationId}}/logs"
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"medicationDate\": \"2026-04-10\",\n  \"medicationTime\": \"08:15\",\n  \"status\": \"taken\"\n}"
+              },
+              "url": "{{baseUrl}}/users/{{patientId}}/medications/{{medicationId}}/logs"
+            }
           }
-        }
       ]
     },
     {

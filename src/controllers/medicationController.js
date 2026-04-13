@@ -16,6 +16,20 @@ async function listMedications(req, res, next) {
   }
 }
 
+async function listMedicationCalendar(req, res, next) {
+  try {
+    const data = await medicationService.listMedicationCalendar({
+      actor: req.user,
+      userId: req.params.userId,
+      query: req.query,
+    });
+
+    return success(res, 'Kalender medication berhasil diambil', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
 async function getMedicationById(req, res, next) {
   try {
     const data = await medicationService.getMedicationById({
@@ -164,6 +178,7 @@ async function createMedicationLog(req, res, next) {
 
 module.exports = {
   listMedications,
+  listMedicationCalendar,
   getMedicationById,
   createMedication,
   updateMedication,

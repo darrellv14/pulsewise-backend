@@ -21,6 +21,7 @@ const {
   medicationCreateSchema,
   medicationUpdateSchema,
   reminderCreateSchema,
+  medicationLogCreateSchema,
 } = require('../src/validators/medicationValidator');
 
 describe('medication v2', () => {
@@ -77,6 +78,82 @@ describe('medication v2', () => {
     ).toEqual({
       scheduleTime: '13:30',
       dayOfWeek: 1,
+    });
+  });
+
+  test('medicationLogCreateSchema accepts explicit status and defaults to taken', () => {
+    expect(
+      medicationLogCreateSchema.parse({
+        medicationDate: '2026-04-11',
+        medicationTime: '08:10',
+        status: 'skipped',
+      })
+    ).toEqual({
+      medicationDate: '2026-04-11',
+      medicationTime: '08:10',
+      status: 'skipped',
+    });
+
+    expect(
+      medicationLogCreateSchema.parse({
+        medicationDate: '2026-04-11',
+      })
+    ).toEqual({
+      medicationDate: '2026-04-11',
+      status: 'taken',
+    });
+  });
+
+  test('createMedicationLog persists status and returns it in dto', async () => {
+    const tx = {
+      medication: {
+        findFirst: jest.fn(),
+      },
+      medicationLog: {
+        create: jest.fn(),
+      },
+    };
+
+    prisma.$transaction.mockImplementation(async (callback) => callback(tx));
+    tx.medication.findFirst.mockResolvedValue({
+      medicationId: 'med-1',
+      userId: 'user-1',
+    });
+    tx.medicationLog.create.mockResolvedValue({
+      medicationLogId: 'log-1',
+      userId: 'user-1',
+      medicationId: 'med-1',
+      status: 'missed',
+      medicationDate: new Date('2026-04-11T00:00:00.000Z'),
+      medicationTime: new Date('1970-01-01T09:00:00.000Z'),
+      createdAt: new Date('2026-04-11T09:00:00.000Z'),
+    });
+
+    const result = await medicationService.createMedicationLog({
+      actor: { userId: 'user-1', role: 'patient' },
+      userId: 'user-1',
+      medicationId: 'med-1',
+      payload: {
+        medicationDate: '2026-04-11',
+        medicationTime: '09:00',
+        status: 'missed',
+      },
+    });
+
+    expect(tx.medicationLog.create).toHaveBeenCalledWith({
+      data: {
+        userId: 'user-1',
+        medicationId: 'med-1',
+        status: 'missed',
+        medicationDate: new Date('2026-04-11T00:00:00.000Z'),
+        medicationTime: new Date('1970-01-01T09:00:00.000Z'),
+      },
+    });
+    expect(result).toMatchObject({
+      medicationLogId: 'log-1',
+      status: 'missed',
+      medicationDate: '2026-04-11',
+      medicationTime: '09:00',
     });
   });
 

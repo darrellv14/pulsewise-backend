@@ -46,6 +46,22 @@ components:
         minimum: 1
         maximum: 100
         default: 20
+    FromDate:
+      name: from
+      in: query
+      required: true
+      schema:
+        type: string
+        format: date
+        example: '2026-04-01'
+    ToDate:
+      name: to
+      in: query
+      required: true
+      schema:
+        type: string
+        format: date
+        example: '2026-04-30'
     SortBy:
       name: sortBy
       in: query
@@ -368,6 +384,63 @@ components:
           items:
             $ref: '#/components/schemas/Reminder'
 
+    MedicationCalendarEvent:
+      type: object
+      properties:
+        eventId:
+          type: string
+          example: rem-123:2026-04-11
+        scheduledDate:
+          type: string
+          format: date
+        scheduledTime:
+          type: string
+          example: '08:00'
+        reminderId:
+          type: string
+          format: uuid
+        medicationId:
+          type: string
+          format: uuid
+        medicationLogId:
+          type: string
+          format: uuid
+          nullable: true
+        name:
+          type: string
+        color:
+          type: string
+          nullable: true
+        singleDose:
+          type: number
+          nullable: true
+        singleDoseUnit:
+          type: string
+          nullable: true
+        status:
+          type: string
+          nullable: true
+          enum: [taken, skipped, missed]
+
+    MedicationCalendarData:
+      type: object
+      properties:
+        range:
+          type: object
+          properties:
+            from:
+              type: string
+              format: date
+            to:
+              type: string
+              format: date
+        totalItems:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/MedicationCalendarEvent'
+
     Reminder:
       type: object
       properties:
@@ -418,6 +491,10 @@ components:
         medicationId:
           type: string
           format: uuid
+        status:
+          type: string
+          enum: [taken, skipped, missed]
+          default: taken
         medicationDate:
           type: string
           format: date
@@ -442,6 +519,11 @@ components:
           nullable: true
           pattern: '^([01]\\d|2[0-3]):([0-5]\\d)$'
           example: '08:15'
+        status:
+          type: string
+          enum: [taken, skipped, missed]
+          default: taken
+          example: taken
 
     EmergencyContact:
       type: object
@@ -2466,6 +2548,37 @@ paths:
                     properties:
                       data:
                         $ref: '#/components/schemas/Medication'
+
+  /api/v1/users/{userId}/medications/calendar:
+    get:
+      tags: [Medications]
+      summary: Feed kalender medication berdasarkan rentang tanggal
+      description: |
+        Mengembalikan occurrence kalender per tanggal untuk seluruh medication user dalam rentang `from` sampai `to`.
+        Endpoint ini ditujukan untuk kebutuhan tampilan kalender dan sudah menggabungkan status medication log jika tersedia.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - $ref: '#/components/parameters/FromDate'
+        - $ref: '#/components/parameters/ToDate'
+      responses:
+        '200':
+          description: Feed kalender medication
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/MedicationCalendarData'
 
   /api/v1/users/{userId}/medications/{medicationId}:
     get:

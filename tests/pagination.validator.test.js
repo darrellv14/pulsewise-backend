@@ -1,6 +1,7 @@
 const {
   medicationListQuerySchema,
   reminderListQuerySchema,
+  medicationCalendarQuerySchema,
   medicationLogQuerySchema,
 } = require('../src/validators/medicationValidator');
 const {
@@ -28,6 +29,25 @@ describe('pagination validators', () => {
       startDate: '2026-04-01',
       endDate: '2026-04-10',
     });
+  });
+
+  test('medication calendar query accepts valid range and rejects oversized range', () => {
+    expect(
+      medicationCalendarQuerySchema.parse({
+        from: '2026-04-01',
+        to: '2026-04-30',
+      })
+    ).toEqual({
+      from: '2026-04-01',
+      to: '2026-04-30',
+    });
+
+    expect(() =>
+      medicationCalendarQuerySchema.parse({
+        from: '2026-01-01',
+        to: '2026-04-15',
+      })
+    ).toThrow('Rentang kalender maksimal 93 hari');
   });
 
   test('legacy list queries default page and limit', () => {

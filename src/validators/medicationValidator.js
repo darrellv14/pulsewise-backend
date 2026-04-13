@@ -7,11 +7,13 @@ const timeStringSchema = z
   .trim()
   .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Format jam harus HH:mm (24 jam)');
 const medicationFrequencySchema = z.enum(['daily', 'weekly']);
+const medicationLogStatusSchema = z.enum(['taken', 'skipped', 'missed']);
 const dayOfWeekSchema = z.coerce.number().int().min(1).max(7);
 const medicationDateSchema = z
   .string()
   .trim()
   .regex(/^\d{4}-\d{2}-\d{2}$/, 'Format tanggal harus YYYY-MM-DD');
+const maxCalendarRangeDays = 93;
 
 const optionalNullableString = (maxLength) =>
   z.union([z.string().trim().max(maxLength), z.literal(''), z.null()]).optional();
@@ -179,10 +181,35 @@ const reminderUpdateSchema = reminderInputSchema.refine((value) => hasUniqueRemi
 const medicationLogCreateSchema = z.object({
   medicationDate: medicationDateSchema,
   medicationTime: timeStringSchema.optional(),
+  status: medicationLogStatusSchema.default('taken'),
 });
 
 const medicationListQuerySchema = paginationQuerySchema;
 const reminderListQuerySchema = paginationQuerySchema;
+
+const medicationCalendarQuerySchema = z
+  .object({
+    from: medicationDateSchema,
+    to: medicationDateSchema,
+  })
+  .refine(
+    (value) => new Date(value.to).getTime() >= new Date(value.from).getTime(),
+    {
+      message: 'to tidak boleh lebih kecil dari from',
+      path: ['to'],
+    }
+  )
+  .refine(
+    (value) => {
+      const milliseconds = new Date(value.to).getTime() - new Date(value.from).getTime();
+      const diffDays = Math.floor(milliseconds / (24 * 60 * 60 * 1000)) + 1;
+      return diffDays <= maxCalendarRangeDays;
+    },
+    {
+      message: `Rentang kalender maksimal ${maxCalendarRangeDays} hari`,
+      path: ['to'],
+    }
+  );
 
 const medicationLogQuerySchema = paginationQuerySchema
   .extend({
@@ -209,6 +236,7 @@ module.exports = {
   reminderParamsSchema,
   medicationListQuerySchema,
   reminderListQuerySchema,
+  medicationCalendarQuerySchema,
   medicationCreateSchema,
   medicationUpdateSchema,
   reminderCreateSchema,
