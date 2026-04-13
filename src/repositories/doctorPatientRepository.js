@@ -1,85 +1,144 @@
-const { pool } = require('../config/database');
+const prisma = require('../config/prisma');
+const CACHE_TTL_SECONDS = 60;
+const CACHE_SWR_SECONDS = 120;
+
+function mapDoctorPatientLink(link) {
+  if (!link) {
+    return null;
+  }
+
+  return {
+    doctor_id: link.doctorId,
+    patient_id: link.patientId,
+    source: link.source,
+    linked_at: link.linkedAt,
+    is_active: link.isActive,
+    first_name: link.patient?.firstName || null,
+    last_name: link.patient?.lastName || null,
+    email: link.patient?.email || null,
+  };
+}
+
+function sanitizeTagPart(value) {
+  return String(value || '').replace(/[^A-Za-z0-9_]/g, '_');
+}
+
+function buildCacheStrategy(tags) {
+  return {
+    ttl: CACHE_TTL_SECONDS,
+    swr: CACHE_SWR_SECONDS,
+    tags,
+  };
+}
+
+async function invalidateCacheTags(tags) {
+  await prisma.$accelerate?.invalidate({ tags });
+}
 
 async function listDoctorPatients({ doctorId, limit, offset }) {
-  const query = `
-    SELECT
-      dp.doctor_id,
-      dp.patient_id,
-      dp.source,
-      dp.linked_at,
-      dp.is_active,
-      u.first_name,
-      u.last_name,
-      u.email
-    FROM doctor_patients dp
-    JOIN users u ON u.user_id = dp.patient_id
-    WHERE dp.doctor_id = $1
-      AND dp.is_active = TRUE
-    ORDER BY dp.linked_at DESC
-    LIMIT $2 OFFSET $3
-  `;
-
-  const totalQuery = `
-    SELECT COUNT(*)::INT AS total
-    FROM doctor_patients
-    WHERE doctor_id = $1 AND is_active = TRUE
-  `;
-
-  const [itemsResult, totalResult] = await Promise.all([
-    pool.query(query, [doctorId, limit, offset]),
-    pool.query(totalQuery, [doctorId]),
+  const cacheTags = [`doctor_patients_${sanitizeTagPart(doctorId)}`];
+  const [items, totalItems] = await Promise.all([
+    prisma.doctorPatient.findMany({
+      where: {
+        doctorId,
+        isActive: true,
+      },
+      include: {
+        patient: {
+          select: {
+            firstName: true,
+            lastName: true,
+            email: true,
+          },
+        },
+      },
+      orderBy: {
+        linkedAt: 'desc',
+      },
+      skip: offset,
+      take: limit,
+      cacheStrategy: buildCacheStrategy(cacheTags),
+    }),
+    prisma.doctorPatient.count({
+      where: {
+        doctorId,
+        isActive: true,
+      },
+      cacheStrategy: buildCacheStrategy(cacheTags),
+    }),
   ]);
 
   return {
-    items: itemsResult.rows,
-    totalItems: totalResult.rows[0]?.total || 0,
+    items: items.map(mapDoctorPatientLink),
+    totalItems,
   };
 }
 
 async function upsertDoctorPatientLink({ doctorId, patientId, source }) {
-  const query = `
-    INSERT INTO doctor_patients (
-      doctor_id,
-      patient_id,
+  const link = await prisma.doctorPatient.upsert({
+    where: {
+      doctorId_patientId: {
+        doctorId,
+        patientId,
+      },
+    },
+    create: {
+      doctorId,
+      patientId,
       source,
-      is_active
-    ) VALUES ($1, $2, $3, TRUE)
-    ON CONFLICT (doctor_id, patient_id)
-    DO UPDATE SET
-      source = EXCLUDED.source,
-      linked_at = NOW(),
-      is_active = TRUE
-    RETURNING doctor_id, patient_id, source, linked_at, is_active
-  `;
+      isActive: true,
+    },
+    update: {
+      source,
+      linkedAt: new Date(),
+      isActive: true,
+    },
+  });
 
-  const result = await pool.query(query, [doctorId, patientId, source]);
-  return result.rows[0] || null;
+  await invalidateCacheTags([`doctor_patients_${sanitizeTagPart(doctorId)}`]);
+
+  return mapDoctorPatientLink(link);
 }
 
 async function findDoctorPatientLink({ doctorId, patientId }) {
-  const query = `
-    SELECT doctor_id, patient_id, source, linked_at, is_active
-    FROM doctor_patients
-    WHERE doctor_id = $1
-      AND patient_id = $2
-      AND is_active = TRUE
-    LIMIT 1
-  `;
+  const link = await prisma.doctorPatient.findFirst({
+    where: {
+      doctorId,
+      patientId,
+      isActive: true,
+    },
+  });
 
-  const result = await pool.query(query, [doctorId, patientId]);
-  return result.rows[0] || null;
+  return mapDoctorPatientLink(link);
 }
 
 async function deactivateDoctorPatientLink({ doctorId, patientId }) {
-  const query = `
-    UPDATE doctor_patients
-    SET is_active = FALSE
-    WHERE doctor_id = $1 AND patient_id = $2
-    RETURNING doctor_id, patient_id, source, linked_at, is_active
-  `;
+  const link = await prisma.doctorPatient.updateMany({
+    where: {
+      doctorId,
+      patientId,
+    },
+    data: {
+      isActive: false,
+    },
+  });
 
-  const result = await pool.query(query, [doctorId, patientId]);
-  return result.rows[0] || null;
+  if (link.count === 0) {
+    return null;
+  }
+
+  const updated = await prisma.doctorPatient.findUnique({
+    where: {
+      doctorId_patientId: {
+        doctorId,
+        patientId,
+      },
+    },
+  });
+
+  await invalidateCacheTags([`doctor_patients_${sanitizeTagPart(doctorId)}`]);
+
+  return mapDoctorPatientLink(updated);
 }
 
 module.exports = {

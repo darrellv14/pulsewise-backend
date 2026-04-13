@@ -18,26 +18,36 @@ model Role {
 }
 
 model User {
-  userId             String             @id @default(dbgenerated("gen_random_uuid()")) @map("user_id") @db.Uuid
-  username           String             @unique @db.VarChar(100)
-  email              String             @unique @db.VarChar(255)
-  passwordHash       String             @map("password_hash")
-  firstName          String?            @map("first_name") @db.VarChar(100)
-  lastName           String?            @map("last_name") @db.VarChar(100)
-  avatarPhoto        String?            @map("avatar_photo")
-  address            String?
-  telNo              String?            @map("tel_no") @db.VarChar(40)
-  isActive           Boolean            @default(true) @map("is_active")
-  accountStatus      String             @default("pending_verification") @map("account_status") @db.VarChar(32)
-  emailVerifiedAt    DateTime?          @map("email_verified_at") @db.Timestamptz(6)
-  createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt          DateTime           @default(now()) @map("updated_at") @db.Timestamptz(6)
-  userRoles          UserRole[]
-  emergencyContacts  EmergencyContact[]
-  heartDiaries       HeartDiary[]
-  medications        Medication[]
-  reminders          Reminder[]
-  medicationLogs     MedicationLog[]
+  userId                           String                    @id @default(dbgenerated("gen_random_uuid()")) @map("user_id") @db.Uuid
+  username                         String                    @unique @db.VarChar(100)
+  email                            String                    @unique @db.VarChar(255)
+  passwordHash                     String                    @map("password_hash")
+  firstName                        String?                   @map("first_name") @db.VarChar(100)
+  lastName                         String?                   @map("last_name") @db.VarChar(100)
+  avatarPhoto                      String?                   @map("avatar_photo")
+  address                          String?
+  telNo                            String?                   @map("tel_no") @db.VarChar(40)
+  isActive                         Boolean                   @default(true) @map("is_active")
+  accountStatus                    String                    @default("pending_verification") @map("account_status") @db.VarChar(32)
+  emailVerifiedAt                  DateTime?                 @map("email_verified_at") @db.Timestamptz(6)
+  createdAt                        DateTime                  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                        DateTime                  @default(now()) @map("updated_at") @db.Timestamptz(6)
+  userRoles                        UserRole[]
+  patientProfile                   PatientProfile?
+  doctorProfile                    DoctorProfile?
+  emergencyContacts                EmergencyContact[]
+  heartDiaries                     HeartDiary[]
+  medications                      Medication[]
+  reminders                        Reminder[]
+  medicationLogs                   MedicationLog[]
+  emailVerifications               EmailVerification[]
+  vitalSignReadings                VitalSignReading[]
+  patientShares                    PatientShare[]            @relation("PatientShares")
+  createdPatientShares             PatientShare[]            @relation("PatientShareCreator")
+  doctorPatientsAsDoctor           DoctorPatient[]           @relation("DoctorPatientDoctor")
+  doctorPatientsAsPatient          DoctorPatient[]           @relation("DoctorPatientPatient")
+  dashboardPairingSessionsAsDoctor DashboardPairingSession[] @relation("DashboardPairingSessionDoctor")
+  dashboardPairingSessionsAsPatient DashboardPairingSession[] @relation("DashboardPairingSessionPatient")
 
   @@map("users")
 }
@@ -191,4 +201,106 @@ model MedicationLog {
 
   @@index([userId, medicationDate], map: "idx_medication_logs_user_date")
   @@map("medication_logs")
+}
+
+model DoctorProfile {
+  doctorId        String  @id @map("doctor_id") @db.Uuid
+  specialization  String? @db.VarChar(120)
+  licenseNo       String? @map("license_no") @db.VarChar(120)
+  hospitalName    String? @map("hospital_name") @db.VarChar(150)
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  user            User    @relation(fields: [doctorId], references: [userId], onDelete: Cascade)
+
+  @@map("doctor_profiles")
+}
+
+model PatientProfile {
+  patientId          String    @id @map("patient_id") @db.Uuid
+  dateOfBirth        DateTime? @map("date_of_birth") @db.Date
+  sex                String?   @db.VarChar(16)
+  bodyHeightCm       Decimal?  @map("body_height_cm") @db.Decimal(5, 2)
+  isSmoking          Boolean?  @map("is_smoking")
+  isElectricSmoking  Boolean?  @map("is_electric_smoking")
+  bloodType          String?   @map("blood_type") @db.VarChar(3)
+  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  user               User      @relation(fields: [patientId], references: [userId], onDelete: Cascade)
+
+  @@map("patient_profiles")
+}
+
+model DoctorPatient {
+  doctorId   String   @map("doctor_id") @db.Uuid
+  patientId  String   @map("patient_id") @db.Uuid
+  source     String   @default("manual") @db.VarChar(50)
+  linkedAt   DateTime @default(now()) @map("linked_at") @db.Timestamptz(6)
+  isActive   Boolean  @default(true) @map("is_active")
+  doctor     User     @relation("DoctorPatientDoctor", fields: [doctorId], references: [userId], onDelete: Cascade)
+  patient    User     @relation("DoctorPatientPatient", fields: [patientId], references: [userId], onDelete: Cascade)
+
+  @@id([doctorId, patientId])
+  @@map("doctor_patients")
+}
+
+model EmailVerification {
+  verificationId String    @id @default(dbgenerated("gen_random_uuid()")) @map("verification_id") @db.Uuid
+  userId         String    @map("user_id") @db.Uuid
+  email          String    @db.VarChar(255)
+  otpCodeHash    String    @map("otp_code_hash")
+  expiresAt      DateTime  @map("expires_at") @db.Timestamptz(6)
+  consumedAt     DateTime? @map("consumed_at") @db.Timestamptz(6)
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  user           User      @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@index([email, createdAt(sort: Desc)], map: "idx_email_verifications_email_time")
+  @@index([userId, createdAt(sort: Desc)], map: "idx_email_verifications_user")
+  @@map("email_verifications")
+}
+
+model VitalSignReading {
+  readingId     BigInt   @id @default(autoincrement()) @map("reading_id")
+  userId        String   @map("user_id") @db.Uuid
+  source        String   @db.VarChar(64)
+  metricType    String   @map("metric_type") @db.VarChar(64)
+  valueNumeric  Decimal? @map("value_numeric") @db.Decimal(10, 3)
+  unit          String?  @db.VarChar(32)
+  payload       Json?
+  measuredAt    DateTime @map("measured_at") @db.Timestamptz(6)
+  receivedAt    DateTime @default(now()) @map("received_at") @db.Timestamptz(6)
+  user          User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@index([userId, measuredAt(sort: Desc)], map: "idx_vital_readings_user_time")
+  @@index([metricType, measuredAt(sort: Desc)], map: "idx_vital_readings_metric_time")
+  @@map("vital_sign_readings")
+}
+
+model PatientShare {
+  shareId      String    @id @default(dbgenerated("gen_random_uuid()")) @map("share_id") @db.Uuid
+  patientId    String    @map("patient_id") @db.Uuid
+  shareCode    String    @unique @map("share_code") @db.VarChar(100)
+  expiresAt    DateTime? @map("expires_at") @db.Timestamptz(6)
+  createdBy    String?   @map("created_by") @db.Uuid
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  revokedAt    DateTime? @map("revoked_at") @db.Timestamptz(6)
+  patient      User      @relation("PatientShares", fields: [patientId], references: [userId], onDelete: Cascade)
+  creator      User?     @relation("PatientShareCreator", fields: [createdBy], references: [userId], onDelete: SetNull)
+
+  @@map("patient_shares")
+}
+
+model DashboardPairingSession {
+  pairingSessionId     String    @id @default(dbgenerated("gen_random_uuid()")) @map("pairing_session_id") @db.Uuid
+  doctorId             String    @map("doctor_id") @db.Uuid
+  pairingTokenHash     String    @unique @map("pairing_token_hash")
+  status               String    @default("pending") @db.VarChar(32)
+  expiresAt            DateTime  @map("expires_at") @db.Timestamptz(6)
+  confirmedAt          DateTime? @map("confirmed_at") @db.Timestamptz(6)
+  confirmedByPatientId String?   @map("confirmed_by_patient_id") @db.Uuid
+  createdAt            DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+  doctor               User      @relation("DashboardPairingSessionDoctor", fields: [doctorId], references: [userId], onDelete: Cascade)
+  confirmedByPatient   User?     @relation("DashboardPairingSessionPatient", fields: [confirmedByPatientId], references: [userId], onDelete: SetNull)
+
+  @@index([doctorId, status, createdAt(sort: Desc)], map: "idx_dashboard_pairing_sessions_doctor_status")
+  @@index([expiresAt], map: "idx_dashboard_pairing_sessions_expires_at")
+  @@map("dashboard_pairing_sessions")
 }

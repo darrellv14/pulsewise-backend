@@ -1,111 +1,186 @@
-const { pool } = require('../config/database');
+const prisma = require('../config/prisma');
+
+function toNullableNumber(value) {
+  return value === null || value === undefined ? null : Number(value);
+}
+
+function toDateOnly(dateValue) {
+  return dateValue ? new Date(`${dateValue}T00:00:00.000Z`) : null;
+}
+
+function toDateTime(value) {
+  return value ? new Date(value) : null;
+}
+
+function mapEmergencyContact(row) {
+  if (!row) {
+    return null;
+  }
+
+  return {
+    emergency_contact_id: row.emergencyContactId,
+    user_id: row.userId,
+    contact_label: row.contactLabel,
+    contact_number: row.contactNumber,
+    is_priority: row.isPriority,
+    created_at: row.createdAt,
+  };
+}
+
+function mapHeartDiary(row) {
+  if (!row) {
+    return null;
+  }
+
+  return {
+    diary_id: row.diaryId,
+    user_id: row.userId,
+    diary_date: row.diaryDate,
+    created_at: row.createdAt,
+  };
+}
+
+function mapDailyMetric(row) {
+  if (!row) {
+    return null;
+  }
+
+  return {
+    metric_id: row.metricId,
+    diary_id: row.diaryId,
+    condition_tag: row.conditionTag,
+    body_height: toNullableNumber(row.bodyHeight),
+    body_weight: toNullableNumber(row.bodyWeight),
+    bmi: toNullableNumber(row.bmi),
+    systolic_pressure: row.systolicPressure,
+    diastolic_pressure: row.diastolicPressure,
+    heart_rate: row.heartRate,
+    time_stamp: row.timeStamp,
+  };
+}
+
+function mapDailySymptom(row) {
+  if (!row) {
+    return null;
+  }
+
+  return {
+    symptom_id: row.symptomId,
+    diary_id: row.diaryId,
+    symptom_name: row.symptomName,
+    intensity: row.intensity,
+    note: row.note,
+    time_stamp: row.timeStamp,
+  };
+}
+
+function mapDailyActivity(row) {
+  if (!row) {
+    return null;
+  }
+
+  return {
+    activity_id: row.activityId,
+    diary_id: row.diaryId,
+    name: row.name,
+    duration: row.duration,
+    heart_rate: row.heartRate,
+    user_feeling: row.userFeeling,
+    note: row.note,
+    time_stamp: row.timeStamp,
+  };
+}
+
+function mapDailyConsumption(row) {
+  if (!row) {
+    return null;
+  }
+
+  return {
+    consumption_id: row.consumptionId,
+    diary_id: row.diaryId,
+    type: row.type,
+    name: row.name,
+    portion: row.portion,
+    note: row.note,
+    time_stamp: row.timeStamp,
+  };
+}
 
 async function listEmergencyContacts({ userId, limit, offset }) {
-  const [itemsResult, totalResult] = await Promise.all([
-    pool.query(
-      `
-      SELECT emergency_contact_id, user_id, contact_label, contact_number, is_priority, created_at
-      FROM emergency_contacts
-      WHERE user_id = $1
-      ORDER BY is_priority DESC, created_at DESC
-      LIMIT $2 OFFSET $3
-    `,
-      [userId, limit, offset]
-    ),
-    pool.query(
-      `
-      SELECT COUNT(*)::int AS total_items
-      FROM emergency_contacts
-      WHERE user_id = $1
-    `,
-      [userId]
-    ),
+  const [items, totalItems] = await Promise.all([
+    prisma.emergencyContact.findMany({
+      where: { userId },
+      orderBy: [{ isPriority: 'desc' }, { createdAt: 'desc' }],
+      skip: offset,
+      take: limit,
+    }),
+    prisma.emergencyContact.count({
+      where: { userId },
+    }),
   ]);
 
   return {
-    items: itemsResult.rows,
-    totalItems: totalResult.rows[0]?.total_items || 0,
+    items: items.map(mapEmergencyContact),
+    totalItems,
   };
 }
 
 async function listHeartDiaries({ userId, startDate, endDate, limit, offset }) {
-  const clauses = ['user_id = $1'];
-  const values = [userId];
-
-  if (startDate) {
-    values.push(startDate);
-    clauses.push(`diary_date >= $${values.length}`);
+  const where = { userId };
+  if (startDate || endDate) {
+    where.diaryDate = {};
+    if (startDate) {
+      where.diaryDate.gte = toDateOnly(startDate);
+    }
+    if (endDate) {
+      where.diaryDate.lte = toDateOnly(endDate);
+    }
   }
 
-  if (endDate) {
-    values.push(endDate);
-    clauses.push(`diary_date <= $${values.length}`);
-  }
-
-  const listValues = [...values, limit, offset];
-
-  const [itemsResult, totalResult] = await Promise.all([
-    pool.query(
-      `
-      SELECT diary_id, user_id, diary_date, created_at
-      FROM heart_diaries
-      WHERE ${clauses.join(' AND ')}
-      ORDER BY diary_date DESC
-      LIMIT $${values.length + 1} OFFSET $${values.length + 2}
-    `,
-      listValues
-    ),
-    pool.query(
-      `
-      SELECT COUNT(*)::int AS total_items
-      FROM heart_diaries
-      WHERE ${clauses.join(' AND ')}
-    `,
-      values
-    ),
+  const [items, totalItems] = await Promise.all([
+    prisma.heartDiary.findMany({
+      where,
+      orderBy: { diaryDate: 'desc' },
+      skip: offset,
+      take: limit,
+    }),
+    prisma.heartDiary.count({ where }),
   ]);
 
   return {
-    items: itemsResult.rows,
-    totalItems: totalResult.rows[0]?.total_items || 0,
+    items: items.map(mapHeartDiary),
+    totalItems,
   };
 }
 
 async function findPriorityEmergencyContact({ userId, excludeEmergencyContactId = null }) {
-  const values = [userId];
-  let excludeClause = '';
+  const row = await prisma.emergencyContact.findFirst({
+    where: {
+      userId,
+      isPriority: true,
+      emergencyContactId: excludeEmergencyContactId
+        ? {
+            not: excludeEmergencyContactId,
+          }
+        : undefined,
+    },
+  });
 
-  if (excludeEmergencyContactId) {
-    values.push(excludeEmergencyContactId);
-    excludeClause = `AND emergency_contact_id <> $${values.length}`;
-  }
-
-  const result = await pool.query(
-    `
-      SELECT emergency_contact_id, user_id, contact_label, contact_number, is_priority, created_at
-      FROM emergency_contacts
-      WHERE user_id = $1
-        AND is_priority = TRUE
-        ${excludeClause}
-      LIMIT 1
-    `,
-    values
-  );
-
-  return result.rows[0] || null;
+  return mapEmergencyContact(row);
 }
 
 async function createEmergencyContact({ userId, contactLabel, contactNumber, isPriority }) {
-  const result = await pool.query(
-    `
-      INSERT INTO emergency_contacts (user_id, contact_label, contact_number, is_priority)
-      VALUES ($1, $2, $3, $4)
-      RETURNING emergency_contact_id, user_id, contact_label, contact_number, is_priority, created_at
-    `,
-    [userId, contactLabel, contactNumber, isPriority]
-  );
+  const row = await prisma.emergencyContact.create({
+    data: {
+      userId,
+      contactLabel,
+      contactNumber,
+      isPriority,
+    },
+  });
 
-  return result.rows[0] || null;
+  return mapEmergencyContact(row);
 }
 
 async function updateEmergencyContact({
@@ -115,169 +190,145 @@ async function updateEmergencyContact({
   contactNumber,
   isPriority,
 }) {
-  const result = await pool.query(
-    `
-      UPDATE emergency_contacts
-      SET contact_label = COALESCE($1, contact_label),
-          contact_number = COALESCE($2, contact_number),
-          is_priority = COALESCE($3, is_priority)
-      WHERE emergency_contact_id = $4
-        AND user_id = $5
-      RETURNING emergency_contact_id, user_id, contact_label, contact_number, is_priority, created_at
-    `,
-    [contactLabel, contactNumber, isPriority, emergencyContactId, userId]
-  );
+  const data = {};
+  if (contactLabel !== null) {
+    data.contactLabel = contactLabel;
+  }
+  if (contactNumber !== null) {
+    data.contactNumber = contactNumber;
+  }
+  if (isPriority !== null) {
+    data.isPriority = isPriority;
+  }
 
-  return result.rows[0] || null;
+  if (Object.keys(data).length === 0) {
+    const row = await prisma.emergencyContact.findFirst({
+      where: {
+        emergencyContactId,
+        userId,
+      },
+    });
+
+    return mapEmergencyContact(row);
+  }
+
+  const result = await prisma.emergencyContact.updateMany({
+    where: {
+      emergencyContactId,
+      userId,
+    },
+    data,
+  });
+
+  if (result.count === 0) {
+    return null;
+  }
+
+  const row = await prisma.emergencyContact.findUnique({
+    where: {
+      emergencyContactId,
+    },
+  });
+
+  return mapEmergencyContact(row);
 }
 
 async function deleteEmergencyContact({ userId, emergencyContactId }) {
-  const result = await pool.query(
-    `
-      DELETE FROM emergency_contacts
-      WHERE emergency_contact_id = $1
-        AND user_id = $2
-    `,
-    [emergencyContactId, userId]
-  );
+  const result = await prisma.emergencyContact.deleteMany({
+    where: {
+      emergencyContactId,
+      userId,
+    },
+  });
 
-  return result.rowCount;
+  return result.count;
 }
 
 async function upsertHeartDiary({ userId, diaryDate }) {
-  const result = await pool.query(
-    `
-      INSERT INTO heart_diaries (user_id, diary_date)
-      VALUES ($1, $2)
-      ON CONFLICT (user_id, diary_date)
-      DO UPDATE SET diary_date = EXCLUDED.diary_date
-      RETURNING diary_id, user_id, diary_date, created_at
-    `,
-    [userId, diaryDate]
-  );
+  const row = await prisma.heartDiary.upsert({
+    where: {
+      userId_diaryDate: {
+        userId,
+        diaryDate: toDateOnly(diaryDate),
+      },
+    },
+    create: {
+      userId,
+      diaryDate: toDateOnly(diaryDate),
+    },
+    update: {},
+  });
 
-  return result.rows[0] || null;
+  return mapHeartDiary(row);
 }
 
 async function getHeartDiaryByDate({ userId, diaryDate }) {
-  const result = await pool.query(
-    `
-      SELECT diary_id, user_id, diary_date, created_at
-      FROM heart_diaries
-      WHERE user_id = $1
-        AND diary_date = $2
-      LIMIT 1
-    `,
-    [userId, diaryDate]
-  );
+  const row = await prisma.heartDiary.findUnique({
+    where: {
+      userId_diaryDate: {
+        userId,
+        diaryDate: toDateOnly(diaryDate),
+      },
+    },
+  });
 
-  return result.rows[0] || null;
+  return mapHeartDiary(row);
 }
 
 async function getHeartDiary({ userId, diaryId }) {
-  const result = await pool.query(
-    `
-      SELECT diary_id, user_id, diary_date, created_at
-      FROM heart_diaries
-      WHERE diary_id = $1
-        AND user_id = $2
-      LIMIT 1
-    `,
-    [diaryId, userId]
-  );
+  const row = await prisma.heartDiary.findFirst({
+    where: {
+      diaryId,
+      userId,
+    },
+  });
 
-  return result.rows[0] || null;
+  return mapHeartDiary(row);
 }
 
 async function listDailyBodyMetrics(diaryId) {
-  const result = await pool.query(
-    `
-      SELECT
-        metric_id,
-        diary_id,
-        condition_tag,
-        body_height,
-        body_weight,
-        bmi,
-        systolic_pressure,
-        diastolic_pressure,
-        heart_rate,
-        time_stamp
-      FROM daily_metrics
-      WHERE diary_id = $1
-      ORDER BY time_stamp DESC
-    `,
-    [diaryId]
-  );
+  const rows = await prisma.dailyBodyMetric.findMany({
+    where: { diaryId },
+    orderBy: { timeStamp: 'desc' },
+  });
 
-  return result.rows;
+  return rows.map(mapDailyMetric);
 }
 
 async function getLatestDailyBodyMetric(diaryId) {
-  const result = await pool.query(
-    `
-      SELECT
-        metric_id,
-        diary_id,
-        condition_tag,
-        body_height,
-        body_weight,
-        bmi,
-        systolic_pressure,
-        diastolic_pressure,
-        heart_rate,
-        time_stamp
-      FROM daily_metrics
-      WHERE diary_id = $1
-      ORDER BY time_stamp DESC, metric_id DESC
-      LIMIT 1
-    `,
-    [diaryId]
-  );
+  const row = await prisma.dailyBodyMetric.findFirst({
+    where: { diaryId },
+    orderBy: [{ timeStamp: 'desc' }, { metricId: 'desc' }],
+  });
 
-  return result.rows[0] || null;
+  return mapDailyMetric(row);
 }
 
 async function listDailySymptoms(diaryId) {
-  const result = await pool.query(
-    `
-      SELECT symptom_id, diary_id, symptom_name, intensity, note, time_stamp
-      FROM daily_symptoms
-      WHERE diary_id = $1
-      ORDER BY time_stamp DESC
-    `,
-    [diaryId]
-  );
+  const rows = await prisma.dailySymptom.findMany({
+    where: { diaryId },
+    orderBy: { timeStamp: 'desc' },
+  });
 
-  return result.rows;
+  return rows.map(mapDailySymptom);
 }
 
 async function listDailyActivities(diaryId) {
-  const result = await pool.query(
-    `
-      SELECT activity_id, diary_id, name, duration, heart_rate, user_feeling, note, time_stamp
-      FROM daily_activities
-      WHERE diary_id = $1
-      ORDER BY time_stamp DESC
-    `,
-    [diaryId]
-  );
+  const rows = await prisma.dailyActivity.findMany({
+    where: { diaryId },
+    orderBy: { timeStamp: 'desc' },
+  });
 
-  return result.rows;
+  return rows.map(mapDailyActivity);
 }
 
 async function listDailyConsumptions(diaryId) {
-  const result = await pool.query(
-    `
-      SELECT consumption_id, diary_id, type, name, portion, note, time_stamp
-      FROM daily_consumptions
-      WHERE diary_id = $1
-      ORDER BY time_stamp DESC
-    `,
-    [diaryId]
-  );
+  const rows = await prisma.dailyConsumption.findMany({
+    where: { diaryId },
+    orderBy: { timeStamp: 'desc' },
+  });
 
-  return result.rows;
+  return rows.map(mapDailyConsumption);
 }
 
 async function createDailyBodyMetric({
@@ -291,22 +342,8 @@ async function createDailyBodyMetric({
   heartRate,
   timeStamp,
 }) {
-  const result = await pool.query(
-    `
-      INSERT INTO daily_metrics (
-        diary_id,
-        condition_tag,
-        body_height,
-        body_weight,
-        bmi,
-        systolic_pressure,
-        diastolic_pressure,
-        heart_rate,
-        time_stamp
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, COALESCE($9, NOW()))
-      RETURNING metric_id, diary_id, condition_tag, body_height, body_weight, bmi, systolic_pressure, diastolic_pressure, heart_rate, time_stamp
-    `,
-    [
+  const row = await prisma.dailyBodyMetric.create({
+    data: {
       diaryId,
       conditionTag,
       bodyHeight,
@@ -315,11 +352,11 @@ async function createDailyBodyMetric({
       systolicPressure,
       diastolicPressure,
       heartRate,
-      timeStamp,
-    ]
-  );
+      timeStamp: timeStamp ? toDateTime(timeStamp) : undefined,
+    },
+  });
 
-  return result.rows[0] || null;
+  return mapDailyMetric(row);
 }
 
 async function updateDailyBodyMetric({
@@ -333,78 +370,58 @@ async function updateDailyBodyMetric({
   heartRate,
   timeStamp,
 }) {
-  const updates = [];
-  const values = [];
-
+  const data = {};
   if (conditionTag !== undefined) {
-    updates.push(`condition_tag = $${values.length + 1}`);
-    values.push(conditionTag);
+    data.conditionTag = conditionTag;
   }
-
   if (bodyHeight !== undefined) {
-    updates.push(`body_height = $${values.length + 1}`);
-    values.push(bodyHeight);
+    data.bodyHeight = bodyHeight;
   }
-
   if (bodyWeight !== undefined) {
-    updates.push(`body_weight = $${values.length + 1}`);
-    values.push(bodyWeight);
+    data.bodyWeight = bodyWeight;
   }
-
   if (bmi !== undefined) {
-    updates.push(`bmi = $${values.length + 1}`);
-    values.push(bmi);
+    data.bmi = bmi;
   }
-
   if (systolicPressure !== undefined) {
-    updates.push(`systolic_pressure = $${values.length + 1}`);
-    values.push(systolicPressure);
+    data.systolicPressure = systolicPressure;
   }
-
   if (diastolicPressure !== undefined) {
-    updates.push(`diastolic_pressure = $${values.length + 1}`);
-    values.push(diastolicPressure);
+    data.diastolicPressure = diastolicPressure;
   }
-
   if (heartRate !== undefined) {
-    updates.push(`heart_rate = $${values.length + 1}`);
-    values.push(heartRate);
+    data.heartRate = heartRate;
+  }
+  if (timeStamp !== undefined && timeStamp !== null) {
+    data.timeStamp = toDateTime(timeStamp);
   }
 
-  if (timeStamp !== undefined) {
-    updates.push(`time_stamp = COALESCE($${values.length + 1}, time_stamp)`);
-    values.push(timeStamp);
-  }
-
-  if (!updates.length) {
+  if (Object.keys(data).length === 0) {
     return null;
   }
 
-  values.push(metricId);
-  const result = await pool.query(
-    `
-      UPDATE daily_metrics
-      SET ${updates.join(', ')}
-      WHERE metric_id = $${values.length}
-      RETURNING metric_id, diary_id, condition_tag, body_height, body_weight, bmi, systolic_pressure, diastolic_pressure, heart_rate, time_stamp
-    `,
-    values
-  );
+  const row = await prisma.dailyBodyMetric.update({
+    where: {
+      metricId,
+    },
+    data,
+  });
 
-  return result.rows[0] || null;
+  return mapDailyMetric(row);
 }
 
 async function createDailySymptom({ diaryId, symptomName, intensity, note, timeStamp }) {
-  const result = await pool.query(
-    `
-      INSERT INTO daily_symptoms (diary_id, symptom_name, intensity, note, time_stamp)
-      VALUES ($1, $2, $3, $4, COALESCE($5, NOW()))
-      RETURNING symptom_id, diary_id, symptom_name, intensity, note, time_stamp
-    `,
-    [diaryId, symptomName, intensity, note, timeStamp]
-  );
+  const row = await prisma.dailySymptom.create({
+    data: {
+      diaryId,
+      symptomName,
+      intensity,
+      note,
+      timeStamp: timeStamp ? toDateTime(timeStamp) : undefined,
+    },
+  });
 
-  return result.rows[0] || null;
+  return mapDailySymptom(row);
 }
 
 async function createDailyActivity({
@@ -416,44 +433,52 @@ async function createDailyActivity({
   note,
   timeStamp,
 }) {
-  const result = await pool.query(
-    `
-      INSERT INTO daily_activities (diary_id, name, duration, heart_rate, user_feeling, note, time_stamp)
-      VALUES ($1, $2, $3, $4, $5, $6, COALESCE($7, NOW()))
-      RETURNING activity_id, diary_id, name, duration, heart_rate, user_feeling, note, time_stamp
-    `,
-    [diaryId, name, duration, heartRate, userFeeling, note, timeStamp]
-  );
+  const row = await prisma.dailyActivity.create({
+    data: {
+      diaryId,
+      name,
+      duration,
+      heartRate,
+      userFeeling,
+      note,
+      timeStamp: timeStamp ? toDateTime(timeStamp) : undefined,
+    },
+  });
 
-  return result.rows[0] || null;
+  return mapDailyActivity(row);
 }
 
 async function createDailyConsumption({ diaryId, type, name, portion, note, timeStamp }) {
-  const result = await pool.query(
-    `
-      INSERT INTO daily_consumptions (diary_id, type, name, portion, note, time_stamp)
-      VALUES ($1, $2, $3, $4, $5, COALESCE($6, NOW()))
-      RETURNING consumption_id, diary_id, type, name, portion, note, time_stamp
-    `,
-    [diaryId, type, name, portion, note, timeStamp]
-  );
+  const row = await prisma.dailyConsumption.create({
+    data: {
+      diaryId,
+      type,
+      name,
+      portion,
+      note,
+      timeStamp: timeStamp ? toDateTime(timeStamp) : undefined,
+    },
+  });
 
-  return result.rows[0] || null;
+  return mapDailyConsumption(row);
 }
 
 async function updateUserAvatar({ userId, avatarPhoto }) {
-  const result = await pool.query(
-    `
-      UPDATE users
-      SET avatar_photo = $1,
-          updated_at = NOW()
-      WHERE user_id = $2
-      RETURNING user_id, avatar_photo, updated_at
-    `,
-    [avatarPhoto, userId]
-  );
+  const row = await prisma.user.update({
+    where: {
+      userId,
+    },
+    data: {
+      avatarPhoto,
+      updatedAt: new Date(),
+    },
+  });
 
-  return result.rows[0] || null;
+  return {
+    user_id: row.userId,
+    avatar_photo: row.avatarPhoto,
+    updated_at: row.updatedAt,
+  };
 }
 
 module.exports = {

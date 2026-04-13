@@ -1,52 +1,69 @@
-const { pool } = require('../config/database');
+const prisma = require('../config/prisma');
+
+function mapPatientShare(share) {
+  if (!share) {
+    return null;
+  }
+
+  return {
+    share_id: share.shareId,
+    patient_id: share.patientId,
+    share_code: share.shareCode,
+    expires_at: share.expiresAt,
+    created_by: share.createdBy,
+    created_at: share.createdAt,
+    revoked_at: share.revokedAt,
+  };
+}
 
 async function createPatientShare({ patientId, shareCode, expiresAt, createdBy }) {
-  const query = `
-    INSERT INTO patient_shares (
-      patient_id,
-      share_code,
-      expires_at,
-      created_by
-    ) VALUES ($1, $2, $3, $4)
-    RETURNING share_id, patient_id, share_code, expires_at, created_by, created_at, revoked_at
-  `;
+  const share = await prisma.patientShare.create({
+    data: {
+      patientId,
+      shareCode,
+      expiresAt: expiresAt ? new Date(expiresAt) : null,
+      createdBy,
+    },
+  });
 
-  const result = await pool.query(query, [patientId, shareCode, expiresAt, createdBy]);
-  return result.rows[0] || null;
+  return mapPatientShare(share);
 }
 
 async function findActiveShareByCode(shareCode) {
-  const query = `
-    SELECT
-      share_id,
-      patient_id,
-      share_code,
-      expires_at,
-      created_by,
-      created_at,
-      revoked_at
-    FROM patient_shares
-    WHERE share_code = $1
-      AND revoked_at IS NULL
-      AND (expires_at IS NULL OR expires_at > NOW())
-    ORDER BY created_at DESC
-    LIMIT 1
-  `;
+  const share = await prisma.patientShare.findFirst({
+    where: {
+      shareCode,
+      revokedAt: null,
+      OR: [
+        {
+          expiresAt: null,
+        },
+        {
+          expiresAt: {
+            gt: new Date(),
+          },
+        },
+      ],
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
 
-  const result = await pool.query(query, [shareCode]);
-  return result.rows[0] || null;
+  return mapPatientShare(share);
 }
 
 async function revokeShare(shareId) {
-  const query = `
-    UPDATE patient_shares
-    SET revoked_at = NOW()
-    WHERE share_id = $1
-    RETURNING share_id, patient_id, share_code, expires_at, created_by, created_at, revoked_at
-  `;
+  const share = await prisma.patientShare.update({
+    where: {
+      shareId,
+    },
+    data: {
+      revokedAt: new Date(),
+    },
+  });
 
-  const result = await pool.query(query, [shareId]);
-  return result.rows[0] || null;
+  return mapPatientShare(share);
 }
 
 module.exports = {

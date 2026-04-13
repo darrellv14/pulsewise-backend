@@ -2,6 +2,9 @@ const prisma = require('../config/prisma');
 const { BAD_REQUEST, FORBIDDEN, NOT_FOUND, CONFLICT } = require('../constants/httpStatus');
 const { buildPagination, normalizePaginationInput } = require('../utils/pagination');
 
+const CACHE_TTL_SECONDS = 60;
+const CACHE_SWR_SECONDS = 120;
+
 function createHttpError(message, statusCode, details = null) {
   const error = new Error(message);
   error.statusCode = statusCode;
@@ -185,6 +188,43 @@ function toDateOnlyValue(value) {
 
 function toPrismaDate(dateValue) {
   return new Date(`${dateValue}T00:00:00.000Z`);
+}
+
+function sanitizeCacheTagPart(value) {
+  return String(value || '')
+    .trim()
+    .replace(/[^A-Za-z0-9_]/g, '_')
+    .slice(0, 48);
+}
+
+function buildMedicationCacheTags({ userId, medicationId }) {
+  const safeUserId = sanitizeCacheTagPart(userId);
+  const tags = [`medications_user_${safeUserId}`];
+
+  if (medicationId) {
+    const safeMedicationId = sanitizeCacheTagPart(medicationId);
+    tags.push(`medication_item_${safeMedicationId}`, `reminders_medication_${safeMedicationId}`);
+  }
+
+  return tags;
+}
+
+function buildCacheStrategy(tags) {
+  return {
+    ttl: CACHE_TTL_SECONDS,
+    swr: CACHE_SWR_SECONDS,
+    tags,
+  };
+}
+
+async function invalidateCacheTags(tags) {
+  if (!Array.isArray(tags) || tags.length === 0) {
+    return;
+  }
+
+  await prisma.$accelerate?.invalidate({
+    tags,
+  });
 }
 
 function toMedicationLogDto(log) {
@@ -451,6 +491,7 @@ async function listMedications({ actor, userId, query }) {
   assertPatientScope({ actor, userId });
   const { page, limit } = normalizePaginationInput(query);
   const skip = (page - 1) * limit;
+  const cacheStrategy = buildCacheStrategy(buildMedicationCacheTags({ userId }));
 
   const [medications, totalItems] = await Promise.all([
     prisma.medication.findMany({
@@ -467,11 +508,13 @@ async function listMedications({ actor, userId, query }) {
       },
       skip,
       take: limit,
+      cacheStrategy,
     }),
     prisma.medication.count({
       where: {
         userId,
       },
+      cacheStrategy,
     }),
   ]);
 
@@ -572,6 +615,7 @@ async function listMedicationCalendar({ actor, userId, query }) {
 
 async function getMedicationById({ actor, userId, medicationId }) {
   assertPatientScope({ actor, userId });
+  const cacheStrategy = buildCacheStrategy(buildMedicationCacheTags({ userId, medicationId }));
 
   const medication = await prisma.medication.findFirst({
     where: {
@@ -583,6 +627,7 @@ async function getMedicationById({ actor, userId, medicationId }) {
         orderBy: [{ dayOfWeek: 'asc' }, { scheduleTime: 'asc' }],
       },
     },
+    cacheStrategy,
   });
 
   if (!medication) {
@@ -643,6 +688,8 @@ async function createMedication({ actor, userId, payload }) {
       },
     });
   });
+
+  await invalidateCacheTags(buildMedicationCacheTags({ userId }));
 
   return toMedicationDto(medication);
 }
@@ -767,6 +814,8 @@ async function updateMedication({ actor, userId, medicationId, payload }) {
     });
   });
 
+  await invalidateCacheTags(buildMedicationCacheTags({ userId, medicationId }));
+
   return toMedicationDto(medication);
 }
 
@@ -786,6 +835,8 @@ async function deleteMedication({ actor, userId, medicationId }) {
     }
   });
 
+  await invalidateCacheTags(buildMedicationCacheTags({ userId, medicationId }));
+
   return {
     medicationId,
   };
@@ -795,6 +846,7 @@ async function listRemindersByMedication({ actor, userId, medicationId, query })
   assertPatientScope({ actor, userId });
   const { page, limit } = normalizePaginationInput(query);
   const skip = (page - 1) * limit;
+  const cacheStrategy = buildCacheStrategy(buildMedicationCacheTags({ userId, medicationId }));
 
   await ensureMedicationOwnership(prisma, { medicationId, userId });
 
@@ -809,9 +861,11 @@ async function listRemindersByMedication({ actor, userId, medicationId, query })
       orderBy: [{ dayOfWeek: 'asc' }, { scheduleTime: 'asc' }],
       skip,
       take: limit,
+      cacheStrategy,
     }),
     prisma.reminder.count({
       where,
+      cacheStrategy,
     }),
   ]);
 
@@ -847,12 +901,15 @@ async function createReminder({ actor, userId, medicationId, payload }) {
     });
   });
 
+  await invalidateCacheTags(buildMedicationCacheTags({ userId, medicationId }));
+
   return toReminderDto(reminder);
 }
 
 async function updateReminder({ actor, userId, reminderId, payload }) {
   assertPatientScope({ actor, userId });
 
+  let invalidationTags = null;
   const reminder = await prisma.$transaction(async (tx) => {
     const currentReminder = await tx.reminder.findFirst({
       where: {
@@ -864,6 +921,11 @@ async function updateReminder({ actor, userId, reminderId, payload }) {
     if (!currentReminder) {
       throw createHttpError('Reminder tidak ditemukan', NOT_FOUND);
     }
+
+    invalidationTags = buildMedicationCacheTags({
+      userId,
+      medicationId: currentReminder.medicationId,
+    });
 
     const medication = await ensureMedicationOwnership(tx, {
       medicationId: currentReminder.medicationId,
@@ -892,11 +954,24 @@ async function updateReminder({ actor, userId, reminderId, payload }) {
     });
   });
 
+  await invalidateCacheTags(invalidationTags);
+
   return toReminderDto(reminder);
 }
 
 async function deleteReminder({ actor, userId, reminderId }) {
   assertPatientScope({ actor, userId });
+
+  const reminder = await prisma.reminder.findFirst({
+    where: {
+      reminderId,
+      userId,
+    },
+  });
+
+  if (!reminder) {
+    throw createHttpError('Reminder tidak ditemukan', NOT_FOUND);
+  }
 
   const result = await prisma.reminder.deleteMany({
     where: {
@@ -908,6 +983,13 @@ async function deleteReminder({ actor, userId, reminderId }) {
   if (result.count === 0) {
     throw createHttpError('Reminder tidak ditemukan', NOT_FOUND);
   }
+
+  await invalidateCacheTags(
+    buildMedicationCacheTags({
+      userId,
+      medicationId: reminder.medicationId,
+    })
+  );
 
   return {
     reminderId,

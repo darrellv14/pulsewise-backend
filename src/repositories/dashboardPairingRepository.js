@@ -1,163 +1,201 @@
-const { pool } = require('../config/database');
+const prisma = require('../config/prisma');
 
-const PAIRING_SESSION_FIELDS = `
-  pairing_session_id,
-  doctor_id,
-  status,
-  expires_at,
-  confirmed_at,
-  confirmed_by_patient_id,
-  created_at,
-  updated_at
-`;
+function mapPairingSession(row) {
+  if (!row) {
+    return null;
+  }
+
+  return {
+    pairing_session_id: row.pairingSessionId,
+    doctor_id: row.doctorId,
+    status: row.status,
+    expires_at: row.expiresAt,
+    confirmed_at: row.confirmedAt,
+    confirmed_by_patient_id: row.confirmedByPatientId,
+    created_at: row.createdAt,
+    updated_at: row.updatedAt,
+  };
+}
+
+function mapDoctorPatientLink(row) {
+  if (!row) {
+    return null;
+  }
+
+  return {
+    doctor_id: row.doctorId,
+    patient_id: row.patientId,
+    source: row.source,
+    linked_at: row.linkedAt,
+    is_active: row.isActive,
+  };
+}
 
 async function createDashboardPairingSession({ doctorId, pairingTokenHash, expiresAt }) {
-  const query = `
-    INSERT INTO dashboard_pairing_sessions (
-      doctor_id,
-      pairing_token_hash,
-      status,
-      expires_at
-    ) VALUES ($1, $2, 'pending', $3)
-    RETURNING ${PAIRING_SESSION_FIELDS}
-  `;
+  const row = await prisma.dashboardPairingSession.create({
+    data: {
+      doctorId,
+      pairingTokenHash,
+      status: 'pending',
+      expiresAt: new Date(expiresAt),
+    },
+  });
 
-  const result = await pool.query(query, [doctorId, pairingTokenHash, expiresAt]);
-  return result.rows[0] || null;
+  return mapPairingSession(row);
 }
 
 async function findDashboardPairingSessionById({ doctorId, pairingSessionId }) {
-  const query = `
-    SELECT ${PAIRING_SESSION_FIELDS}
-    FROM dashboard_pairing_sessions
-    WHERE doctor_id = $1
-      AND pairing_session_id = $2
-    LIMIT 1
-  `;
+  const row = await prisma.dashboardPairingSession.findFirst({
+    where: {
+      doctorId,
+      pairingSessionId,
+    },
+  });
 
-  const result = await pool.query(query, [doctorId, pairingSessionId]);
-  return result.rows[0] || null;
+  return mapPairingSession(row);
 }
 
 async function findDashboardPairingSessionByTokenHash(pairingTokenHash) {
-  const query = `
-    SELECT ${PAIRING_SESSION_FIELDS}
-    FROM dashboard_pairing_sessions
-    WHERE pairing_token_hash = $1
-    ORDER BY created_at DESC
-    LIMIT 1
-  `;
+  const row = await prisma.dashboardPairingSession.findFirst({
+    where: {
+      pairingTokenHash,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
 
-  const result = await pool.query(query, [pairingTokenHash]);
-  return result.rows[0] || null;
+  return mapPairingSession(row);
 }
 
 async function findActiveDashboardPairingSessionByTokenHash(pairingTokenHash) {
-  const query = `
-    SELECT ${PAIRING_SESSION_FIELDS}
-    FROM dashboard_pairing_sessions
-    WHERE pairing_token_hash = $1
-      AND status = 'pending'
-      AND expires_at > NOW()
-    ORDER BY created_at DESC
-    LIMIT 1
-  `;
+  const row = await prisma.dashboardPairingSession.findFirst({
+    where: {
+      pairingTokenHash,
+      status: 'pending',
+      expiresAt: {
+        gt: new Date(),
+      },
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
 
-  const result = await pool.query(query, [pairingTokenHash]);
-  return result.rows[0] || null;
+  return mapPairingSession(row);
 }
 
 async function confirmDashboardPairingSessionAtomic({ pairingTokenHash, patientId, source }) {
-  const client = await pool.connect();
+  return prisma.$transaction(async (tx) => {
+    const updated = await tx.dashboardPairingSession.updateMany({
+      where: {
+        pairingTokenHash,
+        status: 'pending',
+        expiresAt: {
+          gt: new Date(),
+        },
+      },
+      data: {
+        status: 'confirmed',
+        confirmedAt: new Date(),
+        confirmedByPatientId: patientId,
+        updatedAt: new Date(),
+      },
+    });
 
-  try {
-    await client.query('BEGIN');
-
-    const confirmResult = await client.query(
-      `
-        UPDATE dashboard_pairing_sessions
-        SET
-          status = 'confirmed',
-          confirmed_at = NOW(),
-          confirmed_by_patient_id = $2,
-          updated_at = NOW()
-        WHERE pairing_token_hash = $1
-          AND status = 'pending'
-          AND expires_at > NOW()
-        RETURNING ${PAIRING_SESSION_FIELDS}
-      `,
-      [pairingTokenHash, patientId]
-    );
-
-    if (confirmResult.rowCount === 0) {
-      await client.query('ROLLBACK');
+    if (updated.count === 0) {
       return null;
     }
 
-    const pairingSession = confirmResult.rows[0];
-    const linkResult = await client.query(
-      `
-        INSERT INTO doctor_patients (
-          doctor_id,
-          patient_id,
-          source,
-          is_active
-        ) VALUES ($1, $2, $3, TRUE)
-        ON CONFLICT (doctor_id, patient_id)
-        DO UPDATE SET
-          source = EXCLUDED.source,
-          linked_at = NOW(),
-          is_active = TRUE
-        RETURNING doctor_id, patient_id, source, linked_at, is_active
-      `,
-      [pairingSession.doctor_id, patientId, source]
-    );
+    const pairingSession = await tx.dashboardPairingSession.findFirst({
+      where: {
+        pairingTokenHash,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
 
-    await client.query('COMMIT');
+    const doctorPatientLink = await tx.doctorPatient.upsert({
+      where: {
+        doctorId_patientId: {
+          doctorId: pairingSession.doctorId,
+          patientId,
+        },
+      },
+      create: {
+        doctorId: pairingSession.doctorId,
+        patientId,
+        source,
+        isActive: true,
+      },
+      update: {
+        source,
+        linkedAt: new Date(),
+        isActive: true,
+      },
+    });
 
     return {
-      pairingSession,
-      doctorPatientLink: linkResult.rows[0] || null,
+      pairingSession: mapPairingSession(pairingSession),
+      doctorPatientLink: mapDoctorPatientLink(doctorPatientLink),
     };
-  } catch (error) {
-    await client.query('ROLLBACK');
-    throw error;
-  } finally {
-    client.release();
-  }
+  });
 }
 
 async function markDashboardPairingSessionConfirmed({ pairingSessionId, patientId }) {
-  const query = `
-    UPDATE dashboard_pairing_sessions
-    SET
-      status = 'confirmed',
-      confirmed_at = NOW(),
-      confirmed_by_patient_id = $2,
-      updated_at = NOW()
-    WHERE pairing_session_id = $1
-      AND status = 'pending'
-      AND expires_at > NOW()
-    RETURNING ${PAIRING_SESSION_FIELDS}
-  `;
+  const updated = await prisma.dashboardPairingSession.updateMany({
+    where: {
+      pairingSessionId,
+      status: 'pending',
+      expiresAt: {
+        gt: new Date(),
+      },
+    },
+    data: {
+      status: 'confirmed',
+      confirmedAt: new Date(),
+      confirmedByPatientId: patientId,
+      updatedAt: new Date(),
+    },
+  });
 
-  const result = await pool.query(query, [pairingSessionId, patientId]);
-  return result.rows[0] || null;
+  if (updated.count === 0) {
+    return null;
+  }
+
+  const row = await prisma.dashboardPairingSession.findUnique({
+    where: {
+      pairingSessionId,
+    },
+  });
+
+  return mapPairingSession(row);
 }
 
 async function markDashboardPairingSessionExpired(pairingSessionId) {
-  const query = `
-    UPDATE dashboard_pairing_sessions
-    SET
-      status = 'expired',
-      updated_at = NOW()
-    WHERE pairing_session_id = $1
-      AND status = 'pending'
-    RETURNING ${PAIRING_SESSION_FIELDS}
-  `;
+  const updated = await prisma.dashboardPairingSession.updateMany({
+    where: {
+      pairingSessionId,
+      status: 'pending',
+    },
+    data: {
+      status: 'expired',
+      updatedAt: new Date(),
+    },
+  });
 
-  const result = await pool.query(query, [pairingSessionId]);
-  return result.rows[0] || null;
+  if (updated.count === 0) {
+    return null;
+  }
+
+  const row = await prisma.dashboardPairingSession.findUnique({
+    where: {
+      pairingSessionId,
+    },
+  });
+
+  return mapPairingSession(row);
 }
 
 module.exports = {

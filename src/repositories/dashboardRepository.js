@@ -1,10 +1,10 @@
-const { pool } = require('../config/database');
+const prisma = require('../config/prisma');
 
 async function listDoctorDashboardPatients({ doctorId, q, limit, offset }) {
   const hasSearch = Boolean(q && q.trim());
   const normalizedQ = `%${(q || '').trim()}%`;
 
-  const itemsQuery = `
+  const items = await prisma.$queryRaw`
     SELECT
       u.user_id AS patient_id,
       u.first_name,
@@ -59,13 +59,13 @@ async function listDoctorDashboardPatients({ doctorId, q, limit, offset }) {
       ORDER BY vsr.measured_at DESC
       LIMIT 1
     ) latest_spo2 ON TRUE
-    WHERE dp.doctor_id = $1
+    WHERE dp.doctor_id = ${doctorId}
       AND dp.is_active = TRUE
-      AND ($2::BOOLEAN = FALSE OR (
-        u.first_name ILIKE $3 OR
-        u.last_name ILIKE $3 OR
-        u.email ILIKE $3 OR
-        u.user_id::TEXT ILIKE $3
+      AND (${hasSearch}::BOOLEAN = FALSE OR (
+        u.first_name ILIKE ${normalizedQ} OR
+        u.last_name ILIKE ${normalizedQ} OR
+        u.email ILIKE ${normalizedQ} OR
+        u.user_id::TEXT ILIKE ${normalizedQ}
       ))
     ORDER BY COALESCE(
       GREATEST(
@@ -75,36 +75,31 @@ async function listDoctorDashboardPatients({ doctorId, q, limit, offset }) {
       ),
       dp.linked_at
     ) DESC, u.first_name ASC
-    LIMIT $4 OFFSET $5
+    LIMIT ${limit} OFFSET ${offset}
   `;
 
-  const totalQuery = `
+  const totalResult = await prisma.$queryRaw`
     SELECT COUNT(*)::INT AS total
     FROM doctor_patients dp
     JOIN users u ON u.user_id = dp.patient_id
-    WHERE dp.doctor_id = $1
+    WHERE dp.doctor_id = ${doctorId}
       AND dp.is_active = TRUE
-      AND ($2::BOOLEAN = FALSE OR (
-        u.first_name ILIKE $3 OR
-        u.last_name ILIKE $3 OR
-        u.email ILIKE $3 OR
-        u.user_id::TEXT ILIKE $3
+      AND (${hasSearch}::BOOLEAN = FALSE OR (
+        u.first_name ILIKE ${normalizedQ} OR
+        u.last_name ILIKE ${normalizedQ} OR
+        u.email ILIKE ${normalizedQ} OR
+        u.user_id::TEXT ILIKE ${normalizedQ}
       ))
   `;
 
-  const [itemsResult, totalResult] = await Promise.all([
-    pool.query(itemsQuery, [doctorId, hasSearch, normalizedQ, limit, offset]),
-    pool.query(totalQuery, [doctorId, hasSearch, normalizedQ]),
-  ]);
-
   return {
-    items: itemsResult.rows,
-    totalItems: totalResult.rows[0]?.total || 0,
+    items,
+    totalItems: totalResult[0]?.total || 0,
   };
 }
 
 async function getDoctorPatientIdentity({ doctorId, patientId }) {
-  const query = `
+  const result = await prisma.$queryRaw`
     SELECT
       u.user_id AS patient_id,
       u.first_name,
@@ -116,18 +111,17 @@ async function getDoctorPatientIdentity({ doctorId, patientId }) {
     FROM doctor_patients dp
     JOIN users u ON u.user_id = dp.patient_id
     LEFT JOIN patient_profiles p ON p.patient_id = dp.patient_id
-    WHERE dp.doctor_id = $1
-      AND dp.patient_id = $2
+    WHERE dp.doctor_id = ${doctorId}
+      AND dp.patient_id = ${patientId}
       AND dp.is_active = TRUE
     LIMIT 1
   `;
 
-  const result = await pool.query(query, [doctorId, patientId]);
-  return result.rows[0] || null;
+  return result[0] || null;
 }
 
 async function getLatestDailyMetrics(patientId) {
-  const query = `
+  const result = await prisma.$queryRaw`
     SELECT
       dm.time_stamp AS measured_at,
       dm.systolic_pressure AS systolic_bp,
@@ -137,17 +131,16 @@ async function getLatestDailyMetrics(patientId) {
       dm.bmi AS bmi
     FROM heart_diaries hd
     JOIN daily_metrics dm ON dm.diary_id = hd.diary_id
-    WHERE hd.user_id = $1
+    WHERE hd.user_id = ${patientId}
     ORDER BY dm.time_stamp DESC
     LIMIT 1
   `;
 
-  const result = await pool.query(query, [patientId]);
-  return result.rows[0] || null;
+  return result[0] || null;
 }
 
 async function listDailyMetricsSeries({ patientId, startAt, endAt }) {
-  const query = `
+  return prisma.$queryRaw`
     SELECT
       dm.time_stamp AS measured_at,
       dm.systolic_pressure AS systolic_bp,
@@ -157,44 +150,35 @@ async function listDailyMetricsSeries({ patientId, startAt, endAt }) {
       dm.bmi AS bmi
     FROM heart_diaries hd
     JOIN daily_metrics dm ON dm.diary_id = hd.diary_id
-    WHERE hd.user_id = $1
-      AND dm.time_stamp BETWEEN $2 AND $3
+    WHERE hd.user_id = ${patientId}
+      AND dm.time_stamp BETWEEN ${new Date(startAt)} AND ${new Date(endAt)}
     ORDER BY dm.time_stamp ASC
   `;
-
-  const result = await pool.query(query, [patientId, startAt, endAt]);
-  return result.rows;
 }
 
 async function listVitalReadingSeries({ patientId, startAt, endAt }) {
-  const query = `
+  return prisma.$queryRaw`
     SELECT
       metric_type,
       value_numeric,
       measured_at
     FROM vital_sign_readings
-    WHERE user_id = $1
-      AND measured_at BETWEEN $2 AND $3
+    WHERE user_id = ${patientId}
+      AND measured_at BETWEEN ${new Date(startAt)} AND ${new Date(endAt)}
     ORDER BY measured_at ASC
   `;
-
-  const result = await pool.query(query, [patientId, startAt, endAt]);
-  return result.rows;
 }
 
 async function getLatestVitalSnapshot(patientId) {
-  const query = `
+  return prisma.$queryRaw`
     SELECT DISTINCT ON (metric_type)
       metric_type,
       value_numeric,
       measured_at
     FROM vital_sign_readings
-    WHERE user_id = $1
+    WHERE user_id = ${patientId}
     ORDER BY metric_type, measured_at DESC
   `;
-
-  const result = await pool.query(query, [patientId]);
-  return result.rows;
 }
 
 module.exports = {

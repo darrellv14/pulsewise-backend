@@ -55,6 +55,11 @@ describe('medication pagination', () => {
         where: { userId: 'user-1' },
         skip: 1,
         take: 1,
+        cacheStrategy: expect.objectContaining({
+          ttl: 60,
+          swr: 120,
+          tags: ['medications_user_user_1'],
+        }),
       })
     );
     expect(result.pagination).toEqual({
@@ -95,6 +100,11 @@ describe('medication pagination', () => {
         where: { userId: 'user-1', medicationId: 'med-1' },
         skip: 1,
         take: 1,
+        cacheStrategy: expect.objectContaining({
+          ttl: 60,
+          swr: 120,
+          tags: ['medications_user_user_1', 'medication_item_med_1', 'reminders_medication_med_1'],
+        }),
       })
     );
     expect(result.pagination).toEqual({
@@ -174,6 +184,10 @@ describe('medication pagination', () => {
       expect.objectContaining({
         skip: 0,
         take: 20,
+        cacheStrategy: expect.objectContaining({
+          ttl: 60,
+          swr: 120,
+        }),
       })
     );
     expect(result.pagination).toEqual({

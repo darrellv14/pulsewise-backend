@@ -1,4 +1,26 @@
-const { pool } = require('../config/database');
+const prisma = require('../config/prisma');
+
+function toNullableNumber(value) {
+  return value === null || value === undefined ? null : Number(value);
+}
+
+function mapReading(row) {
+  if (!row) {
+    return null;
+  }
+
+  return {
+    reading_id: row.readingId,
+    user_id: row.userId,
+    source: row.source,
+    metric_type: row.metricType,
+    value_numeric: toNullableNumber(row.valueNumeric),
+    unit: row.unit,
+    payload: row.payload,
+    measured_at: row.measuredAt,
+    received_at: row.receivedAt,
+  };
+}
 
 async function findDuplicateReading({
   userId,
@@ -8,40 +30,24 @@ async function findDuplicateReading({
   valueNumeric,
   unit,
 }) {
-  const query = `
-    SELECT
-      reading_id,
-      user_id,
+  const row = await prisma.vitalSignReading.findFirst({
+    where: {
+      userId,
       source,
-      metric_type,
-      value_numeric,
-      unit,
-      payload,
-      measured_at,
-      received_at
-    FROM vital_sign_readings
-    WHERE user_id = $1
-      AND source = $2
-      AND LOWER(metric_type) = LOWER($3)
-      AND measured_at = $4
-      AND (
-        (value_numeric IS NULL AND $5::NUMERIC IS NULL)
-        OR value_numeric = $5::NUMERIC
-      )
-      AND COALESCE(unit, '') = COALESCE($6, '')
-    ORDER BY reading_id DESC
-    LIMIT 1
-  `;
+      metricType: {
+        equals: metricType,
+        mode: 'insensitive',
+      },
+      measuredAt: new Date(measuredAt),
+      valueNumeric: valueNumeric === null ? null : valueNumeric,
+      unit: unit || null,
+    },
+    orderBy: {
+      readingId: 'desc',
+    },
+  });
 
-  const result = await pool.query(query, [
-    userId,
-    source,
-    metricType,
-    measuredAt,
-    valueNumeric,
-    unit,
-  ]);
-  return result.rows[0] || null;
+  return mapReading(row);
 }
 
 async function insertReading({
@@ -53,123 +59,74 @@ async function insertReading({
   payload,
   measuredAt,
 }) {
-  const query = `
-    INSERT INTO vital_sign_readings (
-      user_id,
+  const row = await prisma.vitalSignReading.create({
+    data: {
+      userId,
       source,
-      metric_type,
-      value_numeric,
+      metricType,
+      valueNumeric,
       unit,
       payload,
-      measured_at
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7)
-    RETURNING
-      reading_id,
-      user_id,
-      source,
-      metric_type,
-      value_numeric,
-      unit,
-      payload,
-      measured_at,
-      received_at
-  `;
+      measuredAt: new Date(measuredAt),
+    },
+  });
 
-  const result = await pool.query(query, [
-    userId,
-    source,
-    metricType,
-    valueNumeric,
-    unit,
-    payload,
-    measuredAt,
-  ]);
-
-  return result.rows[0] || null;
+  return mapReading(row);
 }
 
 async function listReadings({ userId, source, metricType, startAt, endAt, limit, offset }) {
-  const params = [userId];
-  const conditions = ['user_id = $1'];
-
+  const where = { userId };
   if (source) {
-    params.push(source);
-    conditions.push(`source = $${params.length}`);
+    where.source = source;
   }
-
   if (metricType) {
-    params.push(metricType);
-    conditions.push(`LOWER(metric_type) = LOWER($${params.length})`);
+    where.metricType = {
+      equals: metricType,
+      mode: 'insensitive',
+    };
+  }
+  if (startAt || endAt) {
+    where.measuredAt = {};
+    if (startAt) {
+      where.measuredAt.gte = new Date(startAt);
+    }
+    if (endAt) {
+      where.measuredAt.lte = new Date(endAt);
+    }
   }
 
-  if (startAt) {
-    params.push(startAt);
-    conditions.push(`measured_at >= $${params.length}`);
-  }
+  const rows = await prisma.vitalSignReading.findMany({
+    where,
+    orderBy: [{ measuredAt: 'desc' }, { readingId: 'desc' }],
+    take: limit,
+    skip: offset,
+  });
 
-  if (endAt) {
-    params.push(endAt);
-    conditions.push(`measured_at <= $${params.length}`);
-  }
-
-  params.push(limit);
-  const limitParamIndex = params.length;
-  params.push(offset);
-  const offsetParamIndex = params.length;
-
-  const query = `
-    SELECT
-      reading_id,
-      user_id,
-      source,
-      metric_type,
-      value_numeric,
-      unit,
-      payload,
-      measured_at,
-      received_at
-    FROM vital_sign_readings
-    WHERE ${conditions.join(' AND ')}
-    ORDER BY measured_at DESC, reading_id DESC
-    LIMIT $${limitParamIndex} OFFSET $${offsetParamIndex}
-  `;
-
-  const result = await pool.query(query, params);
-  return result.rows;
+  return rows.map(mapReading);
 }
 
 async function countReadings({ userId, source, metricType, startAt, endAt }) {
-  const params = [userId];
-  const conditions = ['user_id = $1'];
-
+  const where = { userId };
   if (source) {
-    params.push(source);
-    conditions.push(`source = $${params.length}`);
+    where.source = source;
   }
-
   if (metricType) {
-    params.push(metricType);
-    conditions.push(`LOWER(metric_type) = LOWER($${params.length})`);
+    where.metricType = {
+      equals: metricType,
+      mode: 'insensitive',
+    };
+  }
+  if (startAt || endAt) {
+    where.measuredAt = {};
+    if (startAt) {
+      where.measuredAt.gte = new Date(startAt);
+    }
+    if (endAt) {
+      where.measuredAt.lte = new Date(endAt);
+    }
   }
 
-  if (startAt) {
-    params.push(startAt);
-    conditions.push(`measured_at >= $${params.length}`);
-  }
-
-  if (endAt) {
-    params.push(endAt);
-    conditions.push(`measured_at <= $${params.length}`);
-  }
-
-  const query = `
-    SELECT COUNT(*)::INT AS total
-    FROM vital_sign_readings
-    WHERE ${conditions.join(' AND ')}
-  `;
-
-  const result = await pool.query(query, params);
-  return result.rows[0]?.total || 0;
+  return prisma.vitalSignReading.count({ where });
 }
 
 module.exports = {
