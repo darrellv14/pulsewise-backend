@@ -46,7 +46,7 @@ router.post(
   validateRequest(medicationCreateSchema),
   medicationController.createMedication
 );
-router.put(
+router.patch(
   '/users/:userId/medications/:medicationId',
   authenticate,
   validateRequest(medicationParamsSchema, 'params'),

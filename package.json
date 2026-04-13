@@ -21,7 +21,8 @@
     "migrate": "node scripts/migrate.js",
     "seed:dev": "node scripts/seed-dev-users.js",
     "seed:dashboard": "node scripts/seed-dashboard-data.js",
-    "seed:patient-care": "node scripts/seed-patient-care.js"
+    "seed:patient-care": "node scripts/seed-patient-care.js",
+    "postman:sync-examples": "node scripts/sync-openapi-postman-examples.js"
   },
   "keywords": [],
   "author": "",

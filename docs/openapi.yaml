@@ -150,6 +150,15 @@ components:
           type: string
           format: date-time
           nullable: true
+      example:
+        userId: 3a233724-0b42-4a4f-88e8-88e732c46351
+        username: agus
+        email: agus@example.com
+        firstName: Agus
+        lastName: Pratama
+        role: patient
+        accountStatus: active
+        emailVerifiedAt: '2026-04-10T08:15:00.000Z'
 
     RegisterRequest:
       type: object
@@ -258,6 +267,19 @@ components:
           type: string
           format: email
           nullable: true
+      example:
+        patient_id: 3a233724-0b42-4a4f-88e8-88e732c46351
+        date_of_birth: '1994-08-17'
+        sex: male
+        body_height_cm: 172.5
+        is_smoking: false
+        is_electric_smoking: false
+        blood_type: O+
+        address: Jalan Sukamaju No. 88, Surabaya
+        created_at: '2026-04-10T08:15:00.000Z'
+        first_name: Agus
+        last_name: Pratama
+        email: agus@example.com
 
     DoctorProfile:
       type: object
@@ -287,6 +309,15 @@ components:
           type: string
           format: email
           nullable: true
+      example:
+        doctor_id: 8aca6089-3899-4b85-a715-0a63113e846a
+        specialization: Cardiology
+        license_no: DOC-123456
+        hospital_name: RS PulseWise
+        created_at: '2026-04-10T08:15:00.000Z'
+        first_name: Intan
+        last_name: Wijaya
+        email: intan.wijaya@example.com
 
     PatientProfileUpdateRequest:
       type: object
@@ -383,6 +414,32 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Reminder'
+      example:
+        medicationId: 1e0d4a7c-6fdf-4973-a2bd-7577514a966f
+        userId: 3a233724-0b42-4a4f-88e8-88e732c46351
+        name: Aspirin
+        description: Obat harian untuk terapi jantung
+        conditionTag: heart
+        form: tablet
+        color: '#22C55E'
+        singleDose: 1
+        singleDoseUnit: tablet
+        startDate: '2026-04-10'
+        frequency: daily
+        numOfDays: 7
+        daysOfWeek: []
+        intakeTimes:
+          - '08:00'
+          - '20:00'
+        note: Minum setelah makan
+        createdAt: '2026-04-10T08:15:00.000Z'
+        reminders:
+          - reminderId: 9f7c5d8b-1234-4dcd-99c1-1234567890ab
+            userId: 3a233724-0b42-4a4f-88e8-88e732c46351
+            medicationId: 1e0d4a7c-6fdf-4973-a2bd-7577514a966f
+            scheduleTime: '08:00'
+            dayOfWeek: null
+            createdAt: '2026-04-10T08:15:00.000Z'
 
     MedicationCalendarEvent:
       type: object
@@ -421,6 +478,18 @@ components:
           type: string
           nullable: true
           enum: [taken, skipped, missed]
+      example:
+        eventId: 9f7c5d8b-1234-4dcd-99c1-1234567890ab:2026-04-11
+        scheduledDate: '2026-04-11'
+        scheduledTime: '08:00'
+        reminderId: 9f7c5d8b-1234-4dcd-99c1-1234567890ab
+        medicationId: 1e0d4a7c-6fdf-4973-a2bd-7577514a966f
+        medicationLogId: 3f26d26f-f29a-42a7-b4d1-59880b1d6f02
+        name: Aspirin
+        color: '#22C55E'
+        singleDose: 1
+        singleDoseUnit: tablet
+        status: taken
 
     MedicationCalendarData:
       type: object
@@ -440,6 +509,34 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MedicationCalendarEvent'
+      example:
+        range:
+          from: '2026-04-01'
+          to: '2026-04-30'
+        totalItems: 2
+        items:
+          - eventId: 9f7c5d8b-1234-4dcd-99c1-1234567890ab:2026-04-11
+            scheduledDate: '2026-04-11'
+            scheduledTime: '08:00'
+            reminderId: 9f7c5d8b-1234-4dcd-99c1-1234567890ab
+            medicationId: 1e0d4a7c-6fdf-4973-a2bd-7577514a966f
+            medicationLogId: 3f26d26f-f29a-42a7-b4d1-59880b1d6f02
+            name: Aspirin
+            color: '#22C55E'
+            singleDose: 1
+            singleDoseUnit: tablet
+            status: taken
+          - eventId: 2f7c5d8b-1234-4dcd-99c1-1234567890ac:2026-04-11
+            scheduledDate: '2026-04-11'
+            scheduledTime: '20:00'
+            reminderId: 2f7c5d8b-1234-4dcd-99c1-1234567890ac
+            medicationId: 1e0d4a7c-6fdf-4973-a2bd-7577514a966f
+            medicationLogId: null
+            name: Aspirin
+            color: '#22C55E'
+            singleDose: 1
+            singleDoseUnit: tablet
+            status: null
 
     Reminder:
       type: object
@@ -464,6 +561,13 @@ components:
         createdAt:
           type: string
           format: date-time
+      example:
+        reminderId: 9f7c5d8b-1234-4dcd-99c1-1234567890ab
+        userId: 3a233724-0b42-4a4f-88e8-88e732c46351
+        medicationId: 1e0d4a7c-6fdf-4973-a2bd-7577514a966f
+        scheduleTime: '08:00'
+        dayOfWeek: null
+        createdAt: '2026-04-10T08:15:00.000Z'
 
     ReminderInput:
       type: object
@@ -505,6 +609,14 @@ components:
         createdAt:
           type: string
           format: date-time
+      example:
+        medicationLogId: 3f26d26f-f29a-42a7-b4d1-59880b1d6f02
+        userId: 3a233724-0b42-4a4f-88e8-88e732c46351
+        medicationId: 1e0d4a7c-6fdf-4973-a2bd-7577514a966f
+        status: taken
+        medicationDate: '2026-04-10'
+        medicationTime: '08:15'
+        createdAt: '2026-04-10T08:15:00.000Z'
 
     MedicationLogCreateRequest:
       type: object
@@ -543,6 +655,13 @@ components:
         createdAt:
           type: string
           format: date-time
+      example:
+        emergencyContactId: 1a3b5c7d-9e0f-4a11-8b22-334455667788
+        userId: 3a233724-0b42-4a4f-88e8-88e732c46351
+        contactLabel: Ibu
+        contactNumber: '+628123456789'
+        isPriority: true
+        createdAt: '2026-04-10T08:15:00.000Z'
 
     EmergencyContactCreateRequest:
       type: object
@@ -590,6 +709,11 @@ components:
         createdAt:
           type: string
           format: date-time
+      example:
+        diaryId: 5e5f09ab-5543-435d-b0fb-9a8ef041d8b0
+        userId: 3a233724-0b42-4a4f-88e8-88e732c46351
+        diaryDate: '2026-04-10'
+        createdAt: '2026-04-10T08:15:00.000Z'
 
     DailyBodyMetric:
       type: object
@@ -625,6 +749,17 @@ components:
           type: string
           format: date-time
           nullable: true
+      example:
+        metricId: 7b5d8f10-1111-4222-8333-1234567890ab
+        diaryId: 5e5f09ab-5543-435d-b0fb-9a8ef041d8b0
+        conditionTag: after_breakfast
+        bodyHeight: 172.5
+        bodyWeight: 68.2
+        bmi: 22.9
+        systolicPressure: 122
+        diastolicPressure: 78
+        heartRate: 74
+        timeStamp: '2026-04-10T07:30:00.000Z'
 
     DailySymptom:
       type: object
@@ -651,6 +786,14 @@ components:
           type: string
           format: date-time
           nullable: true
+      example:
+        symptomId: 7b5d8f10-1111-4222-8333-1234567890ac
+        diaryId: 5e5f09ab-5543-435d-b0fb-9a8ef041d8b0
+        symptomName: Pusing ringan
+        intensity: 2
+        note: Muncul sebelum sarapan
+        time: '07:30'
+        timeStamp: '2026-04-10T07:30:00.000Z'
 
     DailyActivity:
       type: object
@@ -679,6 +822,15 @@ components:
           type: string
           format: date-time
           nullable: true
+      example:
+        activityId: 7b5d8f10-1111-4222-8333-1234567890ad
+        diaryId: 5e5f09ab-5543-435d-b0fb-9a8ef041d8b0
+        name: Jalan pagi
+        duration: 30
+        heartRate: 98
+        userFeeling: baik
+        note: Ritme santai
+        timeStamp: '2026-04-10T06:30:00.000Z'
 
     DailyConsumption:
       type: object
@@ -709,6 +861,15 @@ components:
           type: string
           format: date-time
           nullable: true
+      example:
+        consumptionId: 7b5d8f10-1111-4222-8333-1234567890ae
+        diaryId: 5e5f09ab-5543-435d-b0fb-9a8ef041d8b0
+        type: minuman
+        name: Kopi hitam
+        portion: 1 cangkir
+        note: Tanpa gula
+        time: '21:15'
+        timeStamp: '2026-04-10T21:15:00.000Z'
 
     HeartDiaryCreateRequest:
       type: object
@@ -912,6 +1073,48 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/DailyConsumption'
+      example:
+        diaryId: 5e5f09ab-5543-435d-b0fb-9a8ef041d8b0
+        userId: 3a233724-0b42-4a4f-88e8-88e732c46351
+        diaryDate: '2026-04-10'
+        createdAt: '2026-04-10T08:15:00.000Z'
+        bodyMetrics:
+          - metricId: 7b5d8f10-1111-4222-8333-1234567890ab
+            diaryId: 5e5f09ab-5543-435d-b0fb-9a8ef041d8b0
+            conditionTag: after_breakfast
+            bodyHeight: 172.5
+            bodyWeight: 68.2
+            bmi: 22.9
+            systolicPressure: 122
+            diastolicPressure: 78
+            heartRate: 74
+            timeStamp: '2026-04-10T07:30:00.000Z'
+        symptoms:
+          - symptomId: 7b5d8f10-1111-4222-8333-1234567890ac
+            diaryId: 5e5f09ab-5543-435d-b0fb-9a8ef041d8b0
+            symptomName: Pusing ringan
+            intensity: 2
+            note: Muncul sebelum sarapan
+            time: '07:30'
+            timeStamp: '2026-04-10T07:30:00.000Z'
+        activities:
+          - activityId: 7b5d8f10-1111-4222-8333-1234567890ad
+            diaryId: 5e5f09ab-5543-435d-b0fb-9a8ef041d8b0
+            name: Jalan pagi
+            duration: 30
+            heartRate: 98
+            userFeeling: baik
+            note: Ritme santai
+            timeStamp: '2026-04-10T06:30:00.000Z'
+        consumptions:
+          - consumptionId: 7b5d8f10-1111-4222-8333-1234567890ae
+            diaryId: 5e5f09ab-5543-435d-b0fb-9a8ef041d8b0
+            type: minuman
+            name: Kopi hitam
+            portion: 1 cangkir
+            note: Tanpa gula
+            time: '21:15'
+            timeStamp: '2026-04-10T21:15:00.000Z'
 
     AvatarUploadSignatureResponse:
       type: object
@@ -933,6 +1136,15 @@ components:
         uploadUrl:
           type: string
           format: uri
+      example:
+        cloudName: drvu0dpry
+        apiKey: '385651324518538'
+        timestamp: 1776071700
+        folder: pulsewise/avatar
+        signature: 7c7b09f61a4e9773aa79f07b70c1ed37d1d85732
+        transformation: c_limit,h_512,w_512,q_auto:good
+        allowed_formats: jpg,jpeg,png,webp
+        uploadUrl: https://api.cloudinary.com/v1_1/drvu0dpry/image/upload
 
     AvatarSaveRequest:
       type: object
@@ -976,6 +1188,11 @@ components:
         updatedAt:
           type: string
           format: date-time
+      example:
+        userId: 3a233724-0b42-4a4f-88e8-88e732c46351
+        avatarPhoto: https://res.cloudinary.com/drvu0dpry/image/upload/v1776071700/pulsewise/avatar/profile.png
+        cloudinaryPublicId: pulsewise/avatar/profile
+        updatedAt: '2026-04-10T08:15:00.000Z'
 
     MedicationCreateRequest:
       type: object
@@ -1145,6 +1362,15 @@ components:
           type: string
           format: email
           nullable: true
+      example:
+        doctor_id: 8aca6089-3899-4b85-a715-0a63113e846a
+        patient_id: 3a233724-0b42-4a4f-88e8-88e732c46351
+        source: qr_patient_id
+        linked_at: '2026-04-10T08:15:00.000Z'
+        is_active: true
+        first_name: Agus
+        last_name: Pratama
+        email: agus@example.com
 
     PatientShareCreateRequest:
       type: object
@@ -1217,6 +1443,13 @@ components:
           type: string
           format: uuid
           nullable: true
+      example:
+        pairingSessionId: 92d6f1bf-45ef-470f-a5a3-2f277f3138ca
+        doctorId: 8aca6089-3899-4b85-a715-0a63113e846a
+        status: pending
+        expiresAt: '2026-04-10T08:20:00.000Z'
+        confirmedAt: null
+        patientId: null
 
     DashboardPairingSessionCreateData:
       allOf:
@@ -1229,6 +1462,16 @@ components:
               type: string
             pollingPath:
               type: string
+      example:
+        pairingSessionId: 92d6f1bf-45ef-470f-a5a3-2f277f3138ca
+        doctorId: 8aca6089-3899-4b85-a715-0a63113e846a
+        status: pending
+        expiresAt: '2026-04-10T08:20:00.000Z'
+        confirmedAt: null
+        patientId: null
+        pairingToken: PWDASH-79F438BA5A36D22D7A4EA247FEC9E928A9CC
+        qrPayload: PWDASH-79F438BA5A36D22D7A4EA247FEC9E928A9CC
+        pollingPath: /api/v1/doctors/8aca6089-3899-4b85-a715-0a63113e846a/dashboard/pairing-sessions/92d6f1bf-45ef-470f-a5a3-2f277f3138ca
 
     DashboardPairingSessionConfirmData:
       allOf:
@@ -1238,6 +1481,22 @@ components:
             doctorPatientLink:
               $ref: '#/components/schemas/DoctorPatientLink'
               nullable: true
+      example:
+        pairingSessionId: 92d6f1bf-45ef-470f-a5a3-2f277f3138ca
+        doctorId: 8aca6089-3899-4b85-a715-0a63113e846a
+        status: confirmed
+        expiresAt: '2026-04-10T08:20:00.000Z'
+        confirmedAt: '2026-04-10T08:16:00.000Z'
+        patientId: 3a233724-0b42-4a4f-88e8-88e732c46351
+        doctorPatientLink:
+          doctor_id: 8aca6089-3899-4b85-a715-0a63113e846a
+          patient_id: 3a233724-0b42-4a4f-88e8-88e732c46351
+          source: qr_dashboard_pairing
+          linked_at: '2026-04-10T08:16:00.000Z'
+          is_active: true
+          first_name: Agus
+          last_name: Pratama
+          email: agus@example.com
 
     PatientShare:
       type: object
@@ -1255,6 +1514,12 @@ components:
           format: date-time
         qrPayload:
           type: string
+      example:
+        shareId: 7cbe70e1-53b2-4a30-b816-3f59f584a005
+        patientId: 3a233724-0b42-4a4f-88e8-88e732c46351
+        shareCode: PW-9A8B7C6D5E4F
+        expiresAt: '2026-04-11T08:15:00.000Z'
+        qrPayload: PW-9A8B7C6D5E4F
 
     DashboardPatientIdentity:
       type: object
@@ -1285,6 +1550,15 @@ components:
         sex:
           type: string
           nullable: true
+      example:
+        patientId: 3a233724-0b42-4a4f-88e8-88e732c46351
+        firstName: Agus
+        lastName: Pratama
+        email: agus@example.com
+        phone: '+628123456789'
+        dateOfBirth: '1994-08-17'
+        age: 31
+        sex: male
 
     LatestVitals:
       type: object
@@ -1314,6 +1588,15 @@ components:
         bmi:
           type: number
           nullable: true
+      example:
+        measuredAt: '2026-04-10T07:30:00.000Z'
+        systolicBp: 122
+        diastolicBp: 78
+        heartRate: 74
+        oxygenSaturation: 98
+        weight: 68.2
+        height: 172.5
+        bmi: 22.9
 
     DashboardPatientListItem:
       type: object
@@ -1340,6 +1623,22 @@ components:
           nullable: true
         latestVitals:
           $ref: '#/components/schemas/LatestVitals'
+      example:
+        patientId: 3a233724-0b42-4a4f-88e8-88e732c46351
+        firstName: Agus
+        lastName: Pratama
+        email: agus@example.com
+        dateOfBirth: '1994-08-17'
+        sex: male
+        latestVitals:
+          measuredAt: '2026-04-10T07:30:00.000Z'
+          systolicBp: 122
+          diastolicBp: 78
+          heartRate: 74
+          oxygenSaturation: 98
+          weight: 68.2
+          height: 172.5
+          bmi: 22.9
 
     DashboardPeriod:
       type: object
@@ -1352,6 +1651,10 @@ components:
           format: date-time
         timePeriod:
           type: string
+      example:
+        startAt: '2026-04-01T00:00:00.000Z'
+        endAt: '2026-04-10T23:59:59.999Z'
+        timePeriod: last_30_days
 
     DashboardVitalsSeries:
       type: object
@@ -1396,6 +1699,18 @@ components:
           items:
             type: number
             nullable: true
+      example:
+        timestamps:
+          - '2026-04-08T07:30:00.000Z'
+          - '2026-04-09T07:30:00.000Z'
+          - '2026-04-10T07:30:00.000Z'
+        systolicBp: [120, 121, 122]
+        diastolicBp: [76, 77, 78]
+        heartRate: [72, 73, 74]
+        oxygenSaturation: [98, 98, 98]
+        weight: [68.4, 68.3, 68.2]
+        height: [172.5, 172.5, 172.5]
+        bmi: [23, 22.9, 22.9]
 
     DashboardThresholds:
       type: object
@@ -1432,6 +1747,23 @@ components:
           type: number
         BP_STAGE2_DIASTOLIC_MIN:
           type: number
+      example:
+        SPO2_CRITICAL_THRESHOLD: 90
+        SPO2_CAUTION_THRESHOLD: 95
+        WEIGHT_DAILY_INCREASE_CRITICAL_KG: 2
+        HR_NORMAL_MIN: 60
+        HR_NORMAL_MAX: 100
+        BP_NORMAL_SYSTOLIC_MAX: 119
+        BP_NORMAL_DIASTOLIC_MAX: 79
+        BP_ELEVATED_SYSTOLIC_MIN: 120
+        BP_ELEVATED_SYSTOLIC_MAX: 129
+        BP_ELEVATED_DIASTOLIC_MAX: 79
+        BP_STAGE1_SYSTOLIC_MIN: 130
+        BP_STAGE1_SYSTOLIC_MAX: 139
+        BP_STAGE1_DIASTOLIC_MIN: 80
+        BP_STAGE1_DIASTOLIC_MAX: 89
+        BP_STAGE2_SYSTOLIC_MIN: 140
+        BP_STAGE2_DIASTOLIC_MIN: 90
 
     DashboardMetricStats:
       type: object
@@ -1445,6 +1777,10 @@ components:
         max:
           type: number
           nullable: true
+      example:
+        avg: 122.3
+        min: 118
+        max: 129
 
     DashboardAbnormalInstance:
       type: object
@@ -1456,6 +1792,11 @@ components:
           type: object
           additionalProperties:
             type: string
+      example:
+        timestamp: '2026-04-10T07:30:00.000Z'
+        details:
+          bloodPressure: 142/92 mmHg (Stage 2 Hypertension)
+          oxygenSaturation: 93% (Caution)
 
     DoctorDashboardPatientsData:
       type: object
@@ -1466,6 +1807,28 @@ components:
             $ref: '#/components/schemas/DashboardPatientListItem'
         pagination:
           $ref: '#/components/schemas/Pagination'
+      example:
+        items:
+          - patientId: 3a233724-0b42-4a4f-88e8-88e732c46351
+            firstName: Agus
+            lastName: Pratama
+            email: agus@example.com
+            dateOfBirth: '1994-08-17'
+            sex: male
+            latestVitals:
+              measuredAt: '2026-04-10T07:30:00.000Z'
+              systolicBp: 122
+              diastolicBp: 78
+              heartRate: 74
+              oxygenSaturation: 98
+              weight: 68.2
+              height: 172.5
+              bmi: 22.9
+        pagination:
+          page: 1
+          limit: 20
+          totalItems: 1
+          totalPages: 1
 
     DoctorDashboardPatientSummaryData:
       type: object
@@ -1476,6 +1839,42 @@ components:
           $ref: '#/components/schemas/LatestVitals'
         thresholds:
           $ref: '#/components/schemas/DashboardThresholds'
+      example:
+        patient:
+          patientId: 3a233724-0b42-4a4f-88e8-88e732c46351
+          firstName: Agus
+          lastName: Pratama
+          email: agus@example.com
+          phone: '+628123456789'
+          dateOfBirth: '1994-08-17'
+          age: 31
+          sex: male
+        latestVitals:
+          measuredAt: '2026-04-10T07:30:00.000Z'
+          systolicBp: 122
+          diastolicBp: 78
+          heartRate: 74
+          oxygenSaturation: 98
+          weight: 68.2
+          height: 172.5
+          bmi: 22.9
+        thresholds:
+          SPO2_CRITICAL_THRESHOLD: 90
+          SPO2_CAUTION_THRESHOLD: 95
+          WEIGHT_DAILY_INCREASE_CRITICAL_KG: 2
+          HR_NORMAL_MIN: 60
+          HR_NORMAL_MAX: 100
+          BP_NORMAL_SYSTOLIC_MAX: 119
+          BP_NORMAL_DIASTOLIC_MAX: 79
+          BP_ELEVATED_SYSTOLIC_MIN: 120
+          BP_ELEVATED_SYSTOLIC_MAX: 129
+          BP_ELEVATED_DIASTOLIC_MAX: 79
+          BP_STAGE1_SYSTOLIC_MIN: 130
+          BP_STAGE1_SYSTOLIC_MAX: 139
+          BP_STAGE1_DIASTOLIC_MIN: 80
+          BP_STAGE1_DIASTOLIC_MAX: 89
+          BP_STAGE2_SYSTOLIC_MIN: 140
+          BP_STAGE2_DIASTOLIC_MIN: 90
 
     DoctorDashboardPatientVitalsData:
       type: object
@@ -1490,6 +1889,58 @@ components:
           $ref: '#/components/schemas/LatestVitals'
         thresholds:
           $ref: '#/components/schemas/DashboardThresholds'
+      example:
+        patient:
+          patientId: 3a233724-0b42-4a4f-88e8-88e732c46351
+          firstName: Agus
+          lastName: Pratama
+          email: agus@example.com
+          phone: '+628123456789'
+          dateOfBirth: '1994-08-17'
+          age: 31
+          sex: male
+        period:
+          startAt: '2026-04-01T00:00:00.000Z'
+          endAt: '2026-04-10T23:59:59.999Z'
+          timePeriod: last_30_days
+        series:
+          timestamps:
+            - '2026-04-08T07:30:00.000Z'
+            - '2026-04-09T07:30:00.000Z'
+            - '2026-04-10T07:30:00.000Z'
+          systolicBp: [120, 121, 122]
+          diastolicBp: [76, 77, 78]
+          heartRate: [72, 73, 74]
+          oxygenSaturation: [98, 98, 98]
+          weight: [68.4, 68.3, 68.2]
+          height: [172.5, 172.5, 172.5]
+          bmi: [23, 22.9, 22.9]
+        latestVitals:
+          measuredAt: '2026-04-10T07:30:00.000Z'
+          systolicBp: 122
+          diastolicBp: 78
+          heartRate: 74
+          oxygenSaturation: 98
+          weight: 68.2
+          height: 172.5
+          bmi: 22.9
+        thresholds:
+          SPO2_CRITICAL_THRESHOLD: 90
+          SPO2_CAUTION_THRESHOLD: 95
+          WEIGHT_DAILY_INCREASE_CRITICAL_KG: 2
+          HR_NORMAL_MIN: 60
+          HR_NORMAL_MAX: 100
+          BP_NORMAL_SYSTOLIC_MAX: 119
+          BP_NORMAL_DIASTOLIC_MAX: 79
+          BP_ELEVATED_SYSTOLIC_MIN: 120
+          BP_ELEVATED_SYSTOLIC_MAX: 129
+          BP_ELEVATED_DIASTOLIC_MAX: 79
+          BP_STAGE1_SYSTOLIC_MIN: 130
+          BP_STAGE1_SYSTOLIC_MAX: 139
+          BP_STAGE1_DIASTOLIC_MIN: 80
+          BP_STAGE1_DIASTOLIC_MAX: 89
+          BP_STAGE2_SYSTOLIC_MIN: 140
+          BP_STAGE2_DIASTOLIC_MIN: 90
 
     DoctorDashboardAbnormalReportData:
       type: object
@@ -1519,6 +1970,67 @@ components:
             $ref: '#/components/schemas/DashboardAbnormalInstance'
         thresholds:
           $ref: '#/components/schemas/DashboardThresholds'
+      example:
+        patient:
+          patientId: 3a233724-0b42-4a4f-88e8-88e732c46351
+          firstName: Agus
+          lastName: Pratama
+          email: agus@example.com
+          phone: '+628123456789'
+          dateOfBirth: '1994-08-17'
+          age: 31
+          sex: male
+        period:
+          startAt: '2026-04-01T00:00:00.000Z'
+          endAt: '2026-04-10T23:59:59.999Z'
+          timePeriod: last_30_days
+        stats:
+          systolicBp:
+            avg: 122.3
+            min: 118
+            max: 129
+          diastolicBp:
+            avg: 78.1
+            min: 75
+            max: 82
+          heartRate:
+            avg: 74
+            min: 68
+            max: 99
+          oxygenSaturation:
+            avg: 97.6
+            min: 93
+            max: 99
+          weight:
+            avg: 68.3
+            min: 68.2
+            max: 68.4
+          bmi:
+            avg: 22.9
+            min: 22.8
+            max: 23
+        abnormalInstances:
+          - timestamp: '2026-04-10T07:30:00.000Z'
+            details:
+              bloodPressure: 142/92 mmHg (Stage 2 Hypertension)
+              oxygenSaturation: 93% (Caution)
+        thresholds:
+          SPO2_CRITICAL_THRESHOLD: 90
+          SPO2_CAUTION_THRESHOLD: 95
+          WEIGHT_DAILY_INCREASE_CRITICAL_KG: 2
+          HR_NORMAL_MIN: 60
+          HR_NORMAL_MAX: 100
+          BP_NORMAL_SYSTOLIC_MAX: 119
+          BP_NORMAL_DIASTOLIC_MAX: 79
+          BP_ELEVATED_SYSTOLIC_MIN: 120
+          BP_ELEVATED_SYSTOLIC_MAX: 129
+          BP_ELEVATED_DIASTOLIC_MAX: 79
+          BP_STAGE1_SYSTOLIC_MIN: 130
+          BP_STAGE1_SYSTOLIC_MAX: 139
+          BP_STAGE1_DIASTOLIC_MIN: 80
+          BP_STAGE1_DIASTOLIC_MAX: 89
+          BP_STAGE2_SYSTOLIC_MIN: 140
+          BP_STAGE2_DIASTOLIC_MIN: 90
 
     BiometricsReadingInput:
       type: object
@@ -1580,6 +2092,13 @@ components:
           nullable: true
         duplicate:
           type: boolean
+      example:
+        readingId: 1204
+        metricType: systolic_bp
+        measuredAt: '2026-04-10T07:30:00.000Z'
+        valueNumeric: 128
+        unit: mmHg
+        duplicate: false
 
     BiometricsIngestData:
       type: object
@@ -1599,6 +2118,25 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/BiometricsIngestItem'
+      example:
+        patientId: 3a233724-0b42-4a4f-88e8-88e732c46351
+        source: health_connect
+        totalReceived: 2
+        insertedCount: 1
+        duplicateCount: 1
+        items:
+          - readingId: 1204
+            metricType: systolic_bp
+            measuredAt: '2026-04-10T07:30:00.000Z'
+            valueNumeric: 128
+            unit: mmHg
+            duplicate: false
+          - readingId: 1203
+            metricType: systolic_bp
+            measuredAt: '2026-04-10T07:25:00.000Z'
+            valueNumeric: 128
+            unit: mmHg
+            duplicate: true
 
     BiometricsHistoryFilters:
       type: object
@@ -1617,6 +2155,11 @@ components:
           type: string
           format: date-time
           nullable: true
+      example:
+        source: health_connect
+        metricType: systolic_bp
+        startAt: '2026-04-01T00:00:00.000Z'
+        endAt: '2026-04-10T23:59:59.999Z'
 
     BiometricsHistoryItem:
       type: object
@@ -1643,6 +2186,16 @@ components:
         receivedAt:
           type: string
           format: date-time
+      example:
+        readingId: 1204
+        source: health_connect
+        metricType: systolic_bp
+        valueNumeric: 128
+        unit: mmHg
+        payload:
+          deviceModel: Pixel Watch 3
+        measuredAt: '2026-04-10T07:30:00.000Z'
+        receivedAt: '2026-04-10T07:30:05.000Z'
 
     BiometricsHistoryData:
       type: object
@@ -1658,6 +2211,28 @@ components:
             $ref: '#/components/schemas/BiometricsHistoryItem'
         pagination:
           $ref: '#/components/schemas/Pagination'
+      example:
+        patientId: 3a233724-0b42-4a4f-88e8-88e732c46351
+        filters:
+          source: health_connect
+          metricType: systolic_bp
+          startAt: '2026-04-01T00:00:00.000Z'
+          endAt: '2026-04-10T23:59:59.999Z'
+        items:
+          - readingId: 1204
+            source: health_connect
+            metricType: systolic_bp
+            valueNumeric: 128
+            unit: mmHg
+            payload:
+              deviceModel: Pixel Watch 3
+            measuredAt: '2026-04-10T07:30:00.000Z'
+            receivedAt: '2026-04-10T07:30:05.000Z'
+        pagination:
+          page: 1
+          limit: 20
+          totalItems: 1
+          totalPages: 1
 
 paths:
   /api/v1/health:
@@ -2611,7 +3186,7 @@ paths:
                     properties:
                       data:
                         $ref: '#/components/schemas/Medication'
-    put:
+    patch:
       tags: [Medications]
       summary: Update medication
       security:

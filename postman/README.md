@@ -74,3 +74,27 @@ Kalau ingin generate request otomatis langsung dari Swagger:
 2. Tetap gunakan environment `postman/PulseWise-Local.postman_environment.json`.
 
 Catatan: collection dari OpenAPI biasanya tidak punya test script sekomplet collection canonical.
+
+## Sync Saved Response Examples
+
+Canonical collection sekarang bisa diisi ulang dengan saved response examples yang digenerate dari `docs/openapi.yaml`.
+
+Jalankan:
+
+```bash
+npm run postman:sync-examples
+```
+
+Yang dilakukan script:
+
+1. Membaca schema/response dari `docs/openapi.yaml`
+2. Membuat contoh response untuk setiap request di:
+   - `postman/PulseWise-API.postman_collection.json`
+   - `postman/PulseWise-Dashboard-Smoke.postman_collection.json`
+3. Menyimpan hasilnya ke field `response` Postman agar example langsung terlihat saat import
+
+Catatan:
+
+- Script ini tidak perlu memanggil endpoint satu-satu.
+- Jika schema OpenAPI punya `example`, nilai itu akan diprioritaskan.
+- Jika belum ada `example`, script akan membangkitkan contoh otomatis dari schema.
