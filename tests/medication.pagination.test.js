@@ -1,4 +1,7 @@
 jest.mock('../src/config/prisma', () => ({
+  $accelerate: {
+    invalidate: jest.fn(),
+  },
   medication: {
     findMany: jest.fn(),
     count: jest.fn(),

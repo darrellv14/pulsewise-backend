@@ -210,10 +210,26 @@ function buildMedicationCacheTags({ userId, medicationId }) {
 }
 
 function buildCacheStrategy(tags) {
+  if (!prisma.$accelerate) {
+    return null;
+  }
+
   return {
     ttl: CACHE_TTL_SECONDS,
     swr: CACHE_SWR_SECONDS,
     tags,
+  };
+}
+
+function withOptionalCacheStrategy(queryArgs, tags) {
+  const cacheStrategy = buildCacheStrategy(tags);
+  if (!cacheStrategy) {
+    return queryArgs;
+  }
+
+  return {
+    ...queryArgs,
+    cacheStrategy,
   };
 }
 
@@ -491,10 +507,10 @@ async function listMedications({ actor, userId, query }) {
   assertPatientScope({ actor, userId });
   const { page, limit } = normalizePaginationInput(query);
   const skip = (page - 1) * limit;
-  const cacheStrategy = buildCacheStrategy(buildMedicationCacheTags({ userId }));
+  const cacheTags = buildMedicationCacheTags({ userId });
 
   const [medications, totalItems] = await Promise.all([
-    prisma.medication.findMany({
+    prisma.medication.findMany(withOptionalCacheStrategy({
       where: {
         userId,
       },
@@ -508,14 +524,12 @@ async function listMedications({ actor, userId, query }) {
       },
       skip,
       take: limit,
-      cacheStrategy,
-    }),
-    prisma.medication.count({
+    }, cacheTags)),
+    prisma.medication.count(withOptionalCacheStrategy({
       where: {
         userId,
       },
-      cacheStrategy,
-    }),
+    }, cacheTags)),
   ]);
 
   return {
@@ -615,9 +629,9 @@ async function listMedicationCalendar({ actor, userId, query }) {
 
 async function getMedicationById({ actor, userId, medicationId }) {
   assertPatientScope({ actor, userId });
-  const cacheStrategy = buildCacheStrategy(buildMedicationCacheTags({ userId, medicationId }));
+  const cacheTags = buildMedicationCacheTags({ userId, medicationId });
 
-  const medication = await prisma.medication.findFirst({
+  const medication = await prisma.medication.findFirst(withOptionalCacheStrategy({
     where: {
       medicationId,
       userId,
@@ -627,8 +641,7 @@ async function getMedicationById({ actor, userId, medicationId }) {
         orderBy: [{ dayOfWeek: 'asc' }, { scheduleTime: 'asc' }],
       },
     },
-    cacheStrategy,
-  });
+  }, cacheTags));
 
   if (!medication) {
     throw createHttpError('Medication tidak ditemukan', NOT_FOUND);
@@ -846,7 +859,7 @@ async function listRemindersByMedication({ actor, userId, medicationId, query })
   assertPatientScope({ actor, userId });
   const { page, limit } = normalizePaginationInput(query);
   const skip = (page - 1) * limit;
-  const cacheStrategy = buildCacheStrategy(buildMedicationCacheTags({ userId, medicationId }));
+  const cacheTags = buildMedicationCacheTags({ userId, medicationId });
 
   await ensureMedicationOwnership(prisma, { medicationId, userId });
 
@@ -856,17 +869,15 @@ async function listRemindersByMedication({ actor, userId, medicationId, query })
   };
 
   const [reminders, totalItems] = await Promise.all([
-    prisma.reminder.findMany({
+    prisma.reminder.findMany(withOptionalCacheStrategy({
       where,
       orderBy: [{ dayOfWeek: 'asc' }, { scheduleTime: 'asc' }],
       skip,
       take: limit,
-      cacheStrategy,
-    }),
-    prisma.reminder.count({
+    }, cacheTags)),
+    prisma.reminder.count(withOptionalCacheStrategy({
       where,
-      cacheStrategy,
-    }),
+    }, cacheTags)),
   ]);
 
   return {

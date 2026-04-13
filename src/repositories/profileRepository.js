@@ -55,10 +55,26 @@ function mapDoctorProfile(profile) {
 }
 
 function buildCacheStrategy(tags) {
+  if (!prisma.$accelerate) {
+    return null;
+  }
+
   return {
     ttl: CACHE_TTL_SECONDS,
     swr: CACHE_SWR_SECONDS,
     tags,
+  };
+}
+
+function withOptionalCacheStrategy(queryArgs, tags) {
+  const cacheStrategy = buildCacheStrategy(tags);
+  if (!cacheStrategy) {
+    return queryArgs;
+  }
+
+  return {
+    ...queryArgs,
+    cacheStrategy,
   };
 }
 
@@ -71,7 +87,7 @@ async function listPatientProfiles({ limit, offset, sortBy, order }) {
   const sortOrder = order === 'asc' ? 'asc' : 'desc';
 
   const [items, totalItems] = await Promise.all([
-    prisma.patientProfile.findMany({
+    prisma.patientProfile.findMany(withOptionalCacheStrategy({
       include: {
         user: {
           select: {
@@ -87,8 +103,7 @@ async function listPatientProfiles({ limit, offset, sortBy, order }) {
       },
       skip: offset,
       take: limit,
-      cacheStrategy: buildCacheStrategy(['patient_profiles_list']),
-    }),
+    }, ['patient_profiles_list'])),
     prisma.patientProfile.count(),
   ]);
 
@@ -99,7 +114,7 @@ async function listPatientProfiles({ limit, offset, sortBy, order }) {
 }
 
 async function getPatientProfileById(patientId) {
-  const profile = await prisma.patientProfile.findUnique({
+  const profile = await prisma.patientProfile.findUnique(withOptionalCacheStrategy({
     where: {
       patientId,
     },
@@ -113,8 +128,7 @@ async function getPatientProfileById(patientId) {
         },
       },
     },
-    cacheStrategy: buildCacheStrategy([`patient_profile_item_${patientId.replace(/-/g, '_')}`]),
-  });
+  }, [`patient_profile_item_${patientId.replace(/-/g, '_')}`]));
 
   return mapPatientProfile(profile);
 }
@@ -207,7 +221,7 @@ async function upsertPatientProfile({
 }
 
 async function getDoctorProfileById(doctorId) {
-  const profile = await prisma.doctorProfile.findUnique({
+  const profile = await prisma.doctorProfile.findUnique(withOptionalCacheStrategy({
     where: {
       doctorId,
     },
@@ -220,8 +234,7 @@ async function getDoctorProfileById(doctorId) {
         },
       },
     },
-    cacheStrategy: buildCacheStrategy([`doctor_profile_item_${doctorId.replace(/-/g, '_')}`]),
-  });
+  }, [`doctor_profile_item_${doctorId.replace(/-/g, '_')}`]));
 
   return mapDoctorProfile(profile);
 }

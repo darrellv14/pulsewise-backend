@@ -24,10 +24,26 @@ function sanitizeTagPart(value) {
 }
 
 function buildCacheStrategy(tags) {
+  if (!prisma.$accelerate) {
+    return null;
+  }
+
   return {
     ttl: CACHE_TTL_SECONDS,
     swr: CACHE_SWR_SECONDS,
     tags,
+  };
+}
+
+function withOptionalCacheStrategy(queryArgs, tags) {
+  const cacheStrategy = buildCacheStrategy(tags);
+  if (!cacheStrategy) {
+    return queryArgs;
+  }
+
+  return {
+    ...queryArgs,
+    cacheStrategy,
   };
 }
 
@@ -38,7 +54,7 @@ async function invalidateCacheTags(tags) {
 async function listDoctorPatients({ doctorId, limit, offset }) {
   const cacheTags = [`doctor_patients_${sanitizeTagPart(doctorId)}`];
   const [items, totalItems] = await Promise.all([
-    prisma.doctorPatient.findMany({
+    prisma.doctorPatient.findMany(withOptionalCacheStrategy({
       where: {
         doctorId,
         isActive: true,
@@ -57,15 +73,13 @@ async function listDoctorPatients({ doctorId, limit, offset }) {
       },
       skip: offset,
       take: limit,
-      cacheStrategy: buildCacheStrategy(cacheTags),
-    }),
-    prisma.doctorPatient.count({
+    }, cacheTags)),
+    prisma.doctorPatient.count(withOptionalCacheStrategy({
       where: {
         doctorId,
         isActive: true,
       },
-      cacheStrategy: buildCacheStrategy(cacheTags),
-    }),
+    }, cacheTags)),
   ]);
 
   return {
