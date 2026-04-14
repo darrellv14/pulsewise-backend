@@ -264,4 +264,224 @@ describe('medication v2', () => {
       note: 'Setelah makan',
     });
   });
+
+  test('updateMedication allows changing schedule from daily to weekly', async () => {
+    const tx = {
+      medication: {
+        findFirst: jest.fn(),
+        findUnique: jest.fn(),
+        update: jest.fn(),
+      },
+      reminder: {
+        deleteMany: jest.fn(),
+        createMany: jest.fn(),
+      },
+    };
+
+    prisma.$transaction.mockImplementation(async (callback) => callback(tx));
+    tx.medication.findFirst.mockResolvedValue({
+      medicationId: 'med-1',
+      userId: 'user-1',
+      name: 'Aspirin',
+      startDate: new Date('2026-04-11T00:00:00.000Z'),
+      frequency: 'daily',
+      numOfDays: 7,
+      note: null,
+      createdAt: new Date('2026-04-11T00:00:00.000Z'),
+      reminders: [
+        {
+          reminderId: 'rem-1',
+          userId: 'user-1',
+          medicationId: 'med-1',
+          scheduleTime: new Date('1970-01-01T08:00:00.000Z'),
+          dayOfWeek: null,
+          createdAt: new Date('2026-04-11T00:10:00.000Z'),
+        },
+      ],
+    });
+    tx.medication.findUnique.mockResolvedValue({
+        medicationId: 'med-1',
+        userId: 'user-1',
+        name: 'Aspirin',
+        startDate: new Date('2026-04-11T00:00:00.000Z'),
+        frequency: 'weekly',
+        numOfDays: null,
+        note: null,
+        createdAt: new Date('2026-04-11T00:00:00.000Z'),
+        reminders: [
+          {
+            reminderId: 'rem-weekly-1',
+            userId: 'user-1',
+            medicationId: 'med-1',
+            scheduleTime: new Date('1970-01-01T08:00:00.000Z'),
+            dayOfWeek: 1,
+            createdAt: new Date('2026-04-11T00:10:00.000Z'),
+          },
+          {
+            reminderId: 'rem-weekly-2',
+            userId: 'user-1',
+            medicationId: 'med-1',
+            scheduleTime: new Date('1970-01-01T08:00:00.000Z'),
+            dayOfWeek: 3,
+            createdAt: new Date('2026-04-11T00:10:00.000Z'),
+          },
+        ],
+      });
+
+    const result = await medicationService.updateMedication({
+      actor: { userId: 'user-1', role: 'patient' },
+      userId: 'user-1',
+      medicationId: 'med-1',
+      payload: {
+        frequency: 'weekly',
+        daysOfWeek: [1, 3],
+      },
+    });
+
+    expect(tx.medication.update).toHaveBeenCalledWith({
+      where: {
+        medicationId: 'med-1',
+      },
+      data: {
+        frequency: 'weekly',
+        numOfDays: null,
+      },
+    });
+    expect(tx.reminder.deleteMany).toHaveBeenCalledWith({
+      where: {
+        userId: 'user-1',
+        medicationId: 'med-1',
+      },
+    });
+    expect(tx.reminder.createMany).toHaveBeenCalledWith({
+      data: [
+        {
+          userId: 'user-1',
+          medicationId: 'med-1',
+          scheduleTime: new Date('1970-01-01T08:00:00.000Z'),
+          dayOfWeek: 1,
+        },
+        {
+          userId: 'user-1',
+          medicationId: 'med-1',
+          scheduleTime: new Date('1970-01-01T08:00:00.000Z'),
+          dayOfWeek: 3,
+        },
+      ],
+    });
+    expect(result).toMatchObject({
+      medicationId: 'med-1',
+      frequency: 'weekly',
+      numOfDays: null,
+      daysOfWeek: [1, 3],
+      intakeTimes: ['08:00'],
+    });
+  });
+
+  test('updateMedication allows changing schedule from weekly to daily', async () => {
+    const tx = {
+      medication: {
+        findFirst: jest.fn(),
+        findUnique: jest.fn(),
+        update: jest.fn(),
+      },
+      reminder: {
+        deleteMany: jest.fn(),
+        createMany: jest.fn(),
+      },
+    };
+
+    prisma.$transaction.mockImplementation(async (callback) => callback(tx));
+    tx.medication.findFirst.mockResolvedValue({
+      medicationId: 'med-1',
+      userId: 'user-1',
+      name: 'Vitamin C',
+      startDate: new Date('2026-04-11T00:00:00.000Z'),
+      frequency: 'weekly',
+      numOfDays: null,
+      note: null,
+      createdAt: new Date('2026-04-11T00:00:00.000Z'),
+      reminders: [
+        {
+          reminderId: 'rem-1',
+          userId: 'user-1',
+          medicationId: 'med-1',
+          scheduleTime: new Date('1970-01-01T09:30:00.000Z'),
+          dayOfWeek: 1,
+          createdAt: new Date('2026-04-11T00:10:00.000Z'),
+        },
+        {
+          reminderId: 'rem-2',
+          userId: 'user-1',
+          medicationId: 'med-1',
+          scheduleTime: new Date('1970-01-01T09:30:00.000Z'),
+          dayOfWeek: 5,
+          createdAt: new Date('2026-04-11T00:10:00.000Z'),
+        },
+      ],
+    });
+    tx.medication.findUnique.mockResolvedValue({
+        medicationId: 'med-1',
+        userId: 'user-1',
+        name: 'Vitamin C',
+        startDate: new Date('2026-04-11T00:00:00.000Z'),
+        frequency: 'daily',
+        numOfDays: 5,
+        note: null,
+        createdAt: new Date('2026-04-11T00:00:00.000Z'),
+        reminders: [
+          {
+            reminderId: 'rem-daily',
+            userId: 'user-1',
+            medicationId: 'med-1',
+            scheduleTime: new Date('1970-01-01T09:30:00.000Z'),
+            dayOfWeek: null,
+            createdAt: new Date('2026-04-11T00:10:00.000Z'),
+          },
+        ],
+      });
+
+    const result = await medicationService.updateMedication({
+      actor: { userId: 'user-1', role: 'patient' },
+      userId: 'user-1',
+      medicationId: 'med-1',
+      payload: {
+        frequency: 'daily',
+        numOfDays: 5,
+      },
+    });
+
+    expect(tx.medication.update).toHaveBeenCalledWith({
+      where: {
+        medicationId: 'med-1',
+      },
+      data: {
+        frequency: 'daily',
+        numOfDays: 5,
+      },
+    });
+    expect(tx.reminder.deleteMany).toHaveBeenCalledWith({
+      where: {
+        userId: 'user-1',
+        medicationId: 'med-1',
+      },
+    });
+    expect(tx.reminder.createMany).toHaveBeenCalledWith({
+      data: [
+        {
+          userId: 'user-1',
+          medicationId: 'med-1',
+          scheduleTime: new Date('1970-01-01T09:30:00.000Z'),
+          dayOfWeek: null,
+        },
+      ],
+    });
+    expect(result).toMatchObject({
+      medicationId: 'med-1',
+      frequency: 'daily',
+      numOfDays: 5,
+      daysOfWeek: [],
+      intakeTimes: ['09:30'],
+    });
+  });
 });

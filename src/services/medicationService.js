@@ -150,6 +150,36 @@ function hasMedicationSchedulePayload(payload) {
   );
 }
 
+function resolveMedicationScheduleStateForUpdate({ payload, currentMedication }) {
+  const nextFrequency =
+    payload.frequency !== undefined ? payload.frequency : currentMedication.frequency;
+  const currentIntakeTimes = extractIntakeTimes(currentMedication.reminders);
+  const currentDaysOfWeek =
+    currentMedication.frequency === 'weekly'
+      ? extractDaysOfWeek(currentMedication.reminders)
+      : undefined;
+
+  return {
+    frequency: nextFrequency,
+    intakeTimes:
+      payload.intakeTimes !== undefined ? payload.intakeTimes : currentIntakeTimes,
+    daysOfWeek:
+      nextFrequency === 'weekly'
+        ? payload.daysOfWeek !== undefined
+          ? payload.daysOfWeek
+          : currentDaysOfWeek
+        : undefined,
+    numOfDays:
+      nextFrequency === 'daily'
+        ? payload.numOfDays !== undefined
+          ? payload.numOfDays
+          : currentMedication.frequency === 'daily'
+            ? currentMedication.numOfDays
+            : undefined
+        : undefined,
+  };
+}
+
 function assertReminderCompatibleWithMedication(medication, dayOfWeek) {
   const normalizedDayOfWeek = dayOfWeek ?? null;
 
@@ -763,21 +793,12 @@ async function updateMedication({ actor, userId, medicationId, payload }) {
     }
 
     if (scheduleTouched) {
-      const nextScheduleState = validateMedicationScheduleState({
-        frequency: payload.frequency !== undefined ? payload.frequency : currentMedication.frequency,
-        intakeTimes:
-          payload.intakeTimes !== undefined
-            ? payload.intakeTimes
-            : extractIntakeTimes(currentMedication.reminders),
-        daysOfWeek:
-          payload.daysOfWeek !== undefined
-            ? payload.daysOfWeek
-            : currentMedication.frequency === 'weekly'
-              ? extractDaysOfWeek(currentMedication.reminders)
-              : undefined,
-        numOfDays:
-          payload.numOfDays !== undefined ? payload.numOfDays : currentMedication.numOfDays,
-      });
+      const nextScheduleState = validateMedicationScheduleState(
+        resolveMedicationScheduleStateForUpdate({
+          payload,
+          currentMedication,
+        })
+      );
 
       medicationData.frequency = nextScheduleState.frequency;
       medicationData.numOfDays = nextScheduleState.numOfDays;
