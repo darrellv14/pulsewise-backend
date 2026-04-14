@@ -201,7 +201,7 @@ describe('medication pagination', () => {
     });
   });
 
-  test('listMedicationCalendar expands daily and weekly reminders into dated events', async () => {
+  test('listMedicationCalendar expands daily reminders for every date in range and weekly reminders by weekday', async () => {
     prisma.medication.findMany.mockResolvedValue([
       {
         medicationId: 'med-daily',
@@ -212,7 +212,7 @@ describe('medication pagination', () => {
         singleDoseUnit: 'tablet',
         startDate: new Date('2026-04-10T00:00:00.000Z'),
         frequency: 'daily',
-        numOfDays: 3,
+        numOfDays: 1,
         createdAt: new Date('2026-04-01T00:00:00.000Z'),
         reminders: [
           {
@@ -294,7 +294,7 @@ describe('medication pagination', () => {
       from: '2026-04-10',
       to: '2026-04-15',
     });
-    expect(result.totalItems).toBe(4);
+    expect(result.totalItems).toBe(7);
     expect(result.items).toEqual([
       expect.objectContaining({
         eventId: 'rem-daily:2026-04-10',
@@ -315,11 +315,26 @@ describe('medication pagination', () => {
         scheduledTime: '08:00',
       }),
       expect.objectContaining({
+        eventId: 'rem-daily:2026-04-13',
+        scheduledDate: '2026-04-13',
+        scheduledTime: '08:00',
+      }),
+      expect.objectContaining({
         eventId: 'rem-weekly:2026-04-13',
         scheduledDate: '2026-04-13',
         scheduledTime: '09:30',
         name: 'Vitamin C',
         color: 'orange',
+      }),
+      expect.objectContaining({
+        eventId: 'rem-daily:2026-04-14',
+        scheduledDate: '2026-04-14',
+        scheduledTime: '08:00',
+      }),
+      expect.objectContaining({
+        eventId: 'rem-daily:2026-04-15',
+        scheduledDate: '2026-04-15',
+        scheduledTime: '08:00',
       }),
     ]);
   });

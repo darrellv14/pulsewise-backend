@@ -353,19 +353,15 @@ function buildCalendarEvent({ medication, reminder, scheduledDate, matchedLog })
 function buildDailyCalendarEvents({ medication, reminder, rangeStart, rangeEnd, logLookup }) {
   const medicationStart = medication.startDate ? toUtcDateOnly(new Date(medication.startDate)) : rangeStart;
   const effectiveStart = maxUtcDate(rangeStart, medicationStart);
-  const medicationEnd = medication.numOfDays
-    ? addUtcDays(medicationStart, medication.numOfDays - 1)
-    : rangeEnd;
-  const effectiveEnd = minUtcDate(rangeEnd, medicationEnd);
 
-  if (effectiveStart.getTime() > effectiveEnd.getTime()) {
+  if (effectiveStart.getTime() > rangeEnd.getTime()) {
     return [];
   }
 
   const events = [];
   for (
     let currentDate = effectiveStart;
-    currentDate.getTime() <= effectiveEnd.getTime();
+    currentDate.getTime() <= rangeEnd.getTime();
     currentDate = addUtcDays(currentDate, 1)
   ) {
     const scheduledDate = toDateOnlyValue(currentDate);

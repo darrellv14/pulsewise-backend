@@ -511,10 +511,21 @@ components:
             $ref: '#/components/schemas/MedicationCalendarEvent'
       example:
         range:
-          from: '2026-04-01'
-          to: '2026-04-30'
-        totalItems: 2
+          from: '2026-04-10'
+          to: '2026-04-13'
+        totalItems: 4
         items:
+          - eventId: 9f7c5d8b-1234-4dcd-99c1-1234567890ab:2026-04-10
+            scheduledDate: '2026-04-10'
+            scheduledTime: '08:00'
+            reminderId: 9f7c5d8b-1234-4dcd-99c1-1234567890ab
+            medicationId: 1e0d4a7c-6fdf-4973-a2bd-7577514a966f
+            medicationLogId: null
+            name: Aspirin
+            color: '#22C55E'
+            singleDose: 1
+            singleDoseUnit: tablet
+            status: null
           - eventId: 9f7c5d8b-1234-4dcd-99c1-1234567890ab:2026-04-11
             scheduledDate: '2026-04-11'
             scheduledTime: '08:00'
@@ -526,16 +537,27 @@ components:
             singleDose: 1
             singleDoseUnit: tablet
             status: taken
-          - eventId: 2f7c5d8b-1234-4dcd-99c1-1234567890ac:2026-04-11
-            scheduledDate: '2026-04-11'
-            scheduledTime: '20:00'
-            reminderId: 2f7c5d8b-1234-4dcd-99c1-1234567890ac
+          - eventId: 9f7c5d8b-1234-4dcd-99c1-1234567890ab:2026-04-12
+            scheduledDate: '2026-04-12'
+            scheduledTime: '08:00'
+            reminderId: 9f7c5d8b-1234-4dcd-99c1-1234567890ab
             medicationId: 1e0d4a7c-6fdf-4973-a2bd-7577514a966f
             medicationLogId: null
             name: Aspirin
             color: '#22C55E'
             singleDose: 1
             singleDoseUnit: tablet
+            status: null
+          - eventId: 2f7c5d8b-1234-4dcd-99c1-1234567890ac:2026-04-13
+            scheduledDate: '2026-04-13'
+            scheduledTime: '09:30'
+            reminderId: 2f7c5d8b-1234-4dcd-99c1-1234567890ac
+            medicationId: 2e0d4a7c-6fdf-4973-a2bd-7577514a966f
+            medicationLogId: null
+            name: Vitamin C
+            color: orange
+            singleDose: 2
+            singleDoseUnit: capsule
             status: null
 
     Reminder:
