@@ -33,6 +33,7 @@ function mapPatientProfile(profile) {
     first_name: profile.user?.firstName || null,
     last_name: profile.user?.lastName || null,
     email: profile.user?.email || null,
+    avatar_photo: profile.user?.avatarPhoto || null,
     address: profile.user?.address || null,
   };
 }
@@ -51,6 +52,7 @@ function mapDoctorProfile(profile) {
     first_name: profile.user?.firstName || null,
     last_name: profile.user?.lastName || null,
     email: profile.user?.email || null,
+    avatar_photo: profile.user?.avatarPhoto || null,
   };
 }
 
@@ -94,6 +96,7 @@ async function listPatientProfiles({ limit, offset, sortBy, order }) {
             firstName: true,
             lastName: true,
             email: true,
+            avatarPhoto: true,
             address: true,
           },
         },
@@ -124,6 +127,7 @@ async function getPatientProfileById(patientId) {
           firstName: true,
           lastName: true,
           email: true,
+          avatarPhoto: true,
           address: true,
         },
       },
@@ -205,6 +209,7 @@ async function upsertPatientProfile({
             firstName: true,
             lastName: true,
             email: true,
+            avatarPhoto: true,
             address: true,
           },
         },
@@ -231,6 +236,7 @@ async function getDoctorProfileById(doctorId) {
           firstName: true,
           lastName: true,
           email: true,
+          avatarPhoto: true,
         },
       },
     },
@@ -261,6 +267,7 @@ async function upsertDoctorProfile({ doctorId, specialization, licenseNo, hospit
           firstName: true,
           lastName: true,
           email: true,
+          avatarPhoto: true,
         },
       },
     },

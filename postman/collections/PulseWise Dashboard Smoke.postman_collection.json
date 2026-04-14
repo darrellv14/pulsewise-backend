@@ -86,7 +86,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.example.signature\",\n    \"user\": {\n      \"userId\": \"3a233724-0b42-4a4f-88e8-88e732c46351\",\n      \"username\": \"agus\",\n      \"email\": \"agus@example.com\",\n      \"firstName\": \"Agus\",\n      \"lastName\": \"Pratama\",\n      \"role\": \"patient\",\n      \"accountStatus\": \"active\",\n      \"emailVerifiedAt\": \"2026-04-10T08:15:00.000Z\"\n    }\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.example.signature\",\n    \"user\": {\n      \"userId\": \"3a233724-0b42-4a4f-88e8-88e732c46351\",\n      \"username\": \"agus\",\n      \"email\": \"agus@example.com\",\n      \"firstName\": \"Agus\",\n      \"lastName\": \"Pratama\",\n      \"avatarPhoto\": \"https://res.cloudinary.com/drvu0dpry/image/upload/v1776071700/pulsewise/avatars/profile.png\",\n      \"role\": \"patient\",\n      \"accountStatus\": \"active\",\n      \"emailVerifiedAt\": \"2026-04-10T08:15:00.000Z\"\n    }\n  }\n}\n"
             },
             {
               "name": "400 Invalid payload",
@@ -278,7 +278,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.example.signature\",\n    \"user\": {\n      \"userId\": \"3a233724-0b42-4a4f-88e8-88e732c46351\",\n      \"username\": \"agus\",\n      \"email\": \"agus@example.com\",\n      \"firstName\": \"Agus\",\n      \"lastName\": \"Pratama\",\n      \"role\": \"patient\",\n      \"accountStatus\": \"active\",\n      \"emailVerifiedAt\": \"2026-04-10T08:15:00.000Z\"\n    }\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.example.signature\",\n    \"user\": {\n      \"userId\": \"3a233724-0b42-4a4f-88e8-88e732c46351\",\n      \"username\": \"agus\",\n      \"email\": \"agus@example.com\",\n      \"firstName\": \"Agus\",\n      \"lastName\": \"Pratama\",\n      \"avatarPhoto\": \"https://res.cloudinary.com/drvu0dpry/image/upload/v1776071700/pulsewise/avatars/profile.png\",\n      \"role\": \"patient\",\n      \"accountStatus\": \"active\",\n      \"emailVerifiedAt\": \"2026-04-10T08:15:00.000Z\"\n    }\n  }\n}\n"
             },
             {
               "name": "400 Invalid payload",

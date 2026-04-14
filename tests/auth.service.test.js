@@ -2,6 +2,7 @@ const crypto = require('crypto');
 
 jest.mock('../src/repositories/userRepository', () => ({
   findUserByEmail: jest.fn(),
+  findUserById: jest.fn(),
   createEmailVerification: jest.fn(),
   deleteEmailVerification: jest.fn(),
   findLatestValidEmailVerification: jest.fn(),
@@ -86,5 +87,32 @@ describe('authService.confirmEmailVerification', () => {
     expect(userRepository.activateUserByEmail).toHaveBeenCalledWith('patient@example.com');
     expect(result.accountStatus).toBe('active');
     expect(result.user.email).toBe('patient@example.com');
+  });
+});
+
+describe('authService.getCurrentUser', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test('returns avatarPhoto from current user record', async () => {
+    userRepository.findUserById.mockResolvedValue({
+      user_id: '11111111-1111-4111-8111-111111111111',
+      username: 'patient',
+      email: 'patient@example.com',
+      first_name: 'Pat',
+      last_name: 'Ient',
+      avatar_photo: 'https://res.cloudinary.com/demo/image/upload/v1/avatar.png',
+      role: 'patient',
+      account_status: 'active',
+      email_verified_at: '2026-04-10T10:43:08.257Z',
+    });
+
+    const result = await authService.getCurrentUser('11111111-1111-4111-8111-111111111111');
+
+    expect(userRepository.findUserById).toHaveBeenCalledWith(
+      '11111111-1111-4111-8111-111111111111'
+    );
+    expect(result.avatarPhoto).toBe('https://res.cloudinary.com/demo/image/upload/v1/avatar.png');
   });
 });

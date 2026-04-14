@@ -140,6 +140,10 @@ components:
         lastName:
           type: string
           nullable: true
+        avatarPhoto:
+          type: string
+          format: uri
+          nullable: true
         role:
           type: string
           enum: [patient, doctor, admin]
@@ -156,6 +160,7 @@ components:
         email: agus@example.com
         firstName: Agus
         lastName: Pratama
+        avatarPhoto: https://res.cloudinary.com/drvu0dpry/image/upload/v1776071700/pulsewise/avatars/profile.png
         role: patient
         accountStatus: active
         emailVerifiedAt: '2026-04-10T08:15:00.000Z'
@@ -267,6 +272,10 @@ components:
           type: string
           format: email
           nullable: true
+        avatar_photo:
+          type: string
+          format: uri
+          nullable: true
       example:
         patient_id: 3a233724-0b42-4a4f-88e8-88e732c46351
         date_of_birth: '1994-08-17'
@@ -280,6 +289,7 @@ components:
         first_name: Agus
         last_name: Pratama
         email: agus@example.com
+        avatar_photo: https://res.cloudinary.com/drvu0dpry/image/upload/v1776071700/pulsewise/avatars/profile.png
 
     DoctorProfile:
       type: object
@@ -309,6 +319,10 @@ components:
           type: string
           format: email
           nullable: true
+        avatar_photo:
+          type: string
+          format: uri
+          nullable: true
       example:
         doctor_id: 8aca6089-3899-4b85-a715-0a63113e846a
         specialization: Cardiology
@@ -318,6 +332,7 @@ components:
         first_name: Intan
         last_name: Wijaya
         email: intan.wijaya@example.com
+        avatar_photo: https://res.cloudinary.com/drvu0dpry/image/upload/v1776071700/pulsewise/avatars/profile.png
 
     PatientProfileUpdateRequest:
       type: object

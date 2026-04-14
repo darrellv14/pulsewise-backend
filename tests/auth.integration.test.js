@@ -24,6 +24,7 @@ describe('Auth integration', () => {
     expect(meResponse.status).toBe(200);
     expect(meResponse.body.success).toBe(true);
     expect(meResponse.body.data.email).toBe('dev@pulsewise.local');
+    expect(meResponse.body.data).toHaveProperty('avatarPhoto');
   });
 
   test('invalid payload: register without required fields', async () => {

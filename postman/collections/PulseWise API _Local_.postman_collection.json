@@ -137,7 +137,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"user\": {\n      \"userId\": \"3a233724-0b42-4a4f-88e8-88e732c46351\",\n      \"username\": \"agus\",\n      \"email\": \"agus@example.com\",\n      \"firstName\": \"Agus\",\n      \"lastName\": \"Pratama\",\n      \"role\": \"patient\",\n      \"accountStatus\": \"active\",\n      \"emailVerifiedAt\": \"2026-04-10T08:15:00.000Z\"\n    },\n    \"nextStep\": \"EMAIL_VERIFICATION_REQUIRED\"\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"user\": {\n      \"userId\": \"3a233724-0b42-4a4f-88e8-88e732c46351\",\n      \"username\": \"agus\",\n      \"email\": \"agus@example.com\",\n      \"firstName\": \"Agus\",\n      \"lastName\": \"Pratama\",\n      \"avatarPhoto\": \"https://res.cloudinary.com/drvu0dpry/image/upload/v1776071700/pulsewise/avatars/profile.png\",\n      \"role\": \"patient\",\n      \"accountStatus\": \"active\",\n      \"emailVerifiedAt\": \"2026-04-10T08:15:00.000Z\"\n    },\n    \"nextStep\": \"EMAIL_VERIFICATION_REQUIRED\"\n  }\n}\n"
             },
             {
               "name": "400 Invalid payload",
@@ -534,7 +534,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.example.signature\",\n    \"user\": {\n      \"userId\": \"3a233724-0b42-4a4f-88e8-88e732c46351\",\n      \"username\": \"agus\",\n      \"email\": \"agus@example.com\",\n      \"firstName\": \"Agus\",\n      \"lastName\": \"Pratama\",\n      \"role\": \"patient\",\n      \"accountStatus\": \"active\",\n      \"emailVerifiedAt\": \"2026-04-10T08:15:00.000Z\"\n    }\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.example.signature\",\n    \"user\": {\n      \"userId\": \"3a233724-0b42-4a4f-88e8-88e732c46351\",\n      \"username\": \"agus\",\n      \"email\": \"agus@example.com\",\n      \"firstName\": \"Agus\",\n      \"lastName\": \"Pratama\",\n      \"avatarPhoto\": \"https://res.cloudinary.com/drvu0dpry/image/upload/v1776071700/pulsewise/avatars/profile.png\",\n      \"role\": \"patient\",\n      \"accountStatus\": \"active\",\n      \"emailVerifiedAt\": \"2026-04-10T08:15:00.000Z\"\n    }\n  }\n}\n"
             },
             {
               "name": "400 Invalid payload",
@@ -726,7 +726,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.example.signature\",\n    \"user\": {\n      \"userId\": \"3a233724-0b42-4a4f-88e8-88e732c46351\",\n      \"username\": \"agus\",\n      \"email\": \"agus@example.com\",\n      \"firstName\": \"Agus\",\n      \"lastName\": \"Pratama\",\n      \"role\": \"patient\",\n      \"accountStatus\": \"active\",\n      \"emailVerifiedAt\": \"2026-04-10T08:15:00.000Z\"\n    }\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.example.signature\",\n    \"user\": {\n      \"userId\": \"3a233724-0b42-4a4f-88e8-88e732c46351\",\n      \"username\": \"agus\",\n      \"email\": \"agus@example.com\",\n      \"firstName\": \"Agus\",\n      \"lastName\": \"Pratama\",\n      \"avatarPhoto\": \"https://res.cloudinary.com/drvu0dpry/image/upload/v1776071700/pulsewise/avatars/profile.png\",\n      \"role\": \"patient\",\n      \"accountStatus\": \"active\",\n      \"emailVerifiedAt\": \"2026-04-10T08:15:00.000Z\"\n    }\n  }\n}\n"
             },
             {
               "name": "400 Invalid payload",
@@ -895,7 +895,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"userId\": \"3a233724-0b42-4a4f-88e8-88e732c46351\",\n    \"username\": \"agus\",\n    \"email\": \"agus@example.com\",\n    \"firstName\": \"Agus\",\n    \"lastName\": \"Pratama\",\n    \"role\": \"patient\",\n    \"accountStatus\": \"active\",\n    \"emailVerifiedAt\": \"2026-04-10T08:15:00.000Z\"\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"userId\": \"3a233724-0b42-4a4f-88e8-88e732c46351\",\n    \"username\": \"agus\",\n    \"email\": \"agus@example.com\",\n    \"firstName\": \"Agus\",\n    \"lastName\": \"Pratama\",\n    \"avatarPhoto\": \"https://res.cloudinary.com/drvu0dpry/image/upload/v1776071700/pulsewise/avatars/profile.png\",\n    \"role\": \"patient\",\n    \"accountStatus\": \"active\",\n    \"emailVerifiedAt\": \"2026-04-10T08:15:00.000Z\"\n  }\n}\n"
             },
             {
               "name": "401 Unauthorized",
@@ -1170,7 +1170,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"items\": [\n      {\n        \"patient_id\": \"3a233724-0b42-4a4f-88e8-88e732c46351\",\n        \"date_of_birth\": \"1994-08-17\",\n        \"sex\": \"male\",\n        \"body_height_cm\": 172.5,\n        \"is_smoking\": false,\n        \"is_electric_smoking\": false,\n        \"blood_type\": \"O+\",\n        \"address\": \"Jalan Sukamaju No. 88, Surabaya\",\n        \"created_at\": \"2026-04-10T08:15:00.000Z\",\n        \"first_name\": \"Agus\",\n        \"last_name\": \"Pratama\",\n        \"email\": \"agus@example.com\"\n      }\n    ],\n    \"pagination\": {\n      \"page\": 1,\n      \"limit\": 20,\n      \"totalItems\": 125,\n      \"totalPages\": 7\n    }\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"items\": [\n      {\n        \"patient_id\": \"3a233724-0b42-4a4f-88e8-88e732c46351\",\n        \"date_of_birth\": \"1994-08-17\",\n        \"sex\": \"male\",\n        \"body_height_cm\": 172.5,\n        \"is_smoking\": false,\n        \"is_electric_smoking\": false,\n        \"blood_type\": \"O+\",\n        \"address\": \"Jalan Sukamaju No. 88, Surabaya\",\n        \"created_at\": \"2026-04-10T08:15:00.000Z\",\n        \"first_name\": \"Agus\",\n        \"last_name\": \"Pratama\",\n        \"email\": \"agus@example.com\",\n        \"avatar_photo\": \"https://res.cloudinary.com/drvu0dpry/image/upload/v1776071700/pulsewise/avatars/profile.png\"\n      }\n    ],\n    \"pagination\": {\n      \"page\": 1,\n      \"limit\": 20,\n      \"totalItems\": 125,\n      \"totalPages\": 7\n    }\n  }\n}\n"
             }
           ]
         },
@@ -1246,7 +1246,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"patient_id\": \"3a233724-0b42-4a4f-88e8-88e732c46351\",\n    \"date_of_birth\": \"1994-08-17\",\n    \"sex\": \"male\",\n    \"body_height_cm\": 172.5,\n    \"is_smoking\": false,\n    \"is_electric_smoking\": false,\n    \"blood_type\": \"O+\",\n    \"address\": \"Jalan Sukamaju No. 88, Surabaya\",\n    \"created_at\": \"2026-04-10T08:15:00.000Z\",\n    \"first_name\": \"Agus\",\n    \"last_name\": \"Pratama\",\n    \"email\": \"agus@example.com\"\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"patient_id\": \"3a233724-0b42-4a4f-88e8-88e732c46351\",\n    \"date_of_birth\": \"1994-08-17\",\n    \"sex\": \"male\",\n    \"body_height_cm\": 172.5,\n    \"is_smoking\": false,\n    \"is_electric_smoking\": false,\n    \"blood_type\": \"O+\",\n    \"address\": \"Jalan Sukamaju No. 88, Surabaya\",\n    \"created_at\": \"2026-04-10T08:15:00.000Z\",\n    \"first_name\": \"Agus\",\n    \"last_name\": \"Pratama\",\n    \"email\": \"agus@example.com\",\n    \"avatar_photo\": \"https://res.cloudinary.com/drvu0dpry/image/upload/v1776071700/pulsewise/avatars/profile.png\"\n  }\n}\n"
             }
           ]
         },
@@ -1306,7 +1306,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"patient_id\": \"3a233724-0b42-4a4f-88e8-88e732c46351\",\n    \"date_of_birth\": \"1994-08-17\",\n    \"sex\": \"male\",\n    \"body_height_cm\": 172.5,\n    \"is_smoking\": false,\n    \"is_electric_smoking\": false,\n    \"blood_type\": \"O+\",\n    \"address\": \"Jalan Sukamaju No. 88, Surabaya\",\n    \"created_at\": \"2026-04-10T08:15:00.000Z\",\n    \"first_name\": \"Agus\",\n    \"last_name\": \"Pratama\",\n    \"email\": \"agus@example.com\"\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"patient_id\": \"3a233724-0b42-4a4f-88e8-88e732c46351\",\n    \"date_of_birth\": \"1994-08-17\",\n    \"sex\": \"male\",\n    \"body_height_cm\": 172.5,\n    \"is_smoking\": false,\n    \"is_electric_smoking\": false,\n    \"blood_type\": \"O+\",\n    \"address\": \"Jalan Sukamaju No. 88, Surabaya\",\n    \"created_at\": \"2026-04-10T08:15:00.000Z\",\n    \"first_name\": \"Agus\",\n    \"last_name\": \"Pratama\",\n    \"email\": \"agus@example.com\",\n    \"avatar_photo\": \"https://res.cloudinary.com/drvu0dpry/image/upload/v1776071700/pulsewise/avatars/profile.png\"\n  }\n}\n"
             }
           ]
         }
@@ -1372,7 +1372,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"doctor_id\": \"8aca6089-3899-4b85-a715-0a63113e846a\",\n    \"specialization\": \"Cardiology\",\n    \"license_no\": \"DOC-123456\",\n    \"hospital_name\": \"RS PulseWise\",\n    \"created_at\": \"2026-04-10T08:15:00.000Z\",\n    \"first_name\": \"Intan\",\n    \"last_name\": \"Wijaya\",\n    \"email\": \"intan.wijaya@example.com\"\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"doctor_id\": \"8aca6089-3899-4b85-a715-0a63113e846a\",\n    \"specialization\": \"Cardiology\",\n    \"license_no\": \"DOC-123456\",\n    \"hospital_name\": \"RS PulseWise\",\n    \"created_at\": \"2026-04-10T08:15:00.000Z\",\n    \"first_name\": \"Intan\",\n    \"last_name\": \"Wijaya\",\n    \"email\": \"intan.wijaya@example.com\",\n    \"avatar_photo\": \"https://res.cloudinary.com/drvu0dpry/image/upload/v1776071700/pulsewise/avatars/profile.png\"\n  }\n}\n"
             }
           ]
         },

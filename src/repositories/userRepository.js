@@ -10,6 +10,7 @@ function mapUserWithRole(user) {
     username: user.username,
     email: user.email,
     password_hash: user.passwordHash,
+    avatar_photo: user.avatarPhoto,
     account_status: user.accountStatus,
     email_verified_at: user.emailVerifiedAt,
     first_name: user.firstName,

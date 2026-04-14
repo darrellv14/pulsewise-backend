@@ -27,6 +27,7 @@ function buildAuthResponse(token, user) {
       email: user.email,
       firstName: user.first_name,
       lastName: user.last_name,
+      avatarPhoto: user.avatar_photo || null,
       role: user.role || 'patient',
     },
   };
@@ -39,6 +40,7 @@ function buildUserProfile(user) {
     email: user.email,
     firstName: user.first_name,
     lastName: user.last_name,
+    avatarPhoto: user.avatar_photo || null,
     role: user.role || 'patient',
     accountStatus: user.account_status || 'pending_verification',
     emailVerifiedAt: user.email_verified_at || null,
