@@ -11,6 +11,8 @@ function mapUserWithRole(user) {
     email: user.email,
     password_hash: user.passwordHash,
     avatar_photo: user.avatarPhoto,
+    google_sub: user.googleSub,
+    onboarding_completed: user.onboardingCompleted,
     account_status: user.accountStatus,
     email_verified_at: user.emailVerifiedAt,
     first_name: user.firstName,
@@ -61,6 +63,45 @@ async function findUserByEmail(email) {
   return mapUserWithRole(user);
 }
 
+async function findUserByGoogleSub(googleSub) {
+  if (!googleSub) {
+    return null;
+  }
+
+  const user = await prisma.user.findFirst({
+    where: {
+      googleSub,
+      isActive: true,
+    },
+    include: {
+      userRoles: {
+        include: {
+          role: true,
+        },
+        orderBy: {
+          assignedAt: 'asc',
+        },
+        take: 1,
+      },
+    },
+  });
+
+  return mapUserWithRole(user);
+}
+
+async function findUserByGoogleIdentity({ googleSub, email }) {
+  const byGoogleSub = await findUserByGoogleSub(googleSub);
+  if (byGoogleSub) {
+    return byGoogleSub;
+  }
+
+  if (!email) {
+    return null;
+  }
+
+  return findUserByEmail(email);
+}
+
 async function findUserById(userId) {
   const user = await prisma.user.findFirst({
     where: {
@@ -92,6 +133,8 @@ async function createUserWithRole({
   role,
   accountStatus = 'pending_verification',
   emailVerifiedAt = null,
+  googleSub = null,
+  onboardingCompleted = true,
 }) {
   try {
     const created = await prisma.$transaction(async (tx) => {
@@ -100,6 +143,8 @@ async function createUserWithRole({
           username,
           email,
           passwordHash,
+          googleSub,
+          onboardingCompleted,
           accountStatus,
           emailVerifiedAt: emailVerifiedAt ? new Date(emailVerifiedAt) : null,
           firstName,
@@ -229,36 +274,46 @@ async function activateUserByEmail(email) {
   return mapUserWithRole(user);
 }
 
-async function createOrGetGoogleUser({ email, firstName, lastName, role, passwordHash }) {
-  const existing = await findUserByEmail(email);
-  if (existing) {
-    if (existing.account_status !== 'active') {
-      await activateUserByEmail(email);
-    }
-
-    return findUserByEmail(email);
+async function linkGoogleIdentity(userId, googleSub) {
+  if (!googleSub) {
+    return findUserById(userId);
   }
 
-  const usernameBase =
-    email
-      .split('@')[0]
-      .replace(/[^a-zA-Z0-9_]/g, '')
-      .slice(0, 32) || 'googleuser';
-  const username = `${usernameBase}_${Date.now().toString().slice(-6)}`;
-  return createUserWithRole({
-    username,
-    email,
-    passwordHash,
-    firstName,
-    lastName,
-    role,
-    accountStatus: 'active',
-    emailVerifiedAt: new Date().toISOString(),
-  });
+  try {
+    const user = await prisma.user.update({
+      where: {
+        userId,
+      },
+      data: {
+        googleSub,
+        updatedAt: new Date(),
+      },
+      include: {
+        userRoles: {
+          include: {
+            role: true,
+          },
+          take: 1,
+        },
+      },
+    });
+
+    return mapUserWithRole(user);
+  } catch (error) {
+    if (isUniqueConstraintError(error)) {
+      const conflict = new Error('Akun Google ini sudah terhubung ke user lain');
+      conflict.statusCode = 409;
+      throw conflict;
+    }
+
+    throw error;
+  }
 }
 
 module.exports = {
   findUserByEmail,
+  findUserByGoogleSub,
+  findUserByGoogleIdentity,
   findUserById,
   createUserWithRole,
   createEmailVerification,
@@ -266,5 +321,5 @@ module.exports = {
   consumeEmailVerification,
   deleteEmailVerification,
   activateUserByEmail,
-  createOrGetGoogleUser,
+  linkGoogleIdentity,
 };

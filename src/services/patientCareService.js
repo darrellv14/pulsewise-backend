@@ -320,10 +320,7 @@ async function createEmergencyContact({ actor, userId, payload }) {
   if (payload.isPriority) {
     const existingPriority = await patientCareRepository.findPriorityEmergencyContact({ userId });
     if (existingPriority) {
-      throw createHttpError(
-        'Hanya satu emergency contact yang boleh menjadi prioritas',
-        CONFLICT
-      );
+      throw createHttpError('Hanya satu emergency contact yang boleh menjadi prioritas', CONFLICT);
     }
   }
 
@@ -355,10 +352,7 @@ async function updateEmergencyContact({ actor, userId, emergencyContactId, paylo
       excludeEmergencyContactId: emergencyContactId,
     });
     if (existingPriority) {
-      throw createHttpError(
-        'Hanya satu emergency contact yang boleh menjadi prioritas',
-        CONFLICT
-      );
+      throw createHttpError('Hanya satu emergency contact yang boleh menjadi prioritas', CONFLICT);
     }
   }
 
@@ -521,9 +515,7 @@ async function createDailyBodyMetricByDate({ actor, userId, payload }) {
     bodyWeight: hasOwn(payload, 'bodyWeight') ? payload.bodyWeight : undefined,
     bmi: hasOwn(payload, 'bmi') ? payload.bmi : undefined,
     systolicPressure: hasOwn(payload, 'systolicPressure') ? payload.systolicPressure : undefined,
-    diastolicPressure: hasOwn(payload, 'diastolicPressure')
-      ? payload.diastolicPressure
-      : undefined,
+    diastolicPressure: hasOwn(payload, 'diastolicPressure') ? payload.diastolicPressure : undefined,
     heartRate: hasOwn(payload, 'heartRate') ? payload.heartRate : undefined,
     timeStamp: hasOwn(payload, 'timeStamp') ? resolvedTimeStamp : undefined,
   });

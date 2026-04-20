@@ -154,6 +154,8 @@ components:
           type: string
           format: date-time
           nullable: true
+        onboardingCompleted:
+          type: boolean
       example:
         userId: 3a233724-0b42-4a4f-88e8-88e732c46351
         username: agus
@@ -164,6 +166,7 @@ components:
         role: patient
         accountStatus: active
         emailVerifiedAt: '2026-04-10T08:15:00.000Z'
+        onboardingCompleted: true
 
     RegisterRequest:
       type: object
@@ -226,6 +229,71 @@ components:
           type: string
           enum: [patient, doctor]
           default: patient
+
+    GoogleOauthRegisterRequest:
+      type: object
+      required: [registrationToken, username]
+      properties:
+        registrationToken:
+          type: string
+        username:
+          type: string
+          minLength: 3
+          maxLength: 100
+        firstName:
+          type: string
+          nullable: true
+        lastName:
+          type: string
+          nullable: true
+        role:
+          type: string
+          enum: [patient, doctor]
+          default: patient
+
+    GoogleProfilePreview:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        firstName:
+          type: string
+          nullable: true
+        lastName:
+          type: string
+          nullable: true
+        avatarPhoto:
+          type: string
+          format: uri
+          nullable: true
+
+    GoogleOauthBeginData:
+      type: object
+      properties:
+        nextStep:
+          type: string
+          enum: [HOME, COMPLETE_REGISTRATION, VERIFY_OTP]
+        accountExists:
+          type: boolean
+        registrationCompleted:
+          type: boolean
+        otpRequired:
+          type: boolean
+        registrationToken:
+          type: string
+          nullable: true
+        email:
+          type: string
+          format: email
+          nullable: true
+        token:
+          type: string
+          nullable: true
+        user:
+          $ref: '#/components/schemas/AuthUser'
+        googleProfile:
+          $ref: '#/components/schemas/GoogleProfilePreview'
 
     PatientProfile:
       type: object
@@ -2434,7 +2502,7 @@ paths:
   /api/v1/auth/oauth/google:
     post:
       tags: [Auth]
-      summary: Login/register menggunakan Google token (BE verification)
+      summary: Cek status akun Google dan tentukan next step onboarding/login
       requestBody:
         required: true
         content:
@@ -2443,19 +2511,65 @@ paths:
               $ref: '#/components/schemas/GoogleOauthRequest'
       responses:
         '200':
-          description: OAuth login success
+          description: OAuth Google berhasil diverifikasi
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessEnvelope'
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/GoogleOauthBeginData'
         '401':
           description: Invalid Google token
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
+        '409':
+          description: Email sudah terhubung ke akun Google lain
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
         '501':
           description: OAuth provider not configured
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /api/v1/auth/oauth/google/register:
+    post:
+      tags: [Auth]
+      summary: Selesaikan registrasi akun Google baru lalu kirim OTP email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoogleOauthRegisterRequest'
+      responses:
+        '200':
+          description: Registrasi Google dilanjutkan ke verifikasi OTP
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/GoogleOauthBeginData'
+        '401':
+          description: Token registrasi Google tidak valid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '409':
+          description: Akun Google sudah aktif atau bentrok
           content:
             application/json:
               schema:

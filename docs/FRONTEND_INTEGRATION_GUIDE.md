@@ -17,6 +17,7 @@ Dokumen ini merangkum endpoint yang perlu dipakai frontend (mobile + web) supaya
 - PUT /api/v1/doctors/{doctorId}/profile
 
 Catatan onboarding patient:
+
 - UI onboarding boleh dibuat 1 flow.
 - Proses backend tetap dipecah jadi 2 call:
   1. `POST /api/v1/auth/register`

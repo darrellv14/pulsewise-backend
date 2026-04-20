@@ -41,13 +41,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/login",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "login"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
             }
           },
           "response": [
@@ -67,13 +62,8 @@
                 },
                 "url": {
                   "raw": "{{baseUrl}}/auth/login",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "auth",
-                    "login"
-                  ]
+                  "host": ["{{baseUrl}}"],
+                  "path": ["auth", "login"]
                 }
               },
               "status": "OK",
@@ -104,13 +94,8 @@
                 },
                 "url": {
                   "raw": "{{baseUrl}}/auth/login",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "auth",
-                    "login"
-                  ]
+                  "host": ["{{baseUrl}}"],
+                  "path": ["auth", "login"]
                 }
               },
               "status": "Bad Request",
@@ -141,13 +126,8 @@
                 },
                 "url": {
                   "raw": "{{baseUrl}}/auth/login",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "auth",
-                    "login"
-                  ]
+                  "host": ["{{baseUrl}}"],
+                  "path": ["auth", "login"]
                 }
               },
               "status": "Unauthorized",
@@ -178,13 +158,8 @@
                 },
                 "url": {
                   "raw": "{{baseUrl}}/auth/login",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "auth",
-                    "login"
-                  ]
+                  "host": ["{{baseUrl}}"],
+                  "path": ["auth", "login"]
                 }
               },
               "status": "Forbidden",
@@ -233,13 +208,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/login",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "login"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
             }
           },
           "response": [
@@ -259,13 +229,8 @@
                 },
                 "url": {
                   "raw": "{{baseUrl}}/auth/login",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "auth",
-                    "login"
-                  ]
+                  "host": ["{{baseUrl}}"],
+                  "path": ["auth", "login"]
                 }
               },
               "status": "OK",
@@ -296,13 +261,8 @@
                 },
                 "url": {
                   "raw": "{{baseUrl}}/auth/login",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "auth",
-                    "login"
-                  ]
+                  "host": ["{{baseUrl}}"],
+                  "path": ["auth", "login"]
                 }
               },
               "status": "Bad Request",
@@ -333,13 +293,8 @@
                 },
                 "url": {
                   "raw": "{{baseUrl}}/auth/login",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "auth",
-                    "login"
-                  ]
+                  "host": ["{{baseUrl}}"],
+                  "path": ["auth", "login"]
                 }
               },
               "status": "Unauthorized",
@@ -370,13 +325,8 @@
                 },
                 "url": {
                   "raw": "{{baseUrl}}/auth/login",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "auth",
-                    "login"
-                  ]
+                  "host": ["{{baseUrl}}"],
+                  "path": ["auth", "login"]
                 }
               },
               "status": "Forbidden",
@@ -418,15 +368,8 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients?page=1&limit=20",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "doctors",
-                "{{doctorId}}",
-                "dashboard",
-                "patients"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["doctors", "{{doctorId}}", "dashboard", "patients"],
               "query": [
                 {
                   "key": "page",
@@ -452,15 +395,8 @@
                 ],
                 "url": {
                   "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients?page=1&limit=20",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "doctors",
-                    "{{doctorId}}",
-                    "dashboard",
-                    "patients"
-                  ],
+                  "host": ["{{baseUrl}}"],
+                  "path": ["doctors", "{{doctorId}}", "dashboard", "patients"],
                   "query": [
                     {
                       "key": "page",
@@ -497,15 +433,8 @@
                 ],
                 "url": {
                   "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients?page=1&limit=20",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "doctors",
-                    "{{doctorId}}",
-                    "dashboard",
-                    "patients"
-                  ],
+                  "host": ["{{baseUrl}}"],
+                  "path": ["doctors", "{{doctorId}}", "dashboard", "patients"],
                   "query": [
                     {
                       "key": "page",
@@ -545,16 +474,8 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "doctors",
-                "{{doctorId}}",
-                "dashboard",
-                "patients",
-                "{{patientId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["doctors", "{{doctorId}}", "dashboard", "patients", "{{patientId}}"]
             }
           },
           "response": [
@@ -570,16 +491,8 @@
                 ],
                 "url": {
                   "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "doctors",
-                    "{{doctorId}}",
-                    "dashboard",
-                    "patients",
-                    "{{patientId}}"
-                  ]
+                  "host": ["{{baseUrl}}"],
+                  "path": ["doctors", "{{doctorId}}", "dashboard", "patients", "{{patientId}}"]
                 }
               },
               "status": "OK",
@@ -606,16 +519,8 @@
                 ],
                 "url": {
                   "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "doctors",
-                    "{{doctorId}}",
-                    "dashboard",
-                    "patients",
-                    "{{patientId}}"
-                  ]
+                  "host": ["{{baseUrl}}"],
+                  "path": ["doctors", "{{doctorId}}", "dashboard", "patients", "{{patientId}}"]
                 }
               },
               "status": "Not Found",
@@ -645,9 +550,7 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/vitals?timePeriod=last_30_days",
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "host": ["{{baseUrl}}"],
               "path": [
                 "doctors",
                 "{{doctorId}}",
@@ -677,9 +580,7 @@
                 ],
                 "url": {
                   "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/vitals?timePeriod=last_30_days",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "host": ["{{baseUrl}}"],
                   "path": [
                     "doctors",
                     "{{doctorId}}",
@@ -723,9 +624,7 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/abnormal-report?timePeriod=last_30_days",
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "host": ["{{baseUrl}}"],
               "path": [
                 "doctors",
                 "{{doctorId}}",
@@ -755,9 +654,7 @@
                 ],
                 "url": {
                   "raw": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/abnormal-report?timePeriod=last_30_days",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
+                  "host": ["{{baseUrl}}"],
                   "path": [
                     "doctors",
                     "{{doctorId}}",
@@ -821,15 +718,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/doctors/{{doctorId}}/patients/link-by-patient-id",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "doctors",
-                "{{doctorId}}",
-                "patients",
-                "link-by-patient-id"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["doctors", "{{doctorId}}", "patients", "link-by-patient-id"]
             }
           },
           "response": [
@@ -853,15 +743,8 @@
                 },
                 "url": {
                   "raw": "{{baseUrl}}/doctors/{{doctorId}}/patients/link-by-patient-id",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "doctors",
-                    "{{doctorId}}",
-                    "patients",
-                    "link-by-patient-id"
-                  ]
+                  "host": ["{{baseUrl}}"],
+                  "path": ["doctors", "{{doctorId}}", "patients", "link-by-patient-id"]
                 }
               },
               "status": "Created",

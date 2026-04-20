@@ -300,33 +300,33 @@ describe('medication v2', () => {
       ],
     });
     tx.medication.findUnique.mockResolvedValue({
-        medicationId: 'med-1',
-        userId: 'user-1',
-        name: 'Aspirin',
-        startDate: new Date('2026-04-11T00:00:00.000Z'),
-        frequency: 'weekly',
-        numOfDays: null,
-        note: null,
-        createdAt: new Date('2026-04-11T00:00:00.000Z'),
-        reminders: [
-          {
-            reminderId: 'rem-weekly-1',
-            userId: 'user-1',
-            medicationId: 'med-1',
-            scheduleTime: new Date('1970-01-01T08:00:00.000Z'),
-            dayOfWeek: 1,
-            createdAt: new Date('2026-04-11T00:10:00.000Z'),
-          },
-          {
-            reminderId: 'rem-weekly-2',
-            userId: 'user-1',
-            medicationId: 'med-1',
-            scheduleTime: new Date('1970-01-01T08:00:00.000Z'),
-            dayOfWeek: 3,
-            createdAt: new Date('2026-04-11T00:10:00.000Z'),
-          },
-        ],
-      });
+      medicationId: 'med-1',
+      userId: 'user-1',
+      name: 'Aspirin',
+      startDate: new Date('2026-04-11T00:00:00.000Z'),
+      frequency: 'weekly',
+      numOfDays: null,
+      note: null,
+      createdAt: new Date('2026-04-11T00:00:00.000Z'),
+      reminders: [
+        {
+          reminderId: 'rem-weekly-1',
+          userId: 'user-1',
+          medicationId: 'med-1',
+          scheduleTime: new Date('1970-01-01T08:00:00.000Z'),
+          dayOfWeek: 1,
+          createdAt: new Date('2026-04-11T00:10:00.000Z'),
+        },
+        {
+          reminderId: 'rem-weekly-2',
+          userId: 'user-1',
+          medicationId: 'med-1',
+          scheduleTime: new Date('1970-01-01T08:00:00.000Z'),
+          dayOfWeek: 3,
+          createdAt: new Date('2026-04-11T00:10:00.000Z'),
+        },
+      ],
+    });
 
     const result = await medicationService.updateMedication({
       actor: { userId: 'user-1', role: 'patient' },
@@ -421,25 +421,25 @@ describe('medication v2', () => {
       ],
     });
     tx.medication.findUnique.mockResolvedValue({
-        medicationId: 'med-1',
-        userId: 'user-1',
-        name: 'Vitamin C',
-        startDate: new Date('2026-04-11T00:00:00.000Z'),
-        frequency: 'daily',
-        numOfDays: 5,
-        note: null,
-        createdAt: new Date('2026-04-11T00:00:00.000Z'),
-        reminders: [
-          {
-            reminderId: 'rem-daily',
-            userId: 'user-1',
-            medicationId: 'med-1',
-            scheduleTime: new Date('1970-01-01T09:30:00.000Z'),
-            dayOfWeek: null,
-            createdAt: new Date('2026-04-11T00:10:00.000Z'),
-          },
-        ],
-      });
+      medicationId: 'med-1',
+      userId: 'user-1',
+      name: 'Vitamin C',
+      startDate: new Date('2026-04-11T00:00:00.000Z'),
+      frequency: 'daily',
+      numOfDays: 5,
+      note: null,
+      createdAt: new Date('2026-04-11T00:00:00.000Z'),
+      reminders: [
+        {
+          reminderId: 'rem-daily',
+          userId: 'user-1',
+          medicationId: 'med-1',
+          scheduleTime: new Date('1970-01-01T09:30:00.000Z'),
+          dayOfWeek: null,
+          createdAt: new Date('2026-04-11T00:10:00.000Z'),
+        },
+      ],
+    });
 
     const result = await medicationService.updateMedication({
       actor: { userId: 'user-1', role: 'patient' },

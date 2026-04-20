@@ -13,7 +13,10 @@ const otpRule = z.preprocess(
 
     return value;
   },
-  z.string().length(6, 'OTP harus 6 digit').regex(/^[0-9]+$/, 'OTP harus berisi angka')
+  z
+    .string()
+    .length(6, 'OTP harus 6 digit')
+    .regex(/^[0-9]+$/, 'OTP harus berisi angka')
 );
 
 const registerSchema = z.object({
@@ -44,10 +47,19 @@ const googleOauthSchema = z.object({
   role: z.enum(['patient', 'doctor']).default('patient'),
 });
 
+const googleOauthRegisterSchema = z.object({
+  registrationToken: z.string(),
+  username: z.string().trim().min(3).max(100),
+  firstName: optionalNullableString(100),
+  lastName: optionalNullableString(100),
+  role: z.enum(['patient', 'doctor']).default('patient'),
+});
+
 module.exports = {
   registerSchema,
   loginSchema,
   sendEmailVerificationSchema,
   confirmEmailVerificationSchema,
   googleOauthSchema,
+  googleOauthRegisterSchema,
 };

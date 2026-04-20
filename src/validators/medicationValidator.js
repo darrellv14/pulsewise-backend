@@ -170,13 +170,19 @@ const medicationUpdateSchema = z
     path: ['frequency'],
   });
 
-const reminderCreateSchema = reminderInputSchema.refine((value) => hasUniqueReminderSchedules([value]), {
-  message: 'Reminder tidak valid',
-});
+const reminderCreateSchema = reminderInputSchema.refine(
+  (value) => hasUniqueReminderSchedules([value]),
+  {
+    message: 'Reminder tidak valid',
+  }
+);
 
-const reminderUpdateSchema = reminderInputSchema.refine((value) => hasUniqueReminderSchedules([value]), {
-  message: 'Reminder tidak valid',
-  });
+const reminderUpdateSchema = reminderInputSchema.refine(
+  (value) => hasUniqueReminderSchedules([value]),
+  {
+    message: 'Reminder tidak valid',
+  }
+);
 
 const medicationLogCreateSchema = z.object({
   medicationDate: medicationDateSchema,
@@ -192,13 +198,10 @@ const medicationCalendarQuerySchema = z
     from: medicationDateSchema,
     to: medicationDateSchema,
   })
-  .refine(
-    (value) => new Date(value.to).getTime() >= new Date(value.from).getTime(),
-    {
-      message: 'to tidak boleh lebih kecil dari from',
-      path: ['to'],
-    }
-  )
+  .refine((value) => new Date(value.to).getTime() >= new Date(value.from).getTime(), {
+    message: 'to tidak boleh lebih kecil dari from',
+    path: ['to'],
+  })
   .refine(
     (value) => {
       const milliseconds = new Date(value.to).getTime() - new Date(value.from).getTime();

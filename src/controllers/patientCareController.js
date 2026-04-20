@@ -226,7 +226,12 @@ async function createDailyConsumptionByDate(req, res, next) {
       payload: req.body,
     });
 
-    return success(res, 'Consumption diary berdasarkan tanggal berhasil ditambahkan', data, CREATED);
+    return success(
+      res,
+      'Consumption diary berdasarkan tanggal berhasil ditambahkan',
+      data,
+      CREATED
+    );
   } catch (error) {
     return next(error);
   }

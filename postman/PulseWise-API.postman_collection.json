@@ -253,9 +253,7 @@
               "listen": "test",
               "script": {
                 "type": "text/javascript",
-                "exec": [
-                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
-                ]
+                "exec": ["pm.test('Status 200', function () { pm.response.to.have.status(200); });"]
               }
             }
           ],
@@ -806,12 +804,8 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/patients?page=1&limit=20&sortBy=created_at&order=desc",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "patients"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["patients"],
               "query": [
                 {
                   "key": "page",
@@ -845,12 +839,8 @@
                 ],
                 "url": {
                   "raw": "{{baseUrl}}/patients?page=1&limit=20&sortBy=created_at&order=desc",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "patients"
-                  ],
+                  "host": ["{{baseUrl}}"],
+                  "path": ["patients"],
                   "query": [
                     {
                       "key": "page",
@@ -1205,14 +1195,8 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/doctors/{{doctorId}}/patients?page=1&limit=20",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "doctors",
-                "{{doctorId}}",
-                "patients"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["doctors", "{{doctorId}}", "patients"],
               "query": [
                 {
                   "key": "page",
@@ -1238,14 +1222,8 @@
                 ],
                 "url": {
                   "raw": "{{baseUrl}}/doctors/{{doctorId}}/patients?page=1&limit=20",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "doctors",
-                    "{{doctorId}}",
-                    "patients"
-                  ],
+                  "host": ["{{baseUrl}}"],
+                  "path": ["doctors", "{{doctorId}}", "patients"],
                   "query": [
                     {
                       "key": "page",
@@ -2337,9 +2315,7 @@
               "listen": "test",
               "script": {
                 "type": "text/javascript",
-                "exec": [
-                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
-                ]
+                "exec": ["pm.test('Status 200', function () { pm.response.to.have.status(200); });"]
               }
             }
           ],
@@ -2627,9 +2603,7 @@
               "listen": "test",
               "script": {
                 "type": "text/javascript",
-                "exec": [
-                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });"
-                ]
+                "exec": ["pm.test('Status 201', function () { pm.response.to.have.status(201); });"]
               }
             }
           ],

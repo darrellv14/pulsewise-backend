@@ -104,18 +104,18 @@ const bodyMetricCreateBaseSchema = z.object({
 });
 
 const bodyMetricCreateSchema = bodyMetricCreateBaseSchema.refine(
-    (value) =>
-      value.bodyHeight !== undefined ||
-      value.bodyWeight !== undefined ||
-      value.bmi !== undefined ||
-      value.systolicPressure !== undefined ||
-      value.diastolicPressure !== undefined ||
-      value.heartRate !== undefined ||
-      value.conditionTag !== undefined,
-    {
-      message: 'Minimal satu metrik harus diisi',
-    }
-  );
+  (value) =>
+    value.bodyHeight !== undefined ||
+    value.bodyWeight !== undefined ||
+    value.bmi !== undefined ||
+    value.systolicPressure !== undefined ||
+    value.diastolicPressure !== undefined ||
+    value.heartRate !== undefined ||
+    value.conditionTag !== undefined,
+  {
+    message: 'Minimal satu metrik harus diisi',
+  }
+);
 
 const bodyMetricCreateByDateSchema = bodyMetricCreateBaseSchema
   .extend({

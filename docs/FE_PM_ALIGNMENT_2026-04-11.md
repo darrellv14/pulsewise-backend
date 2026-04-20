@@ -13,6 +13,7 @@ Dokumen ini merangkum tindak lanjut atas request FE terkait:
 Quick win ini sudah diimplementasikan.
 
 Perubahan:
+
 - response `GET /api/v1/users/{userId}/emergency-contacts` sekarang membawa `isPriority`
 - payload `POST /api/v1/users/{userId}/emergency-contacts` sekarang menerima `isPriority`
 - payload `PUT /api/v1/users/{userId}/emergency-contacts/{emergencyContactId}` sekarang menerima `isPriority`
@@ -42,6 +43,7 @@ Aturan error:
 ```
 
 Catatan implementasi:
+
 - rule ini dicek di layer aplikasi
 - rule ini juga dikunci di database dengan unique partial index untuk menghindari race condition
 
@@ -69,6 +71,7 @@ Payload yang sudah didukung:
 ```
 
 Kenapa tidak digabung penuh ke `POST /api/v1/auth/register`:
+
 - endpoint register sebaiknya tetap fokus ke akun/auth
 - field biodata patient masuk domain profile, bukan auth
 - profile onboarding lebih aman jika dijalankan setelah register/login berhasil
@@ -81,6 +84,7 @@ Flow yang disarankan:
 3. `PUT /api/v1/patients/{patientId}/profile`
 
 Catatan implementasi FE:
+
 - boleh tetap 1 layar onboarding
 - saat submit, FE cukup pecah jadi 2 request berurutan
 - payload dan response profile tetap memakai field English yang canonical (`dateOfBirth`, `sex`, `heightCm`, `bloodType`, `address`)
@@ -125,6 +129,7 @@ Contoh weekly:
 ```
 
 Catatan desain:
+
 - `daysOfWeek` lebih disarankan sebagai array integer daripada object `senin: true`
 - mapping `daysOfWeek` yang dipakai: `1=Monday`, `2=Tuesday`, `3=Wednesday`, `4=Thursday`, `5=Friday`, `6=Saturday`, `7=Sunday`
 - `intakeTimes` lebih bersih jika dipisah dari medication utama sebagai schedule entries

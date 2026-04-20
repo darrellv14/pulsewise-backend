@@ -54,32 +54,42 @@ async function invalidateCacheTags(tags) {
 async function listDoctorPatients({ doctorId, limit, offset }) {
   const cacheTags = [`doctor_patients_${sanitizeTagPart(doctorId)}`];
   const [items, totalItems] = await Promise.all([
-    prisma.doctorPatient.findMany(withOptionalCacheStrategy({
-      where: {
-        doctorId,
-        isActive: true,
-      },
-      include: {
-        patient: {
-          select: {
-            firstName: true,
-            lastName: true,
-            email: true,
+    prisma.doctorPatient.findMany(
+      withOptionalCacheStrategy(
+        {
+          where: {
+            doctorId,
+            isActive: true,
+          },
+          include: {
+            patient: {
+              select: {
+                firstName: true,
+                lastName: true,
+                email: true,
+              },
+            },
+          },
+          orderBy: {
+            linkedAt: 'desc',
+          },
+          skip: offset,
+          take: limit,
+        },
+        cacheTags
+      )
+    ),
+    prisma.doctorPatient.count(
+      withOptionalCacheStrategy(
+        {
+          where: {
+            doctorId,
+            isActive: true,
           },
         },
-      },
-      orderBy: {
-        linkedAt: 'desc',
-      },
-      skip: offset,
-      take: limit,
-    }, cacheTags)),
-    prisma.doctorPatient.count(withOptionalCacheStrategy({
-      where: {
-        doctorId,
-        isActive: true,
-      },
-    }, cacheTags)),
+        cacheTags
+      )
+    ),
   ]);
 
   return {

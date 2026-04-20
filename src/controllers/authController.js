@@ -32,8 +32,17 @@ async function confirmEmailVerification(req, res, next) {
 
 async function oauthGoogle(req, res, next) {
   try {
-    const result = await authService.loginWithGoogle(req.body.idToken, req.body.role);
-    return success(res, 'Login Google berhasil', result);
+    const result = await authService.beginGoogleAuth(req.body.idToken, req.body.role);
+    return success(res, 'Autentikasi Google berhasil diproses', result);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function completeGoogleOauthRegistration(req, res, next) {
+  try {
+    const result = await authService.completeGoogleRegistration(req.body);
+    return success(res, 'Registrasi Google berhasil dilanjutkan', result);
   } catch (error) {
     return next(error);
   }
@@ -62,6 +71,7 @@ module.exports = {
   sendEmailVerification,
   confirmEmailVerification,
   oauthGoogle,
+  completeGoogleOauthRegistration,
   login,
   me,
 };

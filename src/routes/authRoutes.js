@@ -10,6 +10,7 @@ const {
   sendEmailVerificationSchema,
   confirmEmailVerificationSchema,
   googleOauthSchema,
+  googleOauthRegisterSchema,
 } = require('../validators/authValidator');
 
 const router = express.Router();
@@ -39,6 +40,12 @@ router.post(
   authRateLimiter,
   validateRequest(googleOauthSchema),
   authController.oauthGoogle
+);
+router.post(
+  '/oauth/google/register',
+  authRateLimiter,
+  validateRequest(googleOauthRegisterSchema),
+  authController.completeGoogleOauthRegistration
 );
 router.post('/login', authRateLimiter, validateRequest(loginSchema), authController.login);
 router.get('/me', authenticate, authController.me);

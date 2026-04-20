@@ -76,7 +76,8 @@ describe('patient care avatar upload flow', () => {
 
   test('avatarSaveSchema accepts upload metadata within limits', () => {
     const result = avatarSaveSchema.parse({
-      secureUrl: 'https://res.cloudinary.com/demo-cloud/image/upload/v1/pulsewise/avatar/avatar.webp',
+      secureUrl:
+        'https://res.cloudinary.com/demo-cloud/image/upload/v1/pulsewise/avatar/avatar.webp',
       publicId: 'pulsewise/avatar/avatar',
       bytes: 120000,
       width: 256,
@@ -96,7 +97,8 @@ describe('patient care avatar upload flow', () => {
         actor: { userId: 'user-1', role: 'patient' },
         userId: 'user-1',
         payload: {
-          secureUrl: 'https://res.cloudinary.com/demo-cloud/image/upload/v1/pulsewise/avatar/avatar.webp',
+          secureUrl:
+            'https://res.cloudinary.com/demo-cloud/image/upload/v1/pulsewise/avatar/avatar.webp',
           publicId: 'pulsewise/avatar/avatar',
           bytes: 250000,
           width: 256,

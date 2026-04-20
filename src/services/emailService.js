@@ -13,7 +13,8 @@ function escapeHtml(value) {
 function buildOtpEmailHtml({ otpCode, expiresInMinutes }) {
   const safeOtpCode = escapeHtml(otpCode);
   const safeExpiry = escapeHtml(expiresInMinutes);
-  const brandName = escapeHtml(env.mailtrap.senderName || 'PulseWise');
+  const brandName = escapeHtml(env.mailtrap.senderName || 'Pulse Wise');
+  const currentYear = new Date().getFullYear();
 
   return `
   <!doctype html>
@@ -23,112 +24,59 @@ function buildOtpEmailHtml({ otpCode, expiresInMinutes }) {
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <title>${brandName} - Verifikasi OTP</title>
     </head>
-    <body style="margin:0;padding:0;background:#eef6f2;font-family:Segoe UI,Arial,sans-serif;color:#16302b;">
-      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:linear-gradient(180deg,#e7f7ef 0%,#eef6f2 100%);padding:32px 12px;">
+    <body style="margin: 0; padding: 0; background-color: #FDF7F8; font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #3B4A54;">
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #FDF7F8; padding: 40px 16px;">
         <tr>
           <td align="center">
-            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:580px;background:#ffffff;border-radius:28px;overflow:hidden;border:1px solid #d9ece3;box-shadow:0 18px 50px rgba(7,94,70,.12);">
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 480px; background-color: #FFFFFF; border-radius: 24px; overflow: hidden; box-shadow: 0 10px 40px rgba(225, 61, 90, 0.08);">
+              
               <tr>
-                <td style="padding:0;">
-                  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:linear-gradient(135deg,#00aa13 0%,#0f766e 100%);">
-                    <tr>
-                      <td style="padding:28px 28px 20px 28px;">
-                        <div style="display:inline-block;padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.16);font-size:11px;line-height:1;color:#ecfdf5;font-weight:700;letter-spacing:.9px;">
-                          KEAMANAN AKUN
-                        </div>
-                        <div style="margin-top:18px;font-size:30px;line-height:1.2;color:#ffffff;font-weight:800;">
-                          Verifikasi email Anda
-                        </div>
-                        <div style="margin-top:10px;max-width:420px;font-size:14px;line-height:1.7;color:#dcfce7;">
-                          Satu langkah lagi untuk mengaktifkan akun ${brandName}. Masukkan kode OTP di bawah ini untuk melanjutkan dengan aman.
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td style="padding:0 28px 28px 28px;">
-                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.16);border-radius:20px;">
-                          <tr>
-                            <td style="padding:16px 18px;">
-                              <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
-                                <tr>
-                                  <td style="font-size:13px;line-height:1.6;color:#ecfdf5;">
-                                    Kode ini bersifat rahasia dan hanya berlaku sebentar.
-                                  </td>
-                                  <td align="right" style="font-size:12px;line-height:1.6;color:#bbf7d0;font-weight:700;">
-                                    Berlaku ${safeExpiry} menit
-                                  </td>
-                                </tr>
-                              </table>
-                            </td>
-                          </tr>
-                        </table>
-                      </td>
-                    </tr>
-                  </table>
+                <td style="background-color: #F99B9F; padding: 36px 32px; text-align: center;">
+                  <h1 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.5px; color: #FFFFFF;">
+                    Pulse <span style="color: #E13D5A;">Wise</span>
+                  </h1>
                 </td>
               </tr>
+
               <tr>
-                <td style="padding:30px 28px 12px 28px;">
-                  <p style="margin:0 0 12px 0;font-size:15px;line-height:1.8;color:#36504a;">Halo,</p>
-                  <p style="margin:0 0 22px 0;font-size:15px;line-height:1.8;color:#36504a;">
-                    Gunakan kode OTP berikut untuk menyelesaikan verifikasi. Kami sengaja menampilkannya besar dan jelas agar mudah dibaca di desktop maupun mobile.
+                <td style="padding: 40px 32px 32px 32px;">
+                  <h2 style="margin: 0 0 12px 0; font-size: 20px; font-weight: 700; color: #1A202C;">
+                    Verifikasi Akun Anda
+                  </h2>
+                  <p style="margin: 0 0 28px 0; font-size: 15px; line-height: 1.6; color: #4A5568;">
+                    Halo,<br><br>
+                    Terima kasih telah menggunakan <strong>${brandName}</strong>. Untuk melanjutkan proses masuk, silakan gunakan kode verifikasi di bawah ini.
                   </p>
-                  <div style="margin:0 0 18px 0;padding:22px 18px;border-radius:24px;background:linear-gradient(180deg,#f2fbf6 0%,#ecfdf5 100%);border:1px solid #b7e7cc;text-align:center;">
-                    <div style="font-size:12px;color:#15803d;font-weight:800;letter-spacing:1.1px;">KODE OTP</div>
-                    <div style="margin-top:12px;font-size:42px;line-height:1.1;color:#065f46;font-weight:800;font-family:Consolas,'Courier New',monospace;">
+
+                  <div style="background-color: #FFF0F2; border: 1px dashed #F99B9F; border-radius: 16px; padding: 24px; text-align: center; margin-bottom: 28px;">
+                    <div style="font-size: 12px; font-weight: 600; color: #E13D5A; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">
+                      KODE OTP
+                    </div>
+                    <div style="font-size: 40px; font-weight: 700; color: #E13D5A; letter-spacing: 8px;">
                       ${safeOtpCode}
                     </div>
-                    <div style="margin-top:12px;font-size:13px;line-height:1.7;color:#3f635b;">
-                      Jika tombol salin di aplikasi email Anda bermasalah, ketik manual persis seperti angka di atas.
-                    </div>
                   </div>
-                  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom:18px;">
-                    <tr>
-                      <td style="padding:0 0 10px 0;">
-                        <div style="padding:14px 16px;border-radius:18px;background:#f8faf9;border:1px solid #e2ece8;">
-                          <div style="font-size:13px;line-height:1.7;color:#24413a;font-weight:700;">Yang perlu Anda tahu</div>
-                          <div style="margin-top:8px;font-size:13px;line-height:1.8;color:#4a635d;">
-                            Kode hanya berlaku selama <strong>${safeExpiry} menit</strong> dan akan otomatis kedaluwarsa setelah itu.
-                          </div>
-                          <div style="margin-top:4px;font-size:13px;line-height:1.8;color:#4a635d;">
-                            Demi keamanan, jangan bagikan OTP ini kepada siapa pun, termasuk pihak yang mengaku dari tim ${brandName}.
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                  </table>
-                  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom:8px;">
-                    <tr>
-                      <td style="padding:0 6px 8px 0;">
-                        <div style="padding:12px 14px;border-radius:16px;background:#fff7ed;border:1px solid #fed7aa;font-size:12px;line-height:1.7;color:#9a3412;">
-                          Buka aplikasi dan masukkan kode sebelum masa berlaku habis.
-                        </div>
-                      </td>
-                    </tr>
-                  </table>
+
+                  <p style="margin: 0 0 24px 0; font-size: 14px; line-height: 1.6; color: #4A5568;">
+                    Kode ini hanya berlaku selama <strong>${safeExpiry} menit</strong>. Jangan bagikan kode ini kepada siapapun, termasuk pihak yang mengaku dari ${brandName}.
+                  </p>
+
+                  <div style="background-color: #F8FAFC; border-radius: 12px; padding: 16px;">
+                    <p style="margin: 0; font-size: 13px; line-height: 1.5; color: #64748B;">
+                      Jika Anda tidak sedang mencoba masuk ke aplikasi ${brandName}, abaikan email ini dengan aman.
+                    </p>
+                  </div>
                 </td>
               </tr>
+
               <tr>
-                <td style="padding:0 28px 28px 28px;">
-                  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-radius:20px;background:#103c35;">
-                    <tr>
-                      <td style="padding:18px 20px;">
-                        <div style="font-size:12px;line-height:1.8;color:#a7f3d0;font-weight:700;letter-spacing:.8px;">TIDAK MERASA MEMINTA KODE INI?</div>
-                        <div style="margin-top:6px;font-size:13px;line-height:1.8;color:#e6fffa;">
-                          Anda bisa abaikan email ini. Akun Anda tidak akan berubah tanpa OTP tersebut.
-                        </div>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-              <tr>
-                <td style="padding:18px 28px;background:#f8fbfa;border-top:1px solid #e2ece8;">
-                  <p style="margin:0;font-size:12px;line-height:1.6;color:#6b7280;">
-                    Email ini dikirim otomatis oleh ${brandName}. Mohon tidak membalas langsung ke email ini.
+                <td style="padding: 24px 32px; background-color: #FFFFFF; border-top: 1px solid #F1F5F9; text-align: center;">
+                  <p style="margin: 0; font-size: 12px; color: #94A3B8;">
+                    &copy; ${currentYear} ${brandName}. Email ini dikirim secara otomatis.
                   </p>
                 </td>
               </tr>
+
             </table>
           </td>
         </tr>
@@ -164,7 +112,7 @@ async function sendOtpEmail({ toEmail, otpCode, expiresInMinutes }) {
   await client.send({
     from: sender,
     to: [{ email: toEmail }],
-    subject: 'PulseWise - Kode Verifikasi OTP',
+    subject: 'Pulse Wise - Kode Verifikasi OTP',
     text: `Kode OTP Anda adalah ${otpCode}. Berlaku selama ${expiresInMinutes} menit.`,
     html: buildOtpEmailHtml({
       otpCode,

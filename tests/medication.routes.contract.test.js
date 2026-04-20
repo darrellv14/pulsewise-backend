@@ -6,7 +6,9 @@ describe('medication route contract', () => {
   const medicationId = '22222222-2222-4222-8222-222222222222';
 
   test('PATCH update medication route is registered', async () => {
-    const response = await request(app).patch(`/api/v1/users/${userId}/medications/${medicationId}`);
+    const response = await request(app).patch(
+      `/api/v1/users/${userId}/medications/${medicationId}`
+    );
 
     expect(response.status).toBe(401);
     expect(response.body).toMatchObject({

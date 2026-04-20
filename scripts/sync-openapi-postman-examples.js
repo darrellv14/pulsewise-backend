@@ -6,7 +6,13 @@ const OPENAPI_PATH = path.join(__dirname, '..', 'docs', 'openapi.yaml');
 const COLLECTION_PATHS = [
   path.join(__dirname, '..', 'postman', 'PulseWise-API.postman_collection.json'),
   path.join(__dirname, '..', 'postman', 'PulseWise-Dashboard-Smoke.postman_collection.json'),
-  path.join(__dirname, '..', 'postman', 'collections', 'PulseWise API _Local_.postman_collection.json'),
+  path.join(
+    __dirname,
+    '..',
+    'postman',
+    'collections',
+    'PulseWise API _Local_.postman_collection.json'
+  ),
   path.join(
     __dirname,
     '..',
@@ -17,17 +23,17 @@ const COLLECTION_PATHS = [
 ];
 
 const STATUS_TEXT = {
-  '200': 'OK',
-  '201': 'Created',
-  '202': 'Accepted',
-  '204': 'No Content',
-  '400': 'Bad Request',
-  '401': 'Unauthorized',
-  '403': 'Forbidden',
-  '404': 'Not Found',
-  '409': 'Conflict',
-  '422': 'Unprocessable Entity',
-  '500': 'Internal Server Error',
+  200: 'OK',
+  201: 'Created',
+  202: 'Accepted',
+  204: 'No Content',
+  400: 'Bad Request',
+  401: 'Unauthorized',
+  403: 'Forbidden',
+  404: 'Not Found',
+  409: 'Conflict',
+  422: 'Unprocessable Entity',
+  500: 'Internal Server Error',
   default: 'Response',
 };
 
@@ -299,17 +305,21 @@ function normalizeRequestUrl(url) {
   const pathOnly = withoutBase.split('?')[0] || '/';
   const normalizedPath = pathOnly.startsWith('/api/') ? pathOnly : `/api/v1${pathOnly}`;
 
-  return normalizedPath
-    .replace(/{{[^}]+}}/g, '{}')
-    .replace(/\/+/g, '/')
-    .replace(/\/$/, '') || '/';
+  return (
+    normalizedPath
+      .replace(/{{[^}]+}}/g, '{}')
+      .replace(/\/+/g, '/')
+      .replace(/\/$/, '') || '/'
+  );
 }
 
 function normalizeOpenApiPath(pathname) {
-  return String(pathname || '')
-    .replace(/{[^}]+}/g, '{}')
-    .replace(/\/+/g, '/')
-    .replace(/\/$/, '') || '/';
+  return (
+    String(pathname || '')
+      .replace(/{[^}]+}/g, '{}')
+      .replace(/\/+/g, '/')
+      .replace(/\/$/, '') || '/'
+  );
 }
 
 function buildOperationIndex(spec) {

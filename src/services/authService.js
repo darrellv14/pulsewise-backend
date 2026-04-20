@@ -8,6 +8,9 @@ const { sendOtpEmail } = require('./emailService');
 const { normalizeOtp } = require('../utils/otp');
 
 const ALLOWED_ROLES = new Set(['patient', 'doctor', 'admin']);
+const GOOGLE_MOBILE_ROLES = new Set(['patient', 'doctor']);
+const GOOGLE_REGISTRATION_TOKEN_PURPOSE = 'google_registration';
+const GOOGLE_REGISTRATION_TOKEN_EXPIRES_IN = '15m';
 const googleClient = new OAuth2Client();
 
 function buildAuthPayload(user) {
@@ -20,6 +23,10 @@ function buildAuthPayload(user) {
 
 function buildAuthResponse(token, user) {
   return {
+    nextStep: 'HOME',
+    accountExists: true,
+    registrationCompleted: user.onboarding_completed !== false,
+    otpRequired: false,
     token,
     user: {
       userId: user.user_id,
@@ -29,6 +36,7 @@ function buildAuthResponse(token, user) {
       lastName: user.last_name,
       avatarPhoto: user.avatar_photo || null,
       role: user.role || 'patient',
+      onboardingCompleted: user.onboarding_completed !== false,
     },
   };
 }
@@ -44,6 +52,71 @@ function buildUserProfile(user) {
     role: user.role || 'patient',
     accountStatus: user.account_status || 'pending_verification',
     emailVerifiedAt: user.email_verified_at || null,
+    onboardingCompleted: user.onboarding_completed !== false,
+  };
+}
+
+function buildGoogleProfile(payload) {
+  return {
+    googleSub: String(payload?.sub || ''),
+    email: String(payload?.email || '').toLowerCase(),
+    firstName: payload?.given_name || null,
+    lastName: payload?.family_name || null,
+    avatarPhoto: payload?.picture || null,
+  };
+}
+
+function createGoogleRegistrationToken(googleProfile, role) {
+  return jwt.sign(
+    {
+      purpose: GOOGLE_REGISTRATION_TOKEN_PURPOSE,
+      googleSub: googleProfile.googleSub,
+      email: googleProfile.email,
+      firstName: googleProfile.firstName,
+      lastName: googleProfile.lastName,
+      avatarPhoto: googleProfile.avatarPhoto,
+      role,
+    },
+    env.jwtSecret,
+    {
+      expiresIn: GOOGLE_REGISTRATION_TOKEN_EXPIRES_IN,
+    }
+  );
+}
+
+function verifyGoogleRegistrationToken(registrationToken) {
+  let decoded;
+  try {
+    decoded = jwt.verify(registrationToken, env.jwtSecret);
+  } catch (_error) {
+    const error = new Error('Token registrasi Google tidak valid atau sudah kedaluwarsa');
+    error.statusCode = 401;
+    throw error;
+  }
+
+  if (decoded?.purpose !== GOOGLE_REGISTRATION_TOKEN_PURPOSE) {
+    const error = new Error('Token registrasi Google tidak valid');
+    error.statusCode = 401;
+    throw error;
+  }
+
+  const googleProfile = {
+    googleSub: String(decoded.googleSub || ''),
+    email: String(decoded.email || '').toLowerCase(),
+    firstName: decoded.firstName || null,
+    lastName: decoded.lastName || null,
+    avatarPhoto: decoded.avatarPhoto || null,
+  };
+
+  if (!googleProfile.googleSub || !googleProfile.email) {
+    const error = new Error('Token registrasi Google tidak lengkap');
+    error.statusCode = 401;
+    throw error;
+  }
+
+  return {
+    googleProfile,
+    role: GOOGLE_MOBILE_ROLES.has(decoded.role) ? decoded.role : 'patient',
   };
 }
 
@@ -96,31 +169,20 @@ async function register(payload) {
   };
 }
 
-async function sendEmailVerification(email) {
-  const normalizedEmail = String(email || '')
-    .trim()
-    .toLowerCase();
-  const user = await userRepository.findUserByEmail(normalizedEmail);
-
-  if (!user) {
-    const error = new Error('User tidak ditemukan');
-    error.statusCode = 404;
-    throw error;
-  }
-
+async function issueEmailVerification(user) {
   const otp = generateOtpCode();
   const expiresAt = new Date(Date.now() + env.otpExpiresMinutes * 60 * 1000).toISOString();
 
   const verification = await userRepository.createEmailVerification({
     userId: user.user_id,
-    email: normalizedEmail,
+    email: user.email,
     otpCodeHash: hashOtpCode(otp),
     expiresAt,
   });
 
   try {
     await sendOtpEmail({
-      toEmail: normalizedEmail,
+      toEmail: user.email,
       otpCode: otp,
       expiresInMinutes: env.otpExpiresMinutes,
     });
@@ -148,6 +210,21 @@ async function sendEmailVerification(email) {
   }
 
   return response;
+}
+
+async function sendEmailVerification(email) {
+  const normalizedEmail = String(email || '')
+    .trim()
+    .toLowerCase();
+  const user = await userRepository.findUserByEmail(normalizedEmail);
+
+  if (!user) {
+    const error = new Error('User tidak ditemukan');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  return issueEmailVerification(user);
 }
 
 async function confirmEmailVerification(email, otp) {
@@ -215,7 +292,7 @@ async function login(email, password) {
   return buildAuthResponse(token, user);
 }
 
-async function loginWithGoogle(idToken, role = 'patient') {
+async function verifyGoogleIdToken(idToken) {
   if (!env.googleClientId) {
     const error = new Error('Google OAuth belum dikonfigurasi di backend');
     error.statusCode = 501;
@@ -235,31 +312,181 @@ async function loginWithGoogle(idToken, role = 'patient') {
   }
 
   const payload = ticket.getPayload();
-  const email = String(payload?.email || '').toLowerCase();
+  const googleProfile = buildGoogleProfile(payload);
 
-  if (!email || !payload?.email_verified) {
+  if (!googleProfile.email || !payload?.email_verified || !googleProfile.googleSub) {
     const error = new Error('Google token tidak memiliki email terverifikasi');
     error.statusCode = 401;
     throw error;
   }
 
-  const firstName = payload.given_name || null;
-  const lastName = payload.family_name || null;
-  const placeholderPasswordHash = await bcrypt.hash(crypto.randomUUID(), 10);
+  return googleProfile;
+}
 
-  const user = await userRepository.createOrGetGoogleUser({
-    email,
-    firstName,
-    lastName,
+async function beginGoogleAuth(idToken, role = 'patient') {
+  const requestedRole = GOOGLE_MOBILE_ROLES.has(role) ? role : 'patient';
+  const googleProfile = await verifyGoogleIdToken(idToken);
+  let user = await userRepository.findUserByGoogleIdentity({
+    googleSub: googleProfile.googleSub,
+    email: googleProfile.email,
+  });
+
+  if (!user) {
+    return {
+      nextStep: 'COMPLETE_REGISTRATION',
+      accountExists: false,
+      registrationCompleted: false,
+      otpRequired: true,
+      registrationToken: createGoogleRegistrationToken(googleProfile, requestedRole),
+      role: requestedRole,
+      googleProfile: {
+        email: googleProfile.email,
+        firstName: googleProfile.firstName,
+        lastName: googleProfile.lastName,
+        avatarPhoto: googleProfile.avatarPhoto,
+      },
+    };
+  }
+
+  if (
+    user.email === googleProfile.email &&
+    user.google_sub &&
+    user.google_sub !== googleProfile.googleSub
+  ) {
+    const error = new Error('Email ini sudah terhubung ke akun Google lain');
+    error.statusCode = 409;
+    throw error;
+  }
+
+  if (!user.google_sub) {
+    user = await userRepository.linkGoogleIdentity(user.user_id, googleProfile.googleSub);
+  }
+
+  if (user.account_status === 'active' && user.onboarding_completed !== false) {
+    const token = jwt.sign(buildAuthPayload(user), env.jwtSecret, {
+      expiresIn: env.jwtExpiresIn,
+    });
+
+    return buildAuthResponse(token, user);
+  }
+
+  if (user.onboarding_completed === false) {
+    return {
+      nextStep: 'COMPLETE_REGISTRATION',
+      accountExists: true,
+      registrationCompleted: false,
+      otpRequired: true,
+      registrationToken: createGoogleRegistrationToken(
+        {
+          ...googleProfile,
+          firstName: user.first_name || googleProfile.firstName,
+          lastName: user.last_name || googleProfile.lastName,
+          avatarPhoto: user.avatar_photo || googleProfile.avatarPhoto,
+        },
+        user.role || requestedRole
+      ),
+      role: user.role || requestedRole,
+      googleProfile: {
+        email: user.email,
+        firstName: user.first_name || googleProfile.firstName,
+        lastName: user.last_name || googleProfile.lastName,
+        avatarPhoto: user.avatar_photo || googleProfile.avatarPhoto,
+      },
+      user: buildUserProfile(user),
+    };
+  }
+
+  return {
+    nextStep: 'VERIFY_OTP',
+    accountExists: true,
+    registrationCompleted: true,
+    otpRequired: true,
+    email: user.email,
+    user: buildUserProfile(user),
+  };
+}
+
+async function completeGoogleRegistration(payload) {
+  const registrationToken = String(payload.registrationToken || '');
+  const username = String(payload.username || '').trim();
+  const firstName = payload.firstName ? String(payload.firstName).trim() : null;
+  const lastName = payload.lastName ? String(payload.lastName).trim() : null;
+  const { googleProfile, role: tokenRole } = verifyGoogleRegistrationToken(registrationToken);
+  const role = GOOGLE_MOBILE_ROLES.has(payload.role) ? payload.role : tokenRole;
+
+  let user = await userRepository.findUserByGoogleIdentity({
+    googleSub: googleProfile.googleSub,
+    email: googleProfile.email,
+  });
+
+  if (
+    user &&
+    user.email === googleProfile.email &&
+    user.google_sub &&
+    user.google_sub !== googleProfile.googleSub
+  ) {
+    const error = new Error('Email ini sudah terhubung ke akun Google lain');
+    error.statusCode = 409;
+    throw error;
+  }
+
+  if (user) {
+    if (user.account_status === 'active' && user.onboarding_completed !== false) {
+      const error = new Error('Akun Google ini sudah aktif');
+      error.statusCode = 409;
+      throw error;
+    }
+
+    if (!user.google_sub) {
+      user = await userRepository.linkGoogleIdentity(user.user_id, googleProfile.googleSub);
+    }
+
+    const verification = await issueEmailVerification(user);
+    return {
+      nextStep: 'VERIFY_OTP',
+      accountExists: true,
+      registrationCompleted: true,
+      otpRequired: true,
+      email: user.email,
+      user: buildUserProfile(user),
+      ...verification,
+    };
+  }
+
+  const placeholderPasswordHash = await bcrypt.hash(crypto.randomUUID(), 10);
+  user = await userRepository.createUserWithRole({
+    username,
+    email: googleProfile.email,
+    firstName: firstName || googleProfile.firstName,
+    lastName: lastName || googleProfile.lastName,
     role,
     passwordHash: placeholderPasswordHash,
+    googleSub: googleProfile.googleSub,
+    onboardingCompleted: true,
+    accountStatus: 'pending_verification',
+    emailVerifiedAt: null,
   });
+  const verification = await issueEmailVerification(user);
 
-  const token = jwt.sign(buildAuthPayload(user), env.jwtSecret, {
-    expiresIn: env.jwtExpiresIn,
-  });
+  return {
+    nextStep: 'VERIFY_OTP',
+    accountExists: true,
+    registrationCompleted: true,
+    otpRequired: true,
+    email: user.email,
+    user: buildUserProfile(user),
+    ...verification,
+    googleProfile: {
+      email: googleProfile.email,
+      firstName: googleProfile.firstName,
+      lastName: googleProfile.lastName,
+      avatarPhoto: googleProfile.avatarPhoto,
+    },
+  };
+}
 
-  return buildAuthResponse(token, user);
+async function loginWithGoogle(idToken, role = 'patient') {
+  return beginGoogleAuth(idToken, role);
 }
 
 async function getCurrentUser(userId) {
@@ -281,5 +508,7 @@ module.exports = {
   confirmEmailVerification,
   login,
   loginWithGoogle,
+  beginGoogleAuth,
+  completeGoogleRegistration,
   getCurrentUser,
 };

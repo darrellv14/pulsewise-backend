@@ -106,7 +106,10 @@ function validateMedicationScheduleState({ frequency, intakeTimes, numOfDays, da
 
   if (frequency === 'daily') {
     if (!Number.isInteger(numOfDays) || numOfDays < 1 || numOfDays > 10) {
-      throw createHttpError('Medication daily wajib memakai numOfDays antara 1 sampai 10', BAD_REQUEST);
+      throw createHttpError(
+        'Medication daily wajib memakai numOfDays antara 1 sampai 10',
+        BAD_REQUEST
+      );
     }
 
     if (daysOfWeek && daysOfWeek.length > 0) {
@@ -161,8 +164,7 @@ function resolveMedicationScheduleStateForUpdate({ payload, currentMedication })
 
   return {
     frequency: nextFrequency,
-    intakeTimes:
-      payload.intakeTimes !== undefined ? payload.intakeTimes : currentIntakeTimes,
+    intakeTimes: payload.intakeTimes !== undefined ? payload.intakeTimes : currentIntakeTimes,
     daysOfWeek:
       nextFrequency === 'weekly'
         ? payload.daysOfWeek !== undefined
@@ -313,7 +315,15 @@ function toMedicationDto(medication) {
 
 function toUtcDateOnly(dateValue) {
   return new Date(
-    Date.UTC(dateValue.getUTCFullYear(), dateValue.getUTCMonth(), dateValue.getUTCDate(), 0, 0, 0, 0)
+    Date.UTC(
+      dateValue.getUTCFullYear(),
+      dateValue.getUTCMonth(),
+      dateValue.getUTCDate(),
+      0,
+      0,
+      0,
+      0
+    )
   );
 }
 
@@ -333,10 +343,6 @@ function addUtcDays(dateValue, days) {
 
 function maxUtcDate(left, right) {
   return left.getTime() >= right.getTime() ? left : right;
-}
-
-function minUtcDate(left, right) {
-  return left.getTime() <= right.getTime() ? left : right;
 }
 
 function getMondayBasedDayOfWeek(dateValue) {
@@ -381,7 +387,9 @@ function buildCalendarEvent({ medication, reminder, scheduledDate, matchedLog })
 }
 
 function buildDailyCalendarEvents({ medication, reminder, rangeStart, rangeEnd, logLookup }) {
-  const medicationStart = medication.startDate ? toUtcDateOnly(new Date(medication.startDate)) : rangeStart;
+  const medicationStart = medication.startDate
+    ? toUtcDateOnly(new Date(medication.startDate))
+    : rangeStart;
   const effectiveStart = maxUtcDate(rangeStart, medicationStart);
 
   if (effectiveStart.getTime() > rangeEnd.getTime()) {
@@ -396,7 +404,9 @@ function buildDailyCalendarEvents({ medication, reminder, rangeStart, rangeEnd, 
   ) {
     const scheduledDate = toDateOnlyValue(currentDate);
     const scheduledTime = formatTimeValue(reminder.scheduleTime);
-    const matchedLog = logLookup.get(`${medication.medicationId}|${scheduledDate}|${scheduledTime}`);
+    const matchedLog = logLookup.get(
+      `${medication.medicationId}|${scheduledDate}|${scheduledTime}`
+    );
 
     events.push(
       buildCalendarEvent({
@@ -416,7 +426,9 @@ function buildWeeklyCalendarEvents({ medication, reminder, rangeStart, rangeEnd,
     return [];
   }
 
-  const medicationStart = medication.startDate ? toUtcDateOnly(new Date(medication.startDate)) : rangeStart;
+  const medicationStart = medication.startDate
+    ? toUtcDateOnly(new Date(medication.startDate))
+    : rangeStart;
   const effectiveStart = maxUtcDate(rangeStart, medicationStart);
   const currentDay = getMondayBasedDayOfWeek(effectiveStart);
   const daysUntilMatch = (reminder.dayOfWeek - currentDay + 7) % 7;
@@ -434,7 +446,9 @@ function buildWeeklyCalendarEvents({ medication, reminder, rangeStart, rangeEnd,
   ) {
     const scheduledDate = toDateOnlyValue(currentDate);
     const scheduledTime = formatTimeValue(reminder.scheduleTime);
-    const matchedLog = logLookup.get(`${medication.medicationId}|${scheduledDate}|${scheduledTime}`);
+    const matchedLog = logLookup.get(
+      `${medication.medicationId}|${scheduledDate}|${scheduledTime}`
+    );
 
     events.push(
       buildCalendarEvent({
@@ -536,26 +550,36 @@ async function listMedications({ actor, userId, query }) {
   const cacheTags = buildMedicationCacheTags({ userId });
 
   const [medications, totalItems] = await Promise.all([
-    prisma.medication.findMany(withOptionalCacheStrategy({
-      where: {
-        userId,
-      },
-      include: {
-        reminders: {
-          orderBy: [{ dayOfWeek: 'asc' }, { scheduleTime: 'asc' }],
+    prisma.medication.findMany(
+      withOptionalCacheStrategy(
+        {
+          where: {
+            userId,
+          },
+          include: {
+            reminders: {
+              orderBy: [{ dayOfWeek: 'asc' }, { scheduleTime: 'asc' }],
+            },
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+          skip,
+          take: limit,
         },
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-      skip,
-      take: limit,
-    }, cacheTags)),
-    prisma.medication.count(withOptionalCacheStrategy({
-      where: {
-        userId,
-      },
-    }, cacheTags)),
+        cacheTags
+      )
+    ),
+    prisma.medication.count(
+      withOptionalCacheStrategy(
+        {
+          where: {
+            userId,
+          },
+        },
+        cacheTags
+      )
+    ),
   ]);
 
   return {
@@ -657,17 +681,22 @@ async function getMedicationById({ actor, userId, medicationId }) {
   assertPatientScope({ actor, userId });
   const cacheTags = buildMedicationCacheTags({ userId, medicationId });
 
-  const medication = await prisma.medication.findFirst(withOptionalCacheStrategy({
-    where: {
-      medicationId,
-      userId,
-    },
-    include: {
-      reminders: {
-        orderBy: [{ dayOfWeek: 'asc' }, { scheduleTime: 'asc' }],
+  const medication = await prisma.medication.findFirst(
+    withOptionalCacheStrategy(
+      {
+        where: {
+          medicationId,
+          userId,
+        },
+        include: {
+          reminders: {
+            orderBy: [{ dayOfWeek: 'asc' }, { scheduleTime: 'asc' }],
+          },
+        },
       },
-    },
-  }, cacheTags));
+      cacheTags
+    )
+  );
 
   if (!medication) {
     throw createHttpError('Medication tidak ditemukan', NOT_FOUND);
@@ -886,15 +915,25 @@ async function listRemindersByMedication({ actor, userId, medicationId, query })
   };
 
   const [reminders, totalItems] = await Promise.all([
-    prisma.reminder.findMany(withOptionalCacheStrategy({
-      where,
-      orderBy: [{ dayOfWeek: 'asc' }, { scheduleTime: 'asc' }],
-      skip,
-      take: limit,
-    }, cacheTags)),
-    prisma.reminder.count(withOptionalCacheStrategy({
-      where,
-    }, cacheTags)),
+    prisma.reminder.findMany(
+      withOptionalCacheStrategy(
+        {
+          where,
+          orderBy: [{ dayOfWeek: 'asc' }, { scheduleTime: 'asc' }],
+          skip,
+          take: limit,
+        },
+        cacheTags
+      )
+    ),
+    prisma.reminder.count(
+      withOptionalCacheStrategy(
+        {
+          where,
+        },
+        cacheTags
+      )
+    ),
   ]);
 
   return {
@@ -959,7 +998,8 @@ async function updateReminder({ actor, userId, reminderId, payload }) {
       medicationId: currentReminder.medicationId,
       userId,
     });
-    const dayOfWeek = payload.dayOfWeek !== undefined ? payload.dayOfWeek : currentReminder.dayOfWeek;
+    const dayOfWeek =
+      payload.dayOfWeek !== undefined ? payload.dayOfWeek : currentReminder.dayOfWeek;
 
     assertReminderCompatibleWithMedication(medication, dayOfWeek);
     const scheduleTime = toPrismaTime(payload.scheduleTime);

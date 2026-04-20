@@ -89,24 +89,29 @@ async function listPatientProfiles({ limit, offset, sortBy, order }) {
   const sortOrder = order === 'asc' ? 'asc' : 'desc';
 
   const [items, totalItems] = await Promise.all([
-    prisma.patientProfile.findMany(withOptionalCacheStrategy({
-      include: {
-        user: {
-          select: {
-            firstName: true,
-            lastName: true,
-            email: true,
-            avatarPhoto: true,
-            address: true,
+    prisma.patientProfile.findMany(
+      withOptionalCacheStrategy(
+        {
+          include: {
+            user: {
+              select: {
+                firstName: true,
+                lastName: true,
+                email: true,
+                avatarPhoto: true,
+                address: true,
+              },
+            },
           },
+          orderBy: {
+            [sortField]: sortOrder,
+          },
+          skip: offset,
+          take: limit,
         },
-      },
-      orderBy: {
-        [sortField]: sortOrder,
-      },
-      skip: offset,
-      take: limit,
-    }, ['patient_profiles_list'])),
+        ['patient_profiles_list']
+      )
+    ),
     prisma.patientProfile.count(),
   ]);
 
@@ -117,22 +122,27 @@ async function listPatientProfiles({ limit, offset, sortBy, order }) {
 }
 
 async function getPatientProfileById(patientId) {
-  const profile = await prisma.patientProfile.findUnique(withOptionalCacheStrategy({
-    where: {
-      patientId,
-    },
-    include: {
-      user: {
-        select: {
-          firstName: true,
-          lastName: true,
-          email: true,
-          avatarPhoto: true,
-          address: true,
+  const profile = await prisma.patientProfile.findUnique(
+    withOptionalCacheStrategy(
+      {
+        where: {
+          patientId,
+        },
+        include: {
+          user: {
+            select: {
+              firstName: true,
+              lastName: true,
+              email: true,
+              avatarPhoto: true,
+              address: true,
+            },
+          },
         },
       },
-    },
-  }, [`patient_profile_item_${patientId.replace(/-/g, '_')}`]));
+      [`patient_profile_item_${patientId.replace(/-/g, '_')}`]
+    )
+  );
 
   return mapPatientProfile(profile);
 }
@@ -226,21 +236,26 @@ async function upsertPatientProfile({
 }
 
 async function getDoctorProfileById(doctorId) {
-  const profile = await prisma.doctorProfile.findUnique(withOptionalCacheStrategy({
-    where: {
-      doctorId,
-    },
-    include: {
-      user: {
-        select: {
-          firstName: true,
-          lastName: true,
-          email: true,
-          avatarPhoto: true,
+  const profile = await prisma.doctorProfile.findUnique(
+    withOptionalCacheStrategy(
+      {
+        where: {
+          doctorId,
+        },
+        include: {
+          user: {
+            select: {
+              firstName: true,
+              lastName: true,
+              email: true,
+              avatarPhoto: true,
+            },
+          },
         },
       },
-    },
-  }, [`doctor_profile_item_${doctorId.replace(/-/g, '_')}`]));
+      [`doctor_profile_item_${doctorId.replace(/-/g, '_')}`]
+    )
+  );
 
   return mapDoctorProfile(profile);
 }
