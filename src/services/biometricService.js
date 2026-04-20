@@ -2,6 +2,7 @@ const { BAD_REQUEST, FORBIDDEN, NOT_FOUND } = require('../constants/httpStatus')
 const biometricRepository = require('../repositories/biometricRepository');
 const doctorPatientRepository = require('../repositories/doctorPatientRepository');
 const profileRepository = require('../repositories/profileRepository');
+const { normalizePaginationInput } = require('../utils/pagination');
 
 const METRIC_ALIASES = {
   heart_rate: 'heart_rate',
@@ -250,9 +251,8 @@ async function listBiometrics({ actor, query }) {
     throw error;
   }
 
-  const page = query.page;
-  const limit = query.limit;
-  const offset = (page - 1) * limit;
+  const pagination = normalizePaginationInput(query, { limit: 50 });
+  const offset = (pagination.page - 1) * pagination.limit;
 
   const source = query.source ? String(query.source).trim().toLowerCase() : null;
 
@@ -263,7 +263,7 @@ async function listBiometrics({ actor, query }) {
       metricType,
       startAt,
       endAt,
-      limit,
+      limit: pagination.limit,
       offset,
     }),
     biometricRepository.countReadings({
@@ -293,7 +293,11 @@ async function listBiometrics({ actor, query }) {
       measuredAt: toIso(row.measured_at),
       receivedAt: toIso(row.received_at),
     })),
-    pagination: buildPagination({ page, limit, totalItems }),
+    pagination: buildPagination({
+      page: pagination.page,
+      limit: pagination.limit,
+      totalItems,
+    }),
   };
 }
 

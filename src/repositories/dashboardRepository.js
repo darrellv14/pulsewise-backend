@@ -59,7 +59,7 @@ async function listDoctorDashboardPatients({ doctorId, q, limit, offset }) {
       ORDER BY vsr.measured_at DESC
       LIMIT 1
     ) latest_spo2 ON TRUE
-    WHERE dp.doctor_id = ${doctorId}
+    WHERE dp.doctor_id = ${doctorId}::uuid
       AND dp.is_active = TRUE
       AND (${hasSearch}::BOOLEAN = FALSE OR (
         u.first_name ILIKE ${normalizedQ} OR
@@ -82,7 +82,7 @@ async function listDoctorDashboardPatients({ doctorId, q, limit, offset }) {
     SELECT COUNT(*)::INT AS total
     FROM doctor_patients dp
     JOIN users u ON u.user_id = dp.patient_id
-    WHERE dp.doctor_id = ${doctorId}
+    WHERE dp.doctor_id = ${doctorId}::uuid
       AND dp.is_active = TRUE
       AND (${hasSearch}::BOOLEAN = FALSE OR (
         u.first_name ILIKE ${normalizedQ} OR
@@ -111,8 +111,8 @@ async function getDoctorPatientIdentity({ doctorId, patientId }) {
     FROM doctor_patients dp
     JOIN users u ON u.user_id = dp.patient_id
     LEFT JOIN patient_profiles p ON p.patient_id = dp.patient_id
-    WHERE dp.doctor_id = ${doctorId}
-      AND dp.patient_id = ${patientId}
+    WHERE dp.doctor_id = ${doctorId}::uuid
+      AND dp.patient_id = ${patientId}::uuid
       AND dp.is_active = TRUE
     LIMIT 1
   `;
@@ -131,7 +131,7 @@ async function getLatestDailyMetrics(patientId) {
       dm.bmi AS bmi
     FROM heart_diaries hd
     JOIN daily_metrics dm ON dm.diary_id = hd.diary_id
-    WHERE hd.user_id = ${patientId}
+    WHERE hd.user_id = ${patientId}::uuid
     ORDER BY dm.time_stamp DESC
     LIMIT 1
   `;
@@ -150,7 +150,7 @@ async function listDailyMetricsSeries({ patientId, startAt, endAt }) {
       dm.bmi AS bmi
     FROM heart_diaries hd
     JOIN daily_metrics dm ON dm.diary_id = hd.diary_id
-    WHERE hd.user_id = ${patientId}
+    WHERE hd.user_id = ${patientId}::uuid
       AND dm.time_stamp BETWEEN ${new Date(startAt)} AND ${new Date(endAt)}
     ORDER BY dm.time_stamp ASC
   `;
@@ -163,7 +163,7 @@ async function listVitalReadingSeries({ patientId, startAt, endAt }) {
       value_numeric,
       measured_at
     FROM vital_sign_readings
-    WHERE user_id = ${patientId}
+    WHERE user_id = ${patientId}::uuid
       AND measured_at BETWEEN ${new Date(startAt)} AND ${new Date(endAt)}
     ORDER BY measured_at ASC
   `;
@@ -176,7 +176,7 @@ async function getLatestVitalSnapshot(patientId) {
       value_numeric,
       measured_at
     FROM vital_sign_readings
-    WHERE user_id = ${patientId}
+    WHERE user_id = ${patientId}::uuid
     ORDER BY metric_type, measured_at DESC
   `;
 }

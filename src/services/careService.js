@@ -6,6 +6,7 @@ const dashboardRepository = require('../repositories/dashboardRepository');
 const patientShareRepository = require('../repositories/patientShareRepository');
 const dashboardPairingService = require('./dashboardPairingService');
 const thresholds = require('../constants/dashboardThresholds');
+const { normalizePaginationInput } = require('../utils/pagination');
 
 function buildPagination({ page, limit, totalItems }) {
   const totalPages = Math.max(1, Math.ceil(totalItems / limit));
@@ -396,12 +397,22 @@ function buildAbnormalInstances(points) {
 }
 
 async function listPatients({ page, limit, sortBy, order }) {
-  const offset = (page - 1) * limit;
-  const result = await profileRepository.listPatientProfiles({ limit, offset, sortBy, order });
+  const pagination = normalizePaginationInput({ page, limit });
+  const offset = (pagination.page - 1) * pagination.limit;
+  const result = await profileRepository.listPatientProfiles({
+    limit: pagination.limit,
+    offset,
+    sortBy,
+    order,
+  });
 
   return {
     items: result.items,
-    pagination: buildPagination({ page, limit, totalItems: result.totalItems }),
+    pagination: buildPagination({
+      page: pagination.page,
+      limit: pagination.limit,
+      totalItems: result.totalItems,
+    }),
   };
 }
 
@@ -451,12 +462,21 @@ async function updateDoctorProfile(doctorId, payload) {
 }
 
 async function listDoctorPatients({ doctorId, page, limit }) {
-  const offset = (page - 1) * limit;
-  const result = await doctorPatientRepository.listDoctorPatients({ doctorId, limit, offset });
+  const pagination = normalizePaginationInput({ page, limit });
+  const offset = (pagination.page - 1) * pagination.limit;
+  const result = await doctorPatientRepository.listDoctorPatients({
+    doctorId,
+    limit: pagination.limit,
+    offset,
+  });
 
   return {
     items: result.items,
-    pagination: buildPagination({ page, limit, totalItems: result.totalItems }),
+    pagination: buildPagination({
+      page: pagination.page,
+      limit: pagination.limit,
+      totalItems: result.totalItems,
+    }),
   };
 }
 
@@ -571,14 +591,13 @@ async function unlinkDoctorPatient({ doctorId, patientId }) {
 async function listDoctorDashboardPatients({ actor, doctorId, query }) {
   assertDoctorScope({ actor, doctorId });
 
-  const page = query.page;
-  const limit = query.limit;
-  const offset = (page - 1) * limit;
+  const pagination = normalizePaginationInput(query);
+  const offset = (pagination.page - 1) * pagination.limit;
 
   const result = await dashboardRepository.listDoctorDashboardPatients({
     doctorId,
     q: query.q,
-    limit,
+    limit: pagination.limit,
     offset,
   });
 
@@ -606,7 +625,11 @@ async function listDoctorDashboardPatients({ actor, doctorId, query }) {
         bmi: toNumberOrNull(item.latest_bmi),
       },
     })),
-    pagination: buildPagination({ page, limit, totalItems: result.totalItems }),
+    pagination: buildPagination({
+      page: pagination.page,
+      limit: pagination.limit,
+      totalItems: result.totalItems,
+    }),
   };
 }
 
