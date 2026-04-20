@@ -2,6 +2,7 @@
   "version": 2,
   "functions": {
     "api/index.js": {
+      "regions": ["sin1"],
       "includeFiles": "{docs/openapi.yaml,node_modules/swagger-ui-dist/**}"
     }
   },

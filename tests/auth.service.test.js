@@ -140,6 +140,32 @@ describe('authService.beginGoogleAuth', () => {
     expect(result.registrationToken).toEqual(expect.any(String));
     expect(result.googleProfile.email).toBe('newuser@example.com');
   });
+
+  test('rejects Google auth when email already belongs to password account', async () => {
+    mockVerifyIdToken.mockResolvedValue({
+      getPayload: () => ({
+        sub: 'google-sub-009',
+        email: 'existing.password@example.com',
+        email_verified: true,
+      }),
+    });
+    userRepository.findUserByGoogleIdentity.mockResolvedValue({
+      user_id: '77777777-7777-4777-8777-777777777777',
+      email: 'existing.password@example.com',
+      google_sub: null,
+      account_status: 'active',
+      onboarding_completed: true,
+      role: 'patient',
+    });
+
+    await expect(authService.beginGoogleAuth('google-id-token', 'patient')).rejects.toMatchObject({
+      statusCode: 409,
+      message:
+        'Email ini sudah terdaftar dengan metode email/password. Gunakan login email/password.',
+    });
+
+    expect(userRepository.linkGoogleIdentity).not.toHaveBeenCalled();
+  });
 });
 
 describe('authService.completeGoogleRegistration', () => {
@@ -196,6 +222,40 @@ describe('authService.completeGoogleRegistration', () => {
     expect(sendOtpEmail).toHaveBeenCalledTimes(1);
     expect(result.nextStep).toBe('VERIFY_OTP');
     expect(result.user.email).toBe('google.signup@example.com');
+  });
+
+  test('rejects Google registration completion when email already belongs to password account', async () => {
+    mockVerifyIdToken.mockResolvedValue({
+      getPayload: () => ({
+        sub: 'google-sub-010',
+        email: 'locked@example.com',
+        email_verified: true,
+      }),
+    });
+    userRepository.findUserByGoogleIdentity.mockResolvedValueOnce(null);
+
+    const beginResult = await authService.beginGoogleAuth('google-id-token', 'patient');
+
+    userRepository.findUserByGoogleIdentity.mockResolvedValueOnce({
+      user_id: '88888888-8888-4888-8888-888888888888',
+      email: 'locked@example.com',
+      google_sub: null,
+      account_status: 'active',
+      onboarding_completed: true,
+      role: 'patient',
+    });
+
+    await expect(
+      authService.completeGoogleRegistration({
+        registrationToken: beginResult.registrationToken,
+        username: 'locked_user',
+        role: 'patient',
+      })
+    ).rejects.toMatchObject({
+      statusCode: 409,
+      message:
+        'Email ini sudah terdaftar dengan metode email/password. Gunakan login email/password.',
+    });
   });
 });
 

@@ -11,7 +11,8 @@ const notFoundHandler = require('./middlewares/notFoundHandler');
 const errorHandler = require('./middlewares/errorHandler');
 
 const app = express();
-const openApiSpec = loadOpenApiSpec();
+const isProduction = process.env.NODE_ENV === 'production';
+const openApiSpec = isProduction ? null : loadOpenApiSpec();
 
 app.use(helmet());
 app.use(cors());
@@ -20,17 +21,19 @@ app.use(morgan('dev'));
 
 app.get('/', (req, res) => {
   return success(res, 'Pulse Wise Backend API', {
-    docs: '/docs',
-    openApi: '/openapi.json',
+    docs: isProduction ? null : '/docs',
+    openApi: isProduction ? null : '/openapi.json',
     health: '/api/v1/health',
     apiBase: '/api/v1',
   });
 });
 
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(openApiSpec));
-app.get('/openapi.json', (req, res) => {
-  res.json(openApiSpec);
-});
+if (!isProduction) {
+  app.use('/docs', swaggerUi.serve, swaggerUi.setup(openApiSpec));
+  app.get('/openapi.json', (req, res) => {
+    res.json(openApiSpec);
+  });
+}
 
 app.use('/api/v1', apiRoutes);
 app.use('/api', apiRoutes);

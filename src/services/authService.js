@@ -13,6 +13,14 @@ const GOOGLE_REGISTRATION_TOKEN_PURPOSE = 'google_registration';
 const GOOGLE_REGISTRATION_TOKEN_EXPIRES_IN = '15m';
 const googleClient = new OAuth2Client();
 
+function buildGoogleEmailAlreadyRegisteredError() {
+  const error = new Error(
+    'Email ini sudah terdaftar dengan metode email/password. Gunakan login email/password.'
+  );
+  error.statusCode = 409;
+  return error;
+}
+
 function buildAuthPayload(user) {
   return {
     userId: user.user_id,
@@ -359,7 +367,7 @@ async function beginGoogleAuth(idToken, role = 'patient') {
   }
 
   if (!user.google_sub) {
-    user = await userRepository.linkGoogleIdentity(user.user_id, googleProfile.googleSub);
+    throw buildGoogleEmailAlreadyRegisteredError();
   }
 
   if (user.account_status === 'active' && user.onboarding_completed !== false) {
@@ -430,15 +438,15 @@ async function completeGoogleRegistration(payload) {
     throw error;
   }
 
+  if (user && !user.google_sub) {
+    throw buildGoogleEmailAlreadyRegisteredError();
+  }
+
   if (user) {
     if (user.account_status === 'active' && user.onboarding_completed !== false) {
       const error = new Error('Akun Google ini sudah aktif');
       error.statusCode = 409;
       throw error;
-    }
-
-    if (!user.google_sub) {
-      user = await userRepository.linkGoogleIdentity(user.user_id, googleProfile.googleSub);
     }
 
     const verification = await issueEmailVerification(user);
