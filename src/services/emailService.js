@@ -16,6 +16,9 @@ function buildOtpEmailHtml({ otpCode, expiresInMinutes }) {
   const brandName = escapeHtml(env.mailtrap.senderName || 'Pulse Wise');
   const currentYear = new Date().getFullYear();
 
+  const logoUrl =
+    'https://res.cloudinary.com/drvu0dpry/image/upload/v1776686356/Group_9_qgjlod.png';
+
   return `
   <!doctype html>
   <html lang="id">
@@ -31,10 +34,8 @@ function buildOtpEmailHtml({ otpCode, expiresInMinutes }) {
             <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 480px; background-color: #FFFFFF; border-radius: 24px; overflow: hidden; box-shadow: 0 10px 40px rgba(225, 61, 90, 0.08);">
               
               <tr>
-                <td style="background-color: #F99B9F; padding: 36px 32px; text-align: center;">
-                  <h1 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.5px; color: #FFFFFF;">
-                    Pulse <span style="color: #E13D5A;">Wise</span>
-                  </h1>
+                <td style="background-color: #F99B9F; padding: 32px 32px; text-align: center;">
+                  <img src="${logoUrl}" alt="${brandName} Logo" width="160" style="display: inline-block; border: 0; max-width: 100%; height: auto; -ms-interpolation-mode: bicubic;">
                 </td>
               </tr>
 
