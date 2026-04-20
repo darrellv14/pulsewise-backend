@@ -17,7 +17,7 @@ function buildOtpEmailHtml({ otpCode, expiresInMinutes }) {
   const currentYear = new Date().getFullYear();
 
   const logoUrl =
-    'https://res.cloudinary.com/drvu0dpry/image/upload/v1776686356/Group_9_qgjlod.png';
+    'https://res.cloudinary.com/drvu0dpry/image/upload/v1776686768/Group_9_1_vduwxy.png';
 
   return `
   <!doctype html>
