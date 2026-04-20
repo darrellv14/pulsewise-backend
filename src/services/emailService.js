@@ -35,7 +35,7 @@ function buildOtpEmailHtml({ otpCode, expiresInMinutes }) {
               
               <tr>
                 <td style="background-color: #F99B9F; padding: 32px 32px; text-align: center;">
-                  <img src="${logoUrl}" alt="${brandName} Logo" width="160" style="display: inline-block; border: 0; max-width: 100%; height: auto; -ms-interpolation-mode: bicubic;">
+                  <img src="${logoUrl}" alt="${brandName} Logo" width="200" style="display: inline-block; border: 0; max-width: 100%; height: auto; -ms-interpolation-mode: bicubic;">
                 </td>
               </tr>
 
