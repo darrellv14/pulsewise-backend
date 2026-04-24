@@ -38,6 +38,83 @@ async function updatePatientProfile(req, res, next) {
   }
 }
 
+async function getPatientMlProfile(req, res, next) {
+  try {
+    const data = await careService.getPatientMlProfile({
+      actor: req.user,
+      patientId: req.params.patientId,
+    });
+    return success(res, 'ML profile pasien berhasil diambil', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function updatePatientMlProfile(req, res, next) {
+  try {
+    const data = await careService.updatePatientMlProfile({
+      actor: req.user,
+      patientId: req.params.patientId,
+      payload: req.body,
+    });
+    return success(res, 'ML profile pasien berhasil diperbarui', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function getLatestPatientMlAssessment(req, res, next) {
+  try {
+    const data = await careService.getLatestPatientMlAssessment({
+      actor: req.user,
+      patientId: req.params.patientId,
+    });
+    return success(res, 'Assessment ML terbaru berhasil diambil', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function listPatientMlAssessments(req, res, next) {
+  try {
+    const data = await careService.listPatientMlAssessments({
+      actor: req.user,
+      patientId: req.params.patientId,
+      query: req.query,
+    });
+    return success(res, 'Daftar assessment ML berhasil diambil', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function createPatientMlAssessment(req, res, next) {
+  try {
+    const data = await careService.createPatientMlAssessment({
+      actor: req.user,
+      patientId: req.params.patientId,
+      payload: req.body,
+    });
+    return success(res, 'Assessment ML berhasil dibuat', data, CREATED);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function updatePatientMlAssessment(req, res, next) {
+  try {
+    const data = await careService.updatePatientMlAssessment({
+      actor: req.user,
+      patientId: req.params.patientId,
+      assessmentId: req.params.assessmentId,
+      payload: req.body,
+    });
+    return success(res, 'Assessment ML berhasil diperbarui', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
 async function getDoctorProfile(req, res, next) {
   try {
     const data = await careService.getDoctorProfile(req.params.doctorId);
@@ -336,6 +413,12 @@ module.exports = {
   listPatients,
   getPatientProfile,
   updatePatientProfile,
+  getPatientMlProfile,
+  updatePatientMlProfile,
+  getLatestPatientMlAssessment,
+  listPatientMlAssessments,
+  createPatientMlAssessment,
+  updatePatientMlAssessment,
   getDoctorProfile,
   updateDoctorProfile,
   listDoctorPatients,

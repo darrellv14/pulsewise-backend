@@ -98,7 +98,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"user\": {\n      \"userId\": \"3a233724-0b42-4a4f-88e8-88e732c46351\",\n      \"username\": \"agus\",\n      \"email\": \"agus@example.com\",\n      \"firstName\": \"Agus\",\n      \"lastName\": \"Pratama\",\n      \"avatarPhoto\": \"https://res.cloudinary.com/drvu0dpry/image/upload/v1776071700/pulsewise/avatars/profile.png\",\n      \"role\": \"patient\",\n      \"accountStatus\": \"active\",\n      \"emailVerifiedAt\": \"2026-04-10T08:15:00.000Z\"\n    },\n    \"nextStep\": \"EMAIL_VERIFICATION_REQUIRED\"\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"user\": {\n      \"userId\": \"3a233724-0b42-4a4f-88e8-88e732c46351\",\n      \"username\": \"agus\",\n      \"email\": \"agus@example.com\",\n      \"firstName\": \"Agus\",\n      \"lastName\": \"Pratama\",\n      \"avatarPhoto\": \"https://res.cloudinary.com/drvu0dpry/image/upload/v1776071700/pulsewise/avatars/profile.png\",\n      \"role\": \"patient\",\n      \"accountStatus\": \"active\",\n      \"emailVerifiedAt\": \"2026-04-10T08:15:00.000Z\",\n      \"onboardingCompleted\": true\n    },\n    \"nextStep\": \"EMAIL_VERIFICATION_REQUIRED\"\n  }\n}\n"
             },
             {
               "name": "400 Invalid payload",
@@ -253,7 +253,9 @@
               "listen": "test",
               "script": {
                 "type": "text/javascript",
-                "exec": ["pm.test('Status 200', function () { pm.response.to.have.status(200); });"]
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
+                ]
               }
             }
           ],
@@ -388,7 +390,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.example.signature\",\n    \"user\": {\n      \"userId\": \"3a233724-0b42-4a4f-88e8-88e732c46351\",\n      \"username\": \"agus\",\n      \"email\": \"agus@example.com\",\n      \"firstName\": \"Agus\",\n      \"lastName\": \"Pratama\",\n      \"avatarPhoto\": \"https://res.cloudinary.com/drvu0dpry/image/upload/v1776071700/pulsewise/avatars/profile.png\",\n      \"role\": \"patient\",\n      \"accountStatus\": \"active\",\n      \"emailVerifiedAt\": \"2026-04-10T08:15:00.000Z\"\n    }\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.example.signature\",\n    \"user\": {\n      \"userId\": \"3a233724-0b42-4a4f-88e8-88e732c46351\",\n      \"username\": \"agus\",\n      \"email\": \"agus@example.com\",\n      \"firstName\": \"Agus\",\n      \"lastName\": \"Pratama\",\n      \"avatarPhoto\": \"https://res.cloudinary.com/drvu0dpry/image/upload/v1776071700/pulsewise/avatars/profile.png\",\n      \"role\": \"patient\",\n      \"accountStatus\": \"active\",\n      \"emailVerifiedAt\": \"2026-04-10T08:15:00.000Z\",\n      \"onboardingCompleted\": true\n    }\n  }\n}\n"
             },
             {
               "name": "400 Invalid payload",
@@ -533,7 +535,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.example.signature\",\n    \"user\": {\n      \"userId\": \"3a233724-0b42-4a4f-88e8-88e732c46351\",\n      \"username\": \"agus\",\n      \"email\": \"agus@example.com\",\n      \"firstName\": \"Agus\",\n      \"lastName\": \"Pratama\",\n      \"avatarPhoto\": \"https://res.cloudinary.com/drvu0dpry/image/upload/v1776071700/pulsewise/avatars/profile.png\",\n      \"role\": \"patient\",\n      \"accountStatus\": \"active\",\n      \"emailVerifiedAt\": \"2026-04-10T08:15:00.000Z\"\n    }\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.example.signature\",\n    \"user\": {\n      \"userId\": \"3a233724-0b42-4a4f-88e8-88e732c46351\",\n      \"username\": \"agus\",\n      \"email\": \"agus@example.com\",\n      \"firstName\": \"Agus\",\n      \"lastName\": \"Pratama\",\n      \"avatarPhoto\": \"https://res.cloudinary.com/drvu0dpry/image/upload/v1776071700/pulsewise/avatars/profile.png\",\n      \"role\": \"patient\",\n      \"accountStatus\": \"active\",\n      \"emailVerifiedAt\": \"2026-04-10T08:15:00.000Z\",\n      \"onboardingCompleted\": true\n    }\n  }\n}\n"
             },
             {
               "name": "400 Invalid payload",
@@ -656,7 +658,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"userId\": \"3a233724-0b42-4a4f-88e8-88e732c46351\",\n    \"username\": \"agus\",\n    \"email\": \"agus@example.com\",\n    \"firstName\": \"Agus\",\n    \"lastName\": \"Pratama\",\n    \"avatarPhoto\": \"https://res.cloudinary.com/drvu0dpry/image/upload/v1776071700/pulsewise/avatars/profile.png\",\n    \"role\": \"patient\",\n    \"accountStatus\": \"active\",\n    \"emailVerifiedAt\": \"2026-04-10T08:15:00.000Z\"\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"userId\": \"3a233724-0b42-4a4f-88e8-88e732c46351\",\n    \"username\": \"agus\",\n    \"email\": \"agus@example.com\",\n    \"firstName\": \"Agus\",\n    \"lastName\": \"Pratama\",\n    \"avatarPhoto\": \"https://res.cloudinary.com/drvu0dpry/image/upload/v1776071700/pulsewise/avatars/profile.png\",\n    \"role\": \"patient\",\n    \"accountStatus\": \"active\",\n    \"emailVerifiedAt\": \"2026-04-10T08:15:00.000Z\",\n    \"onboardingCompleted\": true\n  }\n}\n"
             },
             {
               "name": "401 Unauthorized",
@@ -702,7 +704,7 @@
           },
           "response": [
             {
-              "name": "200 OAuth login success",
+              "name": "200 OAuth Google berhasil diverifikasi",
               "originalRequest": {
                 "method": "POST",
                 "header": [
@@ -727,7 +729,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {}\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"nextStep\": \"HOME\",\n    \"accountExists\": true,\n    \"registrationCompleted\": true,\n    \"otpRequired\": true,\n    \"registrationToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.example.signature\",\n    \"email\": \"agus@example.com\",\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.example.signature\",\n    \"user\": {\n      \"userId\": \"3a233724-0b42-4a4f-88e8-88e732c46351\",\n      \"username\": \"agus\",\n      \"email\": \"agus@example.com\",\n      \"firstName\": \"Agus\",\n      \"lastName\": \"Pratama\",\n      \"avatarPhoto\": \"https://res.cloudinary.com/drvu0dpry/image/upload/v1776071700/pulsewise/avatars/profile.png\",\n      \"role\": \"patient\",\n      \"accountStatus\": \"active\",\n      \"emailVerifiedAt\": \"2026-04-10T08:15:00.000Z\",\n      \"onboardingCompleted\": true\n    },\n    \"googleProfile\": {\n      \"email\": \"agus@example.com\",\n      \"firstName\": \"Aspirin\",\n      \"lastName\": \"Aspirin\",\n      \"avatarPhoto\": \"https://example.com/resource\"\n    }\n  }\n}\n"
             },
             {
               "name": "401 Invalid Google token",
@@ -747,6 +749,34 @@
               },
               "status": "Unauthorized",
               "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Validation failed\",\n  \"details\": {}\n}\n"
+            },
+            {
+              "name": "409 Email sudah terhubung ke akun Google lain",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"idToken\": \"{{googleIdToken}}\",\n  \"role\": \"patient\"\n}"
+                },
+                "url": "{{baseUrl}}/auth/oauth/google"
+              },
+              "status": "Conflict",
+              "code": 409,
               "_postman_previewlanguage": "json",
               "header": [
                 {
@@ -804,8 +834,12 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/patients?page=1&limit=20&sortBy=created_at&order=desc",
-              "host": ["{{baseUrl}}"],
-              "path": ["patients"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "patients"
+              ],
               "query": [
                 {
                   "key": "page",
@@ -839,8 +873,12 @@
                 ],
                 "url": {
                   "raw": "{{baseUrl}}/patients?page=1&limit=20&sortBy=created_at&order=desc",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["patients"],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "patients"
+                  ],
                   "query": [
                     {
                       "key": "page",
@@ -1195,8 +1233,14 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/doctors/{{doctorId}}/patients?page=1&limit=20",
-              "host": ["{{baseUrl}}"],
-              "path": ["doctors", "{{doctorId}}", "patients"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "doctors",
+                "{{doctorId}}",
+                "patients"
+              ],
               "query": [
                 {
                   "key": "page",
@@ -1222,8 +1266,14 @@
                 ],
                 "url": {
                   "raw": "{{baseUrl}}/doctors/{{doctorId}}/patients?page=1&limit=20",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["doctors", "{{doctorId}}", "patients"],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "doctors",
+                    "{{doctorId}}",
+                    "patients"
+                  ],
                   "query": [
                     {
                       "key": "page",
@@ -2315,7 +2365,9 @@
               "listen": "test",
               "script": {
                 "type": "text/javascript",
-                "exec": ["pm.test('Status 200', function () { pm.response.to.have.status(200); });"]
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
+                ]
               }
             }
           ],
@@ -2603,7 +2655,9 @@
               "listen": "test",
               "script": {
                 "type": "text/javascript",
-                "exec": ["pm.test('Status 201', function () { pm.response.to.have.status(201); });"]
+                "exec": [
+                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });"
+                ]
               }
             }
           ],
@@ -2982,7 +3036,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n    \"userId\": \"3a233724-0b42-4a4f-88e8-88e732c46351\",\n    \"diaryDate\": \"2026-04-10\",\n    \"createdAt\": \"2026-04-10T08:15:00.000Z\",\n    \"bodyMetrics\": [\n      {\n        \"metricId\": \"7b5d8f10-1111-4222-8333-1234567890ab\",\n        \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n        \"conditionTag\": \"after_breakfast\",\n        \"bodyHeight\": 172.5,\n        \"bodyWeight\": 68.2,\n        \"bmi\": 22.9,\n        \"systolicPressure\": 122,\n        \"diastolicPressure\": 78,\n        \"heartRate\": 74,\n        \"timeStamp\": \"2026-04-10T07:30:00.000Z\"\n      }\n    ],\n    \"symptoms\": [\n      {\n        \"symptomId\": \"7b5d8f10-1111-4222-8333-1234567890ac\",\n        \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n        \"symptomName\": \"Pusing ringan\",\n        \"intensity\": 2,\n        \"note\": \"Muncul sebelum sarapan\",\n        \"time\": \"07:30\",\n        \"timeStamp\": \"2026-04-10T07:30:00.000Z\"\n      }\n    ],\n    \"activities\": [\n      {\n        \"activityId\": \"7b5d8f10-1111-4222-8333-1234567890ad\",\n        \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n        \"name\": \"Jalan pagi\",\n        \"duration\": 30,\n        \"heartRate\": 98,\n        \"userFeeling\": \"baik\",\n        \"note\": \"Ritme santai\",\n        \"timeStamp\": \"2026-04-10T06:30:00.000Z\"\n      }\n    ],\n    \"consumptions\": [\n      {\n        \"consumptionId\": \"7b5d8f10-1111-4222-8333-1234567890ae\",\n        \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n        \"type\": \"minuman\",\n        \"name\": \"Kopi hitam\",\n        \"portion\": \"1 cangkir\",\n        \"note\": \"Tanpa gula\",\n        \"time\": \"21:15\",\n        \"timeStamp\": \"2026-04-10T21:15:00.000Z\"\n      }\n    ]\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n    \"userId\": \"3a233724-0b42-4a4f-88e8-88e732c46351\",\n    \"diaryDate\": \"2026-04-10\",\n    \"createdAt\": \"2026-04-10T08:15:00.000Z\",\n    \"bodyMetrics\": [\n      {\n        \"metricId\": \"7b5d8f10-1111-4222-8333-1234567890ab\",\n        \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n        \"conditionTag\": \"after_breakfast\",\n        \"bodyHeight\": 172.5,\n        \"bodyWeight\": 68.2,\n        \"bmi\": 22.9,\n        \"systolicPressure\": 122,\n        \"diastolicPressure\": 78,\n        \"heartRate\": 74,\n        \"timeStamp\": \"2026-04-10T07:30:00.000Z\"\n      }\n    ],\n    \"symptoms\": [\n      {\n        \"symptomId\": \"7b5d8f10-1111-4222-8333-1234567890ac\",\n        \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n        \"symptomName\": \"Pusing ringan\",\n        \"intensity\": 2,\n        \"note\": \"Muncul sebelum sarapan\",\n        \"time\": \"07:30\",\n        \"timeStamp\": \"2026-04-10T07:30:00.000Z\"\n      }\n    ],\n    \"activities\": [\n      {\n        \"activityId\": \"7b5d8f10-1111-4222-8333-1234567890ad\",\n        \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n        \"name\": \"Jalan pagi\",\n        \"duration\": 30,\n        \"heartRate\": 98,\n        \"userFeeling\": \"baik\",\n        \"note\": \"Ritme santai\",\n        \"timeStamp\": \"2026-04-10T06:30:00.000Z\"\n      }\n    ],\n    \"consumptions\": [\n      {\n        \"consumptionId\": \"7b5d8f10-1111-4222-8333-1234567890ae\",\n        \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n        \"type\": \"minuman\",\n        \"name\": \"Kopi hitam\",\n        \"portion\": \"1 cangkir\",\n        \"note\": \"Tanpa gula\",\n        \"time\": \"21:15\",\n        \"timeStamp\": \"2026-04-10T21:15:00.000Z\"\n      }\n    ],\n    \"sleepRecord\": {\n      \"sleepRecordId\": \"7b5d8f10-1111-4222-8333-1234567890af\",\n      \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n      \"sleepTime\": \"22:30\",\n      \"wakeTime\": \"06:30\",\n      \"sleepDurationHours\": 8,\n      \"source\": \"postman_manual\",\n      \"createdAt\": \"2026-04-10T22:30:00.000Z\",\n      \"updatedAt\": \"2026-04-10T22:30:00.000Z\"\n    }\n  }\n}\n"
             }
           ]
         },
@@ -3118,7 +3172,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"symptomId\": \"7b5d8f10-1111-4222-8333-1234567890ac\",\n    \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n    \"symptomName\": \"Pusing ringan\",\n    \"intensity\": 2,\n    \"note\": \"Muncul sebelum sarapan\",\n    \"time\": \"07:30\",\n    \"timeStamp\": \"2026-04-10T07:30:00.000Z\"\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"symptomId\": \"7b5d8f10-1111-4222-8333-1234567890ac\",\n    \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n    \"symptomName\": \"Pusing ringan\",\n    \"symptomCode\": \"chest_pain\",\n    \"bodyArea\": \"chest\",\n    \"isChestPain\": true,\n    \"painFrequencyCode\": 2,\n    \"painLocationCode\": 1,\n    \"intensity\": 2,\n    \"note\": \"Muncul sebelum sarapan\",\n    \"time\": \"07:30\",\n    \"timeStamp\": \"2026-04-10T07:30:00.000Z\"\n  }\n}\n"
             }
           ]
         },
@@ -3186,7 +3240,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"activityId\": \"7b5d8f10-1111-4222-8333-1234567890ad\",\n    \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n    \"name\": \"Jalan pagi\",\n    \"duration\": 30,\n    \"heartRate\": 98,\n    \"userFeeling\": \"baik\",\n    \"note\": \"Ritme santai\",\n    \"timeStamp\": \"2026-04-10T06:30:00.000Z\"\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"activityId\": \"7b5d8f10-1111-4222-8333-1234567890ad\",\n    \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n    \"name\": \"Jalan pagi\",\n    \"activityCategory\": \"transport\",\n    \"intensityLevel\": \"moderate\",\n    \"transportMode\": \"walk\",\n    \"duration\": 30,\n    \"heartRate\": 98,\n    \"userFeeling\": \"baik\",\n    \"outdoorMinutes\": 20,\n    \"note\": \"Ritme santai\",\n    \"timeStamp\": \"2026-04-10T06:30:00.000Z\"\n  }\n}\n"
             }
           ]
         },
@@ -3254,7 +3308,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"consumptionId\": \"7b5d8f10-1111-4222-8333-1234567890ae\",\n    \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n    \"type\": \"minuman\",\n    \"name\": \"Kopi hitam\",\n    \"portion\": \"1 cangkir\",\n    \"note\": \"Tanpa gula\",\n    \"time\": \"21:15\",\n    \"timeStamp\": \"2026-04-10T21:15:00.000Z\"\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"consumptionId\": \"7b5d8f10-1111-4222-8333-1234567890ae\",\n    \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n    \"type\": \"minuman\",\n    \"name\": \"Kopi hitam\",\n    \"portion\": \"1 cangkir\",\n    \"portionGrams\": 250,\n    \"fdcFoodId\": \"1102647\",\n    \"nutritionSource\": \"fdc_snapshot\",\n    \"energyKcal\": 180,\n    \"proteinG\": 12,\n    \"carbohydrateG\": 20,\n    \"sugarG\": 8,\n    \"fiberG\": 2,\n    \"totalFatG\": 5,\n    \"saturatedFatG\": 2,\n    \"monounsaturatedFatG\": 1.5,\n    \"polyunsaturatedFatG\": 0.8,\n    \"cholesterolMg\": 20,\n    \"calciumMg\": 150,\n    \"note\": \"Tanpa gula\",\n    \"time\": \"21:15\",\n    \"timeStamp\": \"2026-04-10T21:15:00.000Z\"\n  }\n}\n"
             }
           ]
         },
@@ -3293,7 +3347,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n    \"userId\": \"3a233724-0b42-4a4f-88e8-88e732c46351\",\n    \"diaryDate\": \"2026-04-10\",\n    \"createdAt\": \"2026-04-10T08:15:00.000Z\",\n    \"bodyMetrics\": [\n      {\n        \"metricId\": \"7b5d8f10-1111-4222-8333-1234567890ab\",\n        \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n        \"conditionTag\": \"after_breakfast\",\n        \"bodyHeight\": 172.5,\n        \"bodyWeight\": 68.2,\n        \"bmi\": 22.9,\n        \"systolicPressure\": 122,\n        \"diastolicPressure\": 78,\n        \"heartRate\": 74,\n        \"timeStamp\": \"2026-04-10T07:30:00.000Z\"\n      }\n    ],\n    \"symptoms\": [\n      {\n        \"symptomId\": \"7b5d8f10-1111-4222-8333-1234567890ac\",\n        \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n        \"symptomName\": \"Pusing ringan\",\n        \"intensity\": 2,\n        \"note\": \"Muncul sebelum sarapan\",\n        \"time\": \"07:30\",\n        \"timeStamp\": \"2026-04-10T07:30:00.000Z\"\n      }\n    ],\n    \"activities\": [\n      {\n        \"activityId\": \"7b5d8f10-1111-4222-8333-1234567890ad\",\n        \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n        \"name\": \"Jalan pagi\",\n        \"duration\": 30,\n        \"heartRate\": 98,\n        \"userFeeling\": \"baik\",\n        \"note\": \"Ritme santai\",\n        \"timeStamp\": \"2026-04-10T06:30:00.000Z\"\n      }\n    ],\n    \"consumptions\": [\n      {\n        \"consumptionId\": \"7b5d8f10-1111-4222-8333-1234567890ae\",\n        \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n        \"type\": \"minuman\",\n        \"name\": \"Kopi hitam\",\n        \"portion\": \"1 cangkir\",\n        \"note\": \"Tanpa gula\",\n        \"time\": \"21:15\",\n        \"timeStamp\": \"2026-04-10T21:15:00.000Z\"\n      }\n    ]\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n    \"userId\": \"3a233724-0b42-4a4f-88e8-88e732c46351\",\n    \"diaryDate\": \"2026-04-10\",\n    \"createdAt\": \"2026-04-10T08:15:00.000Z\",\n    \"bodyMetrics\": [\n      {\n        \"metricId\": \"7b5d8f10-1111-4222-8333-1234567890ab\",\n        \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n        \"conditionTag\": \"after_breakfast\",\n        \"bodyHeight\": 172.5,\n        \"bodyWeight\": 68.2,\n        \"bmi\": 22.9,\n        \"systolicPressure\": 122,\n        \"diastolicPressure\": 78,\n        \"heartRate\": 74,\n        \"timeStamp\": \"2026-04-10T07:30:00.000Z\"\n      }\n    ],\n    \"symptoms\": [\n      {\n        \"symptomId\": \"7b5d8f10-1111-4222-8333-1234567890ac\",\n        \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n        \"symptomName\": \"Pusing ringan\",\n        \"intensity\": 2,\n        \"note\": \"Muncul sebelum sarapan\",\n        \"time\": \"07:30\",\n        \"timeStamp\": \"2026-04-10T07:30:00.000Z\"\n      }\n    ],\n    \"activities\": [\n      {\n        \"activityId\": \"7b5d8f10-1111-4222-8333-1234567890ad\",\n        \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n        \"name\": \"Jalan pagi\",\n        \"duration\": 30,\n        \"heartRate\": 98,\n        \"userFeeling\": \"baik\",\n        \"note\": \"Ritme santai\",\n        \"timeStamp\": \"2026-04-10T06:30:00.000Z\"\n      }\n    ],\n    \"consumptions\": [\n      {\n        \"consumptionId\": \"7b5d8f10-1111-4222-8333-1234567890ae\",\n        \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n        \"type\": \"minuman\",\n        \"name\": \"Kopi hitam\",\n        \"portion\": \"1 cangkir\",\n        \"note\": \"Tanpa gula\",\n        \"time\": \"21:15\",\n        \"timeStamp\": \"2026-04-10T21:15:00.000Z\"\n      }\n    ],\n    \"sleepRecord\": {\n      \"sleepRecordId\": \"7b5d8f10-1111-4222-8333-1234567890af\",\n      \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n      \"sleepTime\": \"22:30\",\n      \"wakeTime\": \"06:30\",\n      \"sleepDurationHours\": 8,\n      \"source\": \"postman_manual\",\n      \"createdAt\": \"2026-04-10T22:30:00.000Z\",\n      \"updatedAt\": \"2026-04-10T22:30:00.000Z\"\n    }\n  }\n}\n"
             }
           ]
         },
@@ -3403,7 +3457,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"symptomId\": \"7b5d8f10-1111-4222-8333-1234567890ac\",\n    \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n    \"symptomName\": \"Pusing ringan\",\n    \"intensity\": 2,\n    \"note\": \"Muncul sebelum sarapan\",\n    \"time\": \"07:30\",\n    \"timeStamp\": \"2026-04-10T07:30:00.000Z\"\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"symptomId\": \"7b5d8f10-1111-4222-8333-1234567890ac\",\n    \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n    \"symptomName\": \"Pusing ringan\",\n    \"symptomCode\": \"chest_pain\",\n    \"bodyArea\": \"chest\",\n    \"isChestPain\": true,\n    \"painFrequencyCode\": 2,\n    \"painLocationCode\": 1,\n    \"intensity\": 2,\n    \"note\": \"Muncul sebelum sarapan\",\n    \"time\": \"07:30\",\n    \"timeStamp\": \"2026-04-10T07:30:00.000Z\"\n  }\n}\n"
             }
           ]
         },
@@ -3458,7 +3512,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"activityId\": \"7b5d8f10-1111-4222-8333-1234567890ad\",\n    \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n    \"name\": \"Jalan pagi\",\n    \"duration\": 30,\n    \"heartRate\": 98,\n    \"userFeeling\": \"baik\",\n    \"note\": \"Ritme santai\",\n    \"timeStamp\": \"2026-04-10T06:30:00.000Z\"\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"activityId\": \"7b5d8f10-1111-4222-8333-1234567890ad\",\n    \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n    \"name\": \"Jalan pagi\",\n    \"activityCategory\": \"transport\",\n    \"intensityLevel\": \"moderate\",\n    \"transportMode\": \"walk\",\n    \"duration\": 30,\n    \"heartRate\": 98,\n    \"userFeeling\": \"baik\",\n    \"outdoorMinutes\": 20,\n    \"note\": \"Ritme santai\",\n    \"timeStamp\": \"2026-04-10T06:30:00.000Z\"\n  }\n}\n"
             }
           ]
         },
@@ -3513,7 +3567,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"consumptionId\": \"7b5d8f10-1111-4222-8333-1234567890ae\",\n    \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n    \"type\": \"minuman\",\n    \"name\": \"Kopi hitam\",\n    \"portion\": \"1 cangkir\",\n    \"note\": \"Tanpa gula\",\n    \"time\": \"21:15\",\n    \"timeStamp\": \"2026-04-10T21:15:00.000Z\"\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"consumptionId\": \"7b5d8f10-1111-4222-8333-1234567890ae\",\n    \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n    \"type\": \"minuman\",\n    \"name\": \"Kopi hitam\",\n    \"portion\": \"1 cangkir\",\n    \"portionGrams\": 250,\n    \"fdcFoodId\": \"1102647\",\n    \"nutritionSource\": \"fdc_snapshot\",\n    \"energyKcal\": 180,\n    \"proteinG\": 12,\n    \"carbohydrateG\": 20,\n    \"sugarG\": 8,\n    \"fiberG\": 2,\n    \"totalFatG\": 5,\n    \"saturatedFatG\": 2,\n    \"monounsaturatedFatG\": 1.5,\n    \"polyunsaturatedFatG\": 0.8,\n    \"cholesterolMg\": 20,\n    \"calciumMg\": 150,\n    \"note\": \"Tanpa gula\",\n    \"time\": \"21:15\",\n    \"timeStamp\": \"2026-04-10T21:15:00.000Z\"\n  }\n}\n"
             }
           ]
         },
@@ -3647,6 +3701,850 @@
               ],
               "cookie": [],
               "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {}\n}\n"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ML - Profile & Assessment",
+      "item": [
+        {
+          "name": "GET Patient ML Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{patientToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/patients/{{patientId}}/ml-profile"
+          },
+          "response": [
+            {
+              "name": "200 Patient ML profile",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{patientToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/patients/{{patientId}}/ml-profile"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"patientId\": \"11111111-1111-4111-8111-111111111111\",\n    \"demog1_riagendr\": 1,\n    \"demog1_ridreth3\": 1,\n    \"demog1_dmdeduc\": 1,\n    \"demog1_dmdfmsiz\": 1,\n    \"demog1_dmdhhsiz\": 1,\n    \"demog1_dmdhhsza\": 1,\n    \"demog1_dmdhhszb\": 1,\n    \"demog1_dmdhhsze\": 1,\n    \"demog1_dmdmartl\": 1,\n    \"quest22_smq020\": 1,\n    \"quest22_smq890\": 1,\n    \"quest22_smq900\": 1,\n    \"quest23_smd470\": 1,\n    \"quest1_alq111\": 1,\n    \"createdAt\": \"2026-04-10T08:15:00.000Z\",\n    \"updatedAt\": \"2026-04-10T08:15:00.000Z\"\n  }\n}\n"
+            }
+          ]
+        },
+        {
+          "name": "PUT Patient ML Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{patientToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/patients/{{patientId}}/ml-profile",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"demog1_riagendr\": 1,\n  \"demog1_ridreth3\": 6,\n  \"demog1_dmdeduc\": 4,\n  \"demog1_dmdfmsiz\": 3,\n  \"demog1_dmdhhsiz\": 3,\n  \"demog1_dmdhhsza\": 2,\n  \"demog1_dmdhhszb\": 1,\n  \"demog1_dmdhhsze\": 0,\n  \"demog1_dmdmartl\": 1,\n  \"quest22_smq020\": 1,\n  \"quest22_smq890\": 1,\n  \"quest22_smq900\": 2,\n  \"quest23_smd470\": 0,\n  \"quest1_alq111\": 2\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "200 Patient ML profile saved",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{patientToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/patients/{{patientId}}/ml-profile",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"demog1_riagendr\": 1,\n  \"demog1_ridreth3\": 6,\n  \"demog1_dmdeduc\": 4,\n  \"demog1_dmdfmsiz\": 3,\n  \"demog1_dmdhhsiz\": 3,\n  \"demog1_dmdhhsza\": 2,\n  \"demog1_dmdhhszb\": 1,\n  \"demog1_dmdhhsze\": 0,\n  \"demog1_dmdmartl\": 1,\n  \"quest22_smq020\": 1,\n  \"quest22_smq890\": 1,\n  \"quest22_smq900\": 2,\n  \"quest23_smd470\": 0,\n  \"quest1_alq111\": 2\n}"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"patientId\": \"11111111-1111-4111-8111-111111111111\",\n    \"demog1_riagendr\": 1,\n    \"demog1_ridreth3\": 1,\n    \"demog1_dmdeduc\": 1,\n    \"demog1_dmdfmsiz\": 1,\n    \"demog1_dmdhhsiz\": 1,\n    \"demog1_dmdhhsza\": 1,\n    \"demog1_dmdhhszb\": 1,\n    \"demog1_dmdhhsze\": 1,\n    \"demog1_dmdmartl\": 1,\n    \"quest22_smq020\": 1,\n    \"quest22_smq890\": 1,\n    \"quest22_smq900\": 1,\n    \"quest23_smd470\": 1,\n    \"quest1_alq111\": 1,\n    \"createdAt\": \"2026-04-10T08:15:00.000Z\",\n    \"updatedAt\": \"2026-04-10T08:15:00.000Z\"\n  }\n}\n"
+            }
+          ]
+        },
+        {
+          "name": "GET Latest Patient ML Assessment",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{patientToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/patients/{{patientId}}/ml-assessments/latest"
+          },
+          "response": [
+            {
+              "name": "200 Latest patient ML assessment",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{patientToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/patients/{{patientId}}/ml-assessments/latest"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"assessmentId\": \"11111111-1111-4111-8111-111111111111\",\n    \"patientId\": \"11111111-1111-4111-8111-111111111111\",\n    \"assessmentDate\": \"2026-04-10\",\n    \"exami1_bpxpls\": 1,\n    \"labor1_lbdtcsi\": 1.5,\n    \"labor2_urdflow1\": 1.5,\n    \"labor2_urdtime1\": 1.5,\n    \"labor2_urxvol1\": 1.5,\n    \"quest11_hiq011\": 1,\n    \"quest12_heq010\": 1,\n    \"quest12_heq030\": 1,\n    \"quest15_kiq022\": 1,\n    \"quest15_kiq026\": 1,\n    \"quest16_mcq010\": 1,\n    \"quest16_mcq160b\": 1,\n    \"quest16_mcq220\": 1,\n    \"quest16_mcq300a\": 1,\n    \"quest16_mcq300c\": 1,\n    \"quest17_dpq020\": 1,\n    \"quest17_dpq030\": 1,\n    \"quest17_dpq040\": 1,\n    \"quest20_pfq061b\": 1,\n    \"quest20_pfq061c\": 1,\n    \"quest20_pfq061h\": 1,\n    \"quest3_cdq009\": 1,\n    \"quest3_cdq010\": 1,\n    \"quest7_diq010\": 1,\n    \"quest9_dlq050\": 1,\n    \"createdAt\": \"2026-04-10T08:15:00.000Z\",\n    \"updatedAt\": \"2026-04-10T08:15:00.000Z\"\n  }\n}\n"
+            }
+          ]
+        },
+        {
+          "name": "GET List Patient ML Assessments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{patientToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/patients/{{patientId}}/ml-assessments?startDate={{mlDate}}&endDate={{mlDate}}"
+          },
+          "response": [
+            {
+              "name": "200 Patient ML assessments",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{patientToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/patients/{{patientId}}/ml-assessments?startDate={{mlDate}}&endDate={{mlDate}}"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": [\n    {\n      \"assessmentId\": \"11111111-1111-4111-8111-111111111111\",\n      \"patientId\": \"11111111-1111-4111-8111-111111111111\",\n      \"assessmentDate\": \"2026-04-10\",\n      \"exami1_bpxpls\": 1,\n      \"labor1_lbdtcsi\": 1.5,\n      \"labor2_urdflow1\": 1.5,\n      \"labor2_urdtime1\": 1.5,\n      \"labor2_urxvol1\": 1.5,\n      \"quest11_hiq011\": 1,\n      \"quest12_heq010\": 1,\n      \"quest12_heq030\": 1,\n      \"quest15_kiq022\": 1,\n      \"quest15_kiq026\": 1,\n      \"quest16_mcq010\": 1,\n      \"quest16_mcq160b\": 1,\n      \"quest16_mcq220\": 1,\n      \"quest16_mcq300a\": 1,\n      \"quest16_mcq300c\": 1,\n      \"quest17_dpq020\": 1,\n      \"quest17_dpq030\": 1,\n      \"quest17_dpq040\": 1,\n      \"quest20_pfq061b\": 1,\n      \"quest20_pfq061c\": 1,\n      \"quest20_pfq061h\": 1,\n      \"quest3_cdq009\": 1,\n      \"quest3_cdq010\": 1,\n      \"quest7_diq010\": 1,\n      \"quest9_dlq050\": 1,\n      \"createdAt\": \"2026-04-10T08:15:00.000Z\",\n      \"updatedAt\": \"2026-04-10T08:15:00.000Z\"\n    }\n  ]\n}\n"
+            }
+          ]
+        },
+        {
+          "name": "POST Create Patient ML Assessment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{patientToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/patients/{{patientId}}/ml-assessments",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"assessmentDate\": \"{{mlDate}}\",\n  \"exami1_bpxpls\": 1,\n  \"labor1_lbdtcsi\": 180,\n  \"labor2_urdflow1\": 1.2,\n  \"labor2_urdtime1\": 45,\n  \"labor2_urxvol1\": 200,\n  \"quest11_hiq011\": 1,\n  \"quest12_heq010\": 2,\n  \"quest12_heq030\": 2,\n  \"quest15_kiq022\": 2,\n  \"quest15_kiq026\": 2,\n  \"quest16_mcq010\": 2,\n  \"quest16_mcq160b\": 2,\n  \"quest16_mcq220\": 2,\n  \"quest16_mcq300a\": 2,\n  \"quest16_mcq300c\": 2,\n  \"quest17_dpq020\": 0,\n  \"quest17_dpq030\": 0,\n  \"quest17_dpq040\": 0,\n  \"quest20_pfq061b\": 2,\n  \"quest20_pfq061c\": 2,\n  \"quest20_pfq061h\": 2,\n  \"quest3_cdq009\": 2,\n  \"quest3_cdq010\": 2,\n  \"quest7_diq010\": 2,\n  \"quest9_dlq050\": 2\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "200 Patient ML assessment created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{patientToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/patients/{{patientId}}/ml-assessments",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"assessmentDate\": \"{{mlDate}}\",\n  \"exami1_bpxpls\": 1,\n  \"labor1_lbdtcsi\": 180,\n  \"labor2_urdflow1\": 1.2,\n  \"labor2_urdtime1\": 45,\n  \"labor2_urxvol1\": 200,\n  \"quest11_hiq011\": 1,\n  \"quest12_heq010\": 2,\n  \"quest12_heq030\": 2,\n  \"quest15_kiq022\": 2,\n  \"quest15_kiq026\": 2,\n  \"quest16_mcq010\": 2,\n  \"quest16_mcq160b\": 2,\n  \"quest16_mcq220\": 2,\n  \"quest16_mcq300a\": 2,\n  \"quest16_mcq300c\": 2,\n  \"quest17_dpq020\": 0,\n  \"quest17_dpq030\": 0,\n  \"quest17_dpq040\": 0,\n  \"quest20_pfq061b\": 2,\n  \"quest20_pfq061c\": 2,\n  \"quest20_pfq061h\": 2,\n  \"quest3_cdq009\": 2,\n  \"quest3_cdq010\": 2,\n  \"quest7_diq010\": 2,\n  \"quest9_dlq050\": 2\n}"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"assessmentId\": \"11111111-1111-4111-8111-111111111111\",\n    \"patientId\": \"11111111-1111-4111-8111-111111111111\",\n    \"assessmentDate\": \"2026-04-10\",\n    \"exami1_bpxpls\": 1,\n    \"labor1_lbdtcsi\": 1.5,\n    \"labor2_urdflow1\": 1.5,\n    \"labor2_urdtime1\": 1.5,\n    \"labor2_urxvol1\": 1.5,\n    \"quest11_hiq011\": 1,\n    \"quest12_heq010\": 1,\n    \"quest12_heq030\": 1,\n    \"quest15_kiq022\": 1,\n    \"quest15_kiq026\": 1,\n    \"quest16_mcq010\": 1,\n    \"quest16_mcq160b\": 1,\n    \"quest16_mcq220\": 1,\n    \"quest16_mcq300a\": 1,\n    \"quest16_mcq300c\": 1,\n    \"quest17_dpq020\": 1,\n    \"quest17_dpq030\": 1,\n    \"quest17_dpq040\": 1,\n    \"quest20_pfq061b\": 1,\n    \"quest20_pfq061c\": 1,\n    \"quest20_pfq061h\": 1,\n    \"quest3_cdq009\": 1,\n    \"quest3_cdq010\": 1,\n    \"quest7_diq010\": 1,\n    \"quest9_dlq050\": 1,\n    \"createdAt\": \"2026-04-10T08:15:00.000Z\",\n    \"updatedAt\": \"2026-04-10T08:15:00.000Z\"\n  }\n}\n"
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200/201', function () { pm.expect([200, 201]).to.include(pm.response.code); });",
+                  "const json = pm.response.json();",
+                  "if (json?.data?.assessmentId) { pm.environment.set('mlAssessmentId', json.data.assessmentId); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT Update Patient ML Assessment",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{patientToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/patients/{{patientId}}/ml-assessments/{{mlAssessmentId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"assessmentDate\": \"{{mlDate}}\",\n  \"labor1_lbdtcsi\": 175,\n  \"quest17_dpq020\": 1,\n  \"quest17_dpq030\": 0,\n  \"quest17_dpq040\": 0\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "200 Patient ML assessment updated",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{patientToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/patients/{{patientId}}/ml-assessments/{{mlAssessmentId}}",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"assessmentDate\": \"{{mlDate}}\",\n  \"labor1_lbdtcsi\": 175,\n  \"quest17_dpq020\": 1,\n  \"quest17_dpq030\": 0,\n  \"quest17_dpq040\": 0\n}"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"assessmentId\": \"11111111-1111-4111-8111-111111111111\",\n    \"patientId\": \"11111111-1111-4111-8111-111111111111\",\n    \"assessmentDate\": \"2026-04-10\",\n    \"exami1_bpxpls\": 1,\n    \"labor1_lbdtcsi\": 1.5,\n    \"labor2_urdflow1\": 1.5,\n    \"labor2_urdtime1\": 1.5,\n    \"labor2_urxvol1\": 1.5,\n    \"quest11_hiq011\": 1,\n    \"quest12_heq010\": 1,\n    \"quest12_heq030\": 1,\n    \"quest15_kiq022\": 1,\n    \"quest15_kiq026\": 1,\n    \"quest16_mcq010\": 1,\n    \"quest16_mcq160b\": 1,\n    \"quest16_mcq220\": 1,\n    \"quest16_mcq300a\": 1,\n    \"quest16_mcq300c\": 1,\n    \"quest17_dpq020\": 1,\n    \"quest17_dpq030\": 1,\n    \"quest17_dpq040\": 1,\n    \"quest20_pfq061b\": 1,\n    \"quest20_pfq061c\": 1,\n    \"quest20_pfq061h\": 1,\n    \"quest3_cdq009\": 1,\n    \"quest3_cdq010\": 1,\n    \"quest7_diq010\": 1,\n    \"quest9_dlq050\": 1,\n    \"createdAt\": \"2026-04-10T08:15:00.000Z\",\n    \"updatedAt\": \"2026-04-10T08:15:00.000Z\"\n  }\n}\n"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ML - Sleep & Inference",
+      "item": [
+        {
+          "name": "GET Sleep Diary By Date",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{patientToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/users/{{patientId}}/diaries/by-date/sleep?date={{mlDate}}"
+          },
+          "response": [
+            {
+              "name": "200 Sleep diary by date",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{patientToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/users/{{patientId}}/diaries/by-date/sleep?date={{mlDate}}"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"sleepRecordId\": \"11111111-1111-4111-8111-111111111111\",\n    \"diaryId\": \"11111111-1111-4111-8111-111111111111\",\n    \"sleepTime\": \"22:30\",\n    \"wakeTime\": \"06:30\",\n    \"sleepDurationHours\": 1.5,\n    \"source\": \"string\",\n    \"createdAt\": \"2026-04-10T08:15:00.000Z\",\n    \"updatedAt\": \"2026-04-10T08:15:00.000Z\"\n  }\n}\n"
+            }
+          ]
+        },
+        {
+          "name": "PUT Sleep Diary By Date",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{patientToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/users/{{patientId}}/diaries/by-date/sleep",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"diaryDate\": \"{{mlDate}}\",\n  \"sleepTime\": \"22:30\",\n  \"wakeTime\": \"06:30\",\n  \"sleepDurationHours\": 8,\n  \"source\": \"postman_manual\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "200 Sleep diary saved",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{patientToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/users/{{patientId}}/diaries/by-date/sleep",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"diaryDate\": \"{{mlDate}}\",\n  \"sleepTime\": \"22:30\",\n  \"wakeTime\": \"06:30\",\n  \"sleepDurationHours\": 8,\n  \"source\": \"postman_manual\"\n}"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"sleepRecordId\": \"11111111-1111-4111-8111-111111111111\",\n    \"diaryId\": \"11111111-1111-4111-8111-111111111111\",\n    \"sleepTime\": \"22:30\",\n    \"wakeTime\": \"06:30\",\n    \"sleepDurationHours\": 1.5,\n    \"source\": \"string\",\n    \"createdAt\": \"2026-04-10T08:15:00.000Z\",\n    \"updatedAt\": \"2026-04-10T08:15:00.000Z\"\n  }\n}\n"
+            }
+          ]
+        },
+        {
+          "name": "GET Patient ML Readiness",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{patientToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/users/{{patientId}}/ml-readiness?date={{mlDate}}"
+          },
+          "response": [
+            {
+              "name": "200 Patient ML readiness",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{patientToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/users/{{patientId}}/ml-readiness?date={{mlDate}}"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"ready\": true,\n    \"missingFields\": [\n      \"string\"\n    ],\n    \"resolvedFields\": [\n      \"string\"\n    ],\n    \"window\": {\n      \"startDate\": \"2026-04-10\",\n      \"endDate\": \"2026-04-10\"\n    },\n    \"sourceSummary\": {}\n  }\n}\n"
+            }
+          ]
+        },
+        {
+          "name": "GET Patient ML Payload",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{patientToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/users/{{patientId}}/ml-payload?date={{mlDate}}"
+          },
+          "response": [
+            {
+              "name": "200 Patient ML payload",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{patientToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/users/{{patientId}}/ml-payload?date={{mlDate}}"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"mlVersion\": \"string\",\n    \"window\": {\n      \"startDate\": \"2026-04-10\",\n      \"endDate\": \"2026-04-10\"\n    },\n    \"payload\": {\n      \"example\": 1.5\n    },\n    \"sourceSummary\": {}\n  }\n}\n"
+            }
+          ]
+        },
+        {
+          "name": "POST Patient ML Predictions",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{patientToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/users/{{patientId}}/ml-predictions?date={{mlDate}}&includePayload=true",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "response": [
+            {
+              "name": "200 Patient ML prediction",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{patientToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/users/{{patientId}}/ml-predictions?date={{mlDate}}&includePayload=true",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"mlVersion\": \"string\",\n    \"window\": {\n      \"startDate\": \"2026-04-10\",\n      \"endDate\": \"2026-04-10\"\n    },\n    \"payloadHash\": \"string\",\n    \"sourceSummary\": {},\n    \"upstream\": {}\n  }\n}\n"
+            }
+          ]
+        },
+        {
+          "name": "POST Patient ML Recommendations",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{patientToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/users/{{patientId}}/ml-recommendations?date={{mlDate}}&includePayload=true",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "response": [
+            {
+              "name": "200 Patient ML recommendation",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{patientToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/users/{{patientId}}/ml-recommendations?date={{mlDate}}&includePayload=true",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"mlVersion\": \"string\",\n    \"window\": {\n      \"startDate\": \"2026-04-10\",\n      \"endDate\": \"2026-04-10\"\n    },\n    \"payloadHash\": \"string\",\n    \"sourceSummary\": {},\n    \"upstream\": {}\n  }\n}\n"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ML - Doctor Dashboard",
+      "item": [
+        {
+          "name": "GET Dashboard Patient ML Readiness",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctorToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/ml-readiness?date={{mlDate}}"
+          },
+          "response": [
+            {
+              "name": "200 Doctor dashboard patient ML readiness",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{doctorToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/ml-readiness?date={{mlDate}}"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"ready\": true,\n    \"missingFields\": [\n      \"string\"\n    ],\n    \"resolvedFields\": [\n      \"string\"\n    ],\n    \"window\": {\n      \"startDate\": \"2026-04-10\",\n      \"endDate\": \"2026-04-10\"\n    },\n    \"sourceSummary\": {}\n  }\n}\n"
+            }
+          ]
+        },
+        {
+          "name": "GET Dashboard Patient ML Payload",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctorToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/ml-payload?date={{mlDate}}"
+          },
+          "response": [
+            {
+              "name": "200 Doctor dashboard patient ML payload",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{doctorToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/ml-payload?date={{mlDate}}"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"mlVersion\": \"string\",\n    \"window\": {\n      \"startDate\": \"2026-04-10\",\n      \"endDate\": \"2026-04-10\"\n    },\n    \"payload\": {\n      \"example\": 1.5\n    },\n    \"sourceSummary\": {}\n  }\n}\n"
+            }
+          ]
+        },
+        {
+          "name": "POST Dashboard Patient ML Predictions",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctorToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/ml-predictions?date={{mlDate}}&includePayload=true",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "response": [
+            {
+              "name": "200 Doctor dashboard patient ML prediction",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{doctorToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/ml-predictions?date={{mlDate}}&includePayload=true",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"mlVersion\": \"string\",\n    \"window\": {\n      \"startDate\": \"2026-04-10\",\n      \"endDate\": \"2026-04-10\"\n    },\n    \"payloadHash\": \"string\",\n    \"sourceSummary\": {},\n    \"upstream\": {}\n  }\n}\n"
+            }
+          ]
+        },
+        {
+          "name": "POST Dashboard Patient ML Recommendations",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctorToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/ml-recommendations?date={{mlDate}}&includePayload=true",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "response": [
+            {
+              "name": "200 Doctor dashboard patient ML recommendation",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{doctorToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/ml-recommendations?date={{mlDate}}&includePayload=true",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"mlVersion\": \"string\",\n    \"window\": {\n      \"startDate\": \"2026-04-10\",\n      \"endDate\": \"2026-04-10\"\n    },\n    \"payloadHash\": \"string\",\n    \"sourceSummary\": {},\n    \"upstream\": {}\n  }\n}\n"
             }
           ]
         }

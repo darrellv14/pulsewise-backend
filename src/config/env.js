@@ -89,6 +89,11 @@ const env = {
     authWindowMs: Number(process.env.RATE_LIMIT_AUTH_WINDOW_MS || 15 * 60 * 1000),
     authMax: Number(process.env.RATE_LIMIT_AUTH_MAX || 20),
   },
+  mlService: {
+    baseUrl: process.env.ML_SERVICE_BASE_URL || 'http://localhost:8080',
+    timeoutMs: Number(process.env.ML_SERVICE_TIMEOUT_MS || 20000),
+    version: Number(process.env.ML_SERVICE_VERSION || 3),
+  },
   postgres: {
     host: ensureEnv(
       'POSTGRES_HOST',

@@ -126,6 +126,11 @@ function mapSymptom(row) {
     symptomId: row.symptom_id,
     diaryId: row.diary_id,
     symptomName: row.symptom_name,
+    symptomCode: row.symptom_code,
+    bodyArea: row.body_area,
+    isChestPain: row.is_chest_pain ?? null,
+    painFrequencyCode: row.pain_frequency_code,
+    painLocationCode: row.pain_location_code,
     intensity: row.intensity,
     note: row.note,
     time: toTimeOnly(row.time_stamp),
@@ -138,6 +143,10 @@ function mapActivity(row) {
     activityId: row.activity_id,
     diaryId: row.diary_id,
     name: row.name,
+    activityCategory: row.activity_category,
+    intensityLevel: row.intensity_level,
+    transportMode: row.transport_mode,
+    outdoorMinutes: row.outdoor_minutes,
     duration: row.duration,
     heartRate: row.heart_rate,
     userFeeling: row.user_feeling,
@@ -153,9 +162,45 @@ function mapConsumption(row) {
     type: row.type,
     name: row.name,
     portion: row.portion,
+    portionGrams: row.portion_grams !== null ? Number(row.portion_grams) : null,
+    fdcFoodId: row.fdc_food_id,
+    nutritionSource: row.nutrition_source,
+    nutritionSnapshot: {
+      energyKcal: row.energy_kcal !== null ? Number(row.energy_kcal) : null,
+      proteinG: row.protein_g !== null ? Number(row.protein_g) : null,
+      carbohydrateG: row.carbohydrate_g !== null ? Number(row.carbohydrate_g) : null,
+      sugarG: row.sugar_g !== null ? Number(row.sugar_g) : null,
+      fiberG: row.fiber_g !== null ? Number(row.fiber_g) : null,
+      totalFatG: row.total_fat_g !== null ? Number(row.total_fat_g) : null,
+      saturatedFatG: row.saturated_fat_g !== null ? Number(row.saturated_fat_g) : null,
+      monounsaturatedFatG:
+        row.monounsaturated_fat_g !== null ? Number(row.monounsaturated_fat_g) : null,
+      polyunsaturatedFatG:
+        row.polyunsaturated_fat_g !== null ? Number(row.polyunsaturated_fat_g) : null,
+      cholesterolMg: row.cholesterol_mg !== null ? Number(row.cholesterol_mg) : null,
+      calciumMg: row.calcium_mg !== null ? Number(row.calcium_mg) : null,
+    },
     note: row.note,
     time: toTimeOnly(row.time_stamp),
     timeStamp: toIso(row.time_stamp),
+  };
+}
+
+function mapSleepRecord(row) {
+  if (!row) {
+    return null;
+  }
+
+  return {
+    sleepRecordId: row.sleep_record_id,
+    diaryId: row.diary_id,
+    sleepTime: toTimeOnly(row.sleep_time),
+    wakeTime: toTimeOnly(row.wake_time),
+    sleepDurationHours:
+      row.sleep_duration_hours !== null ? Number(row.sleep_duration_hours) : null,
+    source: row.source,
+    createdAt: toIso(row.created_at),
+    updatedAt: toIso(row.updated_at),
   };
 }
 
@@ -169,11 +214,12 @@ function mapDiary(row) {
 }
 
 async function mapHeartDiaryDetail(row) {
-  const [metrics, symptoms, activities, consumptions] = await Promise.all([
+  const [metrics, symptoms, activities, consumptions, sleepRecord] = await Promise.all([
     patientCareRepository.listDailyBodyMetrics(row.diary_id),
     patientCareRepository.listDailySymptoms(row.diary_id),
     patientCareRepository.listDailyActivities(row.diary_id),
     patientCareRepository.listDailyConsumptions(row.diary_id),
+    patientCareRepository.getDailySleepRecord(row.diary_id),
   ]);
 
   return {
@@ -182,6 +228,7 @@ async function mapHeartDiaryDetail(row) {
     symptoms: symptoms.map(mapSymptom),
     activities: activities.map(mapActivity),
     consumptions: consumptions.map(mapConsumption),
+    sleepRecord: mapSleepRecord(sleepRecord),
   };
 }
 
@@ -534,6 +581,11 @@ async function createDailySymptom({ actor, userId, diaryId, payload }) {
   const created = await patientCareRepository.createDailySymptom({
     diaryId,
     symptomName: payload.symptomName,
+    symptomCode: normalizeNullableText(payload.symptomCode),
+    bodyArea: normalizeNullableText(payload.bodyArea),
+    isChestPain: payload.isChestPain ?? null,
+    painFrequencyCode: payload.painFrequencyCode,
+    painLocationCode: payload.painLocationCode,
     intensity: payload.intensity,
     note: payload.note || null,
     timeStamp: payload.timeStamp || null,
@@ -553,6 +605,11 @@ async function createDailySymptomByDate({ actor, userId, payload }) {
   const created = await patientCareRepository.createDailySymptom({
     diaryId: diary.diary_id,
     symptomName: payload.symptomName,
+    symptomCode: normalizeNullableText(payload.symptomCode),
+    bodyArea: normalizeNullableText(payload.bodyArea),
+    isChestPain: payload.isChestPain ?? null,
+    painFrequencyCode: payload.painFrequencyCode,
+    painLocationCode: payload.painLocationCode,
     intensity: payload.intensity,
     note: normalizeNullableText(payload.note),
     timeStamp: resolveDiaryEntryTimestamp({
@@ -576,6 +633,10 @@ async function createDailyActivity({ actor, userId, diaryId, payload }) {
   const created = await patientCareRepository.createDailyActivity({
     diaryId,
     name: payload.name,
+    activityCategory: normalizeNullableText(payload.activityCategory),
+    intensityLevel: normalizeNullableText(payload.intensityLevel),
+    transportMode: normalizeNullableText(payload.transportMode),
+    outdoorMinutes: payload.outdoorMinutes,
     duration: payload.duration,
     heartRate: payload.heartRate,
     userFeeling: payload.userFeeling || null,
@@ -597,6 +658,10 @@ async function createDailyActivityByDate({ actor, userId, payload }) {
   const created = await patientCareRepository.createDailyActivity({
     diaryId: diary.diary_id,
     name: payload.name,
+    activityCategory: normalizeNullableText(payload.activityCategory),
+    intensityLevel: normalizeNullableText(payload.intensityLevel),
+    transportMode: normalizeNullableText(payload.transportMode),
+    outdoorMinutes: payload.outdoorMinutes,
     duration: payload.duration,
     heartRate: payload.heartRate,
     userFeeling: payload.userFeeling || null,
@@ -620,6 +685,20 @@ async function createDailyConsumption({ actor, userId, diaryId, payload }) {
     type: payload.type || null,
     name: payload.name || null,
     portion: payload.portion || null,
+    portionGrams: payload.portionGrams,
+    fdcFoodId: normalizeNullableText(payload.fdcFoodId),
+    nutritionSource: normalizeNullableText(payload.nutritionSource),
+    energyKcal: payload.energyKcal,
+    proteinG: payload.proteinG,
+    carbohydrateG: payload.carbohydrateG,
+    sugarG: payload.sugarG,
+    fiberG: payload.fiberG,
+    totalFatG: payload.totalFatG,
+    saturatedFatG: payload.saturatedFatG,
+    monounsaturatedFatG: payload.monounsaturatedFatG,
+    polyunsaturatedFatG: payload.polyunsaturatedFatG,
+    cholesterolMg: payload.cholesterolMg,
+    calciumMg: payload.calciumMg,
     note: payload.note || null,
     timeStamp: payload.timeStamp || null,
   });
@@ -640,6 +719,20 @@ async function createDailyConsumptionByDate({ actor, userId, payload }) {
     type: normalizeNullableText(payload.type),
     name: normalizeNullableText(payload.name),
     portion: normalizeNullableText(payload.portion),
+    portionGrams: payload.portionGrams,
+    fdcFoodId: normalizeNullableText(payload.fdcFoodId),
+    nutritionSource: normalizeNullableText(payload.nutritionSource),
+    energyKcal: payload.energyKcal,
+    proteinG: payload.proteinG,
+    carbohydrateG: payload.carbohydrateG,
+    sugarG: payload.sugarG,
+    fiberG: payload.fiberG,
+    totalFatG: payload.totalFatG,
+    saturatedFatG: payload.saturatedFatG,
+    monounsaturatedFatG: payload.monounsaturatedFatG,
+    polyunsaturatedFatG: payload.polyunsaturatedFatG,
+    cholesterolMg: payload.cholesterolMg,
+    calciumMg: payload.calciumMg,
     note: normalizeNullableText(payload.note),
     timeStamp: resolveDiaryEntryTimestamp({
       diaryDate: payload.diaryDate,
@@ -649,6 +742,39 @@ async function createDailyConsumptionByDate({ actor, userId, payload }) {
   });
 
   return mapConsumption(created);
+}
+
+async function getDailySleepRecordByDate({ actor, userId, diaryDate }) {
+  assertUserScope({ actor, userId });
+
+  const diary = await patientCareRepository.getHeartDiaryByDate({ userId, diaryDate });
+  if (!diary) {
+    return null;
+  }
+
+  const sleepRecord = await patientCareRepository.getDailySleepRecord(diary.diary_id);
+  return mapSleepRecord(sleepRecord);
+}
+
+async function upsertDailySleepRecordByDate({ actor, userId, payload }) {
+  assertUserScope({ actor, userId });
+
+  const diary = await ensureHeartDiaryByDate({
+    userId,
+    diaryDate: payload.diaryDate,
+  });
+
+  const sleepRecord = await patientCareRepository.upsertDailySleepRecord({
+    diaryId: diary.diary_id,
+    sleepTime: hasOwn(payload, 'sleepTime') ? payload.sleepTime || null : undefined,
+    wakeTime: hasOwn(payload, 'wakeTime') ? payload.wakeTime || null : undefined,
+    sleepDurationHours: hasOwn(payload, 'sleepDurationHours')
+      ? payload.sleepDurationHours
+      : undefined,
+    source: hasOwn(payload, 'source') ? normalizeNullableText(payload.source) : undefined,
+  });
+
+  return mapSleepRecord(sleepRecord);
 }
 
 async function createAvatarUploadSignature({ actor, userId, query, envConfig }) {
@@ -710,6 +836,8 @@ module.exports = {
   listHeartDiaries,
   getHeartDiaryDetail,
   getHeartDiaryByDate,
+  getDailySleepRecordByDate,
+  upsertDailySleepRecordByDate,
   createDailyBodyMetric,
   createDailyBodyMetricByDate,
   createDailySymptom,

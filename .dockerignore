@@ -1,0 +1,17 @@
+.git
+.github
+.vscode
+.venv
+.analysis
+node_modules
+npm-debug.log
+.env
+.env.*
+!.env.example
+coverage
+.postman
+postman
+tests
+IMPLEMENTATION_PLAN.md
+.codex-pulsewise-server.out.log
+.codex-pulsewise-server.err.log

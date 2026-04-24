@@ -30,6 +30,11 @@ const doctorPatientParamsSchema = z.object({
   patientId: uuidV4Schema,
 });
 
+const patientMlAssessmentParamsSchema = z.object({
+  patientId: uuidV4Schema,
+  assessmentId: uuidV4Schema,
+});
+
 const doctorPairingSessionParamsSchema = z.object({
   doctorId: uuidV4Schema,
   pairingSessionId: uuidV4Schema,
@@ -144,13 +149,96 @@ const dashboardSeriesQuerySchema = z
     }
   );
 
+const codedSmallIntSchema = z.coerce.number().int().min(0).max(999).nullable().optional();
+const codedDecimalSchema = z.coerce.number().finite().min(0).max(999999).nullable().optional();
+
+const patientMlProfileUpdateSchema = z
+  .object({
+    demog1_riagendr: codedSmallIntSchema,
+    demog1_ridreth3: codedSmallIntSchema,
+    demog1_dmdeduc: codedSmallIntSchema,
+    demog1_dmdfmsiz: codedSmallIntSchema,
+    demog1_dmdhhsiz: codedSmallIntSchema,
+    demog1_dmdhhsza: codedSmallIntSchema,
+    demog1_dmdhhszb: codedSmallIntSchema,
+    demog1_dmdhhsze: codedSmallIntSchema,
+    demog1_dmdmartl: codedSmallIntSchema,
+    quest22_smq020: codedSmallIntSchema,
+    quest22_smq890: codedSmallIntSchema,
+    quest22_smq900: codedSmallIntSchema,
+    quest23_smd470: codedSmallIntSchema,
+    quest1_alq111: codedSmallIntSchema,
+  })
+  .refine((value) => Object.values(value).some((item) => item !== undefined), {
+    message: 'Minimal salah satu field harus diisi',
+  });
+
+const patientMlAssessmentsQuerySchema = z
+  .object({
+    startDate: isoDateOrDateTimeString.optional(),
+    endDate: isoDateOrDateTimeString.optional(),
+  })
+  .refine(
+    (value) => {
+      if (!value.startDate || !value.endDate) {
+        return true;
+      }
+
+      return new Date(value.endDate).getTime() >= new Date(value.startDate).getTime();
+    },
+    {
+      message: 'endDate tidak boleh lebih kecil dari startDate',
+      path: ['endDate'],
+    }
+  );
+
+const patientMlAssessmentCreateSchema = z.object({
+  assessmentDate: isoDateOrDateTimeString,
+  exami1_bpxpls: codedSmallIntSchema,
+  labor1_lbdtcsi: codedDecimalSchema,
+  labor2_urdflow1: codedDecimalSchema,
+  labor2_urdtime1: codedDecimalSchema,
+  labor2_urxvol1: codedDecimalSchema,
+  quest11_hiq011: codedSmallIntSchema,
+  quest12_heq010: codedSmallIntSchema,
+  quest12_heq030: codedSmallIntSchema,
+  quest15_kiq022: codedSmallIntSchema,
+  quest15_kiq026: codedSmallIntSchema,
+  quest16_mcq010: codedSmallIntSchema,
+  quest16_mcq160b: codedSmallIntSchema,
+  quest16_mcq220: codedSmallIntSchema,
+  quest16_mcq300a: codedSmallIntSchema,
+  quest16_mcq300c: codedSmallIntSchema,
+  quest17_dpq020: codedSmallIntSchema,
+  quest17_dpq030: codedSmallIntSchema,
+  quest17_dpq040: codedSmallIntSchema,
+  quest20_pfq061b: codedSmallIntSchema,
+  quest20_pfq061c: codedSmallIntSchema,
+  quest20_pfq061h: codedSmallIntSchema,
+  quest3_cdq009: codedSmallIntSchema,
+  quest3_cdq010: codedSmallIntSchema,
+  quest7_diq010: codedSmallIntSchema,
+  quest9_dlq050: codedSmallIntSchema,
+});
+
+const patientMlAssessmentUpdateSchema = patientMlAssessmentCreateSchema
+  .partial()
+  .refine((value) => Object.values(value).some((item) => item !== undefined), {
+    message: 'Minimal salah satu field harus diisi',
+  });
+
 module.exports = {
   patientIdParamSchema,
   doctorIdParamSchema,
   doctorPatientParamsSchema,
+  patientMlAssessmentParamsSchema,
   doctorPairingSessionParamsSchema,
   paginationQuerySchema,
   patientProfileUpdateSchema,
+  patientMlProfileUpdateSchema,
+  patientMlAssessmentsQuerySchema,
+  patientMlAssessmentCreateSchema,
+  patientMlAssessmentUpdateSchema,
   doctorProfileUpdateSchema,
   doctorPatientLinkSchema,
   patientShareCreateSchema,

@@ -135,8 +135,28 @@ const bodyMetricCreateByDateSchema = bodyMetricCreateBaseSchema
     }
   );
 
+const activityCategorySchema = z.enum(['work', 'transport', 'recreation', 'other']).optional();
+const intensityLevelSchema = z.enum(['light', 'moderate', 'vigorous', 'unknown']).optional();
+const transportModeSchema = z.enum(['walk', 'bicycle', 'other']).optional();
+
+const symptomCreateBaseExtension = {
+  symptomCode: optionalNullableString(80),
+  bodyArea: optionalNullableString(80),
+  isChestPain: z.boolean().nullable().optional(),
+  painFrequencyCode: z.coerce.number().int().min(0).max(999).nullable().optional(),
+  painLocationCode: z.coerce.number().int().min(0).max(999).nullable().optional(),
+};
+
+const activityCreateBaseExtension = {
+  activityCategory: activityCategorySchema,
+  intensityLevel: intensityLevelSchema,
+  transportMode: transportModeSchema,
+  outdoorMinutes: z.coerce.number().int().min(0).max(1440).nullable().optional(),
+};
+
 const symptomCreateSchema = z.object({
   symptomName: z.string().trim().min(1).max(120),
+  ...symptomCreateBaseExtension,
   intensity: z.coerce.number().int().min(1).max(10).nullable().optional(),
   note: optionalNullableString(2000),
   timeStamp: dateTimeSchema.optional(),
@@ -149,6 +169,7 @@ const symptomCreateByDateSchema = symptomCreateSchema.extend({
 
 const activityCreateSchema = z.object({
   name: z.string().trim().min(1).max(120),
+  ...activityCreateBaseExtension,
   duration: z.coerce.number().int().min(1).max(1440).nullable().optional(),
   heartRate: z.coerce.number().int().min(20).max(250).nullable().optional(),
   userFeeling: optionalNullableString(80),
@@ -164,6 +185,20 @@ const consumptionCreateSchema = z.object({
   type: optionalNullableString(50),
   name: optionalNullableString(120),
   portion: optionalNullableString(80),
+  portionGrams: z.coerce.number().min(0).max(100000).nullable().optional(),
+  fdcFoodId: optionalNullableString(64),
+  nutritionSource: optionalNullableString(32),
+  energyKcal: z.coerce.number().min(0).max(100000).nullable().optional(),
+  proteinG: z.coerce.number().min(0).max(100000).nullable().optional(),
+  carbohydrateG: z.coerce.number().min(0).max(100000).nullable().optional(),
+  sugarG: z.coerce.number().min(0).max(100000).nullable().optional(),
+  fiberG: z.coerce.number().min(0).max(100000).nullable().optional(),
+  totalFatG: z.coerce.number().min(0).max(100000).nullable().optional(),
+  saturatedFatG: z.coerce.number().min(0).max(100000).nullable().optional(),
+  monounsaturatedFatG: z.coerce.number().min(0).max(100000).nullable().optional(),
+  polyunsaturatedFatG: z.coerce.number().min(0).max(100000).nullable().optional(),
+  cholesterolMg: z.coerce.number().min(0).max(100000).nullable().optional(),
+  calciumMg: z.coerce.number().min(0).max(100000).nullable().optional(),
   note: optionalNullableString(2000),
   timeStamp: dateTimeSchema.optional(),
 });
@@ -171,6 +206,18 @@ const consumptionCreateSchema = z.object({
 const consumptionCreateByDateSchema = consumptionCreateSchema.extend({
   diaryDate: dateSchema,
   time: timeOnlySchema.optional(),
+});
+
+const sleepDiaryQuerySchema = z.object({
+  date: dateSchema,
+});
+
+const sleepRecordUpsertSchema = z.object({
+  diaryDate: dateSchema,
+  sleepTime: timeOnlySchema.optional(),
+  wakeTime: timeOnlySchema.optional(),
+  sleepDurationHours: z.coerce.number().min(0).max(24).nullable().optional(),
+  source: optionalNullableString(64),
 });
 
 const avatarSignatureQuerySchema = z.object({
@@ -211,6 +258,8 @@ module.exports = {
   activityCreateByDateSchema,
   consumptionCreateSchema,
   consumptionCreateByDateSchema,
+  sleepDiaryQuerySchema,
+  sleepRecordUpsertSchema,
   emergencyContactListQuerySchema,
   avatarSignatureQuerySchema,
   avatarSaveSchema,

@@ -39,6 +39,8 @@ model User {
   doctorProfile                    DoctorProfile?
   emergencyContacts                EmergencyContact[]
   heartDiaries                     HeartDiary[]
+  patientMlProfile                 PatientMlProfile?
+  patientMlAssessments             PatientMlAssessment[]
   medications                      Medication[]
   reminders                        Reminder[]
   medicationLogs                   MedicationLog[]
@@ -88,6 +90,7 @@ model HeartDiary {
   symptoms           DailySymptom[]
   activities         DailyActivity[]
   consumptions       DailyConsumption[]
+  sleepRecord        DailySleepRecord?
 
   @@unique([userId, diaryDate], map: "heart_diaries_user_id_diary_date_key")
   @@index([userId, diaryDate], map: "idx_heart_diaries_user_date")
@@ -115,6 +118,11 @@ model DailySymptom {
   symptomId   String    @id @default(dbgenerated("gen_random_uuid()")) @map("symptom_id") @db.Uuid
   diaryId     String    @map("diary_id") @db.Uuid
   symptomName String    @map("symptom_name") @db.VarChar(120)
+  symptomCode String?   @map("symptom_code") @db.VarChar(80)
+  bodyArea    String?   @map("body_area") @db.VarChar(80)
+  isChestPain Boolean?  @map("is_chest_pain")
+  painFrequencyCode Int? @map("pain_frequency_code") @db.SmallInt
+  painLocationCode Int? @map("pain_location_code") @db.SmallInt
   intensity   Int?      @db.SmallInt
   note        String?
   timeStamp   DateTime  @default(now()) @map("time_stamp") @db.Timestamptz(6)
@@ -130,6 +138,10 @@ model DailyActivity {
   name        String    @db.VarChar(120)
   duration    Int?
   heartRate   Int?      @map("heart_rate")
+  activityCategory String? @map("activity_category") @db.VarChar(32)
+  intensityLevel String? @map("intensity_level") @db.VarChar(32)
+  transportMode String? @map("transport_mode") @db.VarChar(32)
+  outdoorMinutes Int? @map("outdoor_minutes")
   userFeeling String?   @map("user_feeling") @db.VarChar(80)
   note        String?
   timeStamp   DateTime  @default(now()) @map("time_stamp") @db.Timestamptz(6)
@@ -145,6 +157,20 @@ model DailyConsumption {
   type          String?   @db.VarChar(50)
   name          String?   @db.VarChar(120)
   portion       String?   @db.VarChar(80)
+  portionGrams  Decimal?  @map("portion_grams") @db.Decimal(10, 2)
+  fdcFoodId     String?   @map("fdc_food_id") @db.VarChar(64)
+  nutritionSource String? @map("nutrition_source") @db.VarChar(32)
+  energyKcal    Decimal?  @map("energy_kcal") @db.Decimal(10, 2)
+  proteinG      Decimal?  @map("protein_g") @db.Decimal(10, 2)
+  carbohydrateG Decimal?  @map("carbohydrate_g") @db.Decimal(10, 2)
+  sugarG        Decimal?  @map("sugar_g") @db.Decimal(10, 2)
+  fiberG        Decimal?  @map("fiber_g") @db.Decimal(10, 2)
+  totalFatG     Decimal?  @map("total_fat_g") @db.Decimal(10, 2)
+  saturatedFatG Decimal?  @map("saturated_fat_g") @db.Decimal(10, 2)
+  monounsaturatedFatG Decimal? @map("monounsaturated_fat_g") @db.Decimal(10, 2)
+  polyunsaturatedFatG Decimal? @map("polyunsaturated_fat_g") @db.Decimal(10, 2)
+  cholesterolMg Decimal?  @map("cholesterol_mg") @db.Decimal(10, 2)
+  calciumMg     Decimal?  @map("calcium_mg") @db.Decimal(10, 2)
   note          String?
   timeStamp     DateTime  @default(now()) @map("time_stamp") @db.Timestamptz(6)
   heartDiary    HeartDiary @relation(fields: [diaryId], references: [diaryId], onDelete: Cascade)
@@ -230,6 +256,67 @@ model PatientProfile {
   @@map("patient_profiles")
 }
 
+model PatientMlProfile {
+  patientId         String   @id @map("patient_id") @db.Uuid
+  demog1Riagendr    Int?     @map("demog1_riagendr") @db.SmallInt
+  demog1Ridreth3    Int?     @map("demog1_ridreth3") @db.SmallInt
+  demog1Dmdeduc     Int?     @map("demog1_dmdeduc") @db.SmallInt
+  demog1Dmdfmsiz    Int?     @map("demog1_dmdfmsiz") @db.SmallInt
+  demog1Dmdhhsiz    Int?     @map("demog1_dmdhhsiz") @db.SmallInt
+  demog1Dmdhhsza    Int?     @map("demog1_dmdhhsza") @db.SmallInt
+  demog1Dmdhhszb    Int?     @map("demog1_dmdhhszb") @db.SmallInt
+  demog1Dmdhhsze    Int?     @map("demog1_dmdhhsze") @db.SmallInt
+  demog1Dmdmartl    Int?     @map("demog1_dmdmartl") @db.SmallInt
+  quest22Smq020     Int?     @map("quest22_smq020") @db.SmallInt
+  quest22Smq890     Int?     @map("quest22_smq890") @db.SmallInt
+  quest22Smq900     Int?     @map("quest22_smq900") @db.SmallInt
+  quest23Smd470     Int?     @map("quest23_smd470") @db.SmallInt
+  quest1Alq111      Int?     @map("quest1_alq111") @db.SmallInt
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  patient           User     @relation(fields: [patientId], references: [userId], onDelete: Cascade)
+
+  @@map("patient_ml_profiles")
+}
+
+model PatientMlAssessment {
+  assessmentId      String   @id @default(dbgenerated("gen_random_uuid()")) @map("assessment_id") @db.Uuid
+  patientId         String   @map("patient_id") @db.Uuid
+  assessmentDate    DateTime @map("assessment_date") @db.Date
+  exami1Bpxpls      Int?     @map("exami1_bpxpls") @db.SmallInt
+  labor1Lbdtcsi     Decimal? @map("labor1_lbdtcsi") @db.Decimal(10, 2)
+  labor2Urdflow1    Decimal? @map("labor2_urdflow1") @db.Decimal(10, 2)
+  labor2Urdtime1    Decimal? @map("labor2_urdtime1") @db.Decimal(10, 2)
+  labor2Urxvol1     Decimal? @map("labor2_urxvol1") @db.Decimal(10, 2)
+  quest11Hiq011     Int?     @map("quest11_hiq011") @db.SmallInt
+  quest12Heq010     Int?     @map("quest12_heq010") @db.SmallInt
+  quest12Heq030     Int?     @map("quest12_heq030") @db.SmallInt
+  quest15Kiq022     Int?     @map("quest15_kiq022") @db.SmallInt
+  quest15Kiq026     Int?     @map("quest15_kiq026") @db.SmallInt
+  quest16Mcq010     Int?     @map("quest16_mcq010") @db.SmallInt
+  quest16Mcq160b    Int?     @map("quest16_mcq160b") @db.SmallInt
+  quest16Mcq220     Int?     @map("quest16_mcq220") @db.SmallInt
+  quest16Mcq300a    Int?     @map("quest16_mcq300a") @db.SmallInt
+  quest16Mcq300c    Int?     @map("quest16_mcq300c") @db.SmallInt
+  quest17Dpq020     Int?     @map("quest17_dpq020") @db.SmallInt
+  quest17Dpq030     Int?     @map("quest17_dpq030") @db.SmallInt
+  quest17Dpq040     Int?     @map("quest17_dpq040") @db.SmallInt
+  quest20Pfq061b    Int?     @map("quest20_pfq061b") @db.SmallInt
+  quest20Pfq061c    Int?     @map("quest20_pfq061c") @db.SmallInt
+  quest20Pfq061h    Int?     @map("quest20_pfq061h") @db.SmallInt
+  quest3Cdq009      Int?     @map("quest3_cdq009") @db.SmallInt
+  quest3Cdq010      Int?     @map("quest3_cdq010") @db.SmallInt
+  quest7Diq010      Int?     @map("quest7_diq010") @db.SmallInt
+  quest9Dlq050      Int?     @map("quest9_dlq050") @db.SmallInt
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  patient           User     @relation(fields: [patientId], references: [userId], onDelete: Cascade)
+
+  @@unique([patientId, assessmentDate], map: "patient_ml_assessments_patient_id_assessment_date_key")
+  @@index([patientId, assessmentDate(sort: Desc)], map: "idx_patient_ml_assessments_patient_date")
+  @@map("patient_ml_assessments")
+}
+
 model DoctorPatient {
   doctorId   String   @map("doctor_id") @db.Uuid
   patientId  String   @map("patient_id") @db.Uuid
@@ -273,6 +360,20 @@ model VitalSignReading {
   @@index([userId, measuredAt(sort: Desc)], map: "idx_vital_readings_user_time")
   @@index([metricType, measuredAt(sort: Desc)], map: "idx_vital_readings_metric_time")
   @@map("vital_sign_readings")
+}
+
+model DailySleepRecord {
+  sleepRecordId       String    @id @default(dbgenerated("gen_random_uuid()")) @map("sleep_record_id") @db.Uuid
+  diaryId             String    @unique @map("diary_id") @db.Uuid
+  sleepTime           DateTime? @map("sleep_time") @db.Time(6)
+  wakeTime            DateTime? @map("wake_time") @db.Time(6)
+  sleepDurationHours  Decimal?  @map("sleep_duration_hours") @db.Decimal(5, 2)
+  source              String?   @db.VarChar(64)
+  createdAt           DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+  heartDiary          HeartDiary @relation(fields: [diaryId], references: [diaryId], onDelete: Cascade)
+
+  @@map("daily_sleep_records")
 }
 
 model PatientShare {

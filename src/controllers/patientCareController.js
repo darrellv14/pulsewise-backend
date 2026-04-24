@@ -116,6 +116,34 @@ async function getHeartDiaryByDate(req, res, next) {
   }
 }
 
+async function getDailySleepRecordByDate(req, res, next) {
+  try {
+    const data = await patientCareService.getDailySleepRecordByDate({
+      actor: req.user,
+      userId: req.params.userId,
+      diaryDate: req.query.date,
+    });
+
+    return success(res, 'Sleep diary berdasarkan tanggal berhasil diambil', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function upsertDailySleepRecordByDate(req, res, next) {
+  try {
+    const data = await patientCareService.upsertDailySleepRecordByDate({
+      actor: req.user,
+      userId: req.params.userId,
+      payload: req.body,
+    });
+
+    return success(res, 'Sleep diary berdasarkan tanggal berhasil disimpan', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
 async function createDailyBodyMetric(req, res, next) {
   try {
     const data = await patientCareService.createDailyBodyMetric({
@@ -275,6 +303,8 @@ module.exports = {
   listHeartDiaries,
   getHeartDiaryDetail,
   getHeartDiaryByDate,
+  getDailySleepRecordByDate,
+  upsertDailySleepRecordByDate,
   createDailyBodyMetric,
   createDailyBodyMetricByDate,
   createDailySymptom,

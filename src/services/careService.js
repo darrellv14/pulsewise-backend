@@ -4,6 +4,7 @@ const profileRepository = require('../repositories/profileRepository');
 const doctorPatientRepository = require('../repositories/doctorPatientRepository');
 const dashboardRepository = require('../repositories/dashboardRepository');
 const patientShareRepository = require('../repositories/patientShareRepository');
+const patientMlRepository = require('../repositories/patientMlRepository');
 const dashboardPairingService = require('./dashboardPairingService');
 const thresholds = require('../constants/dashboardThresholds');
 const { normalizePaginationInput } = require('../utils/pagination');
@@ -149,6 +150,47 @@ function assertPatientScope({ actor, patientId }) {
     error.statusCode = FORBIDDEN;
     throw error;
   }
+}
+
+async function assertPatientResourceAccess({ actor, patientId }) {
+  if (!actor) {
+    const error = new Error('Aktor tidak valid');
+    error.statusCode = FORBIDDEN;
+    throw error;
+  }
+
+  if (actor.role === 'admin') {
+    return;
+  }
+
+  if (actor.role === 'patient') {
+    if (actor.userId !== patientId) {
+      const error = new Error('Akses data pasien ditolak');
+      error.statusCode = FORBIDDEN;
+      throw error;
+    }
+
+    return;
+  }
+
+  if (actor.role === 'doctor') {
+    const link = await doctorPatientRepository.findDoctorPatientLink({
+      doctorId: actor.userId,
+      patientId,
+    });
+
+    if (!link) {
+      const error = new Error('Dokter tidak memiliki akses ke pasien ini');
+      error.statusCode = FORBIDDEN;
+      throw error;
+    }
+
+    return;
+  }
+
+  const error = new Error('Role tidak memiliki akses pasien');
+  error.statusCode = FORBIDDEN;
+  throw error;
 }
 
 function generateShareCode() {
@@ -439,6 +481,151 @@ async function updatePatientProfile(patientId, payload) {
     bloodType: payload.bloodType !== undefined ? payload.bloodType : undefined,
     address: payload.address !== undefined ? payload.address : undefined,
   });
+}
+
+async function getPatientMlProfile({ actor, patientId }) {
+  await assertPatientResourceAccess({ actor, patientId });
+
+  const profile = await patientMlRepository.getPatientMlProfileById(patientId);
+  if (!profile) {
+    const error = new Error('ML profile pasien tidak ditemukan');
+    error.statusCode = NOT_FOUND;
+    throw error;
+  }
+
+  return profile;
+}
+
+async function updatePatientMlProfile({ actor, patientId, payload }) {
+  await assertPatientResourceAccess({ actor, patientId });
+
+  return patientMlRepository.upsertPatientMlProfile({
+    patientId,
+    payload: {
+      demog1Riagendr: payload.demog1_riagendr,
+      demog1Ridreth3: payload.demog1_ridreth3,
+      demog1Dmdeduc: payload.demog1_dmdeduc,
+      demog1Dmdfmsiz: payload.demog1_dmdfmsiz,
+      demog1Dmdhhsiz: payload.demog1_dmdhhsiz,
+      demog1Dmdhhsza: payload.demog1_dmdhhsza,
+      demog1Dmdhhszb: payload.demog1_dmdhhszb,
+      demog1Dmdhhsze: payload.demog1_dmdhhsze,
+      demog1Dmdmartl: payload.demog1_dmdmartl,
+      quest22Smq020: payload.quest22_smq020,
+      quest22Smq890: payload.quest22_smq890,
+      quest22Smq900: payload.quest22_smq900,
+      quest23Smd470: payload.quest23_smd470,
+      quest1Alq111: payload.quest1_alq111,
+    },
+  });
+}
+
+async function getLatestPatientMlAssessment({ actor, patientId }) {
+  await assertPatientResourceAccess({ actor, patientId });
+
+  const assessment = await patientMlRepository.getLatestPatientMlAssessment(patientId);
+  if (!assessment) {
+    const error = new Error('Assessment ML pasien tidak ditemukan');
+    error.statusCode = NOT_FOUND;
+    throw error;
+  }
+
+  return assessment;
+}
+
+async function listPatientMlAssessments({ actor, patientId, query }) {
+  await assertPatientResourceAccess({ actor, patientId });
+
+  const items = await patientMlRepository.listPatientMlAssessments({
+    patientId,
+    startDate: query.startDate,
+    endDate: query.endDate,
+  });
+
+  return {
+    items,
+  };
+}
+
+async function createPatientMlAssessment({ actor, patientId, payload }) {
+  await assertPatientResourceAccess({ actor, patientId });
+
+  return patientMlRepository.createPatientMlAssessment({
+    patientId,
+    payload: {
+      assessmentDate: payload.assessmentDate,
+      exami1Bpxpls: payload.exami1_bpxpls,
+      labor1Lbdtcsi: payload.labor1_lbdtcsi,
+      labor2Urdflow1: payload.labor2_urdflow1,
+      labor2Urdtime1: payload.labor2_urdtime1,
+      labor2Urxvol1: payload.labor2_urxvol1,
+      quest11Hiq011: payload.quest11_hiq011,
+      quest12Heq010: payload.quest12_heq010,
+      quest12Heq030: payload.quest12_heq030,
+      quest15Kiq022: payload.quest15_kiq022,
+      quest15Kiq026: payload.quest15_kiq026,
+      quest16Mcq010: payload.quest16_mcq010,
+      quest16Mcq160b: payload.quest16_mcq160b,
+      quest16Mcq220: payload.quest16_mcq220,
+      quest16Mcq300a: payload.quest16_mcq300a,
+      quest16Mcq300c: payload.quest16_mcq300c,
+      quest17Dpq020: payload.quest17_dpq020,
+      quest17Dpq030: payload.quest17_dpq030,
+      quest17Dpq040: payload.quest17_dpq040,
+      quest20Pfq061b: payload.quest20_pfq061b,
+      quest20Pfq061c: payload.quest20_pfq061c,
+      quest20Pfq061h: payload.quest20_pfq061h,
+      quest3Cdq009: payload.quest3_cdq009,
+      quest3Cdq010: payload.quest3_cdq010,
+      quest7Diq010: payload.quest7_diq010,
+      quest9Dlq050: payload.quest9_dlq050,
+    },
+  });
+}
+
+async function updatePatientMlAssessment({ actor, patientId, assessmentId, payload }) {
+  await assertPatientResourceAccess({ actor, patientId });
+
+  const assessment = await patientMlRepository.updatePatientMlAssessment({
+    patientId,
+    assessmentId,
+    payload: {
+      assessmentDate: payload.assessmentDate,
+      exami1Bpxpls: payload.exami1_bpxpls,
+      labor1Lbdtcsi: payload.labor1_lbdtcsi,
+      labor2Urdflow1: payload.labor2_urdflow1,
+      labor2Urdtime1: payload.labor2_urdtime1,
+      labor2Urxvol1: payload.labor2_urxvol1,
+      quest11Hiq011: payload.quest11_hiq011,
+      quest12Heq010: payload.quest12_heq010,
+      quest12Heq030: payload.quest12_heq030,
+      quest15Kiq022: payload.quest15_kiq022,
+      quest15Kiq026: payload.quest15_kiq026,
+      quest16Mcq010: payload.quest16_mcq010,
+      quest16Mcq160b: payload.quest16_mcq160b,
+      quest16Mcq220: payload.quest16_mcq220,
+      quest16Mcq300a: payload.quest16_mcq300a,
+      quest16Mcq300c: payload.quest16_mcq300c,
+      quest17Dpq020: payload.quest17_dpq020,
+      quest17Dpq030: payload.quest17_dpq030,
+      quest17Dpq040: payload.quest17_dpq040,
+      quest20Pfq061b: payload.quest20_pfq061b,
+      quest20Pfq061c: payload.quest20_pfq061c,
+      quest20Pfq061h: payload.quest20_pfq061h,
+      quest3Cdq009: payload.quest3_cdq009,
+      quest3Cdq010: payload.quest3_cdq010,
+      quest7Diq010: payload.quest7_diq010,
+      quest9Dlq050: payload.quest9_dlq050,
+    },
+  });
+
+  if (!assessment) {
+    const error = new Error('Assessment ML pasien tidak ditemukan');
+    error.statusCode = NOT_FOUND;
+    throw error;
+  }
+
+  return assessment;
 }
 
 async function getDoctorProfile(doctorId) {
@@ -765,6 +952,12 @@ module.exports = {
   listPatients,
   getPatientProfile,
   updatePatientProfile,
+  getPatientMlProfile,
+  updatePatientMlProfile,
+  getLatestPatientMlAssessment,
+  listPatientMlAssessments,
+  createPatientMlAssessment,
+  updatePatientMlAssessment,
   getDoctorProfile,
   updateDoctorProfile,
   listDoctorPatients,

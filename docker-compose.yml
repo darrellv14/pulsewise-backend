@@ -30,5 +30,19 @@ services:
       postgres:
         condition: service_healthy
 
+  hfms-backend:
+    build:
+      context: ../hfms-backend
+      dockerfile: Dockerfile
+    image: pulsewise-hfms-backend:local
+    container_name: pulsewise-hfms-backend
+    restart: unless-stopped
+    environment:
+      HFMS_GA_POPULATION_SIZE: ${HFMS_GA_POPULATION_SIZE:-24}
+      HFMS_GA_GENERATIONS: ${HFMS_GA_GENERATIONS:-20}
+      HFMS_GA_MUTATION_PROBABILITY: ${HFMS_GA_MUTATION_PROBABILITY:-0.2}
+    ports:
+      - '${ML_SERVICE_PORT:-8080}:8080'
+
 volumes:
   pulsewise_pgdata:

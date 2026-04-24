@@ -5,6 +5,7 @@ const careRoutes = require('./careRoutes');
 const biometricRoutes = require('./biometricRoutes');
 const medicationRoutes = require('./medicationRoutes');
 const patientCareRoutes = require('./patientCareRoutes');
+const mlRecommendationRoutes = require('./mlRecommendationRoutes');
 
 const router = express.Router();
 
@@ -14,5 +15,6 @@ router.use('/', careRoutes);
 router.use('/', biometricRoutes);
 router.use('/', medicationRoutes);
 router.use('/', patientCareRoutes);
+router.use('/', mlRecommendationRoutes);
 
 module.exports = router;

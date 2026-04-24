@@ -877,6 +877,21 @@ components:
           format: uuid
         symptomName:
           type: string
+        symptomCode:
+          type: string
+          nullable: true
+        bodyArea:
+          type: string
+          nullable: true
+        isChestPain:
+          type: boolean
+          nullable: true
+        painFrequencyCode:
+          type: integer
+          nullable: true
+        painLocationCode:
+          type: integer
+          nullable: true
         intensity:
           type: integer
           nullable: true
@@ -895,6 +910,11 @@ components:
         symptomId: 7b5d8f10-1111-4222-8333-1234567890ac
         diaryId: 5e5f09ab-5543-435d-b0fb-9a8ef041d8b0
         symptomName: Pusing ringan
+        symptomCode: chest_pain
+        bodyArea: chest
+        isChestPain: true
+        painFrequencyCode: 2
+        painLocationCode: 1
         intensity: 2
         note: Muncul sebelum sarapan
         time: '07:30'
@@ -911,6 +931,18 @@ components:
           format: uuid
         name:
           type: string
+        activityCategory:
+          type: string
+          enum: [work, transport, recreation, other]
+          nullable: true
+        intensityLevel:
+          type: string
+          enum: [light, moderate, vigorous, unknown]
+          nullable: true
+        transportMode:
+          type: string
+          enum: [walk, bicycle, other]
+          nullable: true
         duration:
           type: integer
           nullable: true
@@ -919,6 +951,9 @@ components:
           nullable: true
         userFeeling:
           type: string
+          nullable: true
+        outdoorMinutes:
+          type: integer
           nullable: true
         note:
           type: string
@@ -931,9 +966,13 @@ components:
         activityId: 7b5d8f10-1111-4222-8333-1234567890ad
         diaryId: 5e5f09ab-5543-435d-b0fb-9a8ef041d8b0
         name: Jalan pagi
+        activityCategory: transport
+        intensityLevel: moderate
+        transportMode: walk
         duration: 30
         heartRate: 98
         userFeeling: baik
+        outdoorMinutes: 20
         note: Ritme santai
         timeStamp: '2026-04-10T06:30:00.000Z'
 
@@ -955,6 +994,48 @@ components:
         portion:
           type: string
           nullable: true
+        portionGrams:
+          type: number
+          nullable: true
+        fdcFoodId:
+          type: string
+          nullable: true
+        nutritionSource:
+          type: string
+          nullable: true
+        energyKcal:
+          type: number
+          nullable: true
+        proteinG:
+          type: number
+          nullable: true
+        carbohydrateG:
+          type: number
+          nullable: true
+        sugarG:
+          type: number
+          nullable: true
+        fiberG:
+          type: number
+          nullable: true
+        totalFatG:
+          type: number
+          nullable: true
+        saturatedFatG:
+          type: number
+          nullable: true
+        monounsaturatedFatG:
+          type: number
+          nullable: true
+        polyunsaturatedFatG:
+          type: number
+          nullable: true
+        cholesterolMg:
+          type: number
+          nullable: true
+        calciumMg:
+          type: number
+          nullable: true
         note:
           type: string
           nullable: true
@@ -972,6 +1053,20 @@ components:
         type: minuman
         name: Kopi hitam
         portion: 1 cangkir
+        portionGrams: 250
+        fdcFoodId: '1102647'
+        nutritionSource: fdc_snapshot
+        energyKcal: 180
+        proteinG: 12
+        carbohydrateG: 20
+        sugarG: 8
+        fiberG: 2
+        totalFatG: 5
+        saturatedFatG: 2
+        monounsaturatedFatG: 1.5
+        polyunsaturatedFatG: 0.8
+        cholesterolMg: 20
+        calciumMg: 150
         note: Tanpa gula
         time: '21:15'
         timeStamp: '2026-04-10T21:15:00.000Z'
@@ -1050,6 +1145,27 @@ components:
           type: string
           minLength: 1
           maxLength: 120
+        symptomCode:
+          type: string
+          nullable: true
+          maxLength: 80
+        bodyArea:
+          type: string
+          nullable: true
+          maxLength: 80
+        isChestPain:
+          type: boolean
+          nullable: true
+        painFrequencyCode:
+          type: integer
+          minimum: 0
+          maximum: 999
+          nullable: true
+        painLocationCode:
+          type: integer
+          minimum: 0
+          maximum: 999
+          nullable: true
         intensity:
           type: integer
           minimum: 1
@@ -1086,6 +1202,15 @@ components:
           type: string
           minLength: 1
           maxLength: 120
+        activityCategory:
+          type: string
+          enum: [work, transport, recreation, other]
+        intensityLevel:
+          type: string
+          enum: [light, moderate, vigorous, unknown]
+        transportMode:
+          type: string
+          enum: [walk, bicycle, other]
         duration:
           type: integer
           minimum: 1
@@ -1100,6 +1225,11 @@ components:
           type: string
           nullable: true
           maxLength: 80
+        outdoorMinutes:
+          type: integer
+          minimum: 0
+          maximum: 1440
+          nullable: true
         note:
           type: string
           nullable: true
@@ -1134,6 +1264,74 @@ components:
           type: string
           nullable: true
           maxLength: 80
+        portionGrams:
+          type: number
+          minimum: 0
+          maximum: 100000
+          nullable: true
+        fdcFoodId:
+          type: string
+          nullable: true
+          maxLength: 64
+        nutritionSource:
+          type: string
+          nullable: true
+          maxLength: 32
+        energyKcal:
+          type: number
+          minimum: 0
+          maximum: 100000
+          nullable: true
+        proteinG:
+          type: number
+          minimum: 0
+          maximum: 100000
+          nullable: true
+        carbohydrateG:
+          type: number
+          minimum: 0
+          maximum: 100000
+          nullable: true
+        sugarG:
+          type: number
+          minimum: 0
+          maximum: 100000
+          nullable: true
+        fiberG:
+          type: number
+          minimum: 0
+          maximum: 100000
+          nullable: true
+        totalFatG:
+          type: number
+          minimum: 0
+          maximum: 100000
+          nullable: true
+        saturatedFatG:
+          type: number
+          minimum: 0
+          maximum: 100000
+          nullable: true
+        monounsaturatedFatG:
+          type: number
+          minimum: 0
+          maximum: 100000
+          nullable: true
+        polyunsaturatedFatG:
+          type: number
+          minimum: 0
+          maximum: 100000
+          nullable: true
+        cholesterolMg:
+          type: number
+          minimum: 0
+          maximum: 100000
+          nullable: true
+        calciumMg:
+          type: number
+          minimum: 0
+          maximum: 100000
+          nullable: true
         note:
           type: string
           nullable: true
@@ -1178,6 +1376,8 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/DailyConsumption'
+            sleepRecord:
+              $ref: '#/components/schemas/DailySleepRecord'
       example:
         diaryId: 5e5f09ab-5543-435d-b0fb-9a8ef041d8b0
         userId: 3a233724-0b42-4a4f-88e8-88e732c46351
@@ -1220,6 +1420,420 @@ components:
             note: Tanpa gula
             time: '21:15'
             timeStamp: '2026-04-10T21:15:00.000Z'
+        sleepRecord:
+          sleepRecordId: 7b5d8f10-1111-4222-8333-1234567890af
+          diaryId: 5e5f09ab-5543-435d-b0fb-9a8ef041d8b0
+          sleepTime: '22:30'
+          wakeTime: '06:30'
+          sleepDurationHours: 8
+          source: postman_manual
+          createdAt: '2026-04-10T22:30:00.000Z'
+          updatedAt: '2026-04-10T22:30:00.000Z'
+
+    DailySleepRecord:
+      type: object
+      properties:
+        sleepRecordId:
+          type: string
+          format: uuid
+        diaryId:
+          type: string
+          format: uuid
+        sleepTime:
+          type: string
+          nullable: true
+          example: '22:30'
+        wakeTime:
+          type: string
+          nullable: true
+          example: '06:30'
+        sleepDurationHours:
+          type: number
+          nullable: true
+        source:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    DailySleepRecordUpsertRequest:
+      type: object
+      required: [diaryDate]
+      properties:
+        diaryDate:
+          type: string
+          format: date
+        sleepTime:
+          type: string
+          pattern: ^([01]\d|2[0-3]):([0-5]\d)$
+        wakeTime:
+          type: string
+          pattern: ^([01]\d|2[0-3]):([0-5]\d)$
+        sleepDurationHours:
+          type: number
+          minimum: 0
+          maximum: 24
+          nullable: true
+        source:
+          type: string
+          nullable: true
+          maxLength: 64
+
+    PatientMlProfile:
+      type: object
+      properties:
+        patientId:
+          type: string
+          format: uuid
+        demog1_riagendr:
+          type: integer
+          nullable: true
+        demog1_ridreth3:
+          type: integer
+          nullable: true
+        demog1_dmdeduc:
+          type: integer
+          nullable: true
+        demog1_dmdfmsiz:
+          type: integer
+          nullable: true
+        demog1_dmdhhsiz:
+          type: integer
+          nullable: true
+        demog1_dmdhhsza:
+          type: integer
+          nullable: true
+        demog1_dmdhhszb:
+          type: integer
+          nullable: true
+        demog1_dmdhhsze:
+          type: integer
+          nullable: true
+        demog1_dmdmartl:
+          type: integer
+          nullable: true
+        quest22_smq020:
+          type: integer
+          nullable: true
+        quest22_smq890:
+          type: integer
+          nullable: true
+        quest22_smq900:
+          type: integer
+          nullable: true
+        quest23_smd470:
+          type: integer
+          nullable: true
+        quest1_alq111:
+          type: integer
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    PatientMlProfileUpdateRequest:
+      type: object
+      minProperties: 1
+      properties:
+        demog1_riagendr:
+          type: integer
+          nullable: true
+        demog1_ridreth3:
+          type: integer
+          nullable: true
+        demog1_dmdeduc:
+          type: integer
+          nullable: true
+        demog1_dmdfmsiz:
+          type: integer
+          nullable: true
+        demog1_dmdhhsiz:
+          type: integer
+          nullable: true
+        demog1_dmdhhsza:
+          type: integer
+          nullable: true
+        demog1_dmdhhszb:
+          type: integer
+          nullable: true
+        demog1_dmdhhsze:
+          type: integer
+          nullable: true
+        demog1_dmdmartl:
+          type: integer
+          nullable: true
+        quest22_smq020:
+          type: integer
+          nullable: true
+        quest22_smq890:
+          type: integer
+          nullable: true
+        quest22_smq900:
+          type: integer
+          nullable: true
+        quest23_smd470:
+          type: integer
+          nullable: true
+        quest1_alq111:
+          type: integer
+          nullable: true
+
+    PatientMlAssessment:
+      type: object
+      properties:
+        assessmentId:
+          type: string
+          format: uuid
+        patientId:
+          type: string
+          format: uuid
+        assessmentDate:
+          type: string
+          format: date
+        exami1_bpxpls:
+          type: integer
+          nullable: true
+        labor1_lbdtcsi:
+          type: number
+          nullable: true
+        labor2_urdflow1:
+          type: number
+          nullable: true
+        labor2_urdtime1:
+          type: number
+          nullable: true
+        labor2_urxvol1:
+          type: number
+          nullable: true
+        quest11_hiq011:
+          type: integer
+          nullable: true
+        quest12_heq010:
+          type: integer
+          nullable: true
+        quest12_heq030:
+          type: integer
+          nullable: true
+        quest15_kiq022:
+          type: integer
+          nullable: true
+        quest15_kiq026:
+          type: integer
+          nullable: true
+        quest16_mcq010:
+          type: integer
+          nullable: true
+        quest16_mcq160b:
+          type: integer
+          nullable: true
+        quest16_mcq220:
+          type: integer
+          nullable: true
+        quest16_mcq300a:
+          type: integer
+          nullable: true
+        quest16_mcq300c:
+          type: integer
+          nullable: true
+        quest17_dpq020:
+          type: integer
+          nullable: true
+        quest17_dpq030:
+          type: integer
+          nullable: true
+        quest17_dpq040:
+          type: integer
+          nullable: true
+        quest20_pfq061b:
+          type: integer
+          nullable: true
+        quest20_pfq061c:
+          type: integer
+          nullable: true
+        quest20_pfq061h:
+          type: integer
+          nullable: true
+        quest3_cdq009:
+          type: integer
+          nullable: true
+        quest3_cdq010:
+          type: integer
+          nullable: true
+        quest7_diq010:
+          type: integer
+          nullable: true
+        quest9_dlq050:
+          type: integer
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    PatientMlAssessmentUpsertRequest:
+      type: object
+      properties:
+        assessmentDate:
+          type: string
+          format: date
+        exami1_bpxpls:
+          type: integer
+          nullable: true
+        labor1_lbdtcsi:
+          type: number
+          nullable: true
+        labor2_urdflow1:
+          type: number
+          nullable: true
+        labor2_urdtime1:
+          type: number
+          nullable: true
+        labor2_urxvol1:
+          type: number
+          nullable: true
+        quest11_hiq011:
+          type: integer
+          nullable: true
+        quest12_heq010:
+          type: integer
+          nullable: true
+        quest12_heq030:
+          type: integer
+          nullable: true
+        quest15_kiq022:
+          type: integer
+          nullable: true
+        quest15_kiq026:
+          type: integer
+          nullable: true
+        quest16_mcq010:
+          type: integer
+          nullable: true
+        quest16_mcq160b:
+          type: integer
+          nullable: true
+        quest16_mcq220:
+          type: integer
+          nullable: true
+        quest16_mcq300a:
+          type: integer
+          nullable: true
+        quest16_mcq300c:
+          type: integer
+          nullable: true
+        quest17_dpq020:
+          type: integer
+          nullable: true
+        quest17_dpq030:
+          type: integer
+          nullable: true
+        quest17_dpq040:
+          type: integer
+          nullable: true
+        quest20_pfq061b:
+          type: integer
+          nullable: true
+        quest20_pfq061c:
+          type: integer
+          nullable: true
+        quest20_pfq061h:
+          type: integer
+          nullable: true
+        quest3_cdq009:
+          type: integer
+          nullable: true
+        quest3_cdq010:
+          type: integer
+          nullable: true
+        quest7_diq010:
+          type: integer
+          nullable: true
+        quest9_dlq050:
+          type: integer
+          nullable: true
+
+    MlReadinessData:
+      type: object
+      properties:
+        ready:
+          type: boolean
+        missingFields:
+          type: array
+          items:
+            type: string
+        resolvedFields:
+          type: array
+          items:
+            type: string
+        window:
+          type: object
+          properties:
+            startDate:
+              type: string
+              format: date
+            endDate:
+              type: string
+              format: date
+        sourceSummary:
+          type: object
+          additionalProperties: true
+
+    MlPayloadData:
+      type: object
+      properties:
+        mlVersion:
+          type: string
+        window:
+          type: object
+          properties:
+            startDate:
+              type: string
+              format: date
+            endDate:
+              type: string
+              format: date
+        payload:
+          type: object
+          additionalProperties:
+            oneOf:
+              - type: number
+              - type: string
+              - type: integer
+        sourceSummary:
+          type: object
+          additionalProperties: true
+
+    MlUpstreamData:
+      type: object
+      properties:
+        mlVersion:
+          type: string
+        window:
+          type: object
+          properties:
+            startDate:
+              type: string
+              format: date
+            endDate:
+              type: string
+              format: date
+        payloadHash:
+          type: string
+        sourceSummary:
+          type: object
+          additionalProperties: true
+        upstream:
+          type: object
+          additionalProperties: true
 
     AvatarUploadSignatureResponse:
       type: object
@@ -3994,6 +4608,609 @@ paths:
                     properties:
                       data:
                         $ref: '#/components/schemas/DailyConsumption'
+
+  /api/v1/users/{userId}/diaries/by-date/sleep:
+    get:
+      tags: [Patient Care, ML]
+      summary: Get sleep diary by date
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Sleep diary by date
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/DailySleepRecord'
+    put:
+      tags: [Patient Care, ML]
+      summary: Create or update sleep diary by date
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DailySleepRecordUpsertRequest'
+      responses:
+        '200':
+          description: Sleep diary saved
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/DailySleepRecord'
+
+  /api/v1/patients/{patientId}/ml-profile:
+    get:
+      tags: [ML]
+      summary: Get patient ML profile
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Patient ML profile
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PatientMlProfile'
+    put:
+      tags: [ML]
+      summary: Create or update patient ML profile
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatientMlProfileUpdateRequest'
+      responses:
+        '200':
+          description: Patient ML profile saved
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PatientMlProfile'
+
+  /api/v1/patients/{patientId}/ml-assessments/latest:
+    get:
+      tags: [ML]
+      summary: Get latest patient ML assessment
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Latest patient ML assessment
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PatientMlAssessment'
+
+  /api/v1/patients/{patientId}/ml-assessments:
+    get:
+      tags: [ML]
+      summary: List patient ML assessments
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: startDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Patient ML assessments
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/PatientMlAssessment'
+    post:
+      tags: [ML]
+      summary: Create patient ML assessment
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/PatientMlAssessmentUpsertRequest'
+                - type: object
+                  required: [assessmentDate]
+      responses:
+        '200':
+          description: Patient ML assessment created
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PatientMlAssessment'
+
+  /api/v1/patients/{patientId}/ml-assessments/{assessmentId}:
+    put:
+      tags: [ML]
+      summary: Update patient ML assessment
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: assessmentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatientMlAssessmentUpsertRequest'
+      responses:
+        '200':
+          description: Patient ML assessment updated
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PatientMlAssessment'
+
+  /api/v1/users/{userId}/ml-readiness:
+    get:
+      tags: [ML]
+      summary: Get patient ML readiness
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: includePayload
+          in: query
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Patient ML readiness
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/MlReadinessData'
+
+  /api/v1/users/{userId}/ml-payload:
+    get:
+      tags: [ML]
+      summary: Build patient ML payload
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: includePayload
+          in: query
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Patient ML payload
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/MlPayloadData'
+
+  /api/v1/users/{userId}/ml-predictions:
+    post:
+      tags: [ML]
+      summary: Get patient ML prediction from HFMS
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: includePayload
+          in: query
+          required: false
+          schema:
+            type: boolean
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+      responses:
+        '200':
+          description: Patient ML prediction
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/MlUpstreamData'
+
+  /api/v1/users/{userId}/ml-recommendations:
+    post:
+      tags: [ML]
+      summary: Get patient ML recommendation from HFMS
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: includePayload
+          in: query
+          required: false
+          schema:
+            type: boolean
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+      responses:
+        '200':
+          description: Patient ML recommendation
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/MlUpstreamData'
+
+  /api/v1/doctors/{doctorId}/dashboard/patients/{patientId}/ml-readiness:
+    get:
+      tags: [ML, Care Management]
+      summary: Get doctor dashboard patient ML readiness
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: doctorId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: includePayload
+          in: query
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Doctor dashboard patient ML readiness
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/MlReadinessData'
+
+  /api/v1/doctors/{doctorId}/dashboard/patients/{patientId}/ml-payload:
+    get:
+      tags: [ML, Care Management]
+      summary: Build doctor dashboard patient ML payload
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: doctorId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: includePayload
+          in: query
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Doctor dashboard patient ML payload
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/MlPayloadData'
+
+  /api/v1/doctors/{doctorId}/dashboard/patients/{patientId}/ml-predictions:
+    post:
+      tags: [ML, Care Management]
+      summary: Get doctor dashboard patient ML prediction from HFMS
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: doctorId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: includePayload
+          in: query
+          required: false
+          schema:
+            type: boolean
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+      responses:
+        '200':
+          description: Doctor dashboard patient ML prediction
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/MlUpstreamData'
+
+  /api/v1/doctors/{doctorId}/dashboard/patients/{patientId}/ml-recommendations:
+    post:
+      tags: [ML, Care Management]
+      summary: Get doctor dashboard patient ML recommendation from HFMS
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: doctorId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: includePayload
+          in: query
+          required: false
+          schema:
+            type: boolean
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+      responses:
+        '200':
+          description: Doctor dashboard patient ML recommendation
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/MlUpstreamData'
 
   /api/v1/users/{userId}/diaries/{diaryId}:
     get:

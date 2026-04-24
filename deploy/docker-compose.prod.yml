@@ -1,0 +1,48 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: pulsewise-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: pulsewise
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: pulsewise
+    volumes:
+      - pulsewise_pgdata:/var/lib/postgresql/data
+    ports:
+      - '127.0.0.1:5432:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U pulsewise -d pulsewise']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pulsewise-backend:
+    build:
+      context: ../pulsewise-backend
+      dockerfile: Dockerfile
+    container_name: pulsewise-backend
+    restart: unless-stopped
+    env_file:
+      - ./pulsewise-backend.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      hfms-backend:
+        condition: service_started
+    ports:
+      - '127.0.0.1:5000:5000'
+
+  hfms-backend:
+    build:
+      context: ../hfms-backend
+      dockerfile: Dockerfile
+    container_name: pulsewise-hfms-backend
+    restart: unless-stopped
+    env_file:
+      - ./hfms-backend.env
+    ports:
+      - '127.0.0.1:8080:8080'
+
+volumes:
+  pulsewise_pgdata:

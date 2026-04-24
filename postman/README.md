@@ -31,6 +31,8 @@ Import **hanya** file berikut:
    - `GET Dashboard Pairing Session Status` (fallback/polling)
 5. Di folder **Biometrics**, jalankan `POST Ingest Biometrics` lalu `GET Biometrics History` untuk verifikasi ingestion time-series.
 6. Di folder **Medication & Reminder**, gunakan `GET Medication Calendar` untuk mengambil feed kalender lintas-obat berbasis rentang tanggal (`from`/`to`).
+7. Di folder **ML - Profile & Assessment**, isi `ml-profile`, `ml-assessments`, dan `sleep diary` untuk menyiapkan data 67 field.
+8. Di folder **ML - Sleep & Inference** dan **ML - Doctor Dashboard**, jalankan readiness lalu prediction/recommendation untuk patient scope maupun doctor dashboard scope.
 
 ## Endpoint QR Yang Primary vs Legacy
 
@@ -61,6 +63,25 @@ Catatan: endpoint legacy tetap tersedia, tapi untuk integrasi FE terbaru gunakan
 - `GET /biometrics`
   - Ambil histori biometrik dengan filter `source`, `metricType`, `startAt`, `endAt`, pagination.
 
+## Endpoint ML (HFMS v3)
+
+- `GET /users/{userId}/ml-readiness`
+- `GET /users/{userId}/ml-payload`
+- `POST /users/{userId}/ml-predictions`
+- `POST /users/{userId}/ml-recommendations`
+- `GET /patients/{patientId}/ml-profile`
+- `PUT /patients/{patientId}/ml-profile`
+- `GET /patients/{patientId}/ml-assessments/latest`
+- `GET /patients/{patientId}/ml-assessments`
+- `POST /patients/{patientId}/ml-assessments`
+- `PUT /patients/{patientId}/ml-assessments/{assessmentId}`
+- `GET /users/{userId}/diaries/by-date/sleep`
+- `PUT /users/{userId}/diaries/by-date/sleep`
+- `GET /doctors/{doctorId}/dashboard/patients/{patientId}/ml-readiness`
+- `GET /doctors/{doctorId}/dashboard/patients/{patientId}/ml-payload`
+- `POST /doctors/{doctorId}/dashboard/patients/{patientId}/ml-predictions`
+- `POST /doctors/{doctorId}/dashboard/patients/{patientId}/ml-recommendations`
+
 ## Status Legacy Files
 
 File export legacy/duplikat sudah dihapus dari repo.
@@ -83,6 +104,7 @@ Jalankan:
 
 ```bash
 npm run postman:sync-examples
+npm run postman:refresh
 ```
 
 Yang dilakukan script:
@@ -92,6 +114,18 @@ Yang dilakukan script:
    - `postman/PulseWise-API.postman_collection.json`
    - `postman/PulseWise-Dashboard-Smoke.postman_collection.json`
 3. Menyimpan hasilnya ke field `response` Postman agar example langsung terlihat saat import
+
+`postman:refresh` akan:
+
+1. Menyegarkan folder canonical untuk endpoint ML
+2. Menambah variable environment yang dibutuhkan flow ML
+3. Menjaga collection utama dan smoke collection tetap sinkron dengan kontrak backend saat ini
+
+Catatan:
+
+- Endpoint ML saat ini sudah masuk ke collection canonical lewat `postman:refresh`.
+- `docs/openapi.yaml` belum memuat seluruh endpoint ML baru, jadi `postman:sync-examples` akan melaporkan beberapa request ML sebagai `unmatched`.
+- Itu bukan error collection; hanya berarti contoh response ML belum bisa digenerate otomatis dari OpenAPI lama.
 
 Catatan:
 

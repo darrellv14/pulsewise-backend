@@ -5,6 +5,10 @@
       "path": "."
     },
     {
+      "name": "hfms-backend",
+      "path": "..\\hfms-backend"
+    },
+    {
       "name": "chf-dashboard",
       "path": "..\\chf-dashboard"
     }

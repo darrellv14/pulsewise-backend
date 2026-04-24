@@ -68,6 +68,11 @@ function mapDailySymptom(row) {
     symptom_id: row.symptomId,
     diary_id: row.diaryId,
     symptom_name: row.symptomName,
+    symptom_code: row.symptomCode,
+    body_area: row.bodyArea,
+    is_chest_pain: row.isChestPain,
+    pain_frequency_code: row.painFrequencyCode,
+    pain_location_code: row.painLocationCode,
     intensity: row.intensity,
     note: row.note,
     time_stamp: row.timeStamp,
@@ -85,6 +90,10 @@ function mapDailyActivity(row) {
     name: row.name,
     duration: row.duration,
     heart_rate: row.heartRate,
+    activity_category: row.activityCategory,
+    intensity_level: row.intensityLevel,
+    transport_mode: row.transportMode,
+    outdoor_minutes: row.outdoorMinutes,
     user_feeling: row.userFeeling,
     note: row.note,
     time_stamp: row.timeStamp,
@@ -102,8 +111,39 @@ function mapDailyConsumption(row) {
     type: row.type,
     name: row.name,
     portion: row.portion,
+    portion_grams: toNullableNumber(row.portionGrams),
+    fdc_food_id: row.fdcFoodId,
+    nutrition_source: row.nutritionSource,
+    energy_kcal: toNullableNumber(row.energyKcal),
+    protein_g: toNullableNumber(row.proteinG),
+    carbohydrate_g: toNullableNumber(row.carbohydrateG),
+    sugar_g: toNullableNumber(row.sugarG),
+    fiber_g: toNullableNumber(row.fiberG),
+    total_fat_g: toNullableNumber(row.totalFatG),
+    saturated_fat_g: toNullableNumber(row.saturatedFatG),
+    monounsaturated_fat_g: toNullableNumber(row.monounsaturatedFatG),
+    polyunsaturated_fat_g: toNullableNumber(row.polyunsaturatedFatG),
+    cholesterol_mg: toNullableNumber(row.cholesterolMg),
+    calcium_mg: toNullableNumber(row.calciumMg),
     note: row.note,
     time_stamp: row.timeStamp,
+  };
+}
+
+function mapSleepRecord(row) {
+  if (!row) {
+    return null;
+  }
+
+  return {
+    sleep_record_id: row.sleepRecordId,
+    diary_id: row.diaryId,
+    sleep_time: row.sleepTime,
+    wake_time: row.wakeTime,
+    sleep_duration_hours: toNullableNumber(row.sleepDurationHours),
+    source: row.source,
+    created_at: row.createdAt,
+    updated_at: row.updatedAt,
   };
 }
 
@@ -331,6 +371,16 @@ async function listDailyConsumptions(diaryId) {
   return rows.map(mapDailyConsumption);
 }
 
+async function getDailySleepRecord(diaryId) {
+  const row = await prisma.dailySleepRecord.findUnique({
+    where: {
+      diaryId,
+    },
+  });
+
+  return mapSleepRecord(row);
+}
+
 async function createDailyBodyMetric({
   diaryId,
   conditionTag,
@@ -410,11 +460,27 @@ async function updateDailyBodyMetric({
   return mapDailyMetric(row);
 }
 
-async function createDailySymptom({ diaryId, symptomName, intensity, note, timeStamp }) {
+async function createDailySymptom({
+  diaryId,
+  symptomName,
+  symptomCode,
+  bodyArea,
+  isChestPain,
+  painFrequencyCode,
+  painLocationCode,
+  intensity,
+  note,
+  timeStamp,
+}) {
   const row = await prisma.dailySymptom.create({
     data: {
       diaryId,
       symptomName,
+      symptomCode,
+      bodyArea,
+      isChestPain,
+      painFrequencyCode,
+      painLocationCode,
       intensity,
       note,
       timeStamp: timeStamp ? toDateTime(timeStamp) : undefined,
@@ -429,6 +495,10 @@ async function createDailyActivity({
   name,
   duration,
   heartRate,
+  activityCategory,
+  intensityLevel,
+  transportMode,
+  outdoorMinutes,
   userFeeling,
   note,
   timeStamp,
@@ -439,6 +509,10 @@ async function createDailyActivity({
       name,
       duration,
       heartRate,
+      activityCategory,
+      intensityLevel,
+      transportMode,
+      outdoorMinutes,
       userFeeling,
       note,
       timeStamp: timeStamp ? toDateTime(timeStamp) : undefined,
@@ -448,19 +522,78 @@ async function createDailyActivity({
   return mapDailyActivity(row);
 }
 
-async function createDailyConsumption({ diaryId, type, name, portion, note, timeStamp }) {
+async function createDailyConsumption({
+  diaryId,
+  type,
+  name,
+  portion,
+  portionGrams,
+  fdcFoodId,
+  nutritionSource,
+  energyKcal,
+  proteinG,
+  carbohydrateG,
+  sugarG,
+  fiberG,
+  totalFatG,
+  saturatedFatG,
+  monounsaturatedFatG,
+  polyunsaturatedFatG,
+  cholesterolMg,
+  calciumMg,
+  note,
+  timeStamp,
+}) {
   const row = await prisma.dailyConsumption.create({
     data: {
       diaryId,
       type,
       name,
       portion,
+      portionGrams,
+      fdcFoodId,
+      nutritionSource,
+      energyKcal,
+      proteinG,
+      carbohydrateG,
+      sugarG,
+      fiberG,
+      totalFatG,
+      saturatedFatG,
+      monounsaturatedFatG,
+      polyunsaturatedFatG,
+      cholesterolMg,
+      calciumMg,
       note,
       timeStamp: timeStamp ? toDateTime(timeStamp) : undefined,
     },
   });
 
   return mapDailyConsumption(row);
+}
+
+async function upsertDailySleepRecord({ diaryId, sleepTime, wakeTime, sleepDurationHours, source }) {
+  const row = await prisma.dailySleepRecord.upsert({
+    where: {
+      diaryId,
+    },
+    create: {
+      diaryId,
+      sleepTime: sleepTime ? new Date(`1970-01-01T${sleepTime}:00.000Z`) : undefined,
+      wakeTime: wakeTime ? new Date(`1970-01-01T${wakeTime}:00.000Z`) : undefined,
+      sleepDurationHours,
+      source,
+    },
+    update: {
+      sleepTime: sleepTime !== undefined ? (sleepTime ? new Date(`1970-01-01T${sleepTime}:00.000Z`) : null) : undefined,
+      wakeTime: wakeTime !== undefined ? (wakeTime ? new Date(`1970-01-01T${wakeTime}:00.000Z`) : null) : undefined,
+      sleepDurationHours: sleepDurationHours !== undefined ? sleepDurationHours : undefined,
+      source: source !== undefined ? source : undefined,
+      updatedAt: new Date(),
+    },
+  });
+
+  return mapSleepRecord(row);
 }
 
 async function updateUserAvatar({ userId, avatarPhoto }) {
@@ -496,10 +629,12 @@ module.exports = {
   listDailySymptoms,
   listDailyActivities,
   listDailyConsumptions,
+  getDailySleepRecord,
   createDailyBodyMetric,
   updateDailyBodyMetric,
   createDailySymptom,
   createDailyActivity,
   createDailyConsumption,
+  upsertDailySleepRecord,
   updateUserAvatar,
 };

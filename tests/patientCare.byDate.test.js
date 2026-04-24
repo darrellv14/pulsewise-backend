@@ -2,9 +2,12 @@ jest.mock('../src/repositories/patientCareRepository', () => ({
   getHeartDiaryByDate: jest.fn(),
   upsertHeartDiary: jest.fn(),
   getLatestDailyBodyMetric: jest.fn(),
+  getDailySleepRecord: jest.fn(),
+  upsertDailySleepRecord: jest.fn(),
   createDailyBodyMetric: jest.fn(),
   updateDailyBodyMetric: jest.fn(),
   createDailySymptom: jest.fn(),
+  createDailyActivity: jest.fn(),
   createDailyConsumption: jest.fn(),
   listDailyBodyMetrics: jest.fn(),
   listDailySymptoms: jest.fn(),
@@ -102,6 +105,7 @@ describe('patient care by-date flow', () => {
     ]);
     patientCareRepository.listDailyActivities.mockResolvedValue([]);
     patientCareRepository.listDailyConsumptions.mockResolvedValue([]);
+    patientCareRepository.getDailySleepRecord.mockResolvedValue(null);
 
     const result = await patientCareService.getHeartDiaryByDate({
       actor: { userId: 'user-1', role: 'patient' },
@@ -161,6 +165,11 @@ describe('patient care by-date flow', () => {
     expect(patientCareRepository.createDailySymptom).toHaveBeenCalledWith({
       diaryId: 'diary-1',
       symptomName: 'Pusing',
+      symptomCode: undefined,
+      bodyArea: undefined,
+      isChestPain: null,
+      painFrequencyCode: undefined,
+      painLocationCode: undefined,
       intensity: 4,
       note: 'Pagi hari',
       timeStamp: '2026-04-11T07:30:00.000Z',

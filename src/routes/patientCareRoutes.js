@@ -19,6 +19,8 @@ const {
   activityCreateByDateSchema,
   consumptionCreateSchema,
   consumptionCreateByDateSchema,
+  sleepDiaryQuerySchema,
+  sleepRecordUpsertSchema,
   emergencyContactListQuerySchema,
   avatarSignatureQuerySchema,
   avatarSaveSchema,
@@ -74,6 +76,20 @@ router.get(
   validateRequest(userIdParamSchema, 'params'),
   validateRequest(heartDiaryByDateQuerySchema, 'query'),
   patientCareController.getHeartDiaryByDate
+);
+router.get(
+  '/users/:userId/diaries/by-date/sleep',
+  authenticate,
+  validateRequest(userIdParamSchema, 'params'),
+  validateRequest(sleepDiaryQuerySchema, 'query'),
+  patientCareController.getDailySleepRecordByDate
+);
+router.put(
+  '/users/:userId/diaries/by-date/sleep',
+  authenticate,
+  validateRequest(userIdParamSchema, 'params'),
+  validateRequest(sleepRecordUpsertSchema),
+  patientCareController.upsertDailySleepRecordByDate
 );
 router.put(
   '/users/:userId/diaries/by-date/body-metrics',

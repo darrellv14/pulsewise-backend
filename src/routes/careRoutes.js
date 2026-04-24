@@ -6,9 +6,14 @@ const {
   patientIdParamSchema,
   doctorIdParamSchema,
   doctorPatientParamsSchema,
+  patientMlAssessmentParamsSchema,
   doctorPairingSessionParamsSchema,
   paginationQuerySchema,
   patientProfileUpdateSchema,
+  patientMlProfileUpdateSchema,
+  patientMlAssessmentsQuerySchema,
+  patientMlAssessmentCreateSchema,
+  patientMlAssessmentUpdateSchema,
   doctorProfileUpdateSchema,
   doctorPatientLinkSchema,
   patientShareCreateSchema,
@@ -40,6 +45,46 @@ router.put(
   validateRequest(patientIdParamSchema, 'params'),
   validateRequest(patientProfileUpdateSchema),
   careController.updatePatientProfile
+);
+router.get(
+  '/patients/:patientId/ml-profile',
+  authenticate,
+  validateRequest(patientIdParamSchema, 'params'),
+  careController.getPatientMlProfile
+);
+router.put(
+  '/patients/:patientId/ml-profile',
+  authenticate,
+  validateRequest(patientIdParamSchema, 'params'),
+  validateRequest(patientMlProfileUpdateSchema),
+  careController.updatePatientMlProfile
+);
+router.get(
+  '/patients/:patientId/ml-assessments/latest',
+  authenticate,
+  validateRequest(patientIdParamSchema, 'params'),
+  careController.getLatestPatientMlAssessment
+);
+router.get(
+  '/patients/:patientId/ml-assessments',
+  authenticate,
+  validateRequest(patientIdParamSchema, 'params'),
+  validateRequest(patientMlAssessmentsQuerySchema, 'query'),
+  careController.listPatientMlAssessments
+);
+router.post(
+  '/patients/:patientId/ml-assessments',
+  authenticate,
+  validateRequest(patientIdParamSchema, 'params'),
+  validateRequest(patientMlAssessmentCreateSchema),
+  careController.createPatientMlAssessment
+);
+router.put(
+  '/patients/:patientId/ml-assessments/:assessmentId',
+  authenticate,
+  validateRequest(patientMlAssessmentParamsSchema, 'params'),
+  validateRequest(patientMlAssessmentUpdateSchema),
+  careController.updatePatientMlAssessment
 );
 
 router.get(

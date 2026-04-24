@@ -24,6 +24,11 @@ const METRIC_ALIASES = {
   height: 'height',
   body_height: 'height',
   bmi: 'bmi',
+  total_cholesterol: 'total_cholesterol',
+  urine_flow_rate: 'urine_flow_rate',
+  urination_time: 'urination_time',
+  urine_volume: 'urine_volume',
+  pulse_regularity_code: 'pulse_regularity_code',
 };
 
 function toIso(value) {
