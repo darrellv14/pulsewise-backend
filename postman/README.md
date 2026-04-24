@@ -9,6 +9,7 @@ Import **hanya** file berikut:
 1. Main collection: `postman/PulseWise-API.postman_collection.json`
 2. Smoke collection dashboard: `postman/PulseWise-Dashboard-Smoke.postman_collection.json`
 3. Environment: `postman/PulseWise-Local.postman_environment.json`
+4. Environment production: `postman/environments/PulseWise-Production.postman_environment.json`
 
 ## Langkah Import
 
@@ -17,7 +18,15 @@ Import **hanya** file berikut:
 3. Import collection main: `postman/PulseWise-API.postman_collection.json`.
 4. Import collection smoke: `postman/PulseWise-Dashboard-Smoke.postman_collection.json`.
 5. Import environment: `postman/PulseWise-Local.postman_environment.json`.
-6. Pilih environment **PulseWise Local** di kanan atas Postman.
+6. (Opsional production) Import `postman/environments/PulseWise-Production.postman_environment.json`.
+7. Pilih environment **PulseWise Local** atau **PulseWise Production** di kanan atas Postman.
+
+Untuk test production domain:
+
+1. Pilih environment **PulseWise Production**.
+2. Pastikan `baseUrl = https://api.darrellvalentino.com/api/v1`.
+3. Login ulang untuk mengisi token baru di environment production.
+4. Jalankan smoke collection berurutan dari login hingga endpoint ML.
 
 ## Alur Run Yang Direkomendasikan (Frontend Friendly)
 

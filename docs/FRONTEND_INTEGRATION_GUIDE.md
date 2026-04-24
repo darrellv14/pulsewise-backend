@@ -2,6 +2,10 @@
 
 Dokumen ini merangkum endpoint yang perlu dipakai frontend (mobile + web) supaya implementasi konsisten.
 
+Dokumen handoff production terbaru:
+
+- `docs/FRONTEND_PRODUCTION_HANDOFF.md`
+
 ## 1) Endpoint Utama Yang Aktif
 
 ### Auth

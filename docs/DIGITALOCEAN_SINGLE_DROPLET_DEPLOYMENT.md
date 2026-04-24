@@ -173,6 +173,20 @@ Buat `A record`:
 - `api.pulsewise.yourdomain.com` -> IP droplet
 - `ml.pulsewise.yourdomain.com` -> IP droplet
 
+### DNS Setup (Current Production Example)
+
+Untuk domain production saat ini, gunakan:
+
+- `api.darrellvalentino.com` -> `168.144.44.43`
+- `ml.darrellvalentino.com` -> `168.144.44.43`
+
+Verifikasi propagasi:
+
+```bash
+dig +short api.darrellvalentino.com
+dig +short ml.darrellvalentino.com
+```
+
 ### 3. Initial server setup
 Masuk ke server lalu jalankan:
 
@@ -332,6 +346,19 @@ Alasan:
 
 ## Nginx Reverse Proxy
 
+Jika ingin langsung pakai domain production saat ini, gunakan template:
+
+- `deploy/nginx/pulsewise.darrellvalentino.com.conf`
+
+Lalu pasang ke server, misalnya:
+
+```bash
+sudo cp /opt/pulsewise/pulsewise-backend/deploy/nginx/pulsewise.darrellvalentino.com.conf /etc/nginx/sites-available/pulsewise
+sudo ln -sf /etc/nginx/sites-available/pulsewise /etc/nginx/sites-enabled/pulsewise
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
 ### `api.pulsewise.yourdomain.com`
 Contoh:
 
@@ -383,6 +410,19 @@ Setelah DNS aktif dan Nginx config benar:
 ```bash
 sudo certbot --nginx -d api.pulsewise.yourdomain.com
 sudo certbot --nginx -d ml.pulsewise.yourdomain.com
+```
+
+Untuk domain production saat ini:
+
+```bash
+sudo certbot --nginx -d api.darrellvalentino.com -d ml.darrellvalentino.com
+```
+
+Verifikasi:
+
+```bash
+curl -I https://api.darrellvalentino.com/api/v1/health
+curl -I https://ml.darrellvalentino.com/
 ```
 
 ## Build and Start Containers
