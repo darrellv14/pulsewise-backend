@@ -153,12 +153,36 @@ async function listPatientMlAssessments({ patientId, startDate, endDate }) {
   return rows.map(mapMlAssessment);
 }
 
+// async function createPatientMlAssessment({ patientId, payload }) {
+//   const row = await prisma.patientMlAssessment.create({
+//     data: {
+//       patientId,
+//       ...payload,
+//       assessmentDate: toDateOnly(payload.assessmentDate),
+//     },
+//   });
+
+//   return mapMlAssessment(row);
+// }
+
 async function createPatientMlAssessment({ patientId, payload }) {
-  const row = await prisma.patientMlAssessment.create({
-    data: {
-      patientId,
-      ...payload,
-      assessmentDate: toDateOnly(payload.assessmentDate),
+  const parsedDate = toDateOnly(payload.assessmentDate);
+  const { assessmentDate: _ignored, ...dataToSave } = payload;
+  const row = await prisma.patientMlAssessment.upsert({
+    where: {
+      patientId_assessmentDate: {
+        patientId: patientId,
+        assessmentDate: parsedDate,
+      },
+    },
+    update: {
+      ...dataToSave,
+      updatedAt: new Date(),
+    },
+    create: {
+      patientId: patientId,
+      assessmentDate: parsedDate,
+      ...dataToSave,
     },
   });
 
