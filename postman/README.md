@@ -28,6 +28,12 @@ Untuk test production domain:
 3. Login ulang untuk mengisi token baru di environment production.
 4. Jalankan smoke collection berurutan dari login hingga endpoint ML.
 
+Untuk verifikasi CLI:
+
+```bash
+npm run postman:smoke:prod
+```
+
 ## Alur Run Yang Direkomendasikan (Frontend Friendly)
 
 1. Di folder **Auth**, jalankan `POST Login Doctor` dan `POST Login Patient` agar `doctorToken`, `patientToken`, `doctorId`, `patientId` terisi otomatis.
@@ -133,8 +139,9 @@ Yang dilakukan script:
 Catatan:
 
 - Endpoint ML saat ini sudah masuk ke collection canonical lewat `postman:refresh`.
-- `docs/openapi.yaml` belum memuat seluruh endpoint ML baru, jadi `postman:sync-examples` akan melaporkan beberapa request ML sebagai `unmatched`.
-- Itu bukan error collection; hanya berarti contoh response ML belum bisa digenerate otomatis dari OpenAPI lama.
+- `docs/openapi.yaml` sekarang sudah memuat endpoint ML utama, sleep diary, dan kontrak dashboard yang dipakai FE.
+- Kalau masih ada request `unmatched` saat sync examples, biasanya itu karena nama request Postman tidak identik 1:1 dengan path OpenAPI atau ada endpoint smoke yang sengaja diringkas.
+- Untuk verifikasi live production, gunakan environment `postman/environments/PulseWise-Production.postman_environment.json`.
 
 Catatan:
 

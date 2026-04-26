@@ -23,7 +23,9 @@
     "seed:dashboard": "node scripts/seed-dashboard-data.js",
     "seed:patient-care": "node scripts/seed-patient-care.js",
     "postman:sync-examples": "node scripts/sync-openapi-postman-examples.js",
-    "postman:refresh": "node scripts/refresh-postman-collections.js"
+    "postman:refresh": "node scripts/refresh-postman-collections.js",
+    "postman:smoke:prod": "npx newman run postman/PulseWise-Dashboard-Smoke.postman_collection.json -e postman/environments/PulseWise-Production.postman_environment.json --reporters cli",
+    "postman:capture-live:prod": "node scripts/capture-live-postman-examples.js --collection postman/PulseWise-Dashboard-Smoke.postman_collection.json --environment postman/environments/PulseWise-Production.postman_environment.json"
   },
   "keywords": [],
   "author": "",

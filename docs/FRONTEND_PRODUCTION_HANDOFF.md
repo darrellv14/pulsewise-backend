@@ -2,6 +2,10 @@
 
 Dokumen ini adalah handoff final untuk tim frontend setelah backend live di VPS.
 
+Dokumen pendamping yang lebih detail untuk flow live sekarang:
+
+- `docs/FRONTEND_LIVE_INTEGRATION_GUIDE.md`
+
 ## 1. Status Deployment Saat Ini
 
 Environment production aktif di VPS:
@@ -15,10 +19,10 @@ Environment production aktif di VPS:
 
 Hasil smoke test end-to-end: semua endpoint utama `200`.
 
-Referensi commit yang terdeploy saat handoff ini dibuat:
+Referensi deployment:
 
-- `pulsewise-backend`: `dbc0f78`
-- `ml-cnn-backend`: `b313ed3`
+- `pulsewise-backend`: deploy berbasis GitHub repo `darrellv14/pulsewise-backend`
+- `ml-cnn-backend`: deploy berbasis GitHub repo `darrellv14/ml-cnn-backend`
 
 ## 2. Base URL Untuk Frontend
 
@@ -106,3 +110,4 @@ VITE_API_BASE_URL=https://api.darrellvalentino.com/api/v1
 - Deploy VPS: `docs/DIGITALOCEAN_SINGLE_DROPLET_DEPLOYMENT.md`
 - Collection Postman: `postman/PulseWise-API.postman_collection.json`
 - Env Postman production: `postman/environments/PulseWise-Production.postman_environment.json`
+- Checklist recovery VPS: `docs/VPS_RECOVERY_CHECKLIST.md`
