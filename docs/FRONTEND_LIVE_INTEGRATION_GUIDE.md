@@ -111,6 +111,16 @@ Contoh:
 }
 ```
 
+Catatan:
+
+- Gunakan enum resmi untuk `symptomCode`, `bodyArea`, `painFrequencyCode`, dan `painLocationCode`
+- Jika `symptomCode = "chest_pain"`, frontend wajib mengirim:
+  - `bodyArea = "chest"`
+  - `isChestPain = true`
+  - `painFrequencyCode`
+  - `painLocationCode`
+- Lihat detail contract di `docs/FRONTEND_SYMPTOM_CONTRACT_SHEET.md`
+
 ### Symptom diary
 
 Tambahan field pada `POST /users/{userId}/diaries/by-date/symptoms`:
@@ -312,6 +322,7 @@ Ini untuk QA dan smoke test, bukan akun end user production.
 ## 9. Referensi Implementasi
 
 - `docs/FRONTEND_PRODUCTION_HANDOFF.md`
+- `docs/FRONTEND_SYMPTOM_CONTRACT_SHEET.md`
 - `docs/FRONTEND_INTEGRATION_GUIDE.md`
 - `docs/ML_HFMS_V3_BLUEPRINT.md`
 - `postman/PulseWise-API.postman_collection.json`

@@ -1,5 +1,11 @@
 const { z } = require('zod');
 const env = require('../config/env');
+const {
+  SYMPTOM_CODES,
+  BODY_AREAS,
+  PAIN_FREQUENCY_CODES,
+  PAIN_LOCATION_CODES,
+} = require('../constants/patientCareEnums');
 
 const uuidV4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const uuidV4Schema = z.string().uuid().regex(uuidV4Regex, 'Harus UUID v4 yang valid');
@@ -138,13 +144,37 @@ const bodyMetricCreateByDateSchema = bodyMetricCreateBaseSchema
 const activityCategorySchema = z.enum(['work', 'transport', 'recreation', 'other']).optional();
 const intensityLevelSchema = z.enum(['light', 'moderate', 'vigorous', 'unknown']).optional();
 const transportModeSchema = z.enum(['walk', 'bicycle', 'other']).optional();
+const nullableSymptomCodeSchema = z.enum(SYMPTOM_CODES).nullable().optional();
+const nullableBodyAreaSchema = z.enum(BODY_AREAS).nullable().optional();
+const nullablePainFrequencyCodeSchema = z
+  .union([
+    z.literal(PAIN_FREQUENCY_CODES.UNKNOWN),
+    z.literal(PAIN_FREQUENCY_CODES.LESS_THAN_30_MINUTES),
+    z.literal(PAIN_FREQUENCY_CODES.THIRTY_MINUTES_OR_MORE),
+  ])
+  .nullable()
+  .optional();
+const nullablePainLocationCodeSchema = z
+  .union([
+    z.literal(PAIN_LOCATION_CODES.UNKNOWN),
+    z.literal(PAIN_LOCATION_CODES.RIGHT_ARM),
+    z.literal(PAIN_LOCATION_CODES.RIGHT_CHEST),
+    z.literal(PAIN_LOCATION_CODES.NECK),
+    z.literal(PAIN_LOCATION_CODES.UPPER_STERNUM),
+    z.literal(PAIN_LOCATION_CODES.LOWER_STERNUM),
+    z.literal(PAIN_LOCATION_CODES.LEFT_CHEST),
+    z.literal(PAIN_LOCATION_CODES.LEFT_ARM),
+    z.literal(PAIN_LOCATION_CODES.UPPER_ABDOMEN),
+  ])
+  .nullable()
+  .optional();
 
 const symptomCreateBaseExtension = {
-  symptomCode: optionalNullableString(80),
-  bodyArea: optionalNullableString(80),
+  symptomCode: nullableSymptomCodeSchema,
+  bodyArea: nullableBodyAreaSchema,
   isChestPain: z.boolean().nullable().optional(),
-  painFrequencyCode: z.coerce.number().int().min(0).max(999).nullable().optional(),
-  painLocationCode: z.coerce.number().int().min(0).max(999).nullable().optional(),
+  painFrequencyCode: nullablePainFrequencyCodeSchema,
+  painLocationCode: nullablePainLocationCodeSchema,
 };
 
 const activityCreateBaseExtension = {
@@ -160,7 +190,55 @@ const symptomCreateSchema = z.object({
   intensity: z.coerce.number().int().min(1).max(10).nullable().optional(),
   note: optionalNullableString(2000),
   timeStamp: dateTimeSchema.optional(),
-});
+})
+  .superRefine((value, ctx) => {
+    const isChestPainSymptom =
+      value.isChestPain === true || value.symptomCode === 'chest_pain';
+
+    if (!isChestPainSymptom) {
+      return;
+    }
+
+    if (value.symptomCode !== 'chest_pain') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['symptomCode'],
+        message: 'symptomCode harus chest_pain jika gejala ditandai sebagai nyeri dada',
+      });
+    }
+
+    if (value.isChestPain !== true) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['isChestPain'],
+        message: 'isChestPain wajib true jika symptomCode adalah chest_pain',
+      });
+    }
+
+    if (value.bodyArea !== 'chest') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['bodyArea'],
+        message: 'bodyArea wajib chest jika gejala ditandai sebagai nyeri dada',
+      });
+    }
+
+    if (value.painFrequencyCode === undefined || value.painFrequencyCode === null) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['painFrequencyCode'],
+        message: 'painFrequencyCode wajib diisi untuk gejala nyeri dada',
+      });
+    }
+
+    if (value.painLocationCode === undefined || value.painLocationCode === null) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['painLocationCode'],
+        message: 'painLocationCode wajib diisi untuk gejala nyeri dada',
+      });
+    }
+  });
 
 const symptomCreateByDateSchema = symptomCreateSchema.extend({
   diaryDate: dateSchema,

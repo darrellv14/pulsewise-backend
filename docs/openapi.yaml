@@ -880,18 +880,24 @@ components:
         symptomCode:
           type: string
           nullable: true
+          enum: [chest_pain, shortness_of_breath, palpitations, dizziness, headache, fatigue, cough, swelling, nausea, other]
         bodyArea:
           type: string
           nullable: true
+          enum: [head, chest, neck, left_arm, right_arm, upper_abdomen, back, leg, general, other]
         isChestPain:
           type: boolean
           nullable: true
         painFrequencyCode:
           type: integer
           nullable: true
+          enum: [0, 1, 2]
+          description: 0 = unknown, 1 = less than 30 minutes, 2 = 30 minutes or more
         painLocationCode:
           type: integer
           nullable: true
+          enum: [0, 1, 2, 3, 4, 5, 6, 7, 8]
+          description: 0 = unknown, 1 = right arm, 2 = right chest, 3 = neck, 4 = upper sternum, 5 = lower sternum, 6 = left chest, 7 = left arm, 8 = upper abdomen
         intensity:
           type: integer
           nullable: true
@@ -909,7 +915,7 @@ components:
       example:
         symptomId: 7b5d8f10-1111-4222-8333-1234567890ac
         diaryId: 5e5f09ab-5543-435d-b0fb-9a8ef041d8b0
-        symptomName: Pusing ringan
+        symptomName: Nyeri dada
         symptomCode: chest_pain
         bodyArea: chest
         isChestPain: true
@@ -1140,6 +1146,10 @@ components:
     DailySymptomCreateRequest:
       type: object
       required: [symptomName]
+      description: >
+        Gunakan enum resmi untuk symptomCode dan bodyArea. Jika symptomCode adalah chest_pain
+        atau isChestPain bernilai true, maka bodyArea wajib chest, isChestPain wajib true,
+        painFrequencyCode wajib diisi, dan painLocationCode wajib diisi.
       properties:
         symptomName:
           type: string
@@ -1148,24 +1158,24 @@ components:
         symptomCode:
           type: string
           nullable: true
-          maxLength: 80
+          enum: [chest_pain, shortness_of_breath, palpitations, dizziness, headache, fatigue, cough, swelling, nausea, other]
         bodyArea:
           type: string
           nullable: true
-          maxLength: 80
+          enum: [head, chest, neck, left_arm, right_arm, upper_abdomen, back, leg, general, other]
         isChestPain:
           type: boolean
           nullable: true
         painFrequencyCode:
           type: integer
-          minimum: 0
-          maximum: 999
           nullable: true
+          enum: [0, 1, 2]
+          description: 0 = unknown, 1 = less than 30 minutes, 2 = 30 minutes or more
         painLocationCode:
           type: integer
-          minimum: 0
-          maximum: 999
           nullable: true
+          enum: [0, 1, 2, 3, 4, 5, 6, 7, 8]
+          description: 0 = unknown, 1 = right arm, 2 = right chest, 3 = neck, 4 = upper sternum, 5 = lower sternum, 6 = left chest, 7 = left arm, 8 = upper abdomen
         intensity:
           type: integer
           minimum: 1

@@ -53,6 +53,54 @@ describe('patient care by-date flow', () => {
     });
   });
 
+  test('symptomCreateByDateSchema accepts structured chest pain payload with official enums', () => {
+    expect(
+      symptomCreateByDateSchema.parse({
+        diaryDate: '2026-04-11',
+        symptomName: 'Nyeri dada',
+        symptomCode: 'chest_pain',
+        bodyArea: 'chest',
+        isChestPain: true,
+        painFrequencyCode: 2,
+        painLocationCode: 6,
+        intensity: 5,
+        time: '07:30',
+      })
+    ).toEqual({
+      diaryDate: '2026-04-11',
+      symptomName: 'Nyeri dada',
+      symptomCode: 'chest_pain',
+      bodyArea: 'chest',
+      isChestPain: true,
+      painFrequencyCode: 2,
+      painLocationCode: 6,
+      intensity: 5,
+      time: '07:30',
+    });
+  });
+
+  test('symptomCreateByDateSchema rejects unofficial symptom enums', () => {
+    expect(() =>
+      symptomCreateByDateSchema.parse({
+        diaryDate: '2026-04-11',
+        symptomName: 'Pusing',
+        symptomCode: 'migraine',
+      })
+    ).toThrow();
+  });
+
+  test('symptomCreateByDateSchema requires detailed codes for chest pain payload', () => {
+    expect(() =>
+      symptomCreateByDateSchema.parse({
+        diaryDate: '2026-04-11',
+        symptomName: 'Nyeri dada',
+        symptomCode: 'chest_pain',
+        bodyArea: 'chest',
+        isChestPain: true,
+      })
+    ).toThrow();
+  });
+
   test('consumptionCreateByDateSchema accepts time payload for intake time', () => {
     expect(
       consumptionCreateByDateSchema.parse({
