@@ -4,6 +4,8 @@ PulseWise Backend adalah REST API utama untuk sistem PulseWise. Repo ini menanga
 
 Frontend web/mobile seharusnya berbicara ke repo ini, bukan langsung ke service ML. Backend ini bertugas membaca data pasien dari PostgreSQL, memvalidasi kelengkapannya, menyusun payload 67 field untuk model HFMS v3, lalu meneruskan request prediction/recommendation ke microservice ML.
 
+Model ML hidup di repo terpisah [ml-cnn-backend](https://github.com/darrellv14/ml-cnn-backend).
+
 ## What This Repo Owns
 
 - Authentication dan authorization berbasis JWT
