@@ -1,5 +1,10 @@
 # PulseWise Backend API
 
+![Node.js](https://img.shields.io/badge/Node.js-20%2B-339933?logo=node.js&logoColor=white)
+![Express](https://img.shields.io/badge/Express.js-5.x-000000?logo=express&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?logo=prisma&logoColor=white)
+
 PulseWise Backend adalah REST API utama untuk sistem PulseWise. Repo ini menangani autentikasi, data pasien dan dokter, diary kesehatan harian, dashboard monitoring dokter, biometrics time-series, dan integrasi ke microservice Machine Learning HFMS.
 
 Frontend web/mobile seharusnya berbicara ke repo ini, bukan langsung ke service ML. Backend ini bertugas membaca data pasien dari PostgreSQL, memvalidasi kelengkapannya, menyusun payload 67 field untuk model HFMS v3, lalu meneruskan request prediction/recommendation ke microservice ML.
@@ -29,7 +34,7 @@ Model ML hidup di repo terpisah [ml-cnn-backend](https://github.com/darrellv14/m
 - Frontend dashboard/web/mobile
 - Django legacy dashboard lama
 
-Model ML hidup di repo terpisah `hfms-backend` atau `ml-cnn-backend`. Repo ini hanya menjadi application backend dan broker data ke service tersebut.
+Model ML hidup di repo terpisah [ml-cnn-backend](https://github.com/darrellv14/ml-cnn-backend). Frontend utama hidup di repo terpisah [PulseWise](https://github.com/fransnicklaus/PulseWise). Repo ini hanya menjadi application backend dan broker data ke service tersebut.
 
 ## High-Level Architecture
 
@@ -357,9 +362,18 @@ Kalau perlu pendalaman, dokumentasi aktif di repo dibagi seperti ini:
 - `docs/operations/` untuk recovery dan operasional
 - `docs/api/` untuk OpenAPI dan API style
 
+## Related Repositories
+
+- Frontend: [fransnicklaus/PulseWise](https://github.com/fransnicklaus/PulseWise)
+- ML microservice: [darrellv14/ml-cnn-backend](https://github.com/darrellv14/ml-cnn-backend)
+
 ## Notes for Contributors
 
 - Gunakan struktur `docs/` yang sudah ada; jangan taruh dokumen aktif baru di root.
 - Script baru sebaiknya masuk ke kategori yang sesuai di `scripts/`.
 - Dokumen parity, migration notes lama, atau meeting notes historis masuk ke `docs/archive/`.
 - Jika contract API berubah, update OpenAPI dan Postman examples.
+
+## Author
+
+Maintained by Darrell Valentino and PulseWise project collaborators.
