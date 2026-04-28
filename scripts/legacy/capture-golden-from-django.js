@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const DEFAULT_DJANGO_BASE_URL = 'http://127.0.0.1:8000';
-const DEFAULT_OUTPUT_PATH = path.join('docs', 'parity', 'golden-django-5p-30d.json');
+const DEFAULT_OUTPUT_PATH = path.join('docs', 'archive', 'parity', 'golden-django-5p-30d.json');
 const DEFAULT_PATIENT_LIMIT = 5;
 const DEFAULT_DAYS = 30;
 

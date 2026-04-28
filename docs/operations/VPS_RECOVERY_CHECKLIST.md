@@ -228,13 +228,13 @@ curl -sS https://ml.darrellvalentino.com/
 ### App smoke
 
 ```bash
-docker exec pulsewise-backend node scripts/smoke-live.js
+docker exec pulsewise-backend node scripts/smoke/smoke-live.js
 ```
 
 ### Full ML smoke
 
 ```bash
-docker exec pulsewise-backend node scripts/smoke-hfms-e2e.js
+docker exec pulsewise-backend node scripts/smoke/smoke-hfms-e2e.js
 ```
 
 ## 10. Larangan Praktis

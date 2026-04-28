@@ -1,8 +1,8 @@
 const fs = require('fs');
 const path = require('path');
-const { ML_V3_ALL_FIELDS } = require('../src/utils/mlPayloadMapper');
+const { ML_V3_ALL_FIELDS } = require('../../src/utils/mlPayloadMapper');
 
-const rootDir = path.join(__dirname, '..');
+const rootDir = path.join(__dirname, '..', '..');
 const mainCollectionPath = path.join(rootDir, 'postman', 'PulseWise-API.postman_collection.json');
 const smokeCollectionPath = path.join(
   rootDir,

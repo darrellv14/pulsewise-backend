@@ -1,6 +1,6 @@
 require('dotenv').config({ override: true });
 
-const app = require('../src/app');
+const app = require('../../src/app');
 
 const BASE_URL = process.env.SMOKE_BASE_URL || `http://localhost:${process.env.PORT || 5000}/api/v1`;
 const HFMS_BASE_URL = process.env.ML_SERVICE_BASE_URL || 'http://localhost:8080';

@@ -2,9 +2,9 @@ const fs = require('fs');
 const path = require('path');
 
 const DEFAULT_NODE_BASE_URL = 'http://localhost:5000/api/v1';
-const DEFAULT_OUTPUT_PATH = path.join('docs', 'parity', 'golden-django-5p-30d.json');
-const DEFAULT_REPORT_PATH = path.join('docs', 'parity', 'parity-report.json');
-const DEFAULT_TOLERANCE_PATH = path.join('docs', 'parity', 'parity-tolerance.json');
+const DEFAULT_OUTPUT_PATH = path.join('docs', 'archive', 'parity', 'golden-django-5p-30d.json');
+const DEFAULT_REPORT_PATH = path.join('docs', 'archive', 'parity', 'parity-report.json');
+const DEFAULT_TOLERANCE_PATH = path.join('docs', 'archive', 'parity', 'parity-tolerance.json');
 
 const REQUIRED_PATIENT_FIELDS = [
   'patientId',
@@ -714,7 +714,7 @@ async function compareWithNode() {
 }
 
 function printUsage() {
-  console.log('Usage: node scripts/dashboard-parity.js <capture|compare>');
+  console.log('Usage: node scripts/legacy/dashboard-parity.js <capture|compare>');
   console.log(
     'Required env (capture): PARITY_DJANGO_BASE_URL, PARITY_DJANGO_TOKEN, PARITY_DOCTOR_ID'
   );

@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const { Pool } = require('pg');
 
-const migrationDir = path.join(__dirname, '..', 'db', 'migrations');
+const migrationDir = path.join(__dirname, '..', '..', 'db', 'migrations');
 
 function parseConnectionString(connectionString) {
   if (!connectionString) {

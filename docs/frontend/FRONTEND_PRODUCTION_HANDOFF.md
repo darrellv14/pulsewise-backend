@@ -4,7 +4,7 @@ Dokumen ini adalah handoff final untuk tim frontend setelah backend live di VPS.
 
 Dokumen pendamping yang lebih detail untuk flow live sekarang:
 
-- `docs/FRONTEND_LIVE_INTEGRATION_GUIDE.md`
+- `docs/frontend/FRONTEND_LIVE_INTEGRATION_GUIDE.md`
 
 ## 1. Status Deployment Saat Ini
 
@@ -106,8 +106,8 @@ VITE_API_BASE_URL=https://api.darrellvalentino.com/api/v1
 
 ## 8. Referensi
 
-- Integrasi endpoint: `docs/FRONTEND_INTEGRATION_GUIDE.md`
-- Deploy VPS: `docs/DIGITALOCEAN_SINGLE_DROPLET_DEPLOYMENT.md`
+- Integrasi endpoint: `docs/frontend/FRONTEND_INTEGRATION_GUIDE.md`
+- Deploy VPS: `docs/deploy/DIGITALOCEAN_SINGLE_DROPLET_DEPLOYMENT.md`
 - Collection Postman: `postman/PulseWise-API.postman_collection.json`
 - Env Postman production: `postman/environments/PulseWise-Production.postman_environment.json`
-- Checklist recovery VPS: `docs/VPS_RECOVERY_CHECKLIST.md`
+- Checklist recovery VPS: `docs/operations/VPS_RECOVERY_CHECKLIST.md`

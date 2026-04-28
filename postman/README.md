@@ -106,14 +106,14 @@ Dengan begitu, source of truth Postman sekarang hanya file canonical di atas.
 
 Kalau ingin generate request otomatis langsung dari Swagger:
 
-1. Import `docs/openapi.yaml` ke Postman.
+1. Import `docs/api/openapi.yaml` ke Postman.
 2. Tetap gunakan environment `postman/PulseWise-Local.postman_environment.json`.
 
 Catatan: collection dari OpenAPI biasanya tidak punya test script sekomplet collection canonical.
 
 ## Sync Saved Response Examples
 
-Canonical collection sekarang bisa diisi ulang dengan saved response examples yang digenerate dari `docs/openapi.yaml`.
+Canonical collection sekarang bisa diisi ulang dengan saved response examples yang digenerate dari `docs/api/openapi.yaml`.
 
 Jalankan:
 
@@ -124,7 +124,7 @@ npm run postman:refresh
 
 Yang dilakukan script:
 
-1. Membaca schema/response dari `docs/openapi.yaml`
+1. Membaca schema/response dari `docs/api/openapi.yaml`
 2. Membuat contoh response untuk setiap request di:
    - `postman/PulseWise-API.postman_collection.json`
    - `postman/PulseWise-Dashboard-Smoke.postman_collection.json`
@@ -139,7 +139,7 @@ Yang dilakukan script:
 Catatan:
 
 - Endpoint ML saat ini sudah masuk ke collection canonical lewat `postman:refresh`.
-- `docs/openapi.yaml` sekarang sudah memuat endpoint ML utama, sleep diary, dan kontrak dashboard yang dipakai FE.
+- `docs/api/openapi.yaml` sekarang sudah memuat endpoint ML utama, sleep diary, dan kontrak dashboard yang dipakai FE.
 - Kalau masih ada request `unmatched` saat sync examples, biasanya itu karena nama request Postman tidak identik 1:1 dengan path OpenAPI atau ada endpoint smoke yang sengaja diringkas.
 - Untuk verifikasi live production, gunakan environment `postman/environments/PulseWise-Production.postman_environment.json`.
 

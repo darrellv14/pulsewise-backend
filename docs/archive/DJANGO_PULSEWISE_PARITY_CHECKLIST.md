@@ -76,7 +76,7 @@ Parity dianggap lulus hanya jika semua kondisi ini terpenuhi:
 - [x] `latestVitals`, `thresholds`, dan `abnormalInstances` sudah ada di flow dashboard.
 - [x] Guard test unauthorized/forbidden/invalid payload sudah ada.
 - [x] Guard test token invalid/expired untuk dashboard endpoint sudah ada.
-- [x] Script capture golden dataset + parity compare otomatis tersedia (`scripts/dashboard-parity.js`).
+- [x] Script capture golden dataset + parity compare otomatis tersedia (`scripts/legacy/dashboard-parity.js`).
 - [x] Toleransi numerik parity terdokumentasi eksplisit.
 - [x] Snapshot parity otomatis Django vs Node (golden dataset) sudah final (hasil terbaru: pass).
 

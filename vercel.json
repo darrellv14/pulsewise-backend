@@ -3,7 +3,7 @@
   "functions": {
     "api/index.js": {
       "regions": ["sin1"],
-      "includeFiles": "{docs/openapi.yaml,node_modules/swagger-ui-dist/**}"
+      "includeFiles": "{docs/api/openapi.yaml,node_modules/swagger-ui-dist/**}"
     }
   },
   "rewrites": [

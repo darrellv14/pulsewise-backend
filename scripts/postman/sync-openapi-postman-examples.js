@@ -2,24 +2,11 @@ const fs = require('fs');
 const path = require('path');
 const YAML = require('yamljs');
 
-const OPENAPI_PATH = path.join(__dirname, '..', 'docs', 'openapi.yaml');
+const ROOT_DIR = path.join(__dirname, '..', '..');
+const OPENAPI_PATH = path.join(ROOT_DIR, 'docs', 'api', 'openapi.yaml');
 const COLLECTION_PATHS = [
-  path.join(__dirname, '..', 'postman', 'PulseWise-API.postman_collection.json'),
-  path.join(__dirname, '..', 'postman', 'PulseWise-Dashboard-Smoke.postman_collection.json'),
-  path.join(
-    __dirname,
-    '..',
-    'postman',
-    'collections',
-    'PulseWise API _Local_.postman_collection.json'
-  ),
-  path.join(
-    __dirname,
-    '..',
-    'postman',
-    'collections',
-    'PulseWise Dashboard Smoke.postman_collection.json'
-  ),
+  path.join(ROOT_DIR, 'postman', 'PulseWise-API.postman_collection.json'),
+  path.join(ROOT_DIR, 'postman', 'PulseWise-Dashboard-Smoke.postman_collection.json'),
 ];
 
 const STATUS_TEXT = {

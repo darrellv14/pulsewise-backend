@@ -113,13 +113,8 @@ Contoh:
 
 Catatan:
 
-- Gunakan enum resmi untuk `symptomCode`, `bodyArea`, `painFrequencyCode`, dan `painLocationCode`
-- Jika `symptomCode = "chest_pain"`, frontend wajib mengirim:
-  - `bodyArea = "chest"`
-  - `isChestPain = true`
-  - `painFrequencyCode`
-  - `painLocationCode`
-- Lihat detail contract di `docs/FRONTEND_SYMPTOM_CONTRACT_SHEET.md`
+- Gunakan enum resmi untuk `activityCategory`, `intensityLevel`, dan `transportMode`
+- Lihat detail contract di `docs/frontend/FRONTEND_ACTIVITY_CONTRACT_SHEET.md`
 
 ### Symptom diary
 
@@ -146,6 +141,16 @@ Contoh:
   "intensity": 3
 }
 ```
+
+Catatan:
+
+- Gunakan enum resmi untuk `symptomCode`, `bodyArea`, `painFrequencyCode`, dan `painLocationCode`
+- Jika `symptomCode = "chest_pain"`, frontend wajib mengirim:
+  - `bodyArea = "chest"`
+  - `isChestPain = true`
+  - `painFrequencyCode`
+  - `painLocationCode`
+- Lihat detail contract di `docs/frontend/FRONTEND_SYMPTOM_CONTRACT_SHEET.md`
 
 ### Consumption diary
 
@@ -321,10 +326,11 @@ Ini untuk QA dan smoke test, bukan akun end user production.
 
 ## 9. Referensi Implementasi
 
-- `docs/FRONTEND_PRODUCTION_HANDOFF.md`
-- `docs/FRONTEND_SYMPTOM_CONTRACT_SHEET.md`
-- `docs/FRONTEND_INTEGRATION_GUIDE.md`
-- `docs/ML_HFMS_V3_BLUEPRINT.md`
+- `docs/frontend/FRONTEND_PRODUCTION_HANDOFF.md`
+- `docs/frontend/FRONTEND_ACTIVITY_CONTRACT_SHEET.md`
+- `docs/frontend/FRONTEND_SYMPTOM_CONTRACT_SHEET.md`
+- `docs/frontend/FRONTEND_INTEGRATION_GUIDE.md`
+- `docs/architecture/ML_HFMS_V3_BLUEPRINT.md`
 - `postman/PulseWise-API.postman_collection.json`
 - `postman/PulseWise-Dashboard-Smoke.postman_collection.json`
 - `postman/environments/PulseWise-Production.postman_environment.json`

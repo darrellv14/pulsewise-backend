@@ -4,7 +4,7 @@ Dokumen ini merangkum endpoint yang perlu dipakai frontend (mobile + web) supaya
 
 Dokumen handoff production terbaru:
 
-- `docs/FRONTEND_PRODUCTION_HANDOFF.md`
+- `docs/frontend/FRONTEND_PRODUCTION_HANDOFF.md`
 
 ## 1) Endpoint Utama Yang Aktif
 
@@ -113,7 +113,7 @@ Catatan status response confirm pairing:
 
 ## 5) Source of Truth
 
-- Swagger/OpenAPI: docs/openapi.yaml
+- Swagger/OpenAPI: docs/api/openapi.yaml
 - Postman Main: postman/PulseWise-API.postman_collection.json
 - Postman Smoke: postman/PulseWise-Dashboard-Smoke.postman_collection.json
 - Postman Environment: postman/PulseWise-Local.postman_environment.json
@@ -132,7 +132,7 @@ Step implementasi berikutnya di sisi Django:
 2. Untuk request data dashboard, kirim header `Authorization: Bearer <jwt>`.
 3. Tangani fallback UI untuk status `401/403` dan timeout agar UX dashboard tetap aman.
 
-Referensi parity wajib:
+Referensi parity historis:
 
-- `docs/DJANGO_PULSEWISE_PARITY_CHECKLIST.md`
-- `docs/MONGO_TO_POSTGRES_ETL_ACCEPTANCE_PLAN.md`
+- `docs/archive/DJANGO_PULSEWISE_PARITY_CHECKLIST.md`
+- `docs/archive/MONGO_TO_POSTGRES_ETL_ACCEPTANCE_PLAN.md`

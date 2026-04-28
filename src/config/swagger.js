@@ -2,7 +2,7 @@ const path = require('path');
 const YAML = require('yamljs');
 
 function loadOpenApiSpec() {
-  const specPath = path.join(__dirname, '..', '..', 'docs', 'openapi.yaml');
+  const specPath = path.join(__dirname, '..', '..', 'docs', 'api', 'openapi.yaml');
   return YAML.load(specPath);
 }
 

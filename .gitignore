@@ -3,10 +3,15 @@ node_modules/
 .env.*
 !.env.example
 .DS_Store
+.idea/
+.coverage/
+coverage/
+.nyc_output/
 *.log
 .analysis/
 .venv/
 .codex-*.log
+.codex-*.pid
 .deploy-*.zip
 deploy/*.env
 doctor-login.json
