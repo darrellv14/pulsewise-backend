@@ -5,10 +5,11 @@ Panduan ini untuk skenario:
 - `1 Droplet DigitalOcean`
 - RAM `8 GB`
 - komponen dijalankan di satu mesin:
-  - `pulsewise-backend` (Node.js + Express)
-  - `hfms-backend` (Python Flask ML microservice)
-  - `PostgreSQL`
-  - `Nginx` sebagai reverse proxy
+- `pulsewise-backend` (Node.js + Express)
+- `hfms-backend` (Python Flask ML microservice)
+- `PostgreSQL`
+- `Redis`
+- `Nginx` sebagai reverse proxy
 
 Panduan ini cocok untuk:
 - tugas akhir
@@ -27,8 +28,9 @@ Arsitektur yang direkomendasikan untuk `1 droplet 8 GB`:
 2. `pulsewise-backend` menyimpan dan membaca data dari PostgreSQL.
 3. `pulsewise-backend` memanggil `hfms-backend` secara internal untuk prediction dan recommendation.
 4. `hfms-backend` **tidak perlu dipanggil langsung oleh frontend**.
-5. Semua service berjalan di Docker.
-6. `Nginx` menangani domain, HTTPS, dan reverse proxy.
+5. `Redis` dipakai internal untuk rate limit dan selective cache.
+6. Semua service berjalan di Docker.
+7. `Nginx` menangani domain, HTTPS, dan reverse proxy.
 
 ## Recommended Topology
 
@@ -52,6 +54,8 @@ api.pulsewise.yourdomain.com
 PulseWise Express Backend
         |
         +--> PostgreSQL
+        |
+        +--> Redis
         |
         +--> hfms-backend (internal call)
 ```
@@ -146,15 +150,37 @@ Kesimpulan penting:
 Untuk 1 droplet, saya merekomendasikan:
 
 1. Jalankan `PostgreSQL`, `pulsewise-backend`, dan `hfms-backend` di Docker.
-2. Jalankan `Nginx` di host mesin, bukan di container, agar TLS dan reverse proxy lebih mudah.
-3. Gunakan `ufw` untuk hanya membuka:
+2. Jalankan `Redis` di Docker internal network, pakai password, tanpa expose port publik.
+3. Jalankan `Nginx` di host mesin, bukan di container, agar TLS dan reverse proxy lebih mudah.
+4. Gunakan `ufw` untuk hanya membuka:
    - `22`
    - `80`
    - `443`
-4. Jangan expose port `5432`, `5000`, `8080` ke internet.
-5. Reverse proxy dari Nginx ke:
+5. Jangan expose port `5432`, `5000`, `8080`, `6379` ke internet.
+6. Reverse proxy dari Nginx ke:
    - `127.0.0.1:5000` untuk Express
    - `127.0.0.1:8080` untuk HFMS
+
+## CORS Rule for Current Production
+
+Browser CORS harus memakai **origin frontend**, bukan URL API lengkap.
+
+Contoh yang salah:
+
+- `https://api.darrellvalentino.com/api/v1`
+- `https://ml.darrellvalentino.com/api/v1`
+
+Contoh yang benar:
+
+- `https://pulsewise.darrellvalentino.com`
+- `https://staging-pulsewise.darrellvalentino.com`
+- `http://localhost:3000`
+- `http://localhost:5173`
+
+Jika browser frontend memang di-serve langsung dari domain API/ML, origin itu boleh diisi tanpa path:
+
+- `https://api.darrellvalentino.com`
+- `https://ml.darrellvalentino.com`
 
 ## Step-by-Step Deployment
 

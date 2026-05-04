@@ -17,6 +17,24 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7-alpine
+    container_name: pulsewise-redis
+    restart: unless-stopped
+    env_file:
+      - ./pulsewise-backend.env
+    command:
+      - sh
+      - -c
+      - redis-server --appendonly yes --requirepass "$REDIS_PASSWORD"
+    volumes:
+      - pulsewise_redis_data:/data
+    healthcheck:
+      test: ['CMD-SHELL', 'redis-cli -a "$REDIS_PASSWORD" ping | grep PONG']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   pulsewise-backend:
     build:
       context: ../pulsewise-backend
@@ -27,6 +45,8 @@ services:
       - ./pulsewise-backend.env
     depends_on:
       postgres:
+        condition: service_healthy
+      redis:
         condition: service_healthy
       hfms-backend:
         condition: service_started
@@ -46,3 +66,4 @@ services:
 
 volumes:
   pulsewise_pgdata:
+  pulsewise_redis_data:

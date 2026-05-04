@@ -1,10 +1,35 @@
-require('dotenv').config({ override: true });
+require('dotenv').config();
 
-function ensureEnv(name, fallback) {
+const isProduction = process.env.NODE_ENV === 'production';
+const isTest = process.env.NODE_ENV === 'test';
+const isDevelopment = !isProduction && !isTest;
+
+function ensureEnv(name, fallback, options = {}) {
   const value = process.env[name] || fallback;
+  const hasExplicitValue =
+    process.env[name] !== undefined && process.env[name] !== null && process.env[name] !== '';
+
   if (value === undefined || value === null || String(value).trim() === '') {
     throw new Error(`Missing environment variable: ${name}`);
   }
+
+  if (
+    options.disallowLiteralInProduction &&
+    isProduction &&
+    options.disallowLiteralInProduction.includes(value)
+  ) {
+    throw new Error(`Unsafe fallback is not allowed for ${name} in production`);
+  }
+
+  if (
+    options.disallowImplicitFallbackInProduction &&
+    isProduction &&
+    !hasExplicitValue &&
+    value === fallback
+  ) {
+    throw new Error(`Unsafe fallback is not allowed for ${name} in production`);
+  }
+
   return value;
 }
 
@@ -60,13 +85,20 @@ function pickPostgresValue(envName, parsedValue, fallback) {
 
 const env = {
   nodeEnv: process.env.NODE_ENV || 'development',
+  isProduction,
+  isDevelopment,
+  isTest,
   port: Number(process.env.PORT || 5000),
   databaseUrl: process.env.DATABASE_URL || '',
   directUrl: directDatabaseUrl,
-  jwtSecret: ensureEnv('JWT_SECRET', 'replace_with_strong_secret'),
+  jwtSecret: ensureEnv('JWT_SECRET', 'replace_with_strong_secret', {
+    disallowLiteralInProduction: ['replace_with_strong_secret'],
+  }),
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '1d',
   otpExpiresMinutes: Number(process.env.OTP_EXPIRES_MINUTES || 10),
   otpDebugExpose: process.env.OTP_DEBUG_EXPOSE === 'true',
+  canExposeOtpDebugData:
+    process.env.OTP_DEBUG_EXPOSE === 'true' && (isDevelopment || isTest),
   googleClientId: process.env.GOOGLE_CLIENT_ID || '',
   mailtrap: {
     token: process.env.MAILTRAP_TOKEN || '',
@@ -89,6 +121,35 @@ const env = {
     authWindowMs: Number(process.env.RATE_LIMIT_AUTH_WINDOW_MS || 15 * 60 * 1000),
     authMax: Number(process.env.RATE_LIMIT_AUTH_MAX || 20),
   },
+  auth: {
+    recheckUserOnProtectedRoutes:
+      !isTest &&
+      (process.env.AUTH_RECHECK_USER ? process.env.AUTH_RECHECK_USER === 'true' : true),
+  },
+  cors: {
+    allowAllOrigins: process.env.CORS_ALLOW_ALL === 'true' || isDevelopment || isTest,
+    allowedOrigins: String(process.env.CORS_ALLOWED_ORIGINS || '')
+      .split(',')
+      .map((item) => item.trim())
+      .filter(Boolean),
+    credentials: process.env.CORS_CREDENTIALS === 'true',
+  },
+  redis: {
+    enabled: process.env.REDIS_ENABLED
+      ? process.env.REDIS_ENABLED === 'true'
+      : Boolean(isProduction || process.env.REDIS_URL || process.env.REDIS_HOST),
+    url: process.env.REDIS_URL || '',
+    host: process.env.REDIS_HOST || '127.0.0.1',
+    port: Number(process.env.REDIS_PORT || 6379),
+    password: process.env.REDIS_PASSWORD || '',
+    db: Number(process.env.REDIS_DB || 0),
+    prefix: process.env.REDIS_PREFIX || 'pw',
+  },
+  cache: {
+    dashboardListTtlSeconds: Number(process.env.CACHE_DASHBOARD_LIST_TTL_SECONDS || 30),
+    dashboardSummaryTtlSeconds: Number(process.env.CACHE_DASHBOARD_SUMMARY_TTL_SECONDS || 30),
+    diaryByDateTtlSeconds: Number(process.env.CACHE_DIARY_BY_DATE_TTL_SECONDS || 30),
+  },
   mlService: {
     baseUrl: process.env.ML_SERVICE_BASE_URL || 'http://localhost:8080',
     timeoutMs: Number(process.env.ML_SERVICE_TIMEOUT_MS || 20000),
@@ -97,20 +158,24 @@ const env = {
   postgres: {
     host: ensureEnv(
       'POSTGRES_HOST',
-      pickPostgresValue('POSTGRES_HOST', parsedDbUrl?.host, 'localhost')
+      pickPostgresValue('POSTGRES_HOST', parsedDbUrl?.host, 'localhost'),
+      { disallowImplicitFallbackInProduction: true }
     ),
     port: Number(pickPostgresValue('POSTGRES_PORT', parsedDbUrl?.port, 5432)),
     database: ensureEnv(
       'POSTGRES_DB',
-      pickPostgresValue('POSTGRES_DB', parsedDbUrl?.database, 'pulsewise')
+      pickPostgresValue('POSTGRES_DB', parsedDbUrl?.database, 'pulsewise'),
+      { disallowImplicitFallbackInProduction: true }
     ),
     user: ensureEnv(
       'POSTGRES_USER',
-      pickPostgresValue('POSTGRES_USER', parsedDbUrl?.user, 'pulsewise')
+      pickPostgresValue('POSTGRES_USER', parsedDbUrl?.user, 'pulsewise'),
+      { disallowImplicitFallbackInProduction: true }
     ),
     password: ensureEnv(
       'POSTGRES_PASSWORD',
-      pickPostgresValue('POSTGRES_PASSWORD', parsedDbUrl?.password, 'pulsewise123')
+      pickPostgresValue('POSTGRES_PASSWORD', parsedDbUrl?.password, 'pulsewise123'),
+      { disallowImplicitFallbackInProduction: true }
     ),
     ssl: process.env.POSTGRES_SSL === 'true' || Boolean(parsedDbUrl?.sslRequired),
     sslRejectUnauthorized: process.env.POSTGRES_SSL_REJECT_UNAUTHORIZED === 'true',

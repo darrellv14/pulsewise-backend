@@ -51,6 +51,7 @@
     "mailtrap": "^4.4.0",
     "morgan": "^1.10.1",
     "pg": "^8.16.3",
+    "redis": "^5.8.2",
     "swagger-ui-express": "^5.0.1",
     "yamljs": "^0.3.0",
     "zod": "^4.3.6"

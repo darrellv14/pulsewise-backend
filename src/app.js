@@ -1,10 +1,11 @@
-require('dotenv').config({ override: true });
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const swaggerUi = require('swagger-ui-express');
 const { loadOpenApiSpec } = require('./config/swagger');
+const { buildCorsOptions } = require('./config/cors');
 const { success } = require('./utils/response');
 const apiRoutes = require('./routes');
 const notFoundHandler = require('./middlewares/notFoundHandler');
@@ -15,7 +16,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 const openApiSpec = isProduction ? null : loadOpenApiSpec();
 
 app.use(helmet());
-app.use(cors());
+app.use(cors(buildCorsOptions()));
 app.use(express.json());
 app.use(morgan('dev'));
 
