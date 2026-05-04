@@ -229,6 +229,40 @@ components:
           type: string
           format: email
 
+    ForgotPasswordRequest:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+
+    ForgotPasswordVerifyRequest:
+      type: object
+      required: [email, otp]
+      properties:
+        email:
+          type: string
+          format: email
+        otp:
+          type: string
+          example: '123456'
+
+    ForgotPasswordResetRequest:
+      type: object
+      required: [resetToken, newPassword, confirmNewPassword]
+      properties:
+        resetToken:
+          type: string
+        newPassword:
+          type: string
+          minLength: 8
+          maxLength: 128
+        confirmNewPassword:
+          type: string
+          minLength: 8
+          maxLength: 128
+
     EmailVerificationConfirmRequest:
       type: object
       required: [email, otp]
@@ -3275,6 +3309,133 @@ paths:
                         $ref: '#/components/schemas/AuthUser'
         '401':
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /api/v1/auth/forgot-password:
+    post:
+      tags: [Auth]
+      summary: Meminta pengiriman OTP ke email untuk reset password
+      description: |
+        Hanya berlaku untuk akun email/password (non-Google OAuth).
+        Selalu merespons 200 untuk mencegah enumerasi email.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordRequest'
+      responses:
+        '200':
+          description: OTP berhasil dikirim (atau disimulasikan sukses)
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          delivery:
+                            type: string
+                          expiresInMinutes:
+                            type: integer
+                          nextStep:
+                            type: string
+        '400':
+          description: Payload tidak valid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /api/v1/auth/forgot-password/verify:
+    post:
+      tags: [Auth]
+      summary: Verifikasi OTP reset password
+      description: |
+        Memverifikasi OTP dan mengembalikan `resetToken` (JWT) jika valid.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordVerifyRequest'
+      responses:
+        '200':
+          description: OTP valid
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          nextStep:
+                            type: string
+                          resetToken:
+                            type: string
+        '400':
+          description: OTP tidak valid atau kedaluwarsa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Akun Google OAuth tidak didukung
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /api/v1/auth/forgot-password/reset:
+    post:
+      tags: [Auth]
+      summary: Reset password menggunakan resetToken
+      description: |
+        Mengubah password akun menggunakan token dari tahap verifikasi.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordResetRequest'
+      responses:
+        '200':
+          description: Password berhasil direset
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          nextStep:
+                            type: string
+        '400':
+          description: Validasi gagal atau password sama dengan password lama
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '401':
+          description: Token reset password tidak valid atau kedaluwarsa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Akun Google OAuth tidak didukung
           content:
             application/json:
               schema:

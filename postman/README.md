@@ -62,6 +62,17 @@ Catatan: endpoint legacy tetap tersedia, tapi untuk integrasi FE terbaru gunakan
 
 ## Endpoint Auth Tambahan
 
+- `POST /auth/forgot-password`
+  - Meminta pengiriman OTP ke email untuk reset password.
+  - Hanya berlaku untuk akun email/password (non-Google OAuth).
+
+- `POST /auth/forgot-password/verify`
+  - Memverifikasi OTP dan mengembalikan `resetToken` (berlaku 15 menit).
+
+- `POST /auth/forgot-password/reset`
+  - Mereset password menggunakan `resetToken` dari tahap verify.
+
+
 - `POST /auth/change-password`
   - Hanya untuk akun email/password yang sudah login.
   - Tidak berlaku untuk akun Google OAuth.

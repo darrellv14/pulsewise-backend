@@ -708,7 +708,7 @@
           },
           "response": [
             {
-              "name": "200 Password changed",
+              "name": "200 Password berhasil diperbarui",
               "originalRequest": {
                 "method": "POST",
                 "header": [
@@ -737,10 +737,10 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Password berhasil diperbarui\",\n  \"data\": {\n    \"nextStep\": \"LOGIN_AGAIN\"\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"nextStep\": \"LOGIN_AGAIN\"\n  }\n}\n"
             },
             {
-              "name": "400 Validation failed or same password",
+              "name": "400 Payload tidak valid atau password baru sama dengan password saat ini",
               "originalRequest": {
                 "method": "POST",
                 "header": [
@@ -755,7 +755,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"currentPassword\": \"{{patientPassword}}\",\n  \"newPassword\": \"new-password-123\",\n  \"confirmNewPassword\": \"different-password\"\n}"
+                  "raw": "{\n  \"currentPassword\": \"{{patientPassword}}\",\n  \"newPassword\": \"new-password-123\",\n  \"confirmNewPassword\": \"new-password-123\"\n}"
                 },
                 "url": "{{baseUrl}}/auth/change-password"
               },
@@ -769,10 +769,10 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": false,\n  \"message\": \"Validasi request gagal\",\n  \"details\": {\n    \"issues\": [\n      {\n        \"path\": [\n          \"confirmNewPassword\"\n        ],\n        \"message\": \"Konfirmasi password baru tidak sama\"\n      }\n    ]\n  }\n}\n"
+              "body": "{\n  \"success\": false,\n  \"message\": \"Validation failed\",\n  \"details\": {}\n}\n"
             },
             {
-              "name": "401 Current password invalid",
+              "name": "401 Password saat ini salah atau token tidak valid",
               "originalRequest": {
                 "method": "POST",
                 "header": [
@@ -787,7 +787,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"currentPassword\": \"wrong-password\",\n  \"newPassword\": \"new-password-123\",\n  \"confirmNewPassword\": \"new-password-123\"\n}"
+                  "raw": "{\n  \"currentPassword\": \"{{patientPassword}}\",\n  \"newPassword\": \"new-password-123\",\n  \"confirmNewPassword\": \"new-password-123\"\n}"
                 },
                 "url": "{{baseUrl}}/auth/change-password"
               },
@@ -801,10 +801,10 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": false,\n  \"message\": \"Password saat ini salah\",\n  \"details\": null\n}\n"
+              "body": "{\n  \"success\": false,\n  \"message\": \"Validation failed\",\n  \"details\": {}\n}\n"
             },
             {
-              "name": "403 Google account not supported",
+              "name": "403 Endpoint tidak berlaku untuk akun Google OAuth",
               "originalRequest": {
                 "method": "POST",
                 "header": [
@@ -833,7 +833,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": false,\n  \"message\": \"Ubah password hanya tersedia untuk akun email/password\",\n  \"details\": {\n    \"nextStep\": \"USE_GOOGLE_LOGIN\"\n  }\n}\n"
+              "body": "{\n  \"success\": false,\n  \"message\": \"Validation failed\",\n  \"details\": {}\n}\n"
             }
           ]
         },
@@ -869,7 +869,7 @@
           },
           "response": [
             {
-              "name": "200 OTP dikirim (atau email tidak ditemukan — response sama)",
+              "name": "200 OTP berhasil dikirim (atau disimulasikan sukses)",
               "originalRequest": {
                 "method": "POST",
                 "header": [
@@ -882,7 +882,8 @@
                   "mode": "raw",
                   "raw": "{\n  \"email\": \"{{patientEmail}}\"\n}"
                 },
-                "url": "{{baseUrl}}/auth/forgot-password"
+                "url": "{{baseUrl}}/auth/forgot-password",
+                "description": "Meminta OTP reset password dikirim ke email. Hanya berlaku untuk akun email/password (non-Google OAuth). Selalu merespons 200 untuk mencegah enumerasi email."
               },
               "status": "OK",
               "code": 200,
@@ -894,10 +895,10 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Jika email terdaftar, kode OTP telah dikirim\",\n  \"data\": {\n    \"delivery\": \"email\",\n    \"expiresInMinutes\": 10,\n    \"nextStep\": \"VERIFY_FORGOT_PASSWORD_OTP\"\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"delivery\": \"string\",\n    \"expiresInMinutes\": 1,\n    \"nextStep\": \"string\"\n  }\n}\n"
             },
             {
-              "name": "400 Validation failed",
+              "name": "400 Payload tidak valid",
               "originalRequest": {
                 "method": "POST",
                 "header": [
@@ -908,9 +909,10 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"email\": \"invalid-email\"\n}"
+                  "raw": "{\n  \"email\": \"{{patientEmail}}\"\n}"
                 },
-                "url": "{{baseUrl}}/auth/forgot-password"
+                "url": "{{baseUrl}}/auth/forgot-password",
+                "description": "Meminta OTP reset password dikirim ke email. Hanya berlaku untuk akun email/password (non-Google OAuth). Selalu merespons 200 untuk mencegah enumerasi email."
               },
               "status": "Bad Request",
               "code": 400,
@@ -922,7 +924,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": false,\n  \"message\": \"Validasi request gagal\",\n  \"details\": {\n    \"issues\": [\n      {\n        \"path\": [\"email\"],\n        \"message\": \"Invalid email\"\n      }\n    ]\n  }\n}\n"
+              "body": "{\n  \"success\": false,\n  \"message\": \"Validation failed\",\n  \"details\": {}\n}\n"
             }
           ]
         },
@@ -958,7 +960,7 @@
           },
           "response": [
             {
-              "name": "200 OTP valid — reset token diberikan",
+              "name": "200 OTP valid",
               "originalRequest": {
                 "method": "POST",
                 "header": [
@@ -971,7 +973,8 @@
                   "mode": "raw",
                   "raw": "{\n  \"email\": \"{{patientEmail}}\",\n  \"otp\": \"{{forgotOtpCode}}\"\n}"
                 },
-                "url": "{{baseUrl}}/auth/forgot-password/verify"
+                "url": "{{baseUrl}}/auth/forgot-password/verify",
+                "description": "Verifikasi OTP reset password. Jika valid, menghasilkan resetToken (JWT, berlaku 15 menit) yang digunakan pada step berikutnya."
               },
               "status": "OK",
               "code": 200,
@@ -983,38 +986,10 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"OTP berhasil diverifikasi\",\n  \"data\": {\n    \"nextStep\": \"RESET_PASSWORD\",\n    \"resetToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.example.signature\"\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"nextStep\": \"string\",\n    \"resetToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.example.signature\"\n  }\n}\n"
             },
             {
-              "name": "400 OTP tidak valid atau kadaluarsa",
-              "originalRequest": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"email\": \"{{patientEmail}}\",\n  \"otp\": \"000000\"\n}"
-                },
-                "url": "{{baseUrl}}/auth/forgot-password/verify"
-              },
-              "status": "Bad Request",
-              "code": 400,
-              "_postman_previewlanguage": "json",
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json"
-                }
-              ],
-              "cookie": [],
-              "body": "{\n  \"success\": false,\n  \"message\": \"OTP tidak valid atau sudah kadaluarsa\",\n  \"details\": null\n}\n"
-            },
-            {
-              "name": "403 Akun Google tidak didukung",
+              "name": "400 OTP tidak valid atau kedaluwarsa",
               "originalRequest": {
                 "method": "POST",
                 "header": [
@@ -1027,7 +1002,37 @@
                   "mode": "raw",
                   "raw": "{\n  \"email\": \"{{patientEmail}}\",\n  \"otp\": \"{{forgotOtpCode}}\"\n}"
                 },
-                "url": "{{baseUrl}}/auth/forgot-password/verify"
+                "url": "{{baseUrl}}/auth/forgot-password/verify",
+                "description": "Verifikasi OTP reset password. Jika valid, menghasilkan resetToken (JWT, berlaku 15 menit) yang digunakan pada step berikutnya."
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Validation failed\",\n  \"details\": {}\n}\n"
+            },
+            {
+              "name": "403 Akun Google OAuth tidak didukung",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"{{patientEmail}}\",\n  \"otp\": \"{{forgotOtpCode}}\"\n}"
+                },
+                "url": "{{baseUrl}}/auth/forgot-password/verify",
+                "description": "Verifikasi OTP reset password. Jika valid, menghasilkan resetToken (JWT, berlaku 15 menit) yang digunakan pada step berikutnya."
               },
               "status": "Forbidden",
               "code": 403,
@@ -1039,7 +1044,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": false,\n  \"message\": \"Reset password hanya tersedia untuk akun email/password\",\n  \"details\": {\n    \"nextStep\": \"USE_GOOGLE_LOGIN\"\n  }\n}\n"
+              "body": "{\n  \"success\": false,\n  \"message\": \"Validation failed\",\n  \"details\": {}\n}\n"
             }
           ]
         },
@@ -1086,7 +1091,8 @@
                   "mode": "raw",
                   "raw": "{\n  \"resetToken\": \"{{resetToken}}\",\n  \"newPassword\": \"new-password-123\",\n  \"confirmNewPassword\": \"new-password-123\"\n}"
                 },
-                "url": "{{baseUrl}}/auth/forgot-password/reset"
+                "url": "{{baseUrl}}/auth/forgot-password/reset",
+                "description": "Reset password menggunakan resetToken dari step verify OTP. Token berlaku 15 menit. Setelah berhasil, user perlu login ulang dengan password baru."
               },
               "status": "OK",
               "code": 200,
@@ -1098,94 +1104,10 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Password berhasil direset\",\n  \"data\": {\n    \"nextStep\": \"LOGIN_AGAIN\"\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"nextStep\": \"string\"\n  }\n}\n"
             },
             {
-              "name": "400 Konfirmasi password tidak sama",
-              "originalRequest": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"resetToken\": \"{{resetToken}}\",\n  \"newPassword\": \"new-password-123\",\n  \"confirmNewPassword\": \"different-password\"\n}"
-                },
-                "url": "{{baseUrl}}/auth/forgot-password/reset"
-              },
-              "status": "Bad Request",
-              "code": 400,
-              "_postman_previewlanguage": "json",
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json"
-                }
-              ],
-              "cookie": [],
-              "body": "{\n  \"success\": false,\n  \"message\": \"Validasi request gagal\",\n  \"details\": {\n    \"issues\": [\n      {\n        \"path\": [\"confirmNewPassword\"],\n        \"message\": \"Konfirmasi password baru tidak sama\"\n      }\n    ]\n  }\n}\n"
-            },
-            {
-              "name": "400 Password sama dengan password lama",
-              "originalRequest": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"resetToken\": \"{{resetToken}}\",\n  \"newPassword\": \"same-old-password\",\n  \"confirmNewPassword\": \"same-old-password\"\n}"
-                },
-                "url": "{{baseUrl}}/auth/forgot-password/reset"
-              },
-              "status": "Bad Request",
-              "code": 400,
-              "_postman_previewlanguage": "json",
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json"
-                }
-              ],
-              "cookie": [],
-              "body": "{\n  \"success\": false,\n  \"message\": \"Password baru tidak boleh sama dengan password saat ini\",\n  \"details\": null\n}\n"
-            },
-            {
-              "name": "401 Reset token tidak valid atau kadaluarsa",
-              "originalRequest": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"resetToken\": \"expired.or.invalid.token\",\n  \"newPassword\": \"new-password-123\",\n  \"confirmNewPassword\": \"new-password-123\"\n}"
-                },
-                "url": "{{baseUrl}}/auth/forgot-password/reset"
-              },
-              "status": "Unauthorized",
-              "code": 401,
-              "_postman_previewlanguage": "json",
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json"
-                }
-              ],
-              "cookie": [],
-              "body": "{\n  \"success\": false,\n  \"message\": \"Token reset password tidak valid atau sudah kedaluwarsa\",\n  \"details\": null\n}\n"
-            },
-            {
-              "name": "403 Akun Google tidak didukung",
+              "name": "400 Validasi gagal atau password sama dengan password lama",
               "originalRequest": {
                 "method": "POST",
                 "header": [
@@ -1198,7 +1120,66 @@
                   "mode": "raw",
                   "raw": "{\n  \"resetToken\": \"{{resetToken}}\",\n  \"newPassword\": \"new-password-123\",\n  \"confirmNewPassword\": \"new-password-123\"\n}"
                 },
-                "url": "{{baseUrl}}/auth/forgot-password/reset"
+                "url": "{{baseUrl}}/auth/forgot-password/reset",
+                "description": "Reset password menggunakan resetToken dari step verify OTP. Token berlaku 15 menit. Setelah berhasil, user perlu login ulang dengan password baru."
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Validation failed\",\n  \"details\": {}\n}\n"
+            },
+            {
+              "name": "401 Token reset password tidak valid atau kedaluwarsa",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"resetToken\": \"{{resetToken}}\",\n  \"newPassword\": \"new-password-123\",\n  \"confirmNewPassword\": \"new-password-123\"\n}"
+                },
+                "url": "{{baseUrl}}/auth/forgot-password/reset",
+                "description": "Reset password menggunakan resetToken dari step verify OTP. Token berlaku 15 menit. Setelah berhasil, user perlu login ulang dengan password baru."
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Validation failed\",\n  \"details\": {}\n}\n"
+            },
+            {
+              "name": "403 Akun Google OAuth tidak didukung",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"resetToken\": \"{{resetToken}}\",\n  \"newPassword\": \"new-password-123\",\n  \"confirmNewPassword\": \"new-password-123\"\n}"
+                },
+                "url": "{{baseUrl}}/auth/forgot-password/reset",
+                "description": "Reset password menggunakan resetToken dari step verify OTP. Token berlaku 15 menit. Setelah berhasil, user perlu login ulang dengan password baru."
               },
               "status": "Forbidden",
               "code": 403,
@@ -1210,7 +1191,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": false,\n  \"message\": \"Reset password hanya tersedia untuk akun email/password\",\n  \"details\": {\n    \"nextStep\": \"USE_GOOGLE_LOGIN\"\n  }\n}\n"
+              "body": "{\n  \"success\": false,\n  \"message\": \"Validation failed\",\n  \"details\": {}\n}\n"
             }
           ]
         },
@@ -2589,7 +2570,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"patientId\": \"3a233724-0b42-4a4f-88e8-88e732c46351\",\n    \"filters\": {\n      \"source\": \"health_connect\",\n      \"metricType\": \"oxygen_saturation\",\n      \"startAt\": \"2026-05-01T00:00:00.000Z\",\n      \"endAt\": \"2026-05-04T23:59:59.999Z\"\n    },\n    \"items\": [\n      {\n        \"readingId\": 1205,\n        \"source\": \"health_connect\",\n        \"metricType\": \"oxygen_saturation\",\n        \"valueNumeric\": 97,\n        \"unit\": \"%\",\n        \"payload\": {\n          \"deviceModel\": \"Pixel Watch 3\",\n          \"origin\": \"health_connect\"\n        },\n        \"measuredAt\": \"2026-05-04T08:00:00.000Z\",\n        \"receivedAt\": \"2026-05-04T08:00:05.000Z\"\n      }\n    ],\n    \"pagination\": {\n      \"page\": 1,\n      \"limit\": 50,\n      \"totalItems\": 1,\n      \"totalPages\": 1\n    }\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"patientId\": \"3a233724-0b42-4a4f-88e8-88e732c46351\",\n    \"filters\": {\n      \"source\": \"health_connect\",\n      \"metricType\": \"oxygen_saturation\",\n      \"startAt\": \"2026-05-01T00:00:00.000Z\",\n      \"endAt\": \"2026-05-04T23:59:59.999Z\"\n    },\n    \"items\": [\n      {\n        \"readingId\": 1204,\n        \"source\": \"health_connect\",\n        \"metricType\": \"oxygen_saturation\",\n        \"valueNumeric\": 97,\n        \"unit\": \"%\",\n        \"payload\": {\n          \"deviceModel\": \"Pixel Watch 3\",\n          \"origin\": \"health_connect\"\n        },\n        \"measuredAt\": \"2026-05-04T08:00:00.000Z\",\n        \"receivedAt\": \"2026-05-04T08:00:05.000Z\"\n      }\n    ],\n    \"pagination\": {\n      \"page\": 1,\n      \"limit\": 20,\n      \"totalItems\": 1,\n      \"totalPages\": 1\n    }\n  }\n}\n"
             },
             {
               "name": "400 Query tidak valid",
@@ -3700,7 +3681,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"symptomId\": \"7b5d8f10-1111-4222-8333-1234567890ac\",\n    \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n    \"symptomName\": \"Pusing ringan\",\n    \"symptomCode\": \"chest_pain\",\n    \"bodyArea\": \"chest\",\n    \"isChestPain\": true,\n    \"painFrequencyCode\": 2,\n    \"painLocationCode\": 1,\n    \"intensity\": 2,\n    \"note\": \"Muncul sebelum sarapan\",\n    \"time\": \"07:30\",\n    \"timeStamp\": \"2026-04-10T07:30:00.000Z\"\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"symptomId\": \"7b5d8f10-1111-4222-8333-1234567890ac\",\n    \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n    \"symptomName\": \"Nyeri dada\",\n    \"symptomCode\": \"chest_pain\",\n    \"bodyArea\": \"chest\",\n    \"isChestPain\": true,\n    \"painFrequencyCode\": 2,\n    \"painLocationCode\": 1,\n    \"intensity\": 2,\n    \"note\": \"Muncul sebelum sarapan\",\n    \"time\": \"07:30\",\n    \"timeStamp\": \"2026-04-10T07:30:00.000Z\"\n  }\n}\n"
             }
           ]
         },
@@ -3985,7 +3966,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"symptomId\": \"7b5d8f10-1111-4222-8333-1234567890ac\",\n    \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n    \"symptomName\": \"Pusing ringan\",\n    \"symptomCode\": \"chest_pain\",\n    \"bodyArea\": \"chest\",\n    \"isChestPain\": true,\n    \"painFrequencyCode\": 2,\n    \"painLocationCode\": 1,\n    \"intensity\": 2,\n    \"note\": \"Muncul sebelum sarapan\",\n    \"time\": \"07:30\",\n    \"timeStamp\": \"2026-04-10T07:30:00.000Z\"\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"symptomId\": \"7b5d8f10-1111-4222-8333-1234567890ac\",\n    \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n    \"symptomName\": \"Nyeri dada\",\n    \"symptomCode\": \"chest_pain\",\n    \"bodyArea\": \"chest\",\n    \"isChestPain\": true,\n    \"painFrequencyCode\": 2,\n    \"painLocationCode\": 1,\n    \"intensity\": 2,\n    \"note\": \"Muncul sebelum sarapan\",\n    \"time\": \"07:30\",\n    \"timeStamp\": \"2026-04-10T07:30:00.000Z\"\n  }\n}\n"
             }
           ]
         },
