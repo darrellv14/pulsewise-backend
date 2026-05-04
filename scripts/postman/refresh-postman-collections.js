@@ -459,6 +459,58 @@ function recommendationResponses(message) {
   ];
 }
 
+function changePasswordResponses() {
+  return [
+    responseExample({
+      name: '200 Password changed',
+      code: 200,
+      body: {
+        success: true,
+        message: 'Password berhasil diperbarui',
+        data: {
+          nextStep: 'LOGIN_AGAIN',
+        },
+      },
+    }),
+    responseExample({
+      name: '400 Validation failed or same password',
+      code: 400,
+      body: {
+        success: false,
+        message: 'Validasi request gagal',
+        details: {
+          issues: [
+            {
+              path: ['confirmNewPassword'],
+              message: 'Konfirmasi password baru tidak sama',
+            },
+          ],
+        },
+      },
+    }),
+    responseExample({
+      name: '401 Current password invalid',
+      code: 401,
+      body: {
+        success: false,
+        message: 'Password saat ini salah',
+        details: null,
+      },
+    }),
+    responseExample({
+      name: '403 Google account not supported',
+      code: 403,
+      body: {
+        success: false,
+        message: 'Ubah password hanya tersedia untuk akun email/password',
+        details: {
+          nextStep: 'USE_GOOGLE_LOGIN',
+        },
+      },
+    }),
+  ];
+}
+
 function buildMainMlFolders() {
   return [
     {
@@ -731,6 +783,30 @@ function buildSmokeMlFolder() {
   };
 }
 
+function buildSmokeAuthReferenceFolder() {
+  return {
+    name: 'Auth Reference (Manual)',
+    item: [
+      jsonRequest({
+        name: 'POST Change Password',
+        method: 'POST',
+        url: '{{baseUrl}}/auth/change-password',
+        tokenVariable: 'patientToken',
+        body: JSON.stringify(
+          {
+            currentPassword: '{{patientPassword}}',
+            newPassword: 'new-password-123',
+            confirmNewPassword: 'new-password-123',
+          },
+          null,
+          2
+        ),
+        response: changePasswordResponses(),
+      }),
+    ],
+  };
+}
+
 function upsertEnvironmentValue(environment, key, value, type = 'default') {
   const index = environment.values.findIndex((entry) => entry.key === key);
   const nextValue = {
@@ -762,6 +838,7 @@ function main() {
   }
 
   upsertFolder(smokeCollection, 'Dashboard ML Smoke', buildSmokeMlFolder().item);
+  upsertFolder(smokeCollection, 'Auth Reference (Manual)', buildSmokeAuthReferenceFolder().item);
 
   upsertEnvironmentValue(environment, 'baseUrl', 'http://localhost:5000/api/v1');
   upsertEnvironmentValue(environment, 'hfmsBaseUrl', 'http://localhost:8080');

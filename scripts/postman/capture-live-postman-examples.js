@@ -14,7 +14,15 @@ function parseArgs(argv) {
 
     const key = token.slice(2);
     const next = argv[index + 1];
-    args[key] = next && !next.startsWith('--') ? next : true;
+    const value = next && !next.startsWith('--') ? next : true;
+
+    if (Object.prototype.hasOwnProperty.call(args, key)) {
+      const existing = args[key];
+      args[key] = Array.isArray(existing) ? [...existing, value] : [existing, value];
+      continue;
+    }
+
+    args[key] = value;
   }
 
   return args;
@@ -163,6 +171,11 @@ function main() {
   const args = parseArgs(process.argv.slice(2));
   const collectionPath = args.collection;
   const environmentPath = args.environment;
+  const folders = Array.isArray(args.folder)
+    ? args.folder
+    : args.folder
+      ? [args.folder]
+      : [];
 
   if (!collectionPath || !environmentPath) {
     throw new Error('Gunakan --collection <path> dan --environment <path>');
@@ -178,17 +191,25 @@ function main() {
   const newmanCommand = process.platform === 'win32' ? 'npx.cmd' : 'npx';
   const run = spawnSync(
     newmanCommand,
-    [
-      'newman',
-      'run',
-      collectionPath,
-      '-e',
-      environmentPath,
-      '--reporters',
-      'json',
-      '--reporter-json-export',
-      reportPath,
-    ],
+    (() => {
+      const commandArgs = [
+        'newman',
+        'run',
+        collectionPath,
+        '-e',
+        environmentPath,
+        '--reporters',
+        'json',
+        '--reporter-json-export',
+        reportPath,
+      ];
+
+      for (const folder of folders) {
+        commandArgs.push('--folder', folder);
+      }
+
+      return commandArgs;
+    })(),
     {
       stdio: 'inherit',
       shell: process.platform === 'win32',

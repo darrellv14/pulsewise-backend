@@ -17,6 +17,7 @@ Import **hanya** file berikut:
 2. Klik **Import**.
 3. Import collection main: `postman/PulseWise-API.postman_collection.json`.
 4. Import collection smoke: `postman/PulseWise-Dashboard-Smoke.postman_collection.json`.
+5. Folder `Auth Reference (Manual)` di smoke collection hanya untuk dokumentasi/example response, tidak ikut dijalankan oleh `npm run postman:smoke:prod`.
 5. Import environment: `postman/PulseWise-Local.postman_environment.json`.
 6. (Opsional production) Import `postman/environments/PulseWise-Production.postman_environment.json`.
 7. Pilih environment **PulseWise Local** atau **PulseWise Production** di kanan atas Postman.
