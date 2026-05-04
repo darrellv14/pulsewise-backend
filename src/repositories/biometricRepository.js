@@ -6,11 +6,6 @@ const LATEST_VITAL_ALIASES = {
   oxygenSaturation: ['oxygen_saturation', 'spo2', 'sp02', 'oxygen'],
 };
 
-const LATEST_VITAL_ALIASES = {
-  heartRate: ['heart_rate', 'heartrate', 'hr', 'pulse'],
-  oxygenSaturation: ['oxygen_saturation', 'spo2', 'sp02', 'oxygen'],
-};
-
 function toNullableNumber(value) {
   return value === null || value === undefined ? null : Number(value);
 }
@@ -33,11 +28,7 @@ function mapReading(row) {
   };
 }
 
-function normalizeMetricType(metricType) {
-  return String(metricType || '')
-    .trim()
-    .toLowerCase();
-}
+
 
 async function findDuplicateReading({
   userId,
