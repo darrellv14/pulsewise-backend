@@ -4,13 +4,15 @@ const jwt = require('jsonwebtoken');
 const { OAuth2Client } = require('google-auth-library');
 const env = require('../config/env');
 const userRepository = require('../repositories/userRepository');
-const { sendOtpEmail } = require('./emailService');
+const { sendOtpEmail, sendForgotPasswordOtpEmail } = require('./emailService');
 const { normalizeOtp } = require('../utils/otp');
 
 const ALLOWED_ROLES = new Set(['patient', 'doctor', 'admin']);
 const GOOGLE_MOBILE_ROLES = new Set(['patient', 'doctor']);
 const GOOGLE_REGISTRATION_TOKEN_PURPOSE = 'google_registration';
 const GOOGLE_REGISTRATION_TOKEN_EXPIRES_IN = '15m';
+const FORGOT_PASSWORD_TOKEN_PURPOSE = 'forgot_password_reset';
+const FORGOT_PASSWORD_TOKEN_EXPIRES_IN = '15m';
 const googleClient = new OAuth2Client();
 
 function buildGoogleEmailAlreadyRegisteredError() {
@@ -346,6 +348,167 @@ async function changePassword(userId, payload) {
   };
 }
 
+async function sendForgotPasswordOtp(email) {
+  const normalizedEmail = String(email || '')
+    .trim()
+    .toLowerCase();
+  const user = await userRepository.findUserByEmail(normalizedEmail);
+
+  // Selalu balas success agar tidak bocorkan info apakah email terdaftar atau tidak
+  const genericResponse = {
+    delivery: 'email',
+    expiresInMinutes: env.otpExpiresMinutes,
+    nextStep: 'VERIFY_FORGOT_PASSWORD_OTP',
+  };
+
+  if (!user) {
+    return genericResponse;
+  }
+
+  // Blokir user yang login via Google OAuth
+  if (user.google_sub) {
+    return genericResponse;
+  }
+
+  const otp = generateOtpCode();
+  const expiresAt = new Date(Date.now() + env.otpExpiresMinutes * 60 * 1000).toISOString();
+
+  const verification = await userRepository.createEmailVerification({
+    userId: user.user_id,
+    email: user.email,
+    otpCodeHash: hashOtpCode(otp),
+    expiresAt,
+  });
+
+  try {
+    await sendForgotPasswordOtpEmail({
+      toEmail: user.email,
+      otpCode: otp,
+      expiresInMinutes: env.otpExpiresMinutes,
+    });
+  } catch (error) {
+    try {
+      await userRepository.deleteEmailVerification(verification.verification_id);
+    } catch (cleanupError) {
+      if (env.nodeEnv !== 'test') {
+        console.error('[sendForgotPasswordOtp] gagal rollback email verification', cleanupError);
+      }
+    }
+    throw error;
+  }
+
+  if (env.otpDebugExpose) {
+    genericResponse.devOtp = otp;
+  }
+
+  return genericResponse;
+}
+
+async function verifyForgotPasswordOtp(email, otp) {
+  const normalizedEmail = String(email || '')
+    .trim()
+    .toLowerCase();
+
+  const user = await userRepository.findUserByEmail(normalizedEmail);
+  if (!user) {
+    const error = new Error('OTP tidak valid atau sudah kadaluarsa');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (user.google_sub) {
+    const error = new Error('Reset password hanya tersedia untuk akun email/password');
+    error.statusCode = 403;
+    error.details = { nextStep: 'USE_GOOGLE_LOGIN' };
+    throw error;
+  }
+
+  const verification = await userRepository.findLatestValidEmailVerification(normalizedEmail);
+  if (!verification) {
+    const error = new Error('OTP tidak valid atau sudah kadaluarsa');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const isOtpValid = verification.otp_code_hash === hashOtpCode(otp);
+  if (!isOtpValid) {
+    const error = new Error('OTP tidak valid atau sudah kadaluarsa');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  await userRepository.consumeEmailVerification(verification.verification_id);
+
+  const resetToken = jwt.sign(
+    {
+      purpose: FORGOT_PASSWORD_TOKEN_PURPOSE,
+      userId: user.user_id,
+      email: user.email,
+    },
+    env.jwtSecret,
+    { expiresIn: FORGOT_PASSWORD_TOKEN_EXPIRES_IN }
+  );
+
+  return {
+    nextStep: 'RESET_PASSWORD',
+    resetToken,
+  };
+}
+
+async function resetForgotPassword(resetToken, newPassword) {
+  let decoded;
+  try {
+    decoded = jwt.verify(resetToken, env.jwtSecret);
+  } catch (_error) {
+    const error = new Error('Token reset password tidak valid atau sudah kedaluwarsa');
+    error.statusCode = 401;
+    throw error;
+  }
+
+  if (decoded?.purpose !== FORGOT_PASSWORD_TOKEN_PURPOSE) {
+    const error = new Error('Token reset password tidak valid');
+    error.statusCode = 401;
+    throw error;
+  }
+
+  const user = await userRepository.findUserById(decoded.userId);
+  if (!user) {
+    const error = new Error('User tidak ditemukan');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  if (user.google_sub) {
+    const error = new Error('Reset password hanya tersedia untuk akun email/password');
+    error.statusCode = 403;
+    error.details = { nextStep: 'USE_GOOGLE_LOGIN' };
+    throw error;
+  }
+
+  const passwordStr = String(newPassword || '');
+  if (passwordStr.length < 8) {
+    const error = new Error('Password baru minimal 8 karakter');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const isSamePassword = user.password_hash
+    ? await bcrypt.compare(passwordStr, user.password_hash)
+    : false;
+  if (isSamePassword) {
+    const error = new Error('Password baru tidak boleh sama dengan password saat ini');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const newPasswordHash = await bcrypt.hash(passwordStr, 10);
+  await userRepository.updateUserPasswordHash(user.user_id, newPasswordHash);
+
+  return {
+    nextStep: 'LOGIN_AGAIN',
+  };
+}
+
 async function verifyGoogleIdToken(idToken) {
   if (!env.googleClientId) {
     const error = new Error('Google OAuth belum dikonfigurasi di backend');
@@ -562,6 +725,9 @@ module.exports = {
   confirmEmailVerification,
   login,
   changePassword,
+  sendForgotPasswordOtp,
+  verifyForgotPasswordOtp,
+  resetForgotPassword,
   loginWithGoogle,
   beginGoogleAuth,
   completeGoogleRegistration,

@@ -75,6 +75,36 @@ async function changePassword(req, res, next) {
   }
 }
 
+async function sendForgotPasswordOtp(req, res, next) {
+  try {
+    const result = await authService.sendForgotPasswordOtp(req.body.email);
+    return success(res, 'Jika email terdaftar, kode OTP telah dikirim', result);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function verifyForgotPasswordOtp(req, res, next) {
+  try {
+    const result = await authService.verifyForgotPasswordOtp(req.body.email, req.body.otp);
+    return success(res, 'OTP berhasil diverifikasi', result);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function resetForgotPassword(req, res, next) {
+  try {
+    const result = await authService.resetForgotPassword(
+      req.body.resetToken,
+      req.body.newPassword
+    );
+    return success(res, 'Password berhasil direset', result);
+  } catch (error) {
+    return next(error);
+  }
+}
+
 module.exports = {
   register,
   sendEmailVerification,
@@ -84,4 +114,7 @@ module.exports = {
   login,
   me,
   changePassword,
+  sendForgotPasswordOtp,
+  verifyForgotPasswordOtp,
+  resetForgotPassword,
 };

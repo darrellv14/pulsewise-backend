@@ -66,6 +66,26 @@ const changePasswordSchema = z
     path: ['confirmNewPassword'],
   });
 
+const forgotPasswordSchema = z.object({
+  email: emailRule,
+});
+
+const verifyForgotPasswordOtpSchema = z.object({
+  email: emailRule,
+  otp: otpRule,
+});
+
+const resetForgotPasswordSchema = z
+  .object({
+    resetToken: z.string().min(1, 'Reset token wajib diisi'),
+    newPassword: z.string().min(8, 'Password baru minimal 8 karakter').max(128),
+    confirmNewPassword: z.string().min(8).max(128),
+  })
+  .refine((value) => value.newPassword === value.confirmNewPassword, {
+    message: 'Konfirmasi password baru tidak sama',
+    path: ['confirmNewPassword'],
+  });
+
 module.exports = {
   registerSchema,
   loginSchema,
@@ -74,4 +94,7 @@ module.exports = {
   googleOauthSchema,
   googleOauthRegisterSchema,
   changePasswordSchema,
+  forgotPasswordSchema,
+  verifyForgotPasswordOtpSchema,
+  resetForgotPasswordSchema,
 };
