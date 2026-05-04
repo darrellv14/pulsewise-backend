@@ -200,6 +200,27 @@ components:
         password:
           type: string
 
+    ChangePasswordRequest:
+      type: object
+      required: [currentPassword, newPassword, confirmNewPassword]
+      properties:
+        currentPassword:
+          type: string
+          minLength: 1
+          maxLength: 128
+        newPassword:
+          type: string
+          minLength: 8
+          maxLength: 128
+        confirmNewPassword:
+          type: string
+          minLength: 8
+          maxLength: 128
+      example:
+        currentPassword: old-password
+        newPassword: new-password-123
+        confirmNewPassword: new-password-123
+
     EmailVerificationRequest:
       type: object
       required: [email]
@@ -2767,15 +2788,25 @@ components:
       properties:
         metricType:
           type: string
-          example: systolic_bp
+          description: >
+            Jenis metric biometrik. Backend menerima alias seperti
+            `heart_rate`, `heartrate`, `hr`, `pulse`,
+            `oxygen_saturation`, `oxygen`, `spo2`, `sp02`,
+            `systolic`, `systolic_bp`, `systolic_pressure`,
+            `diastolic`, `diastolic_bp`, `diastolic_pressure`,
+            `weight`, `body_weight`, `height`, `body_height`, `bmi`,
+            `total_cholesterol`, `urine_flow_rate`, `urination_time`,
+            `urine_volume`, dan `pulse_regularity_code`.
+            Nilai akan dinormalisasi ke canonical metric internal backend.
+          example: spo2
         valueNumeric:
           type: number
           nullable: true
-          example: 128
+          example: 97
         unit:
           type: string
           nullable: true
-          example: mmHg
+          example: '%'
         measuredAt:
           type: string
           format: date-time
@@ -2783,6 +2814,10 @@ components:
           type: object
           nullable: true
           additionalProperties: true
+          example:
+            deviceModel: Pixel Watch 3
+            deviceManufacturer: Google
+            origin: health_connect
 
     BiometricsIngestRequest:
       type: object
@@ -2795,6 +2830,7 @@ components:
           description: Wajib jika actor bukan pasien
         source:
           type: string
+          description: Sumber data biometrik, misalnya `health_connect`, `manual`, `smartwatch`, atau nama connector internal lain.
           example: health_connect
         readings:
           type: array
@@ -2802,6 +2838,20 @@ components:
           maxItems: 500
           items:
             $ref: '#/components/schemas/BiometricsReadingInput'
+      example:
+        source: health_connect
+        readings:
+          - metricType: heart_rate
+            valueNumeric: 78
+            unit: bpm
+            measuredAt: '2026-05-04T08:00:00.000Z'
+          - metricType: spo2
+            valueNumeric: 97
+            unit: '%'
+            measuredAt: '2026-05-04T08:00:00.000Z'
+            payload:
+              deviceModel: Pixel Watch 3
+              origin: health_connect
 
     BiometricsIngestItem:
       type: object
@@ -2823,10 +2873,10 @@ components:
           type: boolean
       example:
         readingId: 1204
-        metricType: systolic_bp
-        measuredAt: '2026-04-10T07:30:00.000Z'
-        valueNumeric: 128
-        unit: mmHg
+        metricType: oxygen_saturation
+        measuredAt: '2026-05-04T08:00:00.000Z'
+        valueNumeric: 97
+        unit: '%'
         duplicate: false
 
     BiometricsIngestData:
@@ -2851,21 +2901,21 @@ components:
         patientId: 3a233724-0b42-4a4f-88e8-88e732c46351
         source: health_connect
         totalReceived: 2
-        insertedCount: 1
-        duplicateCount: 1
+        insertedCount: 2
+        duplicateCount: 0
         items:
           - readingId: 1204
-            metricType: systolic_bp
-            measuredAt: '2026-04-10T07:30:00.000Z'
-            valueNumeric: 128
-            unit: mmHg
+            metricType: heart_rate
+            measuredAt: '2026-05-04T08:00:00.000Z'
+            valueNumeric: 78
+            unit: bpm
             duplicate: false
-          - readingId: 1203
-            metricType: systolic_bp
-            measuredAt: '2026-04-10T07:25:00.000Z'
-            valueNumeric: 128
-            unit: mmHg
-            duplicate: true
+          - readingId: 1205
+            metricType: oxygen_saturation
+            measuredAt: '2026-05-04T08:00:00.000Z'
+            valueNumeric: 97
+            unit: '%'
+            duplicate: false
 
     BiometricsHistoryFilters:
       type: object
@@ -2876,6 +2926,10 @@ components:
         metricType:
           type: string
           nullable: true
+          description: >
+            Query menerima alias seperti `spo2`, `oxygen`, atau
+            `oxygen_saturation`. Backend akan mengembalikan nilai metric
+            canonical yang sudah dinormalisasi.
         startAt:
           type: string
           format: date-time
@@ -2886,9 +2940,9 @@ components:
           nullable: true
       example:
         source: health_connect
-        metricType: systolic_bp
-        startAt: '2026-04-01T00:00:00.000Z'
-        endAt: '2026-04-10T23:59:59.999Z'
+        metricType: oxygen_saturation
+        startAt: '2026-05-01T00:00:00.000Z'
+        endAt: '2026-05-04T23:59:59.999Z'
 
     BiometricsHistoryItem:
       type: object
@@ -2918,13 +2972,14 @@ components:
       example:
         readingId: 1204
         source: health_connect
-        metricType: systolic_bp
-        valueNumeric: 128
-        unit: mmHg
+        metricType: oxygen_saturation
+        valueNumeric: 97
+        unit: '%'
         payload:
           deviceModel: Pixel Watch 3
-        measuredAt: '2026-04-10T07:30:00.000Z'
-        receivedAt: '2026-04-10T07:30:05.000Z'
+          origin: health_connect
+        measuredAt: '2026-05-04T08:00:00.000Z'
+        receivedAt: '2026-05-04T08:00:05.000Z'
 
     BiometricsHistoryData:
       type: object
@@ -2944,19 +2999,20 @@ components:
         patientId: 3a233724-0b42-4a4f-88e8-88e732c46351
         filters:
           source: health_connect
-          metricType: systolic_bp
-          startAt: '2026-04-01T00:00:00.000Z'
-          endAt: '2026-04-10T23:59:59.999Z'
+          metricType: oxygen_saturation
+          startAt: '2026-05-01T00:00:00.000Z'
+          endAt: '2026-05-04T23:59:59.999Z'
         items:
           - readingId: 1204
             source: health_connect
-            metricType: systolic_bp
-            valueNumeric: 128
-            unit: mmHg
+            metricType: oxygen_saturation
+            valueNumeric: 97
+            unit: '%'
             payload:
               deviceModel: Pixel Watch 3
-            measuredAt: '2026-04-10T07:30:00.000Z'
-            receivedAt: '2026-04-10T07:30:05.000Z'
+              origin: health_connect
+            measuredAt: '2026-05-04T08:00:00.000Z'
+            receivedAt: '2026-05-04T08:00:05.000Z'
         pagination:
           page: 1
           limit: 20
@@ -3219,6 +3275,56 @@ paths:
                         $ref: '#/components/schemas/AuthUser'
         '401':
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /api/v1/auth/change-password:
+    post:
+      tags: [Auth]
+      summary: Ubah password akun email/password
+      description: >
+        Hanya tersedia untuk akun yang menggunakan login email/password.
+        Akun Google OAuth akan ditolak oleh endpoint ini.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+      responses:
+        '200':
+          description: Password berhasil diperbarui
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          nextStep:
+                            type: string
+                            example: LOGIN_AGAIN
+        '400':
+          description: Payload tidak valid atau password baru sama dengan password saat ini
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '401':
+          description: Password saat ini salah atau token tidak valid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '403':
+          description: Endpoint tidak berlaku untuk akun Google OAuth
           content:
             application/json:
               schema:
@@ -5477,6 +5583,10 @@ paths:
       description: |
         Endpoint ingest utama untuk data biometrik dari mobile/connector.
         Menggunakan duplicate check agar ingestion idempotent.
+        Cocok untuk data dari Android Health Connect seperti heart rate dan SpO2.
+        Untuk SpO2, frontend boleh mengirim `metricType` sebagai `spo2`, `oxygen`,
+        atau `oxygen_saturation`; backend akan menormalisasinya menjadi
+        `oxygen_saturation`.
       security:
         - BearerAuth: []
       requestBody:
@@ -5512,7 +5622,12 @@ paths:
     get:
       tags: [Biometrics]
       summary: Ambil histori biometrik pasien
-      description: Alias route juga tersedia di `/api/biometrics`.
+      description: |
+        Ambil histori biometrik pasien dengan filter opsional `patientId`, `source`,
+        `metricType`, `startAt`, `endAt`, `page`, dan `limit`.
+        Alias route juga tersedia di `/api/biometrics`.
+        Jika query `metricType=spo2` atau `metricType=oxygen`, backend akan
+        menormalisasi filter itu ke metric canonical `oxygen_saturation`.
       security:
         - BearerAuth: []
       parameters:
@@ -5527,12 +5642,17 @@ paths:
           required: false
           schema:
             type: string
+          description: Filter berdasarkan sumber data, misalnya `health_connect`, `manual`, atau `smartwatch`.
         - name: metricType
           in: query
           required: false
           schema:
             type: string
-            example: systolic_bp
+            example: spo2
+          description: >
+            Filter berdasarkan metric biometrik. Boleh memakai alias seperti
+            `spo2`, `oxygen`, `oxygen_saturation`, `heart_rate`, `systolic_bp`,
+            `diastolic_bp`, dan lainnya yang didukung backend.
         - name: startAt
           in: query
           required: false

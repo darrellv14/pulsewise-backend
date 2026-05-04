@@ -21,6 +21,15 @@ function buildGoogleEmailAlreadyRegisteredError() {
   return error;
 }
 
+function buildGooglePasswordChangeDisabledError() {
+  const error = new Error('Ubah password hanya tersedia untuk akun email/password');
+  error.statusCode = 403;
+  error.details = {
+    nextStep: 'USE_GOOGLE_LOGIN',
+  };
+  return error;
+}
+
 function buildAuthPayload(user) {
   return {
     userId: user.user_id,
@@ -300,6 +309,43 @@ async function login(email, password) {
   return buildAuthResponse(token, user);
 }
 
+async function changePassword(userId, payload) {
+  const user = await userRepository.findUserById(userId);
+  if (!user) {
+    const error = new Error('User tidak ditemukan');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  if (user.google_sub) {
+    throw buildGooglePasswordChangeDisabledError();
+  }
+
+  const currentPassword = String(payload.currentPassword || '');
+  const newPassword = String(payload.newPassword || '');
+
+  const isValidCurrentPassword = await bcrypt.compare(currentPassword, user.password_hash);
+  if (!isValidCurrentPassword) {
+    const error = new Error('Password saat ini salah');
+    error.statusCode = 401;
+    throw error;
+  }
+
+  const isSamePassword = await bcrypt.compare(newPassword, user.password_hash);
+  if (isSamePassword) {
+    const error = new Error('Password baru tidak boleh sama dengan password saat ini');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const nextPasswordHash = await bcrypt.hash(newPassword, 10);
+  await userRepository.updateUserPasswordHash(user.user_id, nextPasswordHash);
+
+  return {
+    nextStep: 'LOGIN_AGAIN',
+  };
+}
+
 async function verifyGoogleIdToken(idToken) {
   if (!env.googleClientId) {
     const error = new Error('Google OAuth belum dikonfigurasi di backend');
@@ -515,6 +561,7 @@ module.exports = {
   sendEmailVerification,
   confirmEmailVerification,
   login,
+  changePassword,
   loginWithGoogle,
   beginGoogleAuth,
   completeGoogleRegistration,

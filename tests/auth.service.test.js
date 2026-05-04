@@ -27,6 +27,7 @@ jest.mock('../src/repositories/userRepository', () => ({
   consumeEmailVerification: jest.fn(),
   activateUserByEmail: jest.fn(),
   linkGoogleIdentity: jest.fn(),
+  updateUserPasswordHash: jest.fn(),
 }));
 
 jest.mock('../src/services/emailService', () => ({
@@ -283,5 +284,118 @@ describe('authService.getCurrentUser', () => {
       '11111111-1111-4111-8111-111111111111'
     );
     expect(result.avatarPhoto).toBe('https://res.cloudinary.com/demo/image/upload/v1/avatar.png');
+  });
+});
+
+describe('authService.changePassword', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test('changes password for email/password account and asks client to login again', async () => {
+    const passwordHash = await require('bcrypt').hash('old-password', 10);
+
+    userRepository.findUserById.mockResolvedValue({
+      user_id: '11111111-1111-4111-8111-111111111111',
+      email: 'patient@example.com',
+      password_hash: passwordHash,
+      google_sub: null,
+      role: 'patient',
+    });
+    userRepository.updateUserPasswordHash.mockResolvedValue({
+      user_id: '11111111-1111-4111-8111-111111111111',
+    });
+
+    const result = await authService.changePassword('11111111-1111-4111-8111-111111111111', {
+      currentPassword: 'old-password',
+      newPassword: 'new-password-123',
+      confirmNewPassword: 'new-password-123',
+    });
+
+    expect(userRepository.updateUserPasswordHash).toHaveBeenCalledWith(
+      '11111111-1111-4111-8111-111111111111',
+      expect.any(String)
+    );
+    expect(result).toEqual({
+      nextStep: 'LOGIN_AGAIN',
+    });
+  });
+
+  test('rejects change password for Google account', async () => {
+    const passwordHash = await require('bcrypt').hash('old-password', 10);
+
+    userRepository.findUserById.mockResolvedValue({
+      user_id: '11111111-1111-4111-8111-111111111111',
+      email: 'patient@example.com',
+      password_hash: passwordHash,
+      google_sub: 'google-sub-001',
+      role: 'patient',
+    });
+
+    await expect(
+      authService.changePassword('11111111-1111-4111-8111-111111111111', {
+        currentPassword: 'old-password',
+        newPassword: 'new-password-123',
+        confirmNewPassword: 'new-password-123',
+      })
+    ).rejects.toMatchObject({
+      statusCode: 403,
+      message: 'Ubah password hanya tersedia untuk akun email/password',
+      details: {
+        nextStep: 'USE_GOOGLE_LOGIN',
+      },
+    });
+
+    expect(userRepository.updateUserPasswordHash).not.toHaveBeenCalled();
+  });
+
+  test('rejects when current password is wrong', async () => {
+    const passwordHash = await require('bcrypt').hash('old-password', 10);
+
+    userRepository.findUserById.mockResolvedValue({
+      user_id: '11111111-1111-4111-8111-111111111111',
+      email: 'patient@example.com',
+      password_hash: passwordHash,
+      google_sub: null,
+      role: 'patient',
+    });
+
+    await expect(
+      authService.changePassword('11111111-1111-4111-8111-111111111111', {
+        currentPassword: 'wrong-password',
+        newPassword: 'new-password-123',
+        confirmNewPassword: 'new-password-123',
+      })
+    ).rejects.toMatchObject({
+      statusCode: 401,
+      message: 'Password saat ini salah',
+    });
+
+    expect(userRepository.updateUserPasswordHash).not.toHaveBeenCalled();
+  });
+
+  test('rejects when new password is same as current password', async () => {
+    const passwordHash = await require('bcrypt').hash('same-password', 10);
+
+    userRepository.findUserById.mockResolvedValue({
+      user_id: '11111111-1111-4111-8111-111111111111',
+      email: 'patient@example.com',
+      password_hash: passwordHash,
+      google_sub: null,
+      role: 'patient',
+    });
+
+    await expect(
+      authService.changePassword('11111111-1111-4111-8111-111111111111', {
+        currentPassword: 'same-password',
+        newPassword: 'same-password',
+        confirmNewPassword: 'same-password',
+      })
+    ).rejects.toMatchObject({
+      statusCode: 400,
+      message: 'Password baru tidak boleh sama dengan password saat ini',
+    });
+
+    expect(userRepository.updateUserPasswordHash).not.toHaveBeenCalled();
   });
 });

@@ -66,6 +66,15 @@ async function me(req, res, next) {
   }
 }
 
+async function changePassword(req, res, next) {
+  try {
+    const result = await authService.changePassword(req.user.userId, req.body);
+    return success(res, 'Password berhasil diperbarui', result);
+  } catch (error) {
+    return next(error);
+  }
+}
+
 module.exports = {
   register,
   sendEmailVerification,
@@ -74,4 +83,5 @@ module.exports = {
   completeGoogleOauthRegistration,
   login,
   me,
+  changePassword,
 };

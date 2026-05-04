@@ -11,6 +11,7 @@ const {
   confirmEmailVerificationSchema,
   googleOauthSchema,
   googleOauthRegisterSchema,
+  changePasswordSchema,
 } = require('../validators/authValidator');
 
 const router = express.Router();
@@ -49,5 +50,12 @@ router.post(
 );
 router.post('/login', authRateLimiter, validateRequest(loginSchema), authController.login);
 router.get('/me', authenticate, authController.me);
+router.post(
+  '/change-password',
+  authenticate,
+  authRateLimiter,
+  validateRequest(changePasswordSchema),
+  authController.changePassword
+);
 
 module.exports = router;

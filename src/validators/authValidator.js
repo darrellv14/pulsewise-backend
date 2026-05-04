@@ -55,6 +55,17 @@ const googleOauthRegisterSchema = z.object({
   role: z.enum(['patient', 'doctor']).default('patient'),
 });
 
+const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, 'Password saat ini wajib diisi').max(128),
+    newPassword: z.string().min(8, 'Password baru minimal 8 karakter').max(128),
+    confirmNewPassword: z.string().min(8).max(128),
+  })
+  .refine((value) => value.newPassword === value.confirmNewPassword, {
+    message: 'Konfirmasi password baru tidak sama',
+    path: ['confirmNewPassword'],
+  });
+
 module.exports = {
   registerSchema,
   loginSchema,
@@ -62,4 +73,5 @@ module.exports = {
   confirmEmailVerificationSchema,
   googleOauthSchema,
   googleOauthRegisterSchema,
+  changePasswordSchema,
 };

@@ -1,4 +1,5 @@
 const {
+  changePasswordSchema,
   confirmEmailVerificationSchema,
   googleOauthRegisterSchema,
 } = require('../src/validators/authValidator');
@@ -26,5 +27,28 @@ describe('googleOauthRegisterSchema', () => {
 
     expect(result.username).toBe('new_google_user');
     expect(result.registrationToken).toBe('signed-token');
+  });
+});
+
+describe('changePasswordSchema', () => {
+  test('accepts valid change password payload', () => {
+    const result = changePasswordSchema.parse({
+      currentPassword: 'old-password',
+      newPassword: 'new-password-123',
+      confirmNewPassword: 'new-password-123',
+    });
+
+    expect(result.newPassword).toBe('new-password-123');
+  });
+
+  test('rejects when confirmNewPassword does not match', () => {
+    const result = changePasswordSchema.safeParse({
+      currentPassword: 'old-password',
+      newPassword: 'new-password-123',
+      confirmNewPassword: 'different-password',
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error.issues[0].path).toEqual(['confirmNewPassword']);
   });
 });

@@ -310,6 +310,28 @@ async function linkGoogleIdentity(userId, googleSub) {
   }
 }
 
+async function updateUserPasswordHash(userId, passwordHash) {
+  const user = await prisma.user.update({
+    where: {
+      userId,
+    },
+    data: {
+      passwordHash,
+      updatedAt: new Date(),
+    },
+    include: {
+      userRoles: {
+        include: {
+          role: true,
+        },
+        take: 1,
+      },
+    },
+  });
+
+  return mapUserWithRole(user);
+}
+
 module.exports = {
   findUserByEmail,
   findUserByGoogleSub,
@@ -322,4 +344,5 @@ module.exports = {
   deleteEmailVerification,
   activateUserByEmail,
   linkGoogleIdentity,
+  updateUserPasswordHash,
 };

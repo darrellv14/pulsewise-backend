@@ -59,6 +59,45 @@ npm run postman:smoke:prod
 
 Catatan: endpoint legacy tetap tersedia, tapi untuk integrasi FE terbaru gunakan flow `link-by-patient-id`.
 
+## Endpoint Auth Tambahan
+
+- `POST /auth/change-password`
+  - Hanya untuk akun email/password yang sudah login.
+  - Tidak berlaku untuk akun Google OAuth.
+  - Body yang diterima:
+
+```json
+{
+  "currentPassword": "old-password",
+  "newPassword": "new-password-123",
+  "confirmNewPassword": "new-password-123"
+}
+```
+
+  - Response sukses:
+
+```json
+{
+  "success": true,
+  "message": "Password berhasil diperbarui",
+  "data": {
+    "nextStep": "LOGIN_AGAIN"
+  }
+}
+```
+
+  - Jika akun adalah Google OAuth, backend akan mengembalikan `403`:
+
+```json
+{
+  "success": false,
+  "message": "Ubah password hanya tersedia untuk akun email/password",
+  "details": {
+    "nextStep": "USE_GOOGLE_LOGIN"
+  }
+}
+```
+
 ## Endpoint Pairing Session (Desktop QR)
 
 - `POST /doctors/{doctorId}/dashboard/pairing-sessions`
@@ -75,8 +114,40 @@ Catatan: endpoint legacy tetap tersedia, tapi untuk integrasi FE terbaru gunakan
 
 - `POST /biometrics`
   - Ingest batch data biometrik (idempotent duplicate-safe).
+  - Cocok untuk data Android Health Connect / device time-series seperti `heart_rate` dan `spo2`.
+  - `metricType` yang diterima backend bisa berupa alias, misalnya:
+    - heart rate: `heart_rate`, `heartrate`, `hr`, `pulse`
+    - oxygen saturation: `spo2`, `sp02`, `oxygen`, `oxygen_saturation`
+    - blood pressure: `systolic`, `systolic_bp`, `systolic_pressure`, `diastolic`, `diastolic_bp`, `diastolic_pressure`
+    - lainnya: `weight`, `body_weight`, `height`, `body_height`, `bmi`, `total_cholesterol`, `urine_flow_rate`, `urination_time`, `urine_volume`, `pulse_regularity_code`
+  - Contoh payload SpO2 dari Health Connect:
+
+```json
+{
+  "source": "health_connect",
+  "readings": [
+    {
+      "metricType": "spo2",
+      "valueNumeric": 97,
+      "unit": "%",
+      "measuredAt": "2026-05-04T08:00:00.000Z",
+      "payload": {
+        "deviceModel": "Pixel Watch 3",
+        "origin": "health_connect"
+      }
+    }
+  ]
+}
+```
+
 - `GET /biometrics`
-  - Ambil histori biometrik dengan filter `source`, `metricType`, `startAt`, `endAt`, pagination.
+  - Ambil histori biometrik dengan filter `patientId`, `source`, `metricType`, `startAt`, `endAt`, `page`, `limit`.
+  - Query `metricType=spo2` atau `metricType=oxygen` valid; backend akan menormalisasi hasilnya menjadi metric canonical `oxygen_saturation`.
+  - Contoh query:
+
+```text
+GET /biometrics?source=health_connect&metricType=spo2&startAt=2026-05-01T00:00:00.000Z&endAt=2026-05-04T23:59:59.999Z&page=1&limit=50
+```
 
 ## Endpoint ML (HFMS v3)
 
