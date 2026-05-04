@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const { UNAUTHORIZED } = require('../constants/httpStatus');
 const env = require('../config/env');
 const userRepository = require('../repositories/userRepository');
+const { ACCOUNT_STATUSES } = require('../constants/enums');
 const { fail } = require('../utils/response');
 
 async function authenticate(req, res, next) {
@@ -18,7 +19,7 @@ async function authenticate(req, res, next) {
     if (env.auth.recheckUserOnProtectedRoutes) {
       const user = await userRepository.findUserById(decoded.userId);
 
-      if (!user || user.account_status !== 'active') {
+      if (!user || user.account_status !== ACCOUNT_STATUSES.ACTIVE) {
         return fail(res, 'Token tidak valid', UNAUTHORIZED);
       }
     }

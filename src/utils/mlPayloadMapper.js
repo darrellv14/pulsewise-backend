@@ -1,3 +1,5 @@
+const { normalizeMetricType } = require('./metricTypes');
+
 const ML_V3_LIFESTYLE_FIELDS = [
   'Dieta1_DR1TCALC',
   'Dieta1_DR1TCARB',
@@ -116,12 +118,6 @@ function toDateOnlyIso(value) {
 
   const parsed = new Date(value);
   return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString().slice(0, 10);
-}
-
-function normalizeMetricType(metricType) {
-  return String(metricType || '')
-    .trim()
-    .toLowerCase();
 }
 
 function calculateAge(dateOfBirth) {

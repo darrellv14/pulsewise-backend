@@ -5,6 +5,7 @@ const { OAuth2Client } = require('google-auth-library');
 const env = require('../../config/env');
 const userRepository = require('../../repositories/userRepository');
 const { createHttpError } = require('../../utils/httpError');
+const { ACCOUNT_STATUSES } = require('../../constants/enums');
 const { issueEmailVerification } = require('./verificationService');
 const { createGoogleRegistrationToken, verifyGoogleRegistrationToken } = require('./tokenService');
 const {
@@ -80,7 +81,7 @@ async function beginGoogleAuth(idToken, role = 'patient') {
     throw buildGoogleEmailAlreadyRegisteredError();
   }
 
-  if (user.account_status === 'active' && user.onboarding_completed !== false) {
+  if (user.account_status === ACCOUNT_STATUSES.ACTIVE && user.onboarding_completed !== false) {
     const token = jwt.sign(buildAuthPayload(user), env.jwtSecret, {
       expiresIn: env.jwtExpiresIn,
     });
@@ -151,7 +152,7 @@ async function completeGoogleRegistration(payload) {
   }
 
   if (user) {
-    if (user.account_status === 'active' && user.onboarding_completed !== false) {
+    if (user.account_status === ACCOUNT_STATUSES.ACTIVE && user.onboarding_completed !== false) {
       throw createHttpError('Akun Google ini sudah aktif', 409);
     }
 
@@ -177,7 +178,7 @@ async function completeGoogleRegistration(payload) {
     passwordHash: placeholderPasswordHash,
     googleSub: googleProfile.googleSub,
     onboardingCompleted: true,
-    accountStatus: 'pending_verification',
+    accountStatus: ACCOUNT_STATUSES.PENDING_VERIFICATION,
     emailVerifiedAt: null,
   });
   const verification = await issueEmailVerification(user);

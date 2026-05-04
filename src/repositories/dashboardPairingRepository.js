@@ -1,4 +1,5 @@
 const prisma = require('../config/prisma');
+const { PAIRING_STATUSES } = require('../constants/enums');
 
 function mapPairingSession(row) {
   if (!row) {
@@ -36,7 +37,7 @@ async function createDashboardPairingSession({ doctorId, pairingTokenHash, expir
     data: {
       doctorId,
       pairingTokenHash,
-      status: 'pending',
+      status: PAIRING_STATUSES.PENDING,
       expiresAt: new Date(expiresAt),
     },
   });
@@ -72,7 +73,7 @@ async function findActiveDashboardPairingSessionByTokenHash(pairingTokenHash) {
   const row = await prisma.dashboardPairingSession.findFirst({
     where: {
       pairingTokenHash,
-      status: 'pending',
+      status: PAIRING_STATUSES.PENDING,
       expiresAt: {
         gt: new Date(),
       },
@@ -90,13 +91,13 @@ async function confirmDashboardPairingSessionAtomic({ pairingTokenHash, patientI
     const updated = await tx.dashboardPairingSession.updateMany({
       where: {
         pairingTokenHash,
-        status: 'pending',
+        status: PAIRING_STATUSES.PENDING,
         expiresAt: {
           gt: new Date(),
         },
       },
       data: {
-        status: 'confirmed',
+        status: PAIRING_STATUSES.CONFIRMED,
         confirmedAt: new Date(),
         confirmedByPatientId: patientId,
         updatedAt: new Date(),
@@ -147,13 +148,13 @@ async function markDashboardPairingSessionConfirmed({ pairingSessionId, patientI
   const updated = await prisma.dashboardPairingSession.updateMany({
     where: {
       pairingSessionId,
-      status: 'pending',
+      status: PAIRING_STATUSES.PENDING,
       expiresAt: {
         gt: new Date(),
       },
     },
     data: {
-      status: 'confirmed',
+      status: PAIRING_STATUSES.CONFIRMED,
       confirmedAt: new Date(),
       confirmedByPatientId: patientId,
       updatedAt: new Date(),
@@ -177,10 +178,10 @@ async function markDashboardPairingSessionExpired(pairingSessionId) {
   const updated = await prisma.dashboardPairingSession.updateMany({
     where: {
       pairingSessionId,
-      status: 'pending',
+      status: PAIRING_STATUSES.PENDING,
     },
     data: {
-      status: 'expired',
+      status: PAIRING_STATUSES.EXPIRED,
       updatedAt: new Date(),
     },
   });

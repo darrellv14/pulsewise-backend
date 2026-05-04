@@ -1,7 +1,10 @@
 const crypto = require('crypto');
-const { NOT_FOUND, FORBIDDEN } = require('../../constants/httpStatus');
-const doctorPatientRepository = require('../../repositories/doctorPatientRepository');
-const { createHttpError } = require('../../utils/httpError');
+const { NOT_FOUND } = require('../../constants/httpStatus');
+const {
+  assertDoctorScope,
+  assertPatientScope,
+  assertPatientResourceAccess,
+} = require('../shared/guards');
 
 function buildPagination({ page, limit, totalItems }) {
   const totalPages = Math.max(1, Math.ceil(totalItems / limit));
@@ -70,89 +73,6 @@ function latestIso(...values) {
   return normalized.reduce((max, value) => (value > max ? value : max));
 }
 
-function assertDoctorScope({ actor, doctorId }) {
-  if (!actor) {
-    throw createHttpError('Aktor tidak valid', FORBIDDEN);
-  }
-
-  if (actor.role === 'admin') {
-    return;
-  }
-
-  if (actor.role !== 'doctor') {
-    throw createHttpError('Role tidak memiliki akses dashboard dokter', FORBIDDEN);
-  }
-
-  if (actor.userId !== doctorId) {
-    throw createHttpError('Akses dashboard dokter ditolak', FORBIDDEN);
-  }
-}
-
-function assertPatientScope({ actor, patientId }) {
-  if (!actor) {
-    throw createHttpError('Aktor tidak valid', FORBIDDEN);
-  }
-
-  if (actor.role === 'admin') {
-    return;
-  }
-
-  if (actor.role !== 'patient') {
-    throw createHttpError('Role tidak memiliki akses pasien', FORBIDDEN);
-  }
-
-  if (actor.userId !== patientId) {
-    throw createHttpError('Akses data pasien ditolak', FORBIDDEN);
-  }
-}
-
-async function assertPatientResourceAccess({ actor, patientId }) {
-  if (!actor) {
-    throw createHttpError('Aktor tidak valid', FORBIDDEN);
-  }
-
-  if (actor.role === 'admin') {
-    return;
-  }
-
-  if (actor.role === 'patient') {
-    if (actor.userId !== patientId) {
-      throw createHttpError('Akses data pasien ditolak', FORBIDDEN);
-    }
-
-    return;
-  }
-
-  if (actor.role === 'doctor') {
-    const link = await doctorPatientRepository.findDoctorPatientLink({
-      doctorId: actor.userId,
-      patientId,
-    });
-
-    if (!link) {
-      throw createHttpError('Dokter tidak memiliki akses ke pasien ini', FORBIDDEN);
-    }
-
-    return;
-  }
-
-  throw createHttpError('Role tidak memiliki akses pasien', FORBIDDEN);
-}
-
-function formatPatientIdentity(row) {
-  const dateOfBirth = toDateOnlyIso(row.date_of_birth);
-
-  return {
-    patientId: row.patient_id,
-    firstName: row.first_name,
-    lastName: row.last_name,
-    email: row.email,
-    phone: row.tel_no || null,
-    dateOfBirth,
-    age: calculateAge(dateOfBirth),
-    sex: row.sex || null,
-  };
-}
 
 function generateShareCode() {
   return `PW-${crypto.randomBytes(6).toString('hex').toUpperCase()}`;
@@ -230,7 +150,6 @@ module.exports = {
   assertDoctorScope,
   assertPatientScope,
   assertPatientResourceAccess,
-  formatPatientIdentity,
   generateShareCode,
   createPoint,
   buildLatestVitals,

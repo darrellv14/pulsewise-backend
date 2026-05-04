@@ -17,13 +17,13 @@ const {
   calculateAge,
   latestIso,
   assertDoctorScope,
-  formatPatientIdentity,
   createPoint,
   buildLatestVitals,
   extractNumberValues,
   aggregateStats,
 } = require('./shared');
 const { createHttpError } = require('../../utils/httpError');
+const { formatPatientIdentity, mapDashboardSummary } = require('../shared/mappers');
 
 function buildPeriodRange({ startDate, endDate, timePeriod = 'last_30_days' }) {
   const now = new Date();
@@ -283,11 +283,11 @@ async function getDoctorDashboardPatientSummary({ actor, doctorId, patientId }) 
         }
       }
 
-      return {
-        patient: formatPatientIdentity(identity),
+      return mapDashboardSummary({
+        identity,
         latestVitals,
         thresholds,
-      };
+      });
     }
   );
 }

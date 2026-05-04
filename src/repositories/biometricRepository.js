@@ -1,4 +1,5 @@
 const prisma = require('../config/prisma');
+const { normalizeMetricType } = require('../utils/metricTypes');
 
 const LATEST_VITAL_ALIASES = {
   heartRate: ['heart_rate', 'heartrate', 'hr', 'pulse'],
@@ -25,12 +26,6 @@ function mapReading(row) {
     measured_at: row.measuredAt,
     received_at: row.receivedAt,
   };
-}
-
-function normalizeMetricType(metricType) {
-  return String(metricType || '')
-    .trim()
-    .toLowerCase();
 }
 
 async function findDuplicateReading({

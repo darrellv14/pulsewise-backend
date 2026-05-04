@@ -4,6 +4,7 @@ const doctorPatientRepository = require('../repositories/doctorPatientRepository
 const profileRepository = require('../repositories/profileRepository');
 const { normalizePaginationInput } = require('../utils/pagination');
 const { normalizeMetricType } = require('../utils/metricTypes');
+const { normalizeBiometricSource } = require('../constants/enums');
 const { invalidateByPrefixes } = require('./cache/cacheService');
 const {
   dashboardPatientSummaryPrefix,
@@ -111,9 +112,7 @@ async function ingestBiometrics({ actor, payload }) {
 
   await assertPatientExists(targetPatientId);
 
-  const source = String(payload.source || '')
-    .trim()
-    .toLowerCase();
+  const source = normalizeBiometricSource(payload.source) || '';
   const results = [];
   let insertedCount = 0;
   let duplicateCount = 0;
@@ -236,7 +235,7 @@ async function listBiometrics({ actor, query }) {
   const pagination = normalizePaginationInput(query, { limit: 50 });
   const offset = (pagination.page - 1) * pagination.limit;
 
-  const source = query.source ? String(query.source).trim().toLowerCase() : null;
+  const source = normalizeBiometricSource(query.source);
 
   const [rows, totalItems] = await Promise.all([
     biometricRepository.listReadings({

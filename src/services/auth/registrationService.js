@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const userRepository = require('../../repositories/userRepository');
 const { createHttpError } = require('../../utils/httpError');
+const { ACCOUNT_STATUSES } = require('../../constants/enums');
 const { ALLOWED_ROLES, buildUserProfile } = require('./shared');
 
 async function register(payload) {
@@ -30,7 +31,7 @@ async function register(payload) {
     firstName,
     lastName,
     role,
-    accountStatus: 'pending_verification',
+    accountStatus: ACCOUNT_STATUSES.PENDING_VERIFICATION,
     emailVerifiedAt: null,
   });
 

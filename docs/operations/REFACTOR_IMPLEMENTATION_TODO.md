@@ -51,23 +51,23 @@ Dokumen ini memecah roadmap refactor besar menjadi batch yang bisa dikerjakan be
 
 ## Batch 4 - Shared Guards, Mapper, dan Constants
 
-- [ ] Pusatkan access guard:
-  - [ ] doctor scope
-  - [ ] patient scope
-  - [ ] patient resource access
-  - [ ] doctor-patient linked access
-- [ ] Pusatkan mapper:
-  - [ ] patient identity
-  - [ ] latest vital snapshot
-  - [ ] diary detail
-  - [ ] dashboard summary
-- [ ] Pusatkan constants/enums internal:
-  - [ ] metric types
-  - [ ] biometric sources
-  - [ ] condition tags
-  - [ ] account status
-  - [ ] pairing status
-- [ ] Hapus helper `createHttpError` lokal yang masih tersisa
+- [x] Pusatkan access guard:
+  - [x] doctor scope
+  - [x] patient scope
+  - [x] patient resource access
+  - [x] doctor-patient linked access
+- [x] Pusatkan mapper:
+  - [x] patient identity
+  - [x] latest vital snapshot
+  - [x] diary detail
+  - [x] dashboard summary
+- [x] Pusatkan constants/enums internal:
+  - [x] metric types
+  - [x] biometric sources
+  - [x] condition tags
+  - [x] account status
+  - [x] pairing status
+- [x] Hapus helper `createHttpError` lokal yang masih tersisa
 
 ## Batch 5 - Cache and Invalidation Expansion
 

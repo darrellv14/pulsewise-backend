@@ -1,7 +1,9 @@
 const crypto = require('crypto');
 const { NOT_FOUND, FORBIDDEN, CREATED, OK } = require('../constants/httpStatus');
+const { PAIRING_STATUSES } = require('../constants/enums');
 const doctorPatientRepository = require('../repositories/doctorPatientRepository');
 const dashboardPairingRepository = require('../repositories/dashboardPairingRepository');
+const { assertDoctorScope } = require('./shared/guards');
 
 const DEFAULT_PAIRING_SOURCE = 'qr_dashboard_pairing';
 
@@ -12,30 +14,6 @@ function toIso(value) {
 
   const parsed = new Date(value);
   return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString();
-}
-
-function assertDoctorScope({ actor, doctorId }) {
-  if (!actor) {
-    const error = new Error('Aktor tidak valid');
-    error.statusCode = FORBIDDEN;
-    throw error;
-  }
-
-  if (actor.role === 'admin') {
-    return;
-  }
-
-  if (actor.role !== 'doctor') {
-    const error = new Error('Role tidak memiliki akses dashboard dokter');
-    error.statusCode = FORBIDDEN;
-    throw error;
-  }
-
-  if (actor.userId !== doctorId) {
-    const error = new Error('Akses dashboard dokter ditolak');
-    error.statusCode = FORBIDDEN;
-    throw error;
-  }
 }
 
 function assertPatientActor(actor) {
@@ -72,7 +50,7 @@ function buildPairingTokenNotFoundError() {
 }
 
 async function buildFinalizedPairingResponse({ pairingSession, requestedSource }) {
-  if (pairingSession.status === 'confirmed') {
+  if (pairingSession.status === PAIRING_STATUSES.CONFIRMED) {
     const confirmedPatientId = pairingSession.confirmed_by_patient_id || null;
     let doctorPatientLink = null;
 
@@ -103,7 +81,10 @@ async function buildFinalizedPairingResponse({ pairingSession, requestedSource }
     };
   }
 
-  if (pairingSession.status === 'expired' || pairingSession.status === 'cancelled') {
+  if (
+    pairingSession.status === PAIRING_STATUSES.EXPIRED ||
+    pairingSession.status === PAIRING_STATUSES.CANCELLED
+  ) {
     return {
       pairingSessionId: pairingSession.pairing_session_id,
       doctorId: pairingSession.doctor_id,
@@ -159,10 +140,10 @@ async function getDashboardPairingSessionStatus({ actor, doctorId, pairingSessio
     throw error;
   }
 
-  if (
-    pairingSession.status === 'pending' &&
-    new Date(pairingSession.expires_at).getTime() <= Date.now()
-  ) {
+    if (
+      pairingSession.status === PAIRING_STATUSES.PENDING &&
+      new Date(pairingSession.expires_at).getTime() <= Date.now()
+    ) {
     pairingSession =
       (await dashboardPairingRepository.markDashboardPairingSessionExpired(
         pairingSession.pairing_session_id
@@ -195,14 +176,15 @@ async function confirmDashboardPairingSession({
   }
 
   if (
-    pairingSession.status === 'pending' &&
+    pairingSession.status === PAIRING_STATUSES.PENDING &&
     new Date(pairingSession.expires_at).getTime() <= Date.now()
   ) {
-    pairingSession = (await dashboardPairingRepository.markDashboardPairingSessionExpired(
-      pairingSession.pairing_session_id
-    )) || {
+    pairingSession =
+      (await dashboardPairingRepository.markDashboardPairingSessionExpired(
+        pairingSession.pairing_session_id
+      )) || {
       ...pairingSession,
-      status: 'expired',
+        status: PAIRING_STATUSES.EXPIRED,
     };
 
     return buildFinalizedPairingResponse({
@@ -211,7 +193,7 @@ async function confirmDashboardPairingSession({
     });
   }
 
-  if (pairingSession.status !== 'pending') {
+  if (pairingSession.status !== PAIRING_STATUSES.PENDING) {
     return buildFinalizedPairingResponse({
       pairingSession,
       requestedSource: source,
@@ -245,15 +227,16 @@ async function confirmDashboardPairingSession({
   }
 
   if (
-    pairingSession.status === 'pending' &&
+    pairingSession.status === PAIRING_STATUSES.PENDING &&
     new Date(pairingSession.expires_at).getTime() <= Date.now()
   ) {
-    pairingSession = (await dashboardPairingRepository.markDashboardPairingSessionExpired(
-      pairingSession.pairing_session_id
-    )) || {
-      ...pairingSession,
-      status: 'expired',
-    };
+    pairingSession =
+      (await dashboardPairingRepository.markDashboardPairingSessionExpired(
+        pairingSession.pairing_session_id
+      )) || {
+        ...pairingSession,
+        status: PAIRING_STATUSES.EXPIRED,
+      };
   }
 
   return buildFinalizedPairingResponse({

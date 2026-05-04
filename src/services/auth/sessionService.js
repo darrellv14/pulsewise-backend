@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const env = require('../../config/env');
 const userRepository = require('../../repositories/userRepository');
 const { createHttpError } = require('../../utils/httpError');
+const { ACCOUNT_STATUSES } = require('../../constants/enums');
 const {
   buildAuthPayload,
   buildAuthResponse,
@@ -20,7 +21,7 @@ async function login(email, password) {
     throw createHttpError('Email atau password salah', 401);
   }
 
-  if (user.account_status !== 'active') {
+  if (user.account_status !== ACCOUNT_STATUSES.ACTIVE) {
     throw createHttpError('Akun belum aktif, silakan verifikasi email terlebih dahulu', 403);
   }
 

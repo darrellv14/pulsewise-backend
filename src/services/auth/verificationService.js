@@ -2,6 +2,7 @@ const env = require('../../config/env');
 const userRepository = require('../../repositories/userRepository');
 const { sendOtpEmail, sendForgotPasswordOtpEmail } = require('../emailService');
 const { createHttpError } = require('../../utils/httpError');
+const { ACCOUNT_STATUSES } = require('../../constants/enums');
 const { createForgotPasswordResetToken } = require('./tokenService');
 const { buildUserProfile, generateOtpCode, hashOtpCode } = require('./shared');
 
@@ -83,7 +84,7 @@ async function confirmEmailVerification(email, otp) {
 
   return {
     user: buildUserProfile(user),
-    accountStatus: 'active',
+    accountStatus: ACCOUNT_STATUSES.ACTIVE,
   };
 }
 

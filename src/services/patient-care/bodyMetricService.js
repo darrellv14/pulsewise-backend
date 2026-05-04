@@ -1,11 +1,11 @@
 const { NOT_FOUND } = require('../../constants/httpStatus');
+const { normalizeConditionTag } = require('../../constants/enums');
 const patientCareRepository = require('../../repositories/patientCareRepository');
 const biometricRepository = require('../../repositories/biometricRepository');
 const { createHttpError } = require('../../utils/httpError');
 const {
   assertUserScope,
   hasOwn,
-  normalizeNullableText,
 } = require('./shared');
 const { invalidateDiaryAndDashboardCaches } = require('./cache');
 const { ensureHeartDiaryByDate } = require('./diaryService');
@@ -21,7 +21,7 @@ async function createDailyBodyMetric({ actor, userId, diaryId, payload }) {
 
   const created = await patientCareRepository.createDailyBodyMetric({
     diaryId,
-    conditionTag: payload.conditionTag || null,
+    conditionTag: normalizeConditionTag(payload.conditionTag) ?? null,
     bodyHeight: payload.bodyHeight,
     bodyWeight: payload.bodyWeight,
     bmi: payload.bmi,
@@ -51,7 +51,7 @@ async function createDailyBodyMetricByDate({ actor, userId, payload }) {
   if (!existingMetric) {
     const created = await patientCareRepository.createDailyBodyMetric({
       diaryId: diary.diary_id,
-      conditionTag: normalizeNullableText(payload.conditionTag),
+      conditionTag: normalizeConditionTag(payload.conditionTag) ?? null,
       bodyHeight: payload.bodyHeight,
       bodyWeight: payload.bodyWeight,
       bmi: payload.bmi,
@@ -69,7 +69,7 @@ async function createDailyBodyMetricByDate({ actor, userId, payload }) {
   const updated = await patientCareRepository.updateDailyBodyMetric({
     metricId: existingMetric.metric_id,
     conditionTag: hasOwn(payload, 'conditionTag')
-      ? normalizeNullableText(payload.conditionTag)
+      ? normalizeConditionTag(payload.conditionTag)
       : undefined,
     bodyHeight: hasOwn(payload, 'bodyHeight') ? payload.bodyHeight : undefined,
     bodyWeight: hasOwn(payload, 'bodyWeight') ? payload.bodyWeight : undefined,

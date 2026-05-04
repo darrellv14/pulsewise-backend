@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const { normalizeOtp } = require('../../utils/otp');
 const { createHttpError } = require('../../utils/httpError');
+const { ACCOUNT_STATUSES } = require('../../constants/enums');
 
 const ALLOWED_ROLES = new Set(['patient', 'doctor', 'admin']);
 const GOOGLE_MOBILE_ROLES = new Set(['patient', 'doctor']);
@@ -59,7 +60,7 @@ function buildUserProfile(user) {
     lastName: user.last_name,
     avatarPhoto: user.avatar_photo || null,
     role: user.role || 'patient',
-    accountStatus: user.account_status || 'pending_verification',
+    accountStatus: user.account_status || ACCOUNT_STATUSES.PENDING_VERIFICATION,
     emailVerifiedAt: user.email_verified_at || null,
     onboardingCompleted: user.onboarding_completed !== false,
   };

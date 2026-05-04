@@ -223,6 +223,52 @@ Frontend tetap boleh menyimpan aktivitas, tetapi kontribusinya ke variabel activ
 | `activityCategory = recreation` + `intensityLevel = vigorous` | dihitung jumlah hari unik | `Quest19_PAQ655` |
 | `outdoorMinutes` | jika diisi | `Quest6_DED1225` |
 
+## Health Connect Mapping (Recommended)
+
+Tujuan mapping ini:
+
+- tetap simpan activity dari HC ke diary activity
+- hindari payload dummy; kirim hanya field yang benar-benar ada
+- jaga konsistensi enum backend
+
+### Aturan mapping cepat
+
+- `name`: ambil dari label activity HC; kalau kosong gunakan nama generik yang informatif.
+- `timeStamp`: pakai waktu mulai activity; kalau tidak ada, omit.
+- `duration`: pakai menit dari durasi session; kalau tidak ada, omit.
+- `heartRate`: pakai average heart rate jika tersedia; kalau tidak ada, omit.
+- `outdoorMinutes`: pakai durasi outdoor jika tersedia; kalau tidak ada, omit.
+- `activityCategory`:
+  - transport: jika activity HC jelas transport (walk/bicycle/commute)
+  - recreation: jika activity HC adalah olahraga/latihan
+  - work: jika activity HC adalah kerja fisik
+  - other: jika tidak bisa dipetakan secara yakin
+- `transportMode`:
+  - walk atau bicycle jika HC membedakan mode
+  - other jika transport tapi mode tidak jelas
+- `intensityLevel`:
+  - gunakan info intensitas HC jika tersedia
+  - default ke `unknown` jika tidak ada
+
+### Prinsip payload
+
+- Jangan isi field dengan dummy. Jika data tidak ada, omit atau kirim null.
+- `name` tetap wajib.
+- `activityCategory` dan `duration` disarankan diisi bila memungkinkan agar ML lebih siap.
+
+### Example payload minimal dari HC
+
+```json
+{
+  "diaryDate": "2026-04-27",
+  "name": "Walking",
+  "activityCategory": "transport",
+  "transportMode": "walk",
+  "duration": 18,
+  "timeStamp": "2026-04-27T07:10:00.000Z"
+}
+```
+
 ## Implementation Notes For FE
 
 - Jangan kirim string bebas untuk `activityCategory`.
