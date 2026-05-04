@@ -905,6 +905,20 @@ components:
         heartRate:
           type: integer
           nullable: true
+        latestHeartRate:
+          type: integer
+          nullable: true
+        latestHeartRateMeasuredAt:
+          type: string
+          format: date-time
+          nullable: true
+        latestOxygenSaturation:
+          type: integer
+          nullable: true
+        latestOxygenSaturationMeasuredAt:
+          type: string
+          format: date-time
+          nullable: true
         timeStamp:
           type: string
           format: date-time
@@ -919,6 +933,10 @@ components:
         systolicPressure: 122
         diastolicPressure: 78
         heartRate: 74
+        latestHeartRate: 81
+        latestHeartRateMeasuredAt: '2026-05-04T08:30:00.000Z'
+        latestOxygenSaturation: 98
+        latestOxygenSaturationMeasuredAt: '2026-05-04T08:31:00.000Z'
         timeStamp: '2026-04-10T07:30:00.000Z'
 
     DailySymptom:
@@ -935,7 +953,19 @@ components:
         symptomCode:
           type: string
           nullable: true
-          enum: [chest_pain, shortness_of_breath, palpitations, dizziness, headache, fatigue, cough, swelling, nausea, other]
+          enum:
+            [
+              chest_pain,
+              shortness_of_breath,
+              palpitations,
+              dizziness,
+              headache,
+              fatigue,
+              cough,
+              swelling,
+              nausea,
+              other,
+            ]
         bodyArea:
           type: string
           nullable: true
@@ -1213,7 +1243,19 @@ components:
         symptomCode:
           type: string
           nullable: true
-          enum: [chest_pain, shortness_of_breath, palpitations, dizziness, headache, fatigue, cough, swelling, nausea, other]
+          enum:
+            [
+              chest_pain,
+              shortness_of_breath,
+              palpitations,
+              dizziness,
+              headache,
+              fatigue,
+              cough,
+              swelling,
+              nausea,
+              other,
+            ]
         bodyArea:
           type: string
           nullable: true
@@ -1458,6 +1500,10 @@ components:
             systolicPressure: 122
             diastolicPressure: 78
             heartRate: 74
+            latestHeartRate: 81
+            latestHeartRateMeasuredAt: '2026-05-04T08:30:00.000Z'
+            latestOxygenSaturation: 98
+            latestOxygenSaturationMeasuredAt: '2026-05-04T08:31:00.000Z'
             timeStamp: '2026-04-10T07:30:00.000Z'
         symptoms:
           - symptomId: 7b5d8f10-1111-4222-8333-1234567890ac
@@ -5488,38 +5534,6 @@ paths:
                     properties:
                       data:
                         $ref: '#/components/schemas/MlUpstreamData'
-
-  /api/v1/users/{userId}/diaries/{diaryId}:
-    get:
-      tags: [Patient Care]
-      summary: Get detailed heart diary record
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-        - name: diaryId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: Detail heart diary
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessEnvelope'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/HeartDiaryDetail'
 
   /api/v1/users/{userId}/diaries/{diaryId}/body-metrics:
     post:

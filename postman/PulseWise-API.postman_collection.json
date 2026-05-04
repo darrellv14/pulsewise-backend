@@ -253,9 +253,7 @@
               "listen": "test",
               "script": {
                 "type": "text/javascript",
-                "exec": [
-                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
-                ]
+                "exec": ["pm.test('Status 200', function () { pm.response.to.have.status(200); });"]
               }
             }
           ],
@@ -1055,9 +1053,7 @@
               "listen": "test",
               "script": {
                 "type": "text/javascript",
-                "exec": [
-                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
-                ]
+                "exec": ["pm.test('Status 200', function () { pm.response.to.have.status(200); });"]
               }
             }
           ],
@@ -1343,12 +1339,8 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/patients?page=1&limit=20&sortBy=created_at&order=desc",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "patients"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["patients"],
               "query": [
                 {
                   "key": "page",
@@ -1382,12 +1374,8 @@
                 ],
                 "url": {
                   "raw": "{{baseUrl}}/patients?page=1&limit=20&sortBy=created_at&order=desc",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "patients"
-                  ],
+                  "host": ["{{baseUrl}}"],
+                  "path": ["patients"],
                   "query": [
                     {
                       "key": "page",
@@ -1742,14 +1730,8 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/doctors/{{doctorId}}/patients?page=1&limit=20",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "doctors",
-                "{{doctorId}}",
-                "patients"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["doctors", "{{doctorId}}", "patients"],
               "query": [
                 {
                   "key": "page",
@@ -1775,14 +1757,8 @@
                 ],
                 "url": {
                   "raw": "{{baseUrl}}/doctors/{{doctorId}}/patients?page=1&limit=20",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "doctors",
-                    "{{doctorId}}",
-                    "patients"
-                  ],
+                  "host": ["{{baseUrl}}"],
+                  "path": ["doctors", "{{doctorId}}", "patients"],
                   "query": [
                     {
                       "key": "page",
@@ -2874,9 +2850,7 @@
               "listen": "test",
               "script": {
                 "type": "text/javascript",
-                "exec": [
-                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
-                ]
+                "exec": ["pm.test('Status 200', function () { pm.response.to.have.status(200); });"]
               }
             }
           ],
@@ -3164,9 +3138,7 @@
               "listen": "test",
               "script": {
                 "type": "text/javascript",
-                "exec": [
-                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });"
-                ]
+                "exec": ["pm.test('Status 201', function () { pm.response.to.have.status(201); });"]
               }
             }
           ],
@@ -3545,7 +3517,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n    \"userId\": \"3a233724-0b42-4a4f-88e8-88e732c46351\",\n    \"diaryDate\": \"2026-04-10\",\n    \"createdAt\": \"2026-04-10T08:15:00.000Z\",\n    \"bodyMetrics\": [\n      {\n        \"metricId\": \"7b5d8f10-1111-4222-8333-1234567890ab\",\n        \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n        \"conditionTag\": \"after_breakfast\",\n        \"bodyHeight\": 172.5,\n        \"bodyWeight\": 68.2,\n        \"bmi\": 22.9,\n        \"systolicPressure\": 122,\n        \"diastolicPressure\": 78,\n        \"heartRate\": 74,\n        \"timeStamp\": \"2026-04-10T07:30:00.000Z\"\n      }\n    ],\n    \"symptoms\": [\n      {\n        \"symptomId\": \"7b5d8f10-1111-4222-8333-1234567890ac\",\n        \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n        \"symptomName\": \"Pusing ringan\",\n        \"intensity\": 2,\n        \"note\": \"Muncul sebelum sarapan\",\n        \"time\": \"07:30\",\n        \"timeStamp\": \"2026-04-10T07:30:00.000Z\"\n      }\n    ],\n    \"activities\": [\n      {\n        \"activityId\": \"7b5d8f10-1111-4222-8333-1234567890ad\",\n        \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n        \"name\": \"Jalan pagi\",\n        \"duration\": 30,\n        \"heartRate\": 98,\n        \"userFeeling\": \"baik\",\n        \"note\": \"Ritme santai\",\n        \"timeStamp\": \"2026-04-10T06:30:00.000Z\"\n      }\n    ],\n    \"consumptions\": [\n      {\n        \"consumptionId\": \"7b5d8f10-1111-4222-8333-1234567890ae\",\n        \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n        \"type\": \"minuman\",\n        \"name\": \"Kopi hitam\",\n        \"portion\": \"1 cangkir\",\n        \"note\": \"Tanpa gula\",\n        \"time\": \"21:15\",\n        \"timeStamp\": \"2026-04-10T21:15:00.000Z\"\n      }\n    ],\n    \"sleepRecord\": {\n      \"sleepRecordId\": \"7b5d8f10-1111-4222-8333-1234567890af\",\n      \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n      \"sleepTime\": \"22:30\",\n      \"wakeTime\": \"06:30\",\n      \"sleepDurationHours\": 8,\n      \"source\": \"postman_manual\",\n      \"createdAt\": \"2026-04-10T22:30:00.000Z\",\n      \"updatedAt\": \"2026-04-10T22:30:00.000Z\"\n    }\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n    \"userId\": \"3a233724-0b42-4a4f-88e8-88e732c46351\",\n    \"diaryDate\": \"2026-04-10\",\n    \"createdAt\": \"2026-04-10T08:15:00.000Z\",\n    \"bodyMetrics\": [\n      {\n        \"metricId\": \"7b5d8f10-1111-4222-8333-1234567890ab\",\n        \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n        \"conditionTag\": \"after_breakfast\",\n        \"bodyHeight\": 172.5,\n        \"bodyWeight\": 68.2,\n        \"bmi\": 22.9,\n        \"systolicPressure\": 122,\n        \"diastolicPressure\": 78,\n        \"heartRate\": 74,\n        \"latestHeartRate\": 81,\n        \"latestHeartRateMeasuredAt\": \"2026-05-04T08:30:00.000Z\",\n        \"latestOxygenSaturation\": 98,\n        \"latestOxygenSaturationMeasuredAt\": \"2026-05-04T08:31:00.000Z\",\n        \"timeStamp\": \"2026-04-10T07:30:00.000Z\"\n      }\n    ],\n    \"symptoms\": [\n      {\n        \"symptomId\": \"7b5d8f10-1111-4222-8333-1234567890ac\",\n        \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n        \"symptomName\": \"Pusing ringan\",\n        \"intensity\": 2,\n        \"note\": \"Muncul sebelum sarapan\",\n        \"time\": \"07:30\",\n        \"timeStamp\": \"2026-04-10T07:30:00.000Z\"\n      }\n    ],\n    \"activities\": [\n      {\n        \"activityId\": \"7b5d8f10-1111-4222-8333-1234567890ad\",\n        \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n        \"name\": \"Jalan pagi\",\n        \"duration\": 30,\n        \"heartRate\": 98,\n        \"userFeeling\": \"baik\",\n        \"note\": \"Ritme santai\",\n        \"timeStamp\": \"2026-04-10T06:30:00.000Z\"\n      }\n    ],\n    \"consumptions\": [\n      {\n        \"consumptionId\": \"7b5d8f10-1111-4222-8333-1234567890ae\",\n        \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n        \"type\": \"minuman\",\n        \"name\": \"Kopi hitam\",\n        \"portion\": \"1 cangkir\",\n        \"note\": \"Tanpa gula\",\n        \"time\": \"21:15\",\n        \"timeStamp\": \"2026-04-10T21:15:00.000Z\"\n      }\n    ],\n    \"sleepRecord\": {\n      \"sleepRecordId\": \"7b5d8f10-1111-4222-8333-1234567890af\",\n      \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n      \"sleepTime\": \"22:30\",\n      \"wakeTime\": \"06:30\",\n      \"sleepDurationHours\": 8,\n      \"source\": \"postman_manual\",\n      \"createdAt\": \"2026-04-10T22:30:00.000Z\",\n      \"updatedAt\": \"2026-04-10T22:30:00.000Z\"\n    }\n  }\n}\n"
             }
           ]
         },
@@ -3613,7 +3585,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"metricId\": \"7b5d8f10-1111-4222-8333-1234567890ab\",\n    \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n    \"conditionTag\": \"after_breakfast\",\n    \"bodyHeight\": 172.5,\n    \"bodyWeight\": 68.2,\n    \"bmi\": 22.9,\n    \"systolicPressure\": 122,\n    \"diastolicPressure\": 78,\n    \"heartRate\": 74,\n    \"timeStamp\": \"2026-04-10T07:30:00.000Z\"\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"metricId\": \"7b5d8f10-1111-4222-8333-1234567890ab\",\n    \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n    \"conditionTag\": \"after_breakfast\",\n    \"bodyHeight\": 172.5,\n    \"bodyWeight\": 68.2,\n    \"bmi\": 22.9,\n    \"systolicPressure\": 122,\n    \"diastolicPressure\": 78,\n    \"heartRate\": 74,\n    \"latestHeartRate\": 81,\n    \"latestHeartRateMeasuredAt\": \"2026-05-04T08:30:00.000Z\",\n    \"latestOxygenSaturation\": 98,\n    \"latestOxygenSaturationMeasuredAt\": \"2026-05-04T08:31:00.000Z\",\n    \"timeStamp\": \"2026-04-10T07:30:00.000Z\"\n  }\n}\n"
             }
           ]
         },
@@ -3822,45 +3794,6 @@
           ]
         },
         {
-          "name": "GET Heart Diary Detail",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{patientToken}}"
-              }
-            ],
-            "url": "{{baseUrl}}/users/{{patientId}}/diaries/{{diaryId}}"
-          },
-          "response": [
-            {
-              "name": "200 Detail heart diary",
-              "originalRequest": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Authorization",
-                    "value": "Bearer {{patientToken}}"
-                  }
-                ],
-                "url": "{{baseUrl}}/users/{{patientId}}/diaries/{{diaryId}}"
-              },
-              "status": "OK",
-              "code": 200,
-              "_postman_previewlanguage": "json",
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json"
-                }
-              ],
-              "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n    \"userId\": \"3a233724-0b42-4a4f-88e8-88e732c46351\",\n    \"diaryDate\": \"2026-04-10\",\n    \"createdAt\": \"2026-04-10T08:15:00.000Z\",\n    \"bodyMetrics\": [\n      {\n        \"metricId\": \"7b5d8f10-1111-4222-8333-1234567890ab\",\n        \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n        \"conditionTag\": \"after_breakfast\",\n        \"bodyHeight\": 172.5,\n        \"bodyWeight\": 68.2,\n        \"bmi\": 22.9,\n        \"systolicPressure\": 122,\n        \"diastolicPressure\": 78,\n        \"heartRate\": 74,\n        \"timeStamp\": \"2026-04-10T07:30:00.000Z\"\n      }\n    ],\n    \"symptoms\": [\n      {\n        \"symptomId\": \"7b5d8f10-1111-4222-8333-1234567890ac\",\n        \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n        \"symptomName\": \"Pusing ringan\",\n        \"intensity\": 2,\n        \"note\": \"Muncul sebelum sarapan\",\n        \"time\": \"07:30\",\n        \"timeStamp\": \"2026-04-10T07:30:00.000Z\"\n      }\n    ],\n    \"activities\": [\n      {\n        \"activityId\": \"7b5d8f10-1111-4222-8333-1234567890ad\",\n        \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n        \"name\": \"Jalan pagi\",\n        \"duration\": 30,\n        \"heartRate\": 98,\n        \"userFeeling\": \"baik\",\n        \"note\": \"Ritme santai\",\n        \"timeStamp\": \"2026-04-10T06:30:00.000Z\"\n      }\n    ],\n    \"consumptions\": [\n      {\n        \"consumptionId\": \"7b5d8f10-1111-4222-8333-1234567890ae\",\n        \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n        \"type\": \"minuman\",\n        \"name\": \"Kopi hitam\",\n        \"portion\": \"1 cangkir\",\n        \"note\": \"Tanpa gula\",\n        \"time\": \"21:15\",\n        \"timeStamp\": \"2026-04-10T21:15:00.000Z\"\n      }\n    ],\n    \"sleepRecord\": {\n      \"sleepRecordId\": \"7b5d8f10-1111-4222-8333-1234567890af\",\n      \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n      \"sleepTime\": \"22:30\",\n      \"wakeTime\": \"06:30\",\n      \"sleepDurationHours\": 8,\n      \"source\": \"postman_manual\",\n      \"createdAt\": \"2026-04-10T22:30:00.000Z\",\n      \"updatedAt\": \"2026-04-10T22:30:00.000Z\"\n    }\n  }\n}\n"
-            }
-          ]
-        },
-        {
           "name": "POST Diary Body Metric",
           "request": {
             "method": "POST",
@@ -3911,7 +3844,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"metricId\": \"7b5d8f10-1111-4222-8333-1234567890ab\",\n    \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n    \"conditionTag\": \"after_breakfast\",\n    \"bodyHeight\": 172.5,\n    \"bodyWeight\": 68.2,\n    \"bmi\": 22.9,\n    \"systolicPressure\": 122,\n    \"diastolicPressure\": 78,\n    \"heartRate\": 74,\n    \"timeStamp\": \"2026-04-10T07:30:00.000Z\"\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"metricId\": \"7b5d8f10-1111-4222-8333-1234567890ab\",\n    \"diaryId\": \"5e5f09ab-5543-435d-b0fb-9a8ef041d8b0\",\n    \"conditionTag\": \"after_breakfast\",\n    \"bodyHeight\": 172.5,\n    \"bodyWeight\": 68.2,\n    \"bmi\": 22.9,\n    \"systolicPressure\": 122,\n    \"diastolicPressure\": 78,\n    \"heartRate\": 74,\n    \"latestHeartRate\": 81,\n    \"latestHeartRateMeasuredAt\": \"2026-05-04T08:30:00.000Z\",\n    \"latestOxygenSaturation\": 98,\n    \"latestOxygenSaturationMeasuredAt\": \"2026-05-04T08:31:00.000Z\",\n    \"timeStamp\": \"2026-04-10T07:30:00.000Z\"\n  }\n}\n"
             }
           ]
         },

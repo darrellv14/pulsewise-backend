@@ -119,12 +119,6 @@ router.post(
   validateRequest(consumptionCreateByDateSchema),
   patientCareController.createDailyConsumptionByDate
 );
-router.get(
-  '/users/:userId/diaries/:diaryId',
-  authenticate,
-  validateRequest(diaryParamsSchema, 'params'),
-  patientCareController.getHeartDiaryDetail
-);
 router.post(
   '/users/:userId/diaries/:diaryId/body-metrics',
   authenticate,

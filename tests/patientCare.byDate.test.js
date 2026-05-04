@@ -15,7 +15,12 @@ jest.mock('../src/repositories/patientCareRepository', () => ({
   listDailyConsumptions: jest.fn(),
 }));
 
+jest.mock('../src/repositories/biometricRepository', () => ({
+  getLatestVitalSnapshot: jest.fn(),
+}));
+
 const patientCareRepository = require('../src/repositories/patientCareRepository');
+const biometricRepository = require('../src/repositories/biometricRepository');
 const patientCareService = require('../src/services/patientCareService');
 const {
   heartDiaryByDateQuerySchema,
@@ -154,6 +159,16 @@ describe('patient care by-date flow', () => {
     patientCareRepository.listDailyActivities.mockResolvedValue([]);
     patientCareRepository.listDailyConsumptions.mockResolvedValue([]);
     patientCareRepository.getDailySleepRecord.mockResolvedValue(null);
+    biometricRepository.getLatestVitalSnapshot.mockResolvedValue({
+      heartRate: {
+        value_numeric: 81,
+        measured_at: '2026-05-04T08:30:00.000Z',
+      },
+      oxygenSaturation: {
+        value_numeric: 98,
+        measured_at: '2026-05-04T08:31:00.000Z',
+      },
+    });
 
     const result = await patientCareService.getHeartDiaryByDate({
       actor: { userId: 'user-1', role: 'patient' },
@@ -176,6 +191,7 @@ describe('patient care by-date flow', () => {
       activities: [],
       consumptions: [],
     });
+    expect(biometricRepository.getLatestVitalSnapshot).toHaveBeenCalledWith('user-1');
   });
 
   test('createDailySymptomByDate upserts diary first and reuses returned diaryId', async () => {
@@ -322,6 +338,16 @@ describe('patient care by-date flow', () => {
       heart_rate: 76,
       time_stamp: '2026-04-11T07:00:00.000Z',
     });
+    biometricRepository.getLatestVitalSnapshot.mockResolvedValue({
+      heartRate: {
+        value_numeric: 81,
+        measured_at: '2026-05-04T08:30:00.000Z',
+      },
+      oxygenSaturation: {
+        value_numeric: 98,
+        measured_at: '2026-05-04T08:31:00.000Z',
+      },
+    });
 
     const result = await patientCareService.createDailyBodyMetricByDate({
       actor: { userId: 'user-1', role: 'patient' },
@@ -350,6 +376,62 @@ describe('patient care by-date flow', () => {
       diaryId: 'diary-1',
       bodyWeight: 73.2,
       heartRate: 76,
+      latestHeartRate: 81,
+      latestOxygenSaturation: 98,
+    });
+  });
+
+  test('createDailyBodyMetricByDate enriches newly created metric with latest biometrics', async () => {
+    patientCareRepository.upsertHeartDiary.mockResolvedValue({
+      diary_id: 'diary-1',
+      user_id: 'user-1',
+      diary_date: '2026-04-11',
+      created_at: '2026-04-11T01:00:00.000Z',
+    });
+    patientCareRepository.getLatestDailyBodyMetric.mockResolvedValue(null);
+    patientCareRepository.createDailyBodyMetric.mockResolvedValue({
+      metric_id: 'metric-2',
+      diary_id: 'diary-1',
+      condition_tag: 'after_breakfast',
+      body_height: '170.00',
+      body_weight: '73.20',
+      bmi: '25.30',
+      systolic_pressure: 121,
+      diastolic_pressure: 79,
+      heart_rate: 77,
+      time_stamp: '2026-04-11T07:10:00.000Z',
+    });
+    biometricRepository.getLatestVitalSnapshot.mockResolvedValue({
+      heartRate: {
+        value_numeric: 81,
+        measured_at: '2026-05-04T08:30:00.000Z',
+      },
+      oxygenSaturation: {
+        value_numeric: 98,
+        measured_at: '2026-05-04T08:31:00.000Z',
+      },
+    });
+
+    const result = await patientCareService.createDailyBodyMetricByDate({
+      actor: { userId: 'user-1', role: 'patient' },
+      userId: 'user-1',
+      payload: {
+        diaryDate: '2026-04-11',
+        bodyWeight: 73.2,
+        heartRate: 77,
+        timeStamp: '2026-04-11T07:10:00.000Z',
+      },
+    });
+
+    expect(result).toMatchObject({
+      metricId: 'metric-2',
+      diaryId: 'diary-1',
+      bodyWeight: 73.2,
+      heartRate: 77,
+      latestHeartRate: 81,
+      latestHeartRateMeasuredAt: '2026-05-04T08:30:00.000Z',
+      latestOxygenSaturation: 98,
+      latestOxygenSaturationMeasuredAt: '2026-05-04T08:31:00.000Z',
     });
   });
 });
