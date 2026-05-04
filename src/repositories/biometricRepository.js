@@ -1,5 +1,10 @@
 const prisma = require('../config/prisma');
 
+const LATEST_VITAL_ALIASES = {
+  heartRate: ['heart_rate', 'heartrate', 'hr', 'pulse'],
+  oxygenSaturation: ['oxygen_saturation', 'spo2', 'sp02', 'oxygen'],
+};
+
 function toNullableNumber(value) {
   return value === null || value === undefined ? null : Number(value);
 }
@@ -20,6 +25,12 @@ function mapReading(row) {
     measured_at: row.measuredAt,
     received_at: row.receivedAt,
   };
+}
+
+function normalizeMetricType(metricType) {
+  return String(metricType || '')
+    .trim()
+    .toLowerCase();
 }
 
 async function findDuplicateReading({
@@ -129,9 +140,49 @@ async function countReadings({ userId, source, metricType, startAt, endAt }) {
   return prisma.vitalSignReading.count({ where });
 }
 
+async function getLatestVitalSnapshot(userId) {
+  const trackedMetricTypes = Object.values(LATEST_VITAL_ALIASES).flat();
+  const rows = await prisma.vitalSignReading.findMany({
+    where: {
+      userId,
+      metricType: {
+        in: trackedMetricTypes,
+      },
+    },
+    orderBy: [{ measuredAt: 'desc' }, { readingId: 'desc' }],
+  });
+
+  const snapshot = {
+    heartRate: null,
+    oxygenSaturation: null,
+  };
+
+  for (const row of rows) {
+    const normalizedType = normalizeMetricType(row.metricType);
+
+    if (!snapshot.heartRate && LATEST_VITAL_ALIASES.heartRate.includes(normalizedType)) {
+      snapshot.heartRate = mapReading(row);
+    }
+
+    if (
+      !snapshot.oxygenSaturation &&
+      LATEST_VITAL_ALIASES.oxygenSaturation.includes(normalizedType)
+    ) {
+      snapshot.oxygenSaturation = mapReading(row);
+    }
+
+    if (snapshot.heartRate && snapshot.oxygenSaturation) {
+      break;
+    }
+  }
+
+  return snapshot;
+}
+
 module.exports = {
   findDuplicateReading,
   insertReading,
   listReadings,
   countReadings,
+  getLatestVitalSnapshot,
 };

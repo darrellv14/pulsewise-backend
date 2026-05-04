@@ -7,6 +7,7 @@ const {
   INTERNAL_SERVER_ERROR,
 } = require('../constants/httpStatus');
 const env = require('../config/env');
+const biometricRepository = require('../repositories/biometricRepository');
 const patientCareRepository = require('../repositories/patientCareRepository');
 const { buildPagination, normalizePaginationInput } = require('../utils/pagination');
 
@@ -121,6 +122,30 @@ function mapBodyMetric(row) {
   };
 }
 
+function mapLatestVitalSnapshot(snapshot) {
+  return {
+    latestHeartRate:
+      snapshot?.heartRate?.value_numeric !== null &&
+      snapshot?.heartRate?.value_numeric !== undefined
+        ? Number(snapshot.heartRate.value_numeric)
+        : null,
+    latestHeartRateMeasuredAt: toIso(snapshot?.heartRate?.measured_at),
+    latestOxygenSaturation:
+      snapshot?.oxygenSaturation?.value_numeric !== null &&
+      snapshot?.oxygenSaturation?.value_numeric !== undefined
+        ? Number(snapshot.oxygenSaturation.value_numeric)
+        : null,
+    latestOxygenSaturationMeasuredAt: toIso(snapshot?.oxygenSaturation?.measured_at),
+  };
+}
+
+function enrichBodyMetricWithLatestVitals(bodyMetric, snapshot) {
+  return {
+    ...bodyMetric,
+    ...mapLatestVitalSnapshot(snapshot),
+  };
+}
+
 function mapSymptom(row) {
   return {
     symptomId: row.symptom_id,
@@ -196,8 +221,7 @@ function mapSleepRecord(row) {
     diaryId: row.diary_id,
     sleepTime: toTimeOnly(row.sleep_time),
     wakeTime: toTimeOnly(row.wake_time),
-    sleepDurationHours:
-      row.sleep_duration_hours !== null ? Number(row.sleep_duration_hours) : null,
+    sleepDurationHours: row.sleep_duration_hours !== null ? Number(row.sleep_duration_hours) : null,
     source: row.source,
     createdAt: toIso(row.created_at),
     updatedAt: toIso(row.updated_at),
@@ -214,17 +238,21 @@ function mapDiary(row) {
 }
 
 async function mapHeartDiaryDetail(row) {
-  const [metrics, symptoms, activities, consumptions, sleepRecord] = await Promise.all([
-    patientCareRepository.listDailyBodyMetrics(row.diary_id),
-    patientCareRepository.listDailySymptoms(row.diary_id),
-    patientCareRepository.listDailyActivities(row.diary_id),
-    patientCareRepository.listDailyConsumptions(row.diary_id),
-    patientCareRepository.getDailySleepRecord(row.diary_id),
-  ]);
+  const [metrics, symptoms, activities, consumptions, sleepRecord, latestVitalSnapshot] =
+    await Promise.all([
+      patientCareRepository.listDailyBodyMetrics(row.diary_id),
+      patientCareRepository.listDailySymptoms(row.diary_id),
+      patientCareRepository.listDailyActivities(row.diary_id),
+      patientCareRepository.listDailyConsumptions(row.diary_id),
+      patientCareRepository.getDailySleepRecord(row.diary_id),
+      biometricRepository.getLatestVitalSnapshot(row.user_id),
+    ]);
 
   return {
     ...mapDiary(row),
-    bodyMetrics: metrics.map(mapBodyMetric),
+    bodyMetrics: metrics.map((metric) =>
+      enrichBodyMetricWithLatestVitals(mapBodyMetric(metric), latestVitalSnapshot)
+    ),
     symptoms: symptoms.map(mapSymptom),
     activities: activities.map(mapActivity),
     consumptions: consumptions.map(mapConsumption),
@@ -474,17 +502,6 @@ async function listHeartDiaries({ actor, userId, query }) {
   };
 }
 
-async function getHeartDiaryDetail({ actor, userId, diaryId }) {
-  assertUserScope({ actor, userId });
-
-  const diary = await patientCareRepository.getHeartDiary({ userId, diaryId });
-  if (!diary) {
-    throw createHttpError('Heart diary tidak ditemukan', NOT_FOUND);
-  }
-
-  return mapHeartDiaryDetail(diary);
-}
-
 async function getHeartDiaryByDate({ actor, userId, diaryDate }) {
   assertUserScope({ actor, userId });
 
@@ -523,7 +540,8 @@ async function createDailyBodyMetric({ actor, userId, diaryId, payload }) {
     timeStamp: payload.timeStamp || null,
   });
 
-  return mapBodyMetric(created);
+  const latestVitalSnapshot = await biometricRepository.getLatestVitalSnapshot(userId);
+  return enrichBodyMetricWithLatestVitals(mapBodyMetric(created), latestVitalSnapshot);
 }
 
 async function createDailyBodyMetricByDate({ actor, userId, payload }) {
@@ -550,7 +568,8 @@ async function createDailyBodyMetricByDate({ actor, userId, payload }) {
       timeStamp: resolvedTimeStamp,
     });
 
-    return mapBodyMetric(created);
+    const latestVitalSnapshot = await biometricRepository.getLatestVitalSnapshot(userId);
+    return enrichBodyMetricWithLatestVitals(mapBodyMetric(created), latestVitalSnapshot);
   }
 
   const updated = await patientCareRepository.updateDailyBodyMetric({
@@ -567,7 +586,8 @@ async function createDailyBodyMetricByDate({ actor, userId, payload }) {
     timeStamp: hasOwn(payload, 'timeStamp') ? resolvedTimeStamp : undefined,
   });
 
-  return mapBodyMetric(updated);
+  const latestVitalSnapshot = await biometricRepository.getLatestVitalSnapshot(userId);
+  return enrichBodyMetricWithLatestVitals(mapBodyMetric(updated), latestVitalSnapshot);
 }
 
 async function createDailySymptom({ actor, userId, diaryId, payload }) {
@@ -834,7 +854,6 @@ module.exports = {
   deleteEmergencyContact,
   upsertHeartDiary,
   listHeartDiaries,
-  getHeartDiaryDetail,
   getHeartDiaryByDate,
   getDailySleepRecordByDate,
   upsertDailySleepRecordByDate,

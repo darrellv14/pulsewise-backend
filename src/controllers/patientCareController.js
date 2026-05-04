@@ -88,20 +88,6 @@ async function listHeartDiaries(req, res, next) {
   }
 }
 
-async function getHeartDiaryDetail(req, res, next) {
-  try {
-    const data = await patientCareService.getHeartDiaryDetail({
-      actor: req.user,
-      userId: req.params.userId,
-      diaryId: req.params.diaryId,
-    });
-
-    return success(res, 'Detail heart diary berhasil diambil', data);
-  } catch (error) {
-    return next(error);
-  }
-}
-
 async function getHeartDiaryByDate(req, res, next) {
   try {
     const data = await patientCareService.getHeartDiaryByDate({
@@ -301,7 +287,6 @@ module.exports = {
   deleteEmergencyContact,
   upsertHeartDiary,
   listHeartDiaries,
-  getHeartDiaryDetail,
   getHeartDiaryByDate,
   getDailySleepRecordByDate,
   upsertDailySleepRecordByDate,
