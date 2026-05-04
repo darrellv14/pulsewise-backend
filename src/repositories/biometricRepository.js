@@ -1,4 +1,10 @@
 const prisma = require('../config/prisma');
+const { normalizeMetricType } = require('../utils/metricTypes');
+
+const LATEST_VITAL_ALIASES = {
+  heartRate: ['heart_rate', 'heartrate', 'hr', 'pulse'],
+  oxygenSaturation: ['oxygen_saturation', 'spo2', 'sp02', 'oxygen'],
+};
 
 const LATEST_VITAL_ALIASES = {
   heartRate: ['heart_rate', 'heartrate', 'hr', 'pulse'],

@@ -3,33 +3,13 @@ const biometricRepository = require('../repositories/biometricRepository');
 const doctorPatientRepository = require('../repositories/doctorPatientRepository');
 const profileRepository = require('../repositories/profileRepository');
 const { normalizePaginationInput } = require('../utils/pagination');
-
-const METRIC_ALIASES = {
-  heart_rate: 'heart_rate',
-  heartrate: 'heart_rate',
-  hr: 'heart_rate',
-  pulse: 'heart_rate',
-  oxygen_saturation: 'oxygen_saturation',
-  oxygen: 'oxygen_saturation',
-  spo2: 'oxygen_saturation',
-  sp02: 'oxygen_saturation',
-  systolic: 'systolic_bp',
-  systolic_bp: 'systolic_bp',
-  systolic_pressure: 'systolic_bp',
-  diastolic: 'diastolic_bp',
-  diastolic_bp: 'diastolic_bp',
-  diastolic_pressure: 'diastolic_bp',
-  weight: 'weight',
-  body_weight: 'weight',
-  height: 'height',
-  body_height: 'height',
-  bmi: 'bmi',
-  total_cholesterol: 'total_cholesterol',
-  urine_flow_rate: 'urine_flow_rate',
-  urination_time: 'urination_time',
-  urine_volume: 'urine_volume',
-  pulse_regularity_code: 'pulse_regularity_code',
-};
+const { normalizeMetricType } = require('../utils/metricTypes');
+const { normalizeBiometricSource } = require('../constants/enums');
+const { invalidateByPrefixes } = require('./cache/cacheService');
+const {
+  dashboardPatientSummaryPrefix,
+  dashboardPatientsListPrefix,
+} = require('./cache/cacheKeys');
 
 function toIso(value) {
   if (!value) {
@@ -47,13 +27,6 @@ function toNumberOrNull(value) {
 
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : null;
-}
-
-function normalizeMetricType(metricType) {
-  const key = String(metricType || '')
-    .trim()
-    .toLowerCase();
-  return METRIC_ALIASES[key] || null;
 }
 
 function buildPagination({ page, limit, totalItems }) {
@@ -139,9 +112,7 @@ async function ingestBiometrics({ actor, payload }) {
 
   await assertPatientExists(targetPatientId);
 
-  const source = String(payload.source || '')
-    .trim()
-    .toLowerCase();
+  const source = normalizeBiometricSource(payload.source) || '';
   const results = [];
   let insertedCount = 0;
   let duplicateCount = 0;
@@ -209,6 +180,11 @@ async function ingestBiometrics({ actor, payload }) {
     });
   }
 
+  await invalidateByPrefixes([
+    dashboardPatientSummaryPrefix(targetPatientId),
+    dashboardPatientsListPrefix(),
+  ]);
+
   return {
     patientId: targetPatientId,
     source,
@@ -259,7 +235,7 @@ async function listBiometrics({ actor, query }) {
   const pagination = normalizePaginationInput(query, { limit: 50 });
   const offset = (pagination.page - 1) * pagination.limit;
 
-  const source = query.source ? String(query.source).trim().toLowerCase() : null;
+  const source = normalizeBiometricSource(query.source);
 
   const [rows, totalItems] = await Promise.all([
     biometricRepository.listReadings({

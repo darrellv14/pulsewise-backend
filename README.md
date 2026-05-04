@@ -133,6 +133,20 @@ Variabel minimum yang biasanya perlu diisi:
 - `NODE_ENV`
 - `JWT_SECRET`
 - `JWT_EXPIRES_IN`
+- `AUTH_RECHECK_USER`
+
+### Browser CORS
+
+- `CORS_ALLOW_ALL`
+- `CORS_ALLOWED_ORIGINS`
+- `CORS_CREDENTIALS`
+
+Catatan:
+- app native mobile tidak membutuhkan CORS seperti browser
+- untuk project ini, CORS production kemungkinan besar hanya dipakai doctor dashboard web
+- isi `CORS_ALLOWED_ORIGINS` dengan **origin frontend**
+- jangan pakai path seperti `/api/v1`
+- `https://api.darrellvalentino.com/api/v1` bukan format CORS origin yang benar
 
 ### Database
 
@@ -151,6 +165,17 @@ Variabel minimum yang biasanya perlu diisi:
 - `ML_SERVICE_BASE_URL`
 - `ML_SERVICE_TIMEOUT_MS`
 - `ML_SERVICE_VERSION`
+
+### Redis / Cache
+
+- `REDIS_ENABLED`
+- `REDIS_URL` atau `REDIS_HOST` + `REDIS_PORT`
+- `REDIS_PASSWORD`
+- `REDIS_DB`
+- `REDIS_PREFIX`
+- `CACHE_DASHBOARD_LIST_TTL_SECONDS`
+- `CACHE_DASHBOARD_SUMMARY_TTL_SECONDS`
+- `CACHE_DIARY_BY_DATE_TTL_SECONDS`
 
 Contoh pengisian lokal PostgreSQL:
 
@@ -173,6 +198,17 @@ DIRECT_URL=postgresql://pulsewise:pulsewise123@localhost:5432/pulsewise
 ML_SERVICE_BASE_URL=http://localhost:8080
 ML_SERVICE_TIMEOUT_MS=20000
 ML_SERVICE_VERSION=3
+
+CORS_ALLOW_ALL=true
+CORS_ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173
+CORS_CREDENTIALS=false
+
+REDIS_ENABLED=false
+REDIS_HOST=127.0.0.1
+REDIS_PORT=6379
+REDIS_PASSWORD=
+REDIS_DB=0
+REDIS_PREFIX=pw
 ```
 
 ## Local Development
@@ -342,6 +378,7 @@ Beberapa hal penting untuk tim lain:
 Untuk production sekarang, backend ini biasa dipasang bersama:
 
 - PostgreSQL
+- Redis
 - hfms-backend / ml-cnn-backend
 - Nginx reverse proxy
 

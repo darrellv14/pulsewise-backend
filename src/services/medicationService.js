@@ -1,19 +1,12 @@
 const prisma = require('../config/prisma');
-const { BAD_REQUEST, FORBIDDEN, NOT_FOUND, CONFLICT } = require('../constants/httpStatus');
+const { BAD_REQUEST, NOT_FOUND, CONFLICT } = require('../constants/httpStatus');
 const { buildPagination, normalizePaginationInput } = require('../utils/pagination');
+const { createHttpError } = require('../utils/httpError');
+const { normalizeConditionTag } = require('../constants/enums');
+const { assertPatientScope: assertPatientScopeGuard } = require('./shared/guards');
 
 const CACHE_TTL_SECONDS = 60;
 const CACHE_SWR_SECONDS = 120;
-
-function createHttpError(message, statusCode, details = null) {
-  const error = new Error(message);
-  error.statusCode = statusCode;
-  if (details) {
-    error.details = details;
-  }
-
-  return error;
-}
 
 function normalizeNullableText(value) {
   if (value === undefined) {
@@ -488,21 +481,14 @@ function buildMedicationCalendarEvents({ medication, rangeStart, rangeEnd, logLo
 }
 
 function assertPatientScope({ actor, userId }) {
-  if (!actor) {
-    throw createHttpError('Aktor tidak valid', FORBIDDEN);
-  }
-
-  if (actor.role === 'admin') {
-    return;
-  }
-
-  if (actor.role !== 'patient') {
-    throw createHttpError('Role tidak memiliki akses fitur medication pasien', FORBIDDEN);
-  }
-
-  if (actor.userId !== userId) {
-    throw createHttpError('Akses data medication pasien ditolak', FORBIDDEN);
-  }
+  return assertPatientScopeGuard({
+    actor,
+    patientId: userId,
+    messages: {
+      roleDenied: 'Role tidak memiliki akses fitur medication pasien',
+      scopeDenied: 'Akses data medication pasien ditolak',
+    },
+  });
 }
 
 async function ensureMedicationOwnership(tx, { medicationId, userId }) {
@@ -722,7 +708,7 @@ async function createMedication({ actor, userId, payload }) {
         userId,
         name: payload.name.trim(),
         description: normalizeNullableText(payload.description),
-        conditionTag: normalizeNullableText(payload.conditionTag),
+        conditionTag: normalizeConditionTag(payload.conditionTag),
         form: normalizeNullableText(payload.form),
         color: normalizeNullableText(payload.color),
         singleDose: payload.singleDose ?? null,
@@ -794,7 +780,7 @@ async function updateMedication({ actor, userId, medicationId, payload }) {
     }
 
     if (payload.conditionTag !== undefined) {
-      medicationData.conditionTag = normalizeNullableText(payload.conditionTag);
+      medicationData.conditionTag = normalizeConditionTag(payload.conditionTag);
     }
 
     if (payload.form !== undefined) {

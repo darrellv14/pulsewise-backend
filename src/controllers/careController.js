@@ -1,8 +1,7 @@
 const { success } = require('../utils/response');
 const careService = require('../services/careService');
 const { CREATED } = require('../constants/httpStatus');
-
-const DASHBOARD_PAIRING_TERMINAL_STATUSES = new Set(['confirmed', 'expired', 'cancelled']);
+const { PAIRING_TERMINAL_STATUSES } = require('../constants/enums');
 const DASHBOARD_PAIRING_SSE_POLL_MS = 2000;
 const DASHBOARD_PAIRING_SSE_PING_MS = 15000;
 
@@ -257,7 +256,7 @@ async function streamDashboardPairingSessionStatus(req, res, next) {
 
     writeSseEvent(res, 'pairing-status', statusData);
 
-    if (DASHBOARD_PAIRING_TERMINAL_STATUSES.has(statusData.status)) {
+    if (PAIRING_TERMINAL_STATUSES.has(statusData.status)) {
       cleanup();
       res.end();
     }

@@ -1,4 +1,5 @@
 const prisma = require('../config/prisma');
+const { ACCOUNT_STATUSES } = require('../constants/enums');
 
 function mapUserWithRole(user) {
   if (!user) {
@@ -131,7 +132,7 @@ async function createUserWithRole({
   firstName,
   lastName,
   role,
-  accountStatus = 'pending_verification',
+  accountStatus = ACCOUNT_STATUSES.PENDING_VERIFICATION,
   emailVerifiedAt = null,
   googleSub = null,
   onboardingCompleted = true,
@@ -255,7 +256,7 @@ async function activateUserByEmail(email) {
       email,
     },
     data: {
-      accountStatus: 'active',
+      accountStatus: ACCOUNT_STATUSES.ACTIVE,
       emailVerifiedAt: {
         set: new Date(),
       },

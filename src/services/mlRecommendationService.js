@@ -1,25 +1,20 @@
 const crypto = require('crypto');
 const env = require('../config/env');
 const {
-  FORBIDDEN,
   NOT_FOUND,
   CONFLICT,
   BAD_GATEWAY,
   SERVICE_UNAVAILABLE,
   GATEWAY_TIMEOUT,
 } = require('../constants/httpStatus');
-const doctorPatientRepository = require('../repositories/doctorPatientRepository');
 const mlRecommendationRepository = require('../repositories/mlRecommendationRepository');
 const { buildMlV3Payload } = require('../utils/mlPayloadMapper');
-
-function createHttpError(message, statusCode, details = null) {
-  const error = new Error(message);
-  error.statusCode = statusCode;
-  if (details) {
-    error.details = details;
-  }
-  return error;
-}
+const { createHttpError } = require('../utils/httpError');
+const {
+  assertDoctorScope,
+  assertPatientScope,
+  assertDoctorPatientLinkedAccess,
+} = require('./shared/guards');
 
 function normalizeBaseUrl(baseUrl) {
   return String(baseUrl || '')
@@ -28,40 +23,27 @@ function normalizeBaseUrl(baseUrl) {
 }
 
 async function assertPatientRouteAccess({ actor, userId }) {
-  if (!actor) {
-    throw createHttpError('Aktor tidak valid', FORBIDDEN);
-  }
-
-  if (actor.role === 'admin') {
-    return;
-  }
-
-  if (actor.role !== 'patient' || actor.userId !== userId) {
-    throw createHttpError('Akses endpoint ML pasien ditolak', FORBIDDEN);
-  }
+  assertPatientScope({
+    actor,
+    patientId: userId,
+    messages: {
+      roleDenied: 'Akses endpoint ML pasien ditolak',
+      scopeDenied: 'Akses endpoint ML pasien ditolak',
+    },
+  });
 }
 
 async function assertDoctorDashboardRouteAccess({ actor, doctorId, patientId }) {
-  if (!actor) {
-    throw createHttpError('Aktor tidak valid', FORBIDDEN);
-  }
-
-  if (actor.role === 'admin') {
-    return;
-  }
-
-  if (actor.role !== 'doctor' || actor.userId !== doctorId) {
-    throw createHttpError('Akses dashboard dokter ditolak', FORBIDDEN);
-  }
-
-  const link = await doctorPatientRepository.findDoctorPatientLink({
+  assertDoctorScope({
+    actor,
     doctorId,
-    patientId,
+    messages: {
+      roleDenied: 'Akses dashboard dokter ditolak',
+      scopeDenied: 'Akses dashboard dokter ditolak',
+    },
   });
 
-  if (!link) {
-    throw createHttpError('Dokter tidak memiliki akses ke pasien ini', FORBIDDEN);
-  }
+  await assertDoctorPatientLinkedAccess({ doctorId, patientId });
 }
 
 async function parseJsonSafely(response) {

@@ -1,4 +1,5 @@
 const buckets = new Map();
+const { getRedisClient } = require('../config/redis');
 
 function pruneExpired(now) {
   for (const [key, value] of buckets.entries()) {
@@ -25,14 +26,35 @@ function createRateLimiter({ name, windowMs, max, message }) {
   const limitWindowMs = Number(windowMs) > 0 ? Number(windowMs) : 60_000;
   const limitMax = Number(max) > 0 ? Number(max) : 60;
 
-  return function rateLimitMiddleware(req, res, next) {
+  return async function rateLimitMiddleware(req, res, next) {
     const now = Date.now();
+    const key = getClientKey(req, scopeName);
+    const redisKey = `ratelimit:${key}`;
+    const client = await getRedisClient();
+
+    if (client) {
+      const bucketCount = await client.incr(redisKey);
+      if (bucketCount === 1) {
+        await client.pexpire(redisKey, limitWindowMs);
+      }
+
+      if (bucketCount > limitMax) {
+        const ttlMs = await client.pTTL(redisKey);
+        const retryAfterSeconds = Math.max(1, Math.ceil(Math.max(ttlMs, 1000) / 1000));
+        res.set('Retry-After', String(retryAfterSeconds));
+        return res.status(429).json({
+          success: false,
+          message: message || 'Too many requests',
+        });
+      }
+
+      return next();
+    }
 
     if (buckets.size > 10_000) {
       pruneExpired(now);
     }
 
-    const key = getClientKey(req, scopeName);
     const existing = buckets.get(key);
 
     if (!existing || existing.expiresAt <= now) {
