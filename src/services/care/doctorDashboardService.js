@@ -7,6 +7,8 @@ const { getOrSetJson } = require('../cache/cacheService');
 const {
   dashboardPatientsListKey,
   dashboardPatientSummaryKey,
+  dashboardPatientVitalsKey,
+  dashboardPatientAbnormalReportKey,
 } = require('../cache/cacheKeys');
 const {
   NOT_FOUND,
@@ -295,78 +297,90 @@ async function getDoctorDashboardPatientSummary({ actor, doctorId, patientId }) 
 async function getDoctorDashboardPatientVitals({ actor, doctorId, patientId, query }) {
   assertDoctorScope({ actor, doctorId });
 
-  const identity = await dashboardRepository.getDoctorPatientIdentity({ doctorId, patientId });
-  if (!identity) {
-    throw createHttpError('Data pasien dokter tidak ditemukan', NOT_FOUND);
-  }
+  return getOrSetJson(
+    dashboardPatientVitalsKey({ doctorId, patientId, query: query || {} }),
+    env.cache.dashboardVitalsTtlSeconds,
+    async () => {
+      const identity = await dashboardRepository.getDoctorPatientIdentity({ doctorId, patientId });
+      if (!identity) {
+        throw createHttpError('Data pasien dokter tidak ditemukan', NOT_FOUND);
+      }
 
-  const period = buildPeriodRange(query);
+      const period = buildPeriodRange(query);
 
-  const [dailyRows, vitalRows] = await Promise.all([
-    dashboardRepository.listDailyMetricsSeries({
-      patientId,
-      startAt: period.startAt,
-      endAt: period.endAt,
-    }),
-    dashboardRepository.listVitalReadingSeries({
-      patientId,
-      startAt: period.startAt,
-      endAt: period.endAt,
-    }),
-  ]);
+      const [dailyRows, vitalRows] = await Promise.all([
+        dashboardRepository.listDailyMetricsSeries({
+          patientId,
+          startAt: period.startAt,
+          endAt: period.endAt,
+        }),
+        dashboardRepository.listVitalReadingSeries({
+          patientId,
+          startAt: period.startAt,
+          endAt: period.endAt,
+        }),
+      ]);
 
-  const merged = mergeSeries({ dailyRows, vitalRows });
+      const merged = mergeSeries({ dailyRows, vitalRows });
 
-  return {
-    patient: formatPatientIdentity(identity),
-    period,
-    series: merged.series,
-    latestVitals: buildLatestVitals(merged.points),
-    thresholds,
-  };
+      return {
+        patient: formatPatientIdentity(identity),
+        period,
+        series: merged.series,
+        latestVitals: buildLatestVitals(merged.points),
+        thresholds,
+      };
+    }
+  );
 }
 
 async function getDoctorDashboardAbnormalReport({ actor, doctorId, patientId, query }) {
   assertDoctorScope({ actor, doctorId });
 
-  const identity = await dashboardRepository.getDoctorPatientIdentity({ doctorId, patientId });
-  if (!identity) {
-    throw createHttpError('Data pasien dokter tidak ditemukan', NOT_FOUND);
-  }
+  return getOrSetJson(
+    dashboardPatientAbnormalReportKey({ doctorId, patientId, query: query || {} }),
+    env.cache.dashboardAbnormalReportTtlSeconds,
+    async () => {
+      const identity = await dashboardRepository.getDoctorPatientIdentity({ doctorId, patientId });
+      if (!identity) {
+        throw createHttpError('Data pasien dokter tidak ditemukan', NOT_FOUND);
+      }
 
-  const period = buildPeriodRange(query);
+      const period = buildPeriodRange(query);
 
-  const [dailyRows, vitalRows] = await Promise.all([
-    dashboardRepository.listDailyMetricsSeries({
-      patientId,
-      startAt: period.startAt,
-      endAt: period.endAt,
-    }),
-    dashboardRepository.listVitalReadingSeries({
-      patientId,
-      startAt: period.startAt,
-      endAt: period.endAt,
-    }),
-  ]);
+      const [dailyRows, vitalRows] = await Promise.all([
+        dashboardRepository.listDailyMetricsSeries({
+          patientId,
+          startAt: period.startAt,
+          endAt: period.endAt,
+        }),
+        dashboardRepository.listVitalReadingSeries({
+          patientId,
+          startAt: period.startAt,
+          endAt: period.endAt,
+        }),
+      ]);
 
-  const merged = mergeSeries({ dailyRows, vitalRows });
+      const merged = mergeSeries({ dailyRows, vitalRows });
 
-  const stats = {
-    systolicBp: aggregateStats(extractNumberValues(merged.points, 'systolicBp')),
-    diastolicBp: aggregateStats(extractNumberValues(merged.points, 'diastolicBp')),
-    heartRate: aggregateStats(extractNumberValues(merged.points, 'heartRate')),
-    oxygenSaturation: aggregateStats(extractNumberValues(merged.points, 'oxygenSaturation')),
-    weight: aggregateStats(extractNumberValues(merged.points, 'weight')),
-    bmi: aggregateStats(extractNumberValues(merged.points, 'bmi')),
-  };
+      const stats = {
+        systolicBp: aggregateStats(extractNumberValues(merged.points, 'systolicBp')),
+        diastolicBp: aggregateStats(extractNumberValues(merged.points, 'diastolicBp')),
+        heartRate: aggregateStats(extractNumberValues(merged.points, 'heartRate')),
+        oxygenSaturation: aggregateStats(extractNumberValues(merged.points, 'oxygenSaturation')),
+        weight: aggregateStats(extractNumberValues(merged.points, 'weight')),
+        bmi: aggregateStats(extractNumberValues(merged.points, 'bmi')),
+      };
 
-  return {
-    patient: formatPatientIdentity(identity),
-    period,
-    stats,
-    abnormalInstances: buildAbnormalInstances(merged.points),
-    thresholds,
-  };
+      return {
+        patient: formatPatientIdentity(identity),
+        period,
+        stats,
+        abnormalInstances: buildAbnormalInstances(merged.points),
+        thresholds,
+      };
+    }
+  );
 }
 
 module.exports = {

@@ -22,6 +22,22 @@ function dashboardPatientSummaryPrefix(patientId) {
   return `${CACHE_PREFIX}:dashboard:summary:patient:${patientId}:`;
 }
 
+function dashboardPatientVitalsKey({ doctorId, patientId, query }) {
+  return `${CACHE_PREFIX}:dashboard:vitals:patient:${patientId}:doctor:${doctorId}:${hashPayload(query || {})}`;
+}
+
+function dashboardPatientVitalsPrefix(patientId) {
+  return `${CACHE_PREFIX}:dashboard:vitals:patient:${patientId}:`;
+}
+
+function dashboardPatientAbnormalReportKey({ doctorId, patientId, query }) {
+  return `${CACHE_PREFIX}:dashboard:abnormal-report:patient:${patientId}:doctor:${doctorId}:${hashPayload(query || {})}`;
+}
+
+function dashboardPatientAbnormalReportPrefix(patientId) {
+  return `${CACHE_PREFIX}:dashboard:abnormal-report:patient:${patientId}:`;
+}
+
 function diaryByDateKey({ userId, diaryDate }) {
   return `${CACHE_PREFIX}:diary:by-date:user:${userId}:date:${diaryDate}`;
 }
@@ -30,11 +46,25 @@ function diaryByDatePrefix(userId) {
   return `${CACHE_PREFIX}:diary:by-date:user:${userId}:`;
 }
 
+function sleepByDateKey({ userId, diaryDate }) {
+  return `${CACHE_PREFIX}:sleep:by-date:user:${userId}:date:${diaryDate}`;
+}
+
+function sleepByDatePrefix(userId) {
+  return `${CACHE_PREFIX}:sleep:by-date:user:${userId}:`;
+}
+
 module.exports = {
   dashboardPatientsListKey,
   dashboardPatientsListPrefix,
   dashboardPatientSummaryKey,
   dashboardPatientSummaryPrefix,
+  dashboardPatientVitalsKey,
+  dashboardPatientVitalsPrefix,
+  dashboardPatientAbnormalReportKey,
+  dashboardPatientAbnormalReportPrefix,
   diaryByDateKey,
   diaryByDatePrefix,
+  sleepByDateKey,
+  sleepByDatePrefix,
 };

@@ -5,11 +5,7 @@ const profileRepository = require('../repositories/profileRepository');
 const { normalizePaginationInput } = require('../utils/pagination');
 const { normalizeMetricType } = require('../utils/metricTypes');
 const { normalizeBiometricSource } = require('../constants/enums');
-const { invalidateByPrefixes } = require('./cache/cacheService');
-const {
-  dashboardPatientSummaryPrefix,
-  dashboardPatientsListPrefix,
-} = require('./cache/cacheKeys');
+const { invalidateDashboardPatientCaches } = require('./cache/invalidation');
 
 function toIso(value) {
   if (!value) {
@@ -180,10 +176,7 @@ async function ingestBiometrics({ actor, payload }) {
     });
   }
 
-  await invalidateByPrefixes([
-    dashboardPatientSummaryPrefix(targetPatientId),
-    dashboardPatientsListPrefix(),
-  ]);
+  await invalidateDashboardPatientCaches(targetPatientId);
 
   return {
     patientId: targetPatientId,

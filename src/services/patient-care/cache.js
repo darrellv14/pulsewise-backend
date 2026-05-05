@@ -1,26 +1,22 @@
-const { invalidateByPrefixes, getOrSetJson } = require('../cache/cacheService');
+const { getOrSetJson } = require('../cache/cacheService');
+const { diaryByDateKey, sleepByDateKey } = require('../cache/cacheKeys');
 const {
-  diaryByDateKey,
-  diaryByDatePrefix,
-  dashboardPatientSummaryPrefix,
-  dashboardPatientsListPrefix,
-} = require('../cache/cacheKeys');
+  invalidatePatientDiaryCaches,
+  invalidatePatientCareAndDashboardCaches,
+} = require('../cache/invalidation');
 
 async function invalidateDiaryCache(userId) {
-  await invalidateByPrefixes([diaryByDatePrefix(userId)]);
+  await invalidatePatientDiaryCaches(userId);
 }
 
 async function invalidateDiaryAndDashboardCaches(userId) {
-  await invalidateByPrefixes([
-    diaryByDatePrefix(userId),
-    dashboardPatientSummaryPrefix(userId),
-    dashboardPatientsListPrefix(),
-  ]);
+  await invalidatePatientCareAndDashboardCaches(userId);
 }
 
 module.exports = {
   getOrSetJson,
   diaryByDateKey,
+  sleepByDateKey,
   invalidateDiaryCache,
   invalidateDiaryAndDashboardCaches,
 };

@@ -148,7 +148,12 @@ const env = {
   cache: {
     dashboardListTtlSeconds: Number(process.env.CACHE_DASHBOARD_LIST_TTL_SECONDS || 30),
     dashboardSummaryTtlSeconds: Number(process.env.CACHE_DASHBOARD_SUMMARY_TTL_SECONDS || 30),
+    dashboardVitalsTtlSeconds: Number(process.env.CACHE_DASHBOARD_VITALS_TTL_SECONDS || 30),
+    dashboardAbnormalReportTtlSeconds: Number(
+      process.env.CACHE_DASHBOARD_ABNORMAL_REPORT_TTL_SECONDS || 30
+    ),
     diaryByDateTtlSeconds: Number(process.env.CACHE_DIARY_BY_DATE_TTL_SECONDS || 30),
+    sleepByDateTtlSeconds: Number(process.env.CACHE_SLEEP_BY_DATE_TTL_SECONDS || 30),
   },
   mlService: {
     baseUrl: process.env.ML_SERVICE_BASE_URL || 'http://localhost:8080',

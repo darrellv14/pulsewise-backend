@@ -1,6 +1,11 @@
 const jwt = require('jsonwebtoken');
 const request = require('supertest');
 const env = require('../src/config/env');
+const {
+  expectObjectKeys,
+  expectSuccessEnvelope,
+  expectFailureEnvelope,
+} = require('./helpers/contractAssertions');
 
 jest.mock('../src/services/authService', () => ({
   register: jest.fn(),
@@ -60,6 +65,58 @@ describe('Auth API contract', () => {
     });
   });
 
+  test('POST /api/v1/auth/login returns stable success envelope and payload keys', async () => {
+    authService.login.mockResolvedValue({
+      token: 'jwt-token',
+      user: {
+        userId,
+        email: 'patient@pulsewise.local',
+        role: 'patient',
+        avatarPhoto: null,
+      },
+    });
+
+    const response = await request(app).post('/api/v1/auth/login').send({
+      email: 'patient@pulsewise.local',
+      password: 'dev12345',
+    });
+
+    expect(response.status).toBe(200);
+    expectSuccessEnvelope(response, 'Login berhasil');
+    expectObjectKeys(response.body.data, ['token', 'user']);
+    expectObjectKeys(response.body.data.user, ['userId', 'email', 'role', 'avatarPhoto']);
+  });
+
+  test('GET /api/v1/auth/me returns stable success envelope and profile keys', async () => {
+    authService.getCurrentUser.mockResolvedValue({
+      userId,
+      username: 'patient_demo',
+      email: 'patient@pulsewise.local',
+      firstName: 'Demo',
+      lastName: 'Patient',
+      avatarPhoto: null,
+      role: 'patient',
+      onboardingCompleted: true,
+    });
+
+    const response = await request(app)
+      .get('/api/v1/auth/me')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expectSuccessEnvelope(response, 'Data user berhasil diambil');
+    expectObjectKeys(response.body.data, [
+      'userId',
+      'username',
+      'email',
+      'firstName',
+      'lastName',
+      'avatarPhoto',
+      'role',
+      'onboardingCompleted',
+    ]);
+  });
+
   test('POST /api/v1/auth/change-password validates payload', async () => {
     const response = await request(app)
       .post('/api/v1/auth/change-password')
@@ -70,9 +127,7 @@ describe('Auth API contract', () => {
         confirmNewPassword: 'different-password',
       });
 
-    expect(response.status).toBe(400);
-    expect(response.body.success).toBe(false);
-    expect(response.body.message).toBe('Validasi request gagal');
+    expectFailureEnvelope(response, 400, 'Validasi request gagal');
   });
 
   test('POST /api/v1/auth/change-password requires authentication', async () => {
@@ -82,7 +137,6 @@ describe('Auth API contract', () => {
       confirmNewPassword: 'new-password-123',
     });
 
-    expect(response.status).toBe(401);
-    expect(response.body.success).toBe(false);
+    expectFailureEnvelope(response, 401, 'Token tidak ditemukan');
   });
 });

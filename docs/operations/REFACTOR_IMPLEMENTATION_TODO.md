@@ -71,34 +71,34 @@ Dokumen ini memecah roadmap refactor besar menjadi batch yang bisa dikerjakan be
 
 ## Batch 5 - Cache and Invalidation Expansion
 
-- [ ] Tambah cache untuk:
-  - [ ] `GET /api/v1/doctors/:doctorId/dashboard/patients/:patientId/vitals`
-  - [ ] `GET /api/v1/doctors/:doctorId/dashboard/patients/:patientId/abnormal-report`
-  - [ ] kandidat aman lain setelah profiling
-- [ ] Tambah invalidation setelah mutation yang memengaruhi dashboard:
-  - [ ] profile update
-  - [ ] biometrics ingest
-  - [ ] diary body metric update
-  - [ ] sleep/symptom/activity/consumption update bila memang memengaruhi summary
-- [ ] Review TTL:
-  - [ ] dashboard list TTL
-  - [ ] dashboard summary TTL
-  - [ ] diary by-date TTL
-  - [ ] vitals TTL
-- [ ] Tambah test cache hit, cache miss, dan invalidation
+- [x] Tambah cache untuk:
+  - [x] `GET /api/v1/doctors/:doctorId/dashboard/patients/:patientId/vitals`
+  - [x] `GET /api/v1/doctors/:doctorId/dashboard/patients/:patientId/abnormal-report`
+  - [x] kandidat aman lain setelah profiling
+- [x] Tambah invalidation setelah mutation yang memengaruhi dashboard:
+  - [x] profile update
+  - [x] biometrics ingest
+  - [x] diary body metric update
+  - [x] sleep/symptom/activity/consumption update bila memang memengaruhi summary
+- [x] Review TTL:
+  - [x] dashboard list TTL
+  - [x] dashboard summary TTL
+  - [x] diary by-date TTL
+  - [x] vitals TTL
+- [x] Tambah test cache hit, cache miss, dan invalidation
 
 ## Batch 6 - FE Contract Safety
 
-- [ ] Perketat contract test untuk auth
-- [ ] Perketat contract test untuk biometrics
-- [ ] Perketat contract test untuk diary by-date
-- [ ] Perketat contract test untuk dashboard
-- [ ] Tambah snapshot/shape assertions untuk payload FE-critical
-- [ ] Tambah checklist PR:
-  - [ ] route path tetap
-  - [ ] auth requirement tetap
-  - [ ] success envelope tetap
-  - [ ] existing response fields tetap ada
+- [x] Perketat contract test untuk auth
+- [x] Perketat contract test untuk biometrics
+- [x] Perketat contract test untuk diary by-date
+- [x] Perketat contract test untuk dashboard
+- [x] Tambah snapshot/shape assertions untuk payload FE-critical
+- [x] Tambah checklist PR:
+  - [x] route path tetap
+  - [x] auth requirement tetap
+  - [x] success envelope tetap
+  - [x] existing response fields tetap ada
 
 ## Batch 7 - Redis Productionization
 

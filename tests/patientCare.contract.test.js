@@ -1,6 +1,10 @@
 const jwt = require('jsonwebtoken');
 const request = require('supertest');
 const env = require('../src/config/env');
+const {
+  expectObjectKeys,
+  expectSuccessEnvelope,
+} = require('./helpers/contractAssertions');
 
 jest.mock('../src/services/patientCareService', () => ({
   createDailyBodyMetric: jest.fn(),
@@ -65,9 +69,23 @@ describe('Patient care API contract', () => {
       });
 
     expect(response.status).toBe(201);
-    expect(response.body.success).toBe(true);
-    expect(response.body.data).toHaveProperty('latestHeartRate', 81);
-    expect(response.body.data).toHaveProperty('latestOxygenSaturation', 98);
+    expectSuccessEnvelope(response, 'Body metric diary berhasil ditambahkan');
+    expectObjectKeys(response.body.data, [
+      'metricId',
+      'diaryId',
+      'conditionTag',
+      'bodyHeight',
+      'bodyWeight',
+      'bmi',
+      'systolicPressure',
+      'diastolicPressure',
+      'heartRate',
+      'latestHeartRate',
+      'latestHeartRateMeasuredAt',
+      'latestOxygenSaturation',
+      'latestOxygenSaturationMeasuredAt',
+      'timeStamp',
+    ]);
   });
 
   test('PUT /api/v1/users/:userId/diaries/by-date/body-metrics returns enriched body metric contract', async () => {
@@ -103,10 +121,23 @@ describe('Patient care API contract', () => {
       });
 
     expect(response.status).toBe(200);
-    expect(response.body.success).toBe(true);
-    expect(response.body.data).toHaveProperty('metricId');
-    expect(response.body.data).toHaveProperty('latestHeartRateMeasuredAt');
-    expect(response.body.data).toHaveProperty('latestOxygenSaturationMeasuredAt');
+    expectSuccessEnvelope(response, 'Body metric diary berdasarkan tanggal berhasil disimpan');
+    expectObjectKeys(response.body.data, [
+      'metricId',
+      'diaryId',
+      'conditionTag',
+      'bodyHeight',
+      'bodyWeight',
+      'bmi',
+      'systolicPressure',
+      'diastolicPressure',
+      'heartRate',
+      'latestHeartRate',
+      'latestHeartRateMeasuredAt',
+      'latestOxygenSaturation',
+      'latestOxygenSaturationMeasuredAt',
+      'timeStamp',
+    ]);
   });
 
   test('GET /api/v1/users/:userId/diaries/by-date returns enriched diary detail contract', async () => {
@@ -144,9 +175,34 @@ describe('Patient care API contract', () => {
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(200);
-    expect(response.body.success).toBe(true);
-    expect(response.body.data.bodyMetrics[0]).toHaveProperty('latestHeartRate', 81);
-    expect(response.body.data.bodyMetrics[0]).toHaveProperty('latestOxygenSaturation', 98);
+    expectSuccessEnvelope(response, 'Detail heart diary berdasarkan tanggal berhasil diambil');
+    expectObjectKeys(response.body.data, [
+      'diaryId',
+      'userId',
+      'diaryDate',
+      'createdAt',
+      'bodyMetrics',
+      'symptoms',
+      'activities',
+      'consumptions',
+      'sleepRecord',
+    ]);
+    expectObjectKeys(response.body.data.bodyMetrics[0], [
+      'metricId',
+      'diaryId',
+      'conditionTag',
+      'bodyHeight',
+      'bodyWeight',
+      'bmi',
+      'systolicPressure',
+      'diastolicPressure',
+      'heartRate',
+      'latestHeartRate',
+      'latestHeartRateMeasuredAt',
+      'latestOxygenSaturation',
+      'latestOxygenSaturationMeasuredAt',
+      'timeStamp',
+    ]);
   });
 
   test('GET /api/v1/users/:userId/diaries/:diaryId is no longer exposed', async () => {

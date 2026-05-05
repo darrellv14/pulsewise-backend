@@ -1,6 +1,11 @@
 const jwt = require('jsonwebtoken');
 const request = require('supertest');
 const env = require('../src/config/env');
+const {
+  expectObjectKeys,
+  expectSuccessEnvelope,
+  expectFailureEnvelope,
+} = require('./helpers/contractAssertions');
 
 jest.mock('../src/services/biometricService', () => ({
   ingestBiometrics: jest.fn(),
@@ -65,10 +70,23 @@ describe('Biometrics API contract', () => {
       });
 
     expect(response.status).toBe(201);
-    expect(response.body.success).toBe(true);
-    expect(response.body.data).toHaveProperty('insertedCount');
-    expect(response.body.data).toHaveProperty('duplicateCount');
-    expect(Array.isArray(response.body.data.items)).toBe(true);
+    expectSuccessEnvelope(response, 'Ingest biometrik berhasil diproses');
+    expectObjectKeys(response.body.data, [
+      'patientId',
+      'source',
+      'totalReceived',
+      'insertedCount',
+      'duplicateCount',
+      'items',
+    ]);
+    expectObjectKeys(response.body.data.items[0], [
+      'readingId',
+      'metricType',
+      'measuredAt',
+      'valueNumeric',
+      'unit',
+      'duplicate',
+    ]);
   });
 
   test('GET /api/v1/biometrics returns history contract', async () => {
@@ -105,9 +123,18 @@ describe('Biometrics API contract', () => {
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(200);
-    expect(response.body.success).toBe(true);
-    expect(response.body.data).toHaveProperty('items');
-    expect(response.body.data).toHaveProperty('pagination');
+    expectSuccessEnvelope(response, 'Histori biometrik berhasil diambil');
+    expectObjectKeys(response.body.data, ['patientId', 'filters', 'items', 'pagination']);
+    expectObjectKeys(response.body.data.items[0], [
+      'readingId',
+      'source',
+      'metricType',
+      'valueNumeric',
+      'unit',
+      'payload',
+      'measuredAt',
+      'receivedAt',
+    ]);
     expect(response.body.data.items[0]).toHaveProperty('metricType', 'systolic_bp');
   });
 
@@ -120,8 +147,7 @@ describe('Biometrics API contract', () => {
         readings: [],
       });
 
-    expect(response.status).toBe(400);
-    expect(response.body.success).toBe(false);
+    expectFailureEnvelope(response, 400, 'Validasi request gagal');
     expect(response.body).toHaveProperty('details');
   });
 });

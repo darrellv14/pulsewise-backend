@@ -1,6 +1,10 @@
 const jwt = require('jsonwebtoken');
 const request = require('supertest');
 const env = require('../src/config/env');
+const {
+  expectObjectKeys,
+  expectSuccessEnvelope,
+} = require('./helpers/contractAssertions');
 
 jest.mock('../src/services/careService', () => ({
   listDoctorDashboardPatients: jest.fn(),
@@ -87,11 +91,18 @@ describe('Dashboard API contract', () => {
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(200);
-    expect(response.body.success).toBe(true);
-    expect(response.body.data).toHaveProperty('items');
-    expect(response.body.data).toHaveProperty('pagination');
-    expect(response.body.data.items[0]).toHaveProperty('patientId');
-    expect(response.body.data.items[0]).toHaveProperty('latestVitals');
+    expectSuccessEnvelope(response, 'Daftar pasien dashboard dokter berhasil diambil');
+    expectObjectKeys(response.body.data, ['items', 'pagination']);
+    expectObjectKeys(response.body.data.items[0], [
+      'patientId',
+      'firstName',
+      'lastName',
+      'email',
+      'dateOfBirth',
+      'age',
+      'sex',
+      'latestVitals',
+    ]);
   });
 
   test('GET dashboard patient summary returns expected keys', async () => {
@@ -126,10 +137,109 @@ describe('Dashboard API contract', () => {
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(200);
-    expect(response.body.success).toBe(true);
-    expect(response.body.data).toHaveProperty('patient');
-    expect(response.body.data).toHaveProperty('latestVitals');
-    expect(response.body.data).toHaveProperty('thresholds');
+    expectSuccessEnvelope(response, 'Ringkasan pasien dashboard dokter berhasil diambil');
+    expectObjectKeys(response.body.data, ['patient', 'latestVitals', 'thresholds']);
+  });
+
+  test('GET dashboard patient vitals returns stable shape', async () => {
+    careService.getDoctorDashboardPatientVitals.mockResolvedValue({
+      patient: {
+        patientId,
+        firstName: 'Nadia',
+        lastName: 'Saraswati',
+        email: 'seed.patient2@pulsewise.local',
+        phone: '081200000102',
+        dateOfBirth: '1994-09-03',
+        age: 31,
+        sex: 'female',
+      },
+      period: {
+        startAt: '2026-04-01T00:00:00.000Z',
+        endAt: '2026-04-30T23:59:59.999Z',
+        timePeriod: 'custom',
+      },
+      series: {
+        timestamps: ['2026-04-10T07:30:00.000Z'],
+        systolicBp: [122],
+        diastolicBp: [78],
+        heartRate: [81],
+        oxygenSaturation: [98],
+        weight: [68.2],
+        height: [172.5],
+        bmi: [22.9],
+      },
+      latestVitals: {
+        measuredAt: '2026-04-10T07:30:00.000Z',
+        systolicBp: 122,
+        diastolicBp: 78,
+        heartRate: 81,
+        oxygenSaturation: 98,
+        weight: 68.2,
+        height: 172.5,
+        bmi: 22.9,
+      },
+      thresholds: {
+        SPO2_CRITICAL_THRESHOLD: 90,
+      },
+    });
+
+    const response = await request(app)
+      .get(`/api/v1/doctors/${doctorId}/dashboard/patients/${patientId}/vitals?timePeriod=last_30_days`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expectSuccessEnvelope(response, 'Time-series vital pasien dashboard dokter berhasil diambil');
+    expectObjectKeys(response.body.data, ['patient', 'period', 'series', 'latestVitals', 'thresholds']);
+    expectObjectKeys(response.body.data.series, [
+      'timestamps',
+      'systolicBp',
+      'diastolicBp',
+      'heartRate',
+      'oxygenSaturation',
+      'weight',
+      'height',
+      'bmi',
+    ]);
+  });
+
+  test('GET dashboard abnormal report returns stable shape', async () => {
+    careService.getDoctorDashboardAbnormalReport.mockResolvedValue({
+      patient: {
+        patientId,
+        firstName: 'Nadia',
+        lastName: 'Saraswati',
+        email: 'seed.patient2@pulsewise.local',
+        phone: '081200000102',
+        dateOfBirth: '1994-09-03',
+        age: 31,
+        sex: 'female',
+      },
+      period: {
+        startAt: '2026-04-01T00:00:00.000Z',
+        endAt: '2026-04-30T23:59:59.999Z',
+        timePeriod: 'custom',
+      },
+      stats: {
+        systolicBp: { avg: 122, min: 122, max: 122 },
+        diastolicBp: { avg: 78, min: 78, max: 78 },
+        heartRate: { avg: 81, min: 81, max: 81 },
+        oxygenSaturation: { avg: 98, min: 98, max: 98 },
+        weight: { avg: 68.2, min: 68.2, max: 68.2 },
+        bmi: { avg: 22.9, min: 22.9, max: 22.9 },
+      },
+      abnormalInstances: [],
+      thresholds: {
+        SPO2_CRITICAL_THRESHOLD: 90,
+      },
+    });
+
+    const response = await request(app)
+      .get(`/api/v1/doctors/${doctorId}/dashboard/patients/${patientId}/abnormal-report?timePeriod=last_30_days`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expectSuccessEnvelope(response, 'Abnormal report pasien dashboard dokter berhasil diambil');
+    expectObjectKeys(response.body.data, ['patient', 'period', 'stats', 'abnormalInstances', 'thresholds']);
   });
 
   test('POST link by scanned patientId returns expected envelope contract', async () => {

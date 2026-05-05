@@ -1,19 +1,26 @@
+const env = require('../../config/env');
 const patientCareRepository = require('../../repositories/patientCareRepository');
 const { assertUserScope, hasOwn, normalizeNullableText } = require('./shared');
-const { invalidateDiaryCache } = require('./cache');
+const { getOrSetJson, invalidateDiaryCache, sleepByDateKey } = require('./cache');
 const { ensureHeartDiaryByDate } = require('./diaryService');
 const { mapSleepRecord } = require('./mappers');
 
 async function getDailySleepRecordByDate({ actor, userId, diaryDate }) {
   assertUserScope({ actor, userId });
 
-  const diary = await patientCareRepository.getHeartDiaryByDate({ userId, diaryDate });
-  if (!diary) {
-    return null;
-  }
+  return getOrSetJson(
+    sleepByDateKey({ userId, diaryDate }),
+    env.cache.sleepByDateTtlSeconds,
+    async () => {
+      const diary = await patientCareRepository.getHeartDiaryByDate({ userId, diaryDate });
+      if (!diary) {
+        return null;
+      }
 
-  const sleepRecord = await patientCareRepository.getDailySleepRecord(diary.diary_id);
-  return mapSleepRecord(sleepRecord);
+      const sleepRecord = await patientCareRepository.getDailySleepRecord(diary.diary_id);
+      return mapSleepRecord(sleepRecord);
+    }
+  );
 }
 
 async function upsertDailySleepRecordByDate({ actor, userId, payload }) {

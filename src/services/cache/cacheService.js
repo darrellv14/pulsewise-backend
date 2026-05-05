@@ -124,4 +124,5 @@ module.exports = {
   getOrSetJson,
   invalidateExact,
   invalidateByPrefixes,
+  __resetMemoryStoreForTests: () => memoryStore.clear(),
 };

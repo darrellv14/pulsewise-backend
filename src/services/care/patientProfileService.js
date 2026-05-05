@@ -1,10 +1,6 @@
 const profileRepository = require('../../repositories/profileRepository');
 const patientMlRepository = require('../../repositories/patientMlRepository');
-const { invalidateByPrefixes } = require('../cache/cacheService');
-const {
-  dashboardPatientSummaryPrefix,
-  dashboardPatientsListPrefix,
-} = require('../cache/cacheKeys');
+const { invalidateDashboardPatientCaches } = require('../cache/invalidation');
 const { normalizePaginationInput } = require('../../utils/pagination');
 const { createHttpError } = require('../../utils/httpError');
 const {
@@ -55,10 +51,7 @@ async function updatePatientProfile(patientId, payload) {
     address: payload.address !== undefined ? payload.address : undefined,
   });
 
-  await invalidateByPrefixes([
-    dashboardPatientSummaryPrefix(patientId),
-    dashboardPatientsListPrefix(),
-  ]);
+  await invalidateDashboardPatientCaches(patientId);
 
   return updated;
 }
