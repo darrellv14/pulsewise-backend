@@ -6,6 +6,7 @@ const {
   patientMlParamsSchema,
   doctorDashboardMlParamsSchema,
   mlRequestQuerySchema,
+  mlHistoryQuerySchema,
   emptyMlBodySchema,
 } = require('../validators/mlRecommendationValidator');
 
@@ -41,6 +42,32 @@ router.post(
   validateRequest(emptyMlBodySchema),
   mlRecommendationController.getPatientMlRecommendations
 );
+router.get(
+  '/users/:userId/ml-predictions/latest',
+  authenticate,
+  validateRequest(patientMlParamsSchema, 'params'),
+  mlRecommendationController.getPatientLatestMlPrediction
+);
+router.get(
+  '/users/:userId/ml-recommendations/latest',
+  authenticate,
+  validateRequest(patientMlParamsSchema, 'params'),
+  mlRecommendationController.getPatientLatestMlRecommendation
+);
+router.get(
+  '/users/:userId/ml-predictions/history',
+  authenticate,
+  validateRequest(patientMlParamsSchema, 'params'),
+  validateRequest(mlHistoryQuerySchema, 'query'),
+  mlRecommendationController.listPatientMlPredictionHistory
+);
+router.get(
+  '/users/:userId/ml-recommendations/history',
+  authenticate,
+  validateRequest(patientMlParamsSchema, 'params'),
+  validateRequest(mlHistoryQuerySchema, 'query'),
+  mlRecommendationController.listPatientMlRecommendationHistory
+);
 
 router.get(
   '/doctors/:doctorId/dashboard/patients/:patientId/ml-readiness',
@@ -71,6 +98,32 @@ router.post(
   validateRequest(mlRequestQuerySchema, 'query'),
   validateRequest(emptyMlBodySchema),
   mlRecommendationController.getDoctorDashboardPatientMlRecommendations
+);
+router.get(
+  '/doctors/:doctorId/dashboard/patients/:patientId/ml-predictions/latest',
+  authenticate,
+  validateRequest(doctorDashboardMlParamsSchema, 'params'),
+  mlRecommendationController.getDoctorDashboardPatientLatestMlPrediction
+);
+router.get(
+  '/doctors/:doctorId/dashboard/patients/:patientId/ml-recommendations/latest',
+  authenticate,
+  validateRequest(doctorDashboardMlParamsSchema, 'params'),
+  mlRecommendationController.getDoctorDashboardPatientLatestMlRecommendation
+);
+router.get(
+  '/doctors/:doctorId/dashboard/patients/:patientId/ml-predictions/history',
+  authenticate,
+  validateRequest(doctorDashboardMlParamsSchema, 'params'),
+  validateRequest(mlHistoryQuerySchema, 'query'),
+  mlRecommendationController.listDoctorDashboardPatientMlPredictionHistory
+);
+router.get(
+  '/doctors/:doctorId/dashboard/patients/:patientId/ml-recommendations/history',
+  authenticate,
+  validateRequest(doctorDashboardMlParamsSchema, 'params'),
+  validateRequest(mlHistoryQuerySchema, 'query'),
+  mlRecommendationController.listDoctorDashboardPatientMlRecommendationHistory
 );
 
 module.exports = router;

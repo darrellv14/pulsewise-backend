@@ -1,5 +1,6 @@
 const env = require('../../config/env');
 const { getRedisClient } = require('../../config/redis');
+const cacheMetrics = require('./metrics');
 
 const memoryStore = new Map();
 
@@ -20,16 +21,27 @@ async function getJson(key) {
   const client = await getRedisClient();
 
   if (client) {
+    cacheMetrics.incrementBackend('redis');
     const rawValue = await client.get(namespacedKey);
-    return rawValue ? JSON.parse(rawValue) : null;
+    if (rawValue) {
+      cacheMetrics.increment('hits');
+      return JSON.parse(rawValue);
+    }
+
+    cacheMetrics.increment('misses');
+    return null;
   }
 
   const entry = memoryStore.get(namespacedKey);
   if (!entry || entry.expiresAt <= Date.now()) {
     memoryStore.delete(namespacedKey);
+    cacheMetrics.incrementBackend('memory');
+    cacheMetrics.increment('misses');
     return null;
   }
 
+  cacheMetrics.incrementBackend('memory');
+  cacheMetrics.increment('hits');
   return entry.value;
 }
 
@@ -39,6 +51,8 @@ async function setJson(key, value, ttlSeconds) {
   const client = await getRedisClient();
 
   if (client) {
+    cacheMetrics.incrementBackend('redis');
+    cacheMetrics.increment('sets');
     await client.set(namespacedKey, JSON.stringify(value), {
       EX: ttl,
     });
@@ -53,6 +67,8 @@ async function setJson(key, value, ttlSeconds) {
     value,
     expiresAt: Date.now() + ttl * 1000,
   });
+  cacheMetrics.incrementBackend('memory');
+  cacheMetrics.increment('sets');
 }
 
 async function getOrSetJson(key, ttlSeconds, loader) {
@@ -77,6 +93,8 @@ async function invalidateExact(keys) {
 
   const client = await getRedisClient();
   if (client) {
+    cacheMetrics.incrementBackend('redis');
+    cacheMetrics.increment('invalidationsExact');
     await client.del(...normalizedKeys);
     return;
   }
@@ -84,6 +102,8 @@ async function invalidateExact(keys) {
   for (const key of normalizedKeys) {
     memoryStore.delete(key);
   }
+  cacheMetrics.incrementBackend('memory');
+  cacheMetrics.increment('invalidationsExact');
 }
 
 async function invalidateByPrefixes(prefixes) {
@@ -97,6 +117,8 @@ async function invalidateByPrefixes(prefixes) {
 
   const client = await getRedisClient();
   if (client) {
+    cacheMetrics.incrementBackend('redis');
+    cacheMetrics.increment('invalidationsPrefix');
     for (const prefix of normalizedPrefixes) {
       const pattern = `${prefix}*`;
       const iterator = client.scanIterator({
@@ -116,6 +138,8 @@ async function invalidateByPrefixes(prefixes) {
       memoryStore.delete(key);
     }
   }
+  cacheMetrics.incrementBackend('memory');
+  cacheMetrics.increment('invalidationsPrefix');
 }
 
 module.exports = {
@@ -124,5 +148,7 @@ module.exports = {
   getOrSetJson,
   invalidateExact,
   invalidateByPrefixes,
+  getCacheMetricsSnapshot: cacheMetrics.getMetricsSnapshot,
   __resetMemoryStoreForTests: () => memoryStore.clear(),
+  __resetMetricsForTests: cacheMetrics.resetMetrics,
 };

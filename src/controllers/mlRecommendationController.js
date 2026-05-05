@@ -117,13 +117,133 @@ async function getDoctorDashboardPatientMlRecommendations(req, res, next) {
   }
 }
 
+async function getPatientLatestMlPrediction(req, res, next) {
+  try {
+    const data = await mlRecommendationService.getPatientLatestMlPrediction({
+      actor: req.user,
+      userId: req.params.userId,
+    });
+
+    return success(res, 'Prediksi ML terbaru pasien berhasil diambil', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function getPatientLatestMlRecommendation(req, res, next) {
+  try {
+    const data = await mlRecommendationService.getPatientLatestMlRecommendation({
+      actor: req.user,
+      userId: req.params.userId,
+    });
+
+    return success(res, 'Rekomendasi ML terbaru pasien berhasil diambil', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function listPatientMlPredictionHistory(req, res, next) {
+  try {
+    const data = await mlRecommendationService.listPatientMlPredictionHistory({
+      actor: req.user,
+      userId: req.params.userId,
+      query: req.query,
+    });
+
+    return success(res, 'Riwayat prediksi ML pasien berhasil diambil', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function listPatientMlRecommendationHistory(req, res, next) {
+  try {
+    const data = await mlRecommendationService.listPatientMlRecommendationHistory({
+      actor: req.user,
+      userId: req.params.userId,
+      query: req.query,
+    });
+
+    return success(res, 'Riwayat rekomendasi ML pasien berhasil diambil', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function getDoctorDashboardPatientLatestMlPrediction(req, res, next) {
+  try {
+    const data = await mlRecommendationService.getDoctorDashboardPatientLatestMlPrediction({
+      actor: req.user,
+      doctorId: req.params.doctorId,
+      patientId: req.params.patientId,
+    });
+
+    return success(res, 'Prediksi ML terbaru pasien dashboard berhasil diambil', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function getDoctorDashboardPatientLatestMlRecommendation(req, res, next) {
+  try {
+    const data = await mlRecommendationService.getDoctorDashboardPatientLatestMlRecommendation({
+      actor: req.user,
+      doctorId: req.params.doctorId,
+      patientId: req.params.patientId,
+    });
+
+    return success(res, 'Rekomendasi ML terbaru pasien dashboard berhasil diambil', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function listDoctorDashboardPatientMlPredictionHistory(req, res, next) {
+  try {
+    const data = await mlRecommendationService.listDoctorDashboardPatientMlPredictionHistory({
+      actor: req.user,
+      doctorId: req.params.doctorId,
+      patientId: req.params.patientId,
+      query: req.query,
+    });
+
+    return success(res, 'Riwayat prediksi ML pasien dashboard berhasil diambil', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function listDoctorDashboardPatientMlRecommendationHistory(req, res, next) {
+  try {
+    const data = await mlRecommendationService.listDoctorDashboardPatientMlRecommendationHistory({
+      actor: req.user,
+      doctorId: req.params.doctorId,
+      patientId: req.params.patientId,
+      query: req.query,
+    });
+
+    return success(res, 'Riwayat rekomendasi ML pasien dashboard berhasil diambil', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
 module.exports = {
   getPatientMlReadiness,
   getPatientMlPayload,
   getPatientMlPredictions,
   getPatientMlRecommendations,
+  getPatientLatestMlPrediction,
+  getPatientLatestMlRecommendation,
+  listPatientMlPredictionHistory,
+  listPatientMlRecommendationHistory,
   getDoctorDashboardPatientMlReadiness,
   getDoctorDashboardPatientMlPayload,
   getDoctorDashboardPatientMlPredictions,
   getDoctorDashboardPatientMlRecommendations,
+  getDoctorDashboardPatientLatestMlPrediction,
+  getDoctorDashboardPatientLatestMlRecommendation,
+  listDoctorDashboardPatientMlPredictionHistory,
+  listDoctorDashboardPatientMlRecommendationHistory,
 };

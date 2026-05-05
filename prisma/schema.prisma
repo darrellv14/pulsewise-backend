@@ -41,6 +41,7 @@ model User {
   heartDiaries                     HeartDiary[]
   patientMlProfile                 PatientMlProfile?
   patientMlAssessments             PatientMlAssessment[]
+  patientMlInferenceResults        PatientMlInferenceResult[] @relation("PatientMlInferenceResults")
   medications                      Medication[]
   reminders                        Reminder[]
   medicationLogs                   MedicationLog[]
@@ -52,6 +53,7 @@ model User {
   doctorPatientsAsPatient          DoctorPatient[]           @relation("DoctorPatientPatient")
   dashboardPairingSessionsAsDoctor DashboardPairingSession[] @relation("DashboardPairingSessionDoctor")
   dashboardPairingSessionsAsPatient DashboardPairingSession[] @relation("DashboardPairingSessionPatient")
+  requestedMlInferenceResults      PatientMlInferenceResult[] @relation("RequestedMlInferenceResults")
 
   @@map("users")
 }
@@ -315,6 +317,31 @@ model PatientMlAssessment {
   @@unique([patientId, assessmentDate], map: "patient_ml_assessments_patient_id_assessment_date_key")
   @@index([patientId, assessmentDate(sort: Desc)], map: "idx_patient_ml_assessments_patient_date")
   @@map("patient_ml_assessments")
+}
+
+model PatientMlInferenceResult {
+  resultId         String   @id @default(dbgenerated("gen_random_uuid()")) @map("result_id") @db.Uuid
+  patientId        String   @map("patient_id") @db.Uuid
+  requestedByUserId String? @map("requested_by_user_id") @db.Uuid
+  inferenceType    String   @map("inference_type") @db.VarChar(32)
+  requestContext   String?  @map("request_context") @db.VarChar(32)
+  mlVersion        String   @map("ml_version") @db.VarChar(64)
+  payloadHash      String   @map("payload_hash") @db.VarChar(128)
+  payload          Json?    @map("payload")
+  sourceSummary    Json?    @map("source_summary")
+  windowStartDate  DateTime @map("window_start_date") @db.Date
+  windowEndDate    DateTime @map("window_end_date") @db.Date
+  upstreamEndpoint String?  @map("upstream_endpoint")
+  upstreamStatus   Int?     @map("upstream_status")
+  upstreamBody     Json?    @map("upstream_body")
+  generatedAt      DateTime @default(now()) @map("generated_at") @db.Timestamptz(6)
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  patient          User     @relation("PatientMlInferenceResults", fields: [patientId], references: [userId], onDelete: Cascade)
+  requestedByUser  User?    @relation("RequestedMlInferenceResults", fields: [requestedByUserId], references: [userId], onDelete: SetNull)
+
+  @@index([patientId, inferenceType, generatedAt(sort: Desc)], map: "idx_patient_ml_inference_results_patient_type_generated")
+  @@index([requestedByUserId, generatedAt(sort: Desc)], map: "idx_patient_ml_inference_results_requested_by")
+  @@map("patient_ml_inference_results")
 }
 
 model DoctorPatient {

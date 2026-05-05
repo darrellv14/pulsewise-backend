@@ -426,6 +426,8 @@ function predictionResponses(message) {
         success: true,
         message,
         data: {
+          resultId: 'f0f49556-5fbf-4ed3-b4b4-4f32f9f4ebf2',
+          generatedAt: '2026-05-05T12:30:00.000Z',
           mlVersion: 'hfms-v3',
           window: SAMPLE_ML_WINDOW,
           payloadHash: 'sha256:8dc6b9ce2c1d6db4a98fe1b14d4f5d55f2f3c44f365d0c7aa8aa18be667d6d2d',
@@ -447,12 +449,80 @@ function recommendationResponses(message) {
         success: true,
         message,
         data: {
+          resultId: 'f0f49556-5fbf-4ed3-b4b4-4f32f9f4ebf2',
+          generatedAt: '2026-05-05T12:30:00.000Z',
           mlVersion: 'hfms-v3',
           window: SAMPLE_ML_WINDOW,
           payloadHash: 'sha256:8dc6b9ce2c1d6db4a98fe1b14d4f5d55f2f3c44f365d0c7aa8aa18be667d6d2d',
           sourceSummary: SAMPLE_ML_SOURCE_SUMMARY,
           payload: buildSampleMlPayload(),
           upstream: SAMPLE_ML_UPSTREAM_RECOMMENDATION,
+        },
+      },
+    }),
+  ];
+}
+
+function mlInferenceResultResponses(message, inferenceType, upstream) {
+  return [
+    responseExample({
+      name: `200 ML ${inferenceType} latest success`,
+      code: 200,
+      body: {
+        success: true,
+        message,
+        data: {
+          resultId: 'f0f49556-5fbf-4ed3-b4b4-4f32f9f4ebf2',
+          patientId: '29a8cae4-ba34-4418-baf0-0ba776fbec6b',
+          requestedByUserId: '29a8cae4-ba34-4418-baf0-0ba776fbec6b',
+          inferenceType,
+          requestContext: 'patient',
+          mlVersion: 'hfms-v3',
+          payloadHash: 'sha256:8dc6b9ce2c1d6db4a98fe1b14d4f5d55f2f3c44f365d0c7aa8aa18be667d6d2d',
+          payload: null,
+          sourceSummary: SAMPLE_ML_SOURCE_SUMMARY,
+          window: SAMPLE_ML_WINDOW,
+          upstream,
+          generatedAt: '2026-05-05T12:30:00.000Z',
+          createdAt: '2026-05-05T12:30:00.000Z',
+        },
+      },
+    }),
+  ];
+}
+
+function mlInferenceHistoryResponses(message, inferenceType, upstream) {
+  return [
+    responseExample({
+      name: `200 ML ${inferenceType} history success`,
+      code: 200,
+      body: {
+        success: true,
+        message,
+        data: {
+          items: [
+            {
+              resultId: 'f0f49556-5fbf-4ed3-b4b4-4f32f9f4ebf2',
+              patientId: '29a8cae4-ba34-4418-baf0-0ba776fbec6b',
+              requestedByUserId: '29a8cae4-ba34-4418-baf0-0ba776fbec6b',
+              inferenceType,
+              requestContext: 'patient',
+              mlVersion: 'hfms-v3',
+              payloadHash: 'sha256:8dc6b9ce2c1d6db4a98fe1b14d4f5d55f2f3c44f365d0c7aa8aa18be667d6d2d',
+              payload: null,
+              sourceSummary: SAMPLE_ML_SOURCE_SUMMARY,
+              window: SAMPLE_ML_WINDOW,
+              upstream,
+              generatedAt: '2026-05-05T12:30:00.000Z',
+              createdAt: '2026-05-05T12:30:00.000Z',
+            },
+          ],
+          pagination: {
+            page: 1,
+            limit: 10,
+            totalItems: 1,
+            totalPages: 1,
+          },
         },
       },
     }),
@@ -698,12 +768,56 @@ function buildMainMlFolders() {
           response: predictionResponses('Prediksi dari microservice ML berhasil diambil'),
         }),
         jsonRequest({
+          name: 'GET Patient Latest ML Prediction',
+          method: 'GET',
+          url: '{{baseUrl}}/users/{{patientId}}/ml-predictions/latest',
+          tokenVariable: 'patientToken',
+          response: mlInferenceResultResponses(
+            'Prediksi ML terbaru pasien berhasil diambil',
+            'prediction',
+            SAMPLE_ML_UPSTREAM_PREDICTION
+          ),
+        }),
+        jsonRequest({
+          name: 'GET Patient ML Prediction History',
+          method: 'GET',
+          url: '{{baseUrl}}/users/{{patientId}}/ml-predictions/history?page=1&limit=10',
+          tokenVariable: 'patientToken',
+          response: mlInferenceHistoryResponses(
+            'Riwayat prediksi ML pasien berhasil diambil',
+            'prediction',
+            SAMPLE_ML_UPSTREAM_PREDICTION
+          ),
+        }),
+        jsonRequest({
           name: 'POST Patient ML Recommendations',
           method: 'POST',
           url: '{{baseUrl}}/users/{{patientId}}/ml-recommendations?date={{mlDate}}&includePayload=true',
           tokenVariable: 'patientToken',
           body: '{}',
           response: recommendationResponses('Rekomendasi dari microservice ML berhasil diambil'),
+        }),
+        jsonRequest({
+          name: 'GET Patient Latest ML Recommendation',
+          method: 'GET',
+          url: '{{baseUrl}}/users/{{patientId}}/ml-recommendations/latest',
+          tokenVariable: 'patientToken',
+          response: mlInferenceResultResponses(
+            'Rekomendasi ML terbaru pasien berhasil diambil',
+            'recommendation',
+            SAMPLE_ML_UPSTREAM_RECOMMENDATION
+          ),
+        }),
+        jsonRequest({
+          name: 'GET Patient ML Recommendation History',
+          method: 'GET',
+          url: '{{baseUrl}}/users/{{patientId}}/ml-recommendations/history?page=1&limit=10',
+          tokenVariable: 'patientToken',
+          response: mlInferenceHistoryResponses(
+            'Riwayat rekomendasi ML pasien berhasil diambil',
+            'recommendation',
+            SAMPLE_ML_UPSTREAM_RECOMMENDATION
+          ),
         }),
       ],
     },
@@ -733,12 +847,56 @@ function buildMainMlFolders() {
           response: predictionResponses('Prediksi ML pasien dashboard berhasil diambil'),
         }),
         jsonRequest({
+          name: 'GET Dashboard Patient Latest ML Prediction',
+          method: 'GET',
+          url: '{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/ml-predictions/latest',
+          tokenVariable: 'doctorToken',
+          response: mlInferenceResultResponses(
+            'Prediksi ML terbaru pasien dashboard berhasil diambil',
+            'prediction',
+            SAMPLE_ML_UPSTREAM_PREDICTION
+          ),
+        }),
+        jsonRequest({
+          name: 'GET Dashboard Patient ML Prediction History',
+          method: 'GET',
+          url: '{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/ml-predictions/history?page=1&limit=10',
+          tokenVariable: 'doctorToken',
+          response: mlInferenceHistoryResponses(
+            'Riwayat prediksi ML pasien dashboard berhasil diambil',
+            'prediction',
+            SAMPLE_ML_UPSTREAM_PREDICTION
+          ),
+        }),
+        jsonRequest({
           name: 'POST Dashboard Patient ML Recommendations',
           method: 'POST',
           url: '{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/ml-recommendations?date={{mlDate}}&includePayload=true',
           tokenVariable: 'doctorToken',
           body: '{}',
           response: recommendationResponses('Rekomendasi ML pasien dashboard berhasil diambil'),
+        }),
+        jsonRequest({
+          name: 'GET Dashboard Patient Latest ML Recommendation',
+          method: 'GET',
+          url: '{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/ml-recommendations/latest',
+          tokenVariable: 'doctorToken',
+          response: mlInferenceResultResponses(
+            'Rekomendasi ML terbaru pasien dashboard berhasil diambil',
+            'recommendation',
+            SAMPLE_ML_UPSTREAM_RECOMMENDATION
+          ),
+        }),
+        jsonRequest({
+          name: 'GET Dashboard Patient ML Recommendation History',
+          method: 'GET',
+          url: '{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/ml-recommendations/history?page=1&limit=10',
+          tokenVariable: 'doctorToken',
+          response: mlInferenceHistoryResponses(
+            'Riwayat rekomendasi ML pasien dashboard berhasil diambil',
+            'recommendation',
+            SAMPLE_ML_UPSTREAM_RECOMMENDATION
+          ),
         }),
       ],
     },

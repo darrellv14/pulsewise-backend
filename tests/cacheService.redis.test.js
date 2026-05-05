@@ -34,6 +34,7 @@ function createFakeRedisClient() {
 describe('Cache service Redis backend', () => {
   beforeEach(() => {
     cacheService.__resetMemoryStoreForTests();
+    cacheService.__resetMetricsForTests();
     jest.clearAllMocks();
   });
 
@@ -50,6 +51,14 @@ describe('Cache service Redis backend', () => {
     expect(loader).toHaveBeenCalledTimes(1);
     expect(client.get).toHaveBeenCalledTimes(2);
     expect(client.set).toHaveBeenCalledTimes(1);
+    expect(cacheService.getCacheMetricsSnapshot()).toMatchObject({
+      hits: 1,
+      misses: 1,
+      sets: 1,
+      backends: {
+        redis: 3,
+      },
+    });
   });
 
   test('invalidateByPrefixes deletes matching Redis keys', async () => {
@@ -65,6 +74,9 @@ describe('Cache service Redis backend', () => {
     expect(await cacheService.getJson('dashboard:vitals:1')).toBeNull();
     expect(await cacheService.getJson('dashboard:summary:1')).toBeNull();
     expect(await cacheService.getJson('other:key')).toEqual({ ok: 3 });
+    expect(cacheService.getCacheMetricsSnapshot()).toMatchObject({
+      invalidationsPrefix: 1,
+    });
   });
 
   test('falls back to in-memory cache when Redis client is unavailable', async () => {

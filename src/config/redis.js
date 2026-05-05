@@ -2,6 +2,14 @@ const env = require('./env');
 
 let redisModule = null;
 let missingDependencyLogged = false;
+const redisEnv = env.redis || {};
+const redisStatus = {
+  enabled: Boolean(redisEnv.enabled),
+  available: false,
+  backend: redisEnv.enabled ? 'redis' : 'memory',
+  lastConnectedAt: null,
+  lastError: null,
+};
 
 function loadRedisModule() {
   if (redisModule) {
@@ -14,11 +22,14 @@ function loadRedisModule() {
     redisModule = require('redis');
     return redisModule;
   } catch (_error) {
-    if (!missingDependencyLogged && env.redis.enabled && env.nodeEnv !== 'test') {
+    if (!missingDependencyLogged && redisEnv.enabled && env.nodeEnv !== 'test') {
       missingDependencyLogged = true;
       console.warn(
         '[redis] package "redis" belum terpasang. Fallback ke memori lokal akan digunakan.'
       );
+      redisStatus.available = false;
+      redisStatus.backend = 'memory';
+      redisStatus.lastError = 'missing redis package';
     }
 
     return null;
@@ -28,7 +39,7 @@ function loadRedisModule() {
 let clientPromise = null;
 
 async function getRedisClient() {
-  if (!env.redis.enabled) {
+  if (!redisEnv.enabled) {
     return null;
   }
 
@@ -43,31 +54,39 @@ async function getRedisClient() {
 
   clientPromise = (async () => {
     const client = redis.createClient({
-      url: env.redis.url || undefined,
-      socket: env.redis.url
+      url: redisEnv.url || undefined,
+      socket: redisEnv.url
         ? undefined
         : {
-            host: env.redis.host,
-            port: env.redis.port,
+            host: redisEnv.host,
+            port: redisEnv.port,
           },
-      password: env.redis.password || undefined,
-      database: env.redis.db,
+      password: redisEnv.password || undefined,
+      database: redisEnv.db,
     });
 
     client.on('error', (error) => {
       if (env.nodeEnv !== 'test') {
         console.error('[redis] error', error);
       }
+      redisStatus.lastError = error.message;
     });
 
     try {
       await client.connect();
+      redisStatus.available = true;
+      redisStatus.backend = 'redis';
+      redisStatus.lastConnectedAt = new Date().toISOString();
+      redisStatus.lastError = null;
       return client;
     } catch (error) {
       if (env.nodeEnv !== 'test') {
         console.error('[redis] gagal connect, fallback ke memori lokal', error);
       }
 
+      redisStatus.available = false;
+      redisStatus.backend = 'memory';
+      redisStatus.lastError = error.message;
       clientPromise = null;
       try {
         await client.quit();
@@ -83,4 +102,7 @@ async function getRedisClient() {
 
 module.exports = {
   getRedisClient,
+  getRedisRuntimeStatus: () => ({
+    ...redisStatus,
+  }),
 };

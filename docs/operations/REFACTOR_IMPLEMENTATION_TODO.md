@@ -134,27 +134,33 @@ Catatan:
 
 ## Roadmap to 95+
 
-- [ ] Pecah `src/services/medicationService.js` menjadi modul bounded:
-  - [ ] medication catalog/query service
-  - [ ] medication mutation service
-  - [ ] reminder service
-  - [ ] medication log/history service
-  - [ ] cache invalidation/tag helper
-- [ ] Pisah `src/services/mlRecommendationService.js`:
-  - [ ] ML readiness service
-  - [ ] ML payload assembly service
-  - [ ] ML transport/client service
-  - [ ] ML prediction/recommendation orchestration service
+- [x] Tambah persistence hasil inference ML di `pulsewise-backend`:
+  - [x] buat tabel snapshot/history hasil ML (`prediction` dan `recommendation`)
+  - [x] simpan hasil inference saat endpoint prediction/recommendation dipanggil
+  - [x] tambah endpoint latest prediction/recommendation untuk FE
+  - [x] tambah endpoint history prediction/recommendation untuk kebutuhan audit/riwayat
+  - [x] jaga agar HFMS tetap fokus di inferensi, bukan persistence user-facing
+- [x] Pecah `src/services/medicationService.js` menjadi modul bounded:
+  - [x] medication catalog/query service
+  - [x] medication mutation service
+  - [x] reminder service
+  - [x] medication log/history service
+  - [x] cache invalidation/tag helper
+- [x] Pisah `src/services/mlRecommendationService.js`:
+  - [x] ML readiness service
+  - [x] ML payload assembly service
+  - [x] ML transport/client service
+  - [x] ML prediction/recommendation orchestration service
 - [ ] Haluskan `src/services/care/doctorDashboardService.js`:
-  - [ ] split summary service
-  - [ ] split vitals series service
-  - [ ] split abnormal report service
-  - [ ] tambah observability untuk cache hit/miss
-- [ ] Tambah observability Redis/cache:
-  - [ ] log cache hit/miss terstruktur untuk endpoint utama
-  - [ ] counter sederhana untuk invalidation per domain
-  - [ ] health/debug endpoint internal untuk status Redis client
-- [ ] Sinkronkan OpenAPI dan Postman penuh dengan contract yang sudah dikunci test
+  - [x] split summary service
+  - [x] split vitals series service
+  - [x] split abnormal report service
+  - [x] tambah observability untuk cache hit/miss
+- [x] Tambah observability Redis/cache:
+  - [x] log cache hit/miss terstruktur untuk endpoint utama
+  - [x] counter sederhana untuk invalidation per domain
+  - [x] health/debug visibility untuk status Redis client dan cache metrics
+- [x] Sinkronkan OpenAPI dan Postman penuh dengan contract yang sudah dikunci test
 - [ ] Rencanakan penghilangan prefix `/api/v1` sebagai major version migration, bukan breaking change langsung:
   - [ ] tambahkan alias route tanpa prefix versi
   - [ ] siapkan masa transisi dual-route
