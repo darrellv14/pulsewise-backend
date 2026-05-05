@@ -66,4 +66,16 @@ describe('Cache service Redis backend', () => {
     expect(await cacheService.getJson('dashboard:summary:1')).toBeNull();
     expect(await cacheService.getJson('other:key')).toEqual({ ok: 3 });
   });
+
+  test('falls back to in-memory cache when Redis client is unavailable', async () => {
+    getRedisClient.mockResolvedValue(null);
+    const loader = jest.fn(async () => ({ fallback: true }));
+
+    const first = await cacheService.getOrSetJson('fallback:test', 30, loader);
+    const second = await cacheService.getOrSetJson('fallback:test', 30, loader);
+
+    expect(first).toEqual({ fallback: true });
+    expect(second).toEqual({ fallback: true });
+    expect(loader).toHaveBeenCalledTimes(1);
+  });
 });

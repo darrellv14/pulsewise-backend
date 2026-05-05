@@ -102,27 +102,61 @@ Dokumen ini memecah roadmap refactor besar menjadi batch yang bisa dikerjakan be
 
 ## Batch 7 - Redis Productionization
 
-- [ ] Pastikan Redis jalan di internal Docker network saja
-- [ ] Jangan expose port `6379` ke public internet
-- [ ] Pakai password Redis yang panjang dan acak
-- [ ] Simpan `REDIS_PASSWORD` di env production
-- [ ] Tambah persistence Redis (`appendonly` + volume)
-- [ ] Tambah healthcheck Redis di compose production
-- [ ] Verifikasi backend fallback behavior saat Redis unavailable
+- [x] Pastikan Redis jalan di internal Docker network saja
+- [x] Jangan expose port `6379` ke public internet
+- [x] Pakai password Redis yang panjang dan acak
+- [x] Simpan `REDIS_PASSWORD` di env production
+- [x] Tambah persistence Redis (`appendonly` + volume)
+- [x] Tambah healthcheck Redis di compose production
+- [x] Verifikasi backend fallback behavior saat Redis unavailable
 
 ## CORS Production Checklist
 
-- [ ] Kumpulkan semua origin frontend production/staging/dev
-- [ ] Isi `CORS_ALLOWED_ORIGINS` dengan origin frontend saja
-- [ ] Jangan masukkan path seperti `/api/v1`
-- [ ] Jangan gunakan domain API/ML sebagai origin FE kecuali browser app memang di-serve dari sana
-- [ ] Set `CORS_ALLOW_ALL=false` di production
+- [x] Kumpulkan semua origin frontend production/staging/dev
+- [x] Isi `CORS_ALLOWED_ORIGINS` dengan origin frontend saja
+- [x] Jangan masukkan path seperti `/api/v1`
+- [x] Jangan gunakan domain API/ML sebagai origin FE kecuali browser app memang di-serve dari sana
+- [x] Set `CORS_ALLOW_ALL=false` di production
 
 ## Deployment Checklist After Each Batch
 
-- [ ] `npm run lint`
-- [ ] `npm test`
-- [ ] smoke subset yang relevan
-- [ ] update env example bila ada config baru
-- [ ] update docs deploy bila ada perubahan infra
-- [ ] update OpenAPI/Postman jika ada perubahan additive pada contract
+- [x] `npm run lint`
+- [x] `npm test`
+- [x] smoke subset yang relevan
+- [x] update env example bila ada config baru
+- [x] update docs deploy bila ada perubahan infra
+- [x] update OpenAPI/Postman jika ada perubahan additive pada contract
+
+Catatan:
+
+- Untuk Batch 5-7 tidak ada perubahan additive pada public response contract, jadi OpenAPI/Postman tidak perlu diubah.
+- Smoke subset yang sudah diverifikasi mencakup health endpoint production, rebuild compose, dan hit endpoint dashboard yang menghasilkan key Redis nyata di production.
+
+## Roadmap to 95+
+
+- [ ] Pecah `src/services/medicationService.js` menjadi modul bounded:
+  - [ ] medication catalog/query service
+  - [ ] medication mutation service
+  - [ ] reminder service
+  - [ ] medication log/history service
+  - [ ] cache invalidation/tag helper
+- [ ] Pisah `src/services/mlRecommendationService.js`:
+  - [ ] ML readiness service
+  - [ ] ML payload assembly service
+  - [ ] ML transport/client service
+  - [ ] ML prediction/recommendation orchestration service
+- [ ] Haluskan `src/services/care/doctorDashboardService.js`:
+  - [ ] split summary service
+  - [ ] split vitals series service
+  - [ ] split abnormal report service
+  - [ ] tambah observability untuk cache hit/miss
+- [ ] Tambah observability Redis/cache:
+  - [ ] log cache hit/miss terstruktur untuk endpoint utama
+  - [ ] counter sederhana untuk invalidation per domain
+  - [ ] health/debug endpoint internal untuk status Redis client
+- [ ] Sinkronkan OpenAPI dan Postman penuh dengan contract yang sudah dikunci test
+- [ ] Rencanakan penghilangan prefix `/api/v1` sebagai major version migration, bukan breaking change langsung:
+  - [ ] tambahkan alias route tanpa prefix versi
+  - [ ] siapkan masa transisi dual-route
+  - [ ] update FE/mobile/web secara bertahap
+  - [ ] deprecate `/api/v1` setelah telemetry dan traffic migration aman
