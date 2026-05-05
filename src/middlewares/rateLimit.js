@@ -35,7 +35,7 @@ function createRateLimiter({ name, windowMs, max, message }) {
     if (client) {
       const bucketCount = await client.incr(redisKey);
       if (bucketCount === 1) {
-        await client.pexpire(redisKey, limitWindowMs);
+        await client.pExpire(redisKey, limitWindowMs);
       }
 
       if (bucketCount > limitMax) {
