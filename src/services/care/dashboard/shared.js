@@ -205,6 +205,7 @@ module.exports = {
   NOT_FOUND,
   buildPagination,
   toNumberOrNull,
+  toIso,
   toDateOnlyIso,
   calculateAge,
   latestIso,
