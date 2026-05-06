@@ -35,7 +35,7 @@ describe('Biometrics API contract', () => {
     jest.clearAllMocks();
   });
 
-  test('POST /api/v1/biometrics returns ingest summary contract', async () => {
+  test('POST /biometrics returns ingest summary contract', async () => {
     biometricService.ingestBiometrics.mockResolvedValue({
       patientId,
       source: 'health_connect',
@@ -55,7 +55,7 @@ describe('Biometrics API contract', () => {
     });
 
     const response = await request(app)
-      .post('/api/v1/biometrics')
+      .post('/biometrics')
       .set('Authorization', `Bearer ${token}`)
       .send({
         source: 'health_connect',
@@ -89,7 +89,7 @@ describe('Biometrics API contract', () => {
     ]);
   });
 
-  test('GET /api/v1/biometrics returns history contract', async () => {
+  test('GET /biometrics returns history contract', async () => {
     biometricService.listBiometrics.mockResolvedValue({
       patientId,
       filters: {
@@ -119,7 +119,7 @@ describe('Biometrics API contract', () => {
     });
 
     const response = await request(app)
-      .get('/api/v1/biometrics?metricType=systolic_bp&page=1&limit=50')
+      .get('/biometrics?metricType=systolic_bp&page=1&limit=50')
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(200);
@@ -138,9 +138,9 @@ describe('Biometrics API contract', () => {
     expect(response.body.data.items[0]).toHaveProperty('metricType', 'systolic_bp');
   });
 
-  test('POST /api/v1/biometrics validates payload', async () => {
+  test('POST /biometrics validates payload', async () => {
     const response = await request(app)
-      .post('/api/v1/biometrics')
+      .post('/biometrics')
       .set('Authorization', `Bearer ${token}`)
       .send({
         source: 'health_connect',

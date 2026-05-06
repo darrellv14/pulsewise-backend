@@ -54,7 +54,7 @@ Catatan:
 Set environment variable (PowerShell):
 
 ```powershell
-$env:PARITY_NODE_BASE_URL="http://localhost:5000/api/v1"
+$env:PARITY_NODE_BASE_URL="http://localhost:5000"
 $env:PARITY_NODE_TOKEN="<doctor_token_node>"
 $env:PARITY_DOCTOR_ID="<doctor_uuid>"
 npm run parity:compare

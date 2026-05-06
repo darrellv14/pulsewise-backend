@@ -2,7 +2,7 @@
 
 Dokumen ini adalah panduan implementasi frontend untuk environment live PulseWise:
 
-- API utama: `https://api.darrellvalentino.com/api/v1`
+- API utama: `https://api.darrellvalentino.com`
 - ML debug/admin: `https://ml.darrellvalentino.com`
 
 Frontend web dan mobile **cukup memanggil `api.darrellvalentino.com`**. Service ML tetap dipanggil oleh backend Express.
@@ -28,15 +28,15 @@ Implikasinya:
 Gunakan salah satu bentuk berikut sesuai stack frontend:
 
 ```env
-NEXT_PUBLIC_API_BASE_URL=https://api.darrellvalentino.com/api/v1
+NEXT_PUBLIC_API_BASE_URL=https://api.darrellvalentino.com
 ```
 
 ```env
-VITE_API_BASE_URL=https://api.darrellvalentino.com/api/v1
+VITE_API_BASE_URL=https://api.darrellvalentino.com
 ```
 
 ```env
-REACT_APP_API_BASE_URL=https://api.darrellvalentino.com/api/v1
+REACT_APP_API_BASE_URL=https://api.darrellvalentino.com
 ```
 
 Jangan:

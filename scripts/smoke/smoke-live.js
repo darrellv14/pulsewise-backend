@@ -1,6 +1,6 @@
 require('dotenv').config({ override: true });
 
-const BASE_URL = process.env.SMOKE_BASE_URL || 'http://localhost:5000/api/v1';
+const BASE_URL = process.env.SMOKE_BASE_URL || 'http://localhost:5000';
 const DOCTOR_EMAIL = process.env.SMOKE_DOCTOR_EMAIL || 'doctor@pulsewise.local';
 const PATIENT_EMAIL = process.env.SMOKE_PATIENT_EMAIL || 'seed.patient2@pulsewise.local';
 const PASSWORD = process.env.SMOKE_PASSWORD || 'dev12345';

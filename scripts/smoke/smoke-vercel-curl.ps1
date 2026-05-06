@@ -1,5 +1,5 @@
 param(
-  [string]$BaseUrl = "https://pulsewise-backend.vercel.app/api/v1",
+  [string]$BaseUrl = "https://pulsewise-backend.vercel.app",
   [string]$DoctorEmail = "doctor@pulsewise.local",
   [string]$DoctorPassword = "dev12345",
   [string]$PatientEmail = "seed.patient2@pulsewise.local",

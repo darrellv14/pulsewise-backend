@@ -87,7 +87,7 @@ describe('Dashboard API contract', () => {
     });
 
     const response = await request(app)
-      .get(`/api/v1/doctors/${doctorId}/dashboard/patients?page=1&limit=20`)
+      .get(`/doctors/${doctorId}/dashboard/patients?page=1&limit=20`)
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(200);
@@ -133,7 +133,7 @@ describe('Dashboard API contract', () => {
     });
 
     const response = await request(app)
-      .get(`/api/v1/doctors/${doctorId}/dashboard/patients/${patientId}`)
+      .get(`/doctors/${doctorId}/dashboard/patients/${patientId}`)
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(200);
@@ -184,7 +184,7 @@ describe('Dashboard API contract', () => {
     });
 
     const response = await request(app)
-      .get(`/api/v1/doctors/${doctorId}/dashboard/patients/${patientId}/vitals?timePeriod=last_30_days`)
+      .get(`/doctors/${doctorId}/dashboard/patients/${patientId}/vitals?timePeriod=last_30_days`)
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(200);
@@ -234,7 +234,7 @@ describe('Dashboard API contract', () => {
     });
 
     const response = await request(app)
-      .get(`/api/v1/doctors/${doctorId}/dashboard/patients/${patientId}/abnormal-report?timePeriod=last_30_days`)
+      .get(`/doctors/${doctorId}/dashboard/patients/${patientId}/abnormal-report?timePeriod=last_30_days`)
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(200);
@@ -252,7 +252,7 @@ describe('Dashboard API contract', () => {
     });
 
     const response = await request(app)
-      .post(`/api/v1/doctors/${doctorId}/patients/link-by-patient-id`)
+      .post(`/doctors/${doctorId}/patients/link-by-patient-id`)
       .set('Authorization', `Bearer ${token}`)
       .send({
         patientId,
@@ -273,11 +273,11 @@ describe('Dashboard API contract', () => {
       expiresAt: '2026-04-09T12:10:00.000Z',
       pairingToken: 'PWDASH-ABCDEF0123456789',
       qrPayload: 'PWDASH-ABCDEF0123456789',
-      pollingPath: `/api/v1/doctors/${doctorId}/dashboard/pairing-sessions/${pairingSessionId}`,
+      pollingPath: `/doctors/${doctorId}/dashboard/pairing-sessions/${pairingSessionId}`,
     });
 
     const response = await request(app)
-      .post(`/api/v1/doctors/${doctorId}/dashboard/pairing-sessions`)
+      .post(`/doctors/${doctorId}/dashboard/pairing-sessions`)
       .set('Authorization', `Bearer ${token}`)
       .send({
         expiresInSeconds: 90,
@@ -301,7 +301,7 @@ describe('Dashboard API contract', () => {
     });
 
     const response = await request(app)
-      .get(`/api/v1/doctors/${doctorId}/dashboard/pairing-sessions/${pairingSessionId}/events`)
+      .get(`/doctors/${doctorId}/dashboard/pairing-sessions/${pairingSessionId}/events`)
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(200);
@@ -325,7 +325,7 @@ describe('Dashboard API contract', () => {
     });
 
     const response = await request(app)
-      .post('/api/v1/dashboard/pairing-sessions/confirm')
+      .post('/dashboard/pairing-sessions/confirm')
       .set('Authorization', `Bearer ${patientToken}`)
       .send({
         pairingToken: 'PWDASH-ABCDEF0123456789ABCDEF0123456789',
@@ -350,7 +350,7 @@ describe('Dashboard API contract', () => {
     });
 
     const response = await request(app)
-      .post('/api/v1/dashboard/pairing-sessions/confirm')
+      .post('/dashboard/pairing-sessions/confirm')
       .set('Authorization', `Bearer ${patientToken}`)
       .send({
         pairingToken: 'PWDASH-ABCDEF0123456789ABCDEF0123456789',

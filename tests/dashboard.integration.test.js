@@ -16,7 +16,7 @@ describe('Doctor dashboard endpoint guards', () => {
   const pairingSessionId = '44444444-4444-4444-8444-444444444444';
 
   test('unauthorized: dashboard patient list without token', async () => {
-    const response = await request(app).get(`/api/v1/doctors/${doctorId}/dashboard/patients`);
+    const response = await request(app).get(`/doctors/${doctorId}/dashboard/patients`);
 
     expect(response.status).toBe(401);
     expect(response.body.success).toBe(false);
@@ -25,7 +25,7 @@ describe('Doctor dashboard endpoint guards', () => {
 
   test('unauthorized: dashboard patient list with malformed token', async () => {
     const response = await request(app)
-      .get(`/api/v1/doctors/${doctorId}/dashboard/patients`)
+      .get(`/doctors/${doctorId}/dashboard/patients`)
       .set('Authorization', 'Bearer token-invalid-format');
 
     expect(response.status).toBe(401);
@@ -45,7 +45,7 @@ describe('Doctor dashboard endpoint guards', () => {
     );
 
     const response = await request(app)
-      .get(`/api/v1/doctors/${doctorId}/dashboard/patients`)
+      .get(`/doctors/${doctorId}/dashboard/patients`)
       .set('Authorization', `Bearer ${expiredToken}`);
 
     expect(response.status).toBe(401);
@@ -61,7 +61,7 @@ describe('Doctor dashboard endpoint guards', () => {
     });
 
     const response = await request(app)
-      .get(`/api/v1/doctors/${doctorId}/dashboard/patients`)
+      .get(`/doctors/${doctorId}/dashboard/patients`)
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(403);
@@ -77,7 +77,7 @@ describe('Doctor dashboard endpoint guards', () => {
     });
 
     const response = await request(app)
-      .get(`/api/v1/doctors/${doctorId}/dashboard/patients`)
+      .get(`/doctors/${doctorId}/dashboard/patients`)
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(403);
@@ -94,7 +94,7 @@ describe('Doctor dashboard endpoint guards', () => {
 
     const response = await request(app)
       .get(
-        `/api/v1/doctors/${doctorId}/dashboard/patients/${patientId}/vitals?timePeriod=last_90_days`
+        `/doctors/${doctorId}/dashboard/patients/${patientId}/vitals?timePeriod=last_90_days`
       )
       .set('Authorization', `Bearer ${token}`);
 
@@ -105,7 +105,7 @@ describe('Doctor dashboard endpoint guards', () => {
 
   test('unauthorized: link-by-patient-id without token', async () => {
     const response = await request(app)
-      .post(`/api/v1/doctors/${doctorId}/patients/link-by-patient-id`)
+      .post(`/doctors/${doctorId}/patients/link-by-patient-id`)
       .send({
         patientId,
       });
@@ -123,7 +123,7 @@ describe('Doctor dashboard endpoint guards', () => {
     });
 
     const response = await request(app)
-      .post(`/api/v1/doctors/${doctorId}/patients/link-by-patient-id`)
+      .post(`/doctors/${doctorId}/patients/link-by-patient-id`)
       .set('Authorization', `Bearer ${token}`)
       .send({
         patientId: 'not-a-uuid',
@@ -136,7 +136,7 @@ describe('Doctor dashboard endpoint guards', () => {
 
   test('unauthorized: create dashboard pairing session without token', async () => {
     const response = await request(app)
-      .post(`/api/v1/doctors/${doctorId}/dashboard/pairing-sessions`)
+      .post(`/doctors/${doctorId}/dashboard/pairing-sessions`)
       .send({
         expiresInSeconds: 90,
       });
@@ -154,7 +154,7 @@ describe('Doctor dashboard endpoint guards', () => {
     });
 
     const response = await request(app)
-      .post(`/api/v1/doctors/${doctorId}/dashboard/pairing-sessions`)
+      .post(`/doctors/${doctorId}/dashboard/pairing-sessions`)
       .set('Authorization', `Bearer ${token}`)
       .send({
         expiresInSeconds: 10,
@@ -167,7 +167,7 @@ describe('Doctor dashboard endpoint guards', () => {
 
   test('unauthorized: pairing session SSE stream without token', async () => {
     const response = await request(app).get(
-      `/api/v1/doctors/${doctorId}/dashboard/pairing-sessions/${pairingSessionId}/events`
+      `/doctors/${doctorId}/dashboard/pairing-sessions/${pairingSessionId}/events`
     );
 
     expect(response.status).toBe(401);
@@ -183,7 +183,7 @@ describe('Doctor dashboard endpoint guards', () => {
     });
 
     const response = await request(app)
-      .post('/api/v1/dashboard/pairing-sessions/confirm')
+      .post('/dashboard/pairing-sessions/confirm')
       .set('Authorization', `Bearer ${token}`)
       .send({
         pairingToken: 'PWDASH-INVALID-TOKEN-ABCDEF0123456789',

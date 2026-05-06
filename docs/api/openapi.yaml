@@ -1,13 +1,14 @@
 openapi: 3.0.3
 info:
   title: PulseWise Backend API
-  version: 1.0.0
+  version: 2.0.0
   description: |
     Kontrak API utama PulseWise.
     Semua endpoint menggunakan JSON dan response envelope standar.
+    Path canonical saat ini tidak lagi memakai prefix `/api/v1`.
 servers:
-  - url: https://pulsewise-backend.vercel.app
-    description: Production (Vercel)
+  - url: https://api.darrellvalentino.com
+    description: Production
   - url: http://localhost:5000
     description: Local Development
 
@@ -2380,7 +2381,7 @@ components:
         patientId: null
         pairingToken: PWDASH-79F438BA5A36D22D7A4EA247FEC9E928A9CC
         qrPayload: PWDASH-79F438BA5A36D22D7A4EA247FEC9E928A9CC
-        pollingPath: /api/v1/doctors/8aca6089-3899-4b85-a715-0a63113e846a/dashboard/pairing-sessions/92d6f1bf-45ef-470f-a5a3-2f277f3138ca
+        pollingPath: /doctors/8aca6089-3899-4b85-a715-0a63113e846a/dashboard/pairing-sessions/92d6f1bf-45ef-470f-a5a3-2f277f3138ca
 
     DashboardPairingSessionConfirmData:
       allOf:
@@ -3179,10 +3180,10 @@ components:
           totalPages: 1
 
 paths:
-  /api/v1/health:
+  /health:
     get:
       tags: [Health]
-      summary: Health check service + DB
+      summary: Health check service, DB, Redis, dan cache metrics
       responses:
         '200':
           description: Service healthy
@@ -3202,8 +3203,83 @@ paths:
                           dbTime:
                             type: string
                             format: date-time
+                          redis:
+                            type: object
+                            properties:
+                              enabled:
+                                type: boolean
+                              available:
+                                type: boolean
+                              backend:
+                                type: string
+                                nullable: true
+                              lastConnectedAt:
+                                type: string
+                                format: date-time
+                                nullable: true
+                              lastError:
+                                type: string
+                                nullable: true
+                          cache:
+                            type: object
+                            properties:
+                              hits:
+                                type: integer
+                              misses:
+                                type: integer
+                              requests:
+                                type: integer
+                              hitRate:
+                                type: number
+                                nullable: true
+                              sets:
+                                type: integer
+                              invalidationsExact:
+                                type: integer
+                              invalidationsPrefix:
+                                type: integer
+                              lastOperationAt:
+                                type: string
+                                format: date-time
+                                nullable: true
+                              backends:
+                                type: object
+                                properties:
+                                  redis:
+                                    type: integer
+                                  memory:
+                                    type: integer
+                              windows:
+                                type: object
+                                properties:
+                                  hitRate:
+                                    type: number
+                                    nullable: true
+                                  last60Minutes:
+                                    type: array
+                                    items:
+                                      type: object
+                                      properties:
+                                        minute:
+                                          type: string
+                                          format: date-time
+                                        hits:
+                                          type: integer
+                                        misses:
+                                          type: integer
+                                        requests:
+                                          type: integer
+                                        hitRate:
+                                          type: number
+                                          nullable: true
+                                        sets:
+                                          type: integer
+                                        invalidationsExact:
+                                          type: integer
+                                        invalidationsPrefix:
+                                          type: integer
 
-  /api/v1/auth/register:
+  /auth/register:
     post:
       tags: [Auth]
       summary: Register user baru (status pending_verification)
@@ -3244,7 +3320,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
 
-  /api/v1/auth/login:
+  /auth/login:
     post:
       tags: [Auth]
       summary: Login dengan email dan password
@@ -3290,7 +3366,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
 
-  /api/v1/auth/verifications/email:
+  /auth/verifications/email:
     post:
       tags: [Auth]
       summary: Kirim OTP verifikasi email
@@ -3314,7 +3390,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
 
-  /api/v1/auth/verifications/email/confirm:
+  /auth/verifications/email/confirm:
     post:
       tags: [Auth]
       summary: Konfirmasi OTP verifikasi email
@@ -3338,7 +3414,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
 
-  /api/v1/auth/oauth/google:
+  /auth/oauth/google:
     post:
       tags: [Auth]
       summary: Cek status akun Google dan tentukan next step onboarding/login
@@ -3379,7 +3455,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
 
-  /api/v1/auth/oauth/google/register:
+  /auth/oauth/google/register:
     post:
       tags: [Auth]
       summary: Selesaikan registrasi akun Google baru lalu kirim OTP email
@@ -3414,7 +3490,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
 
-  /api/v1/auth/me:
+  /auth/me:
     get:
       tags: [Auth]
       summary: Ambil profil user saat ini
@@ -3439,7 +3515,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
 
-  /api/v1/auth/forgot-password:
+  /auth/forgot-password:
     post:
       tags: [Auth]
       summary: Meminta pengiriman OTP ke email untuk reset password
@@ -3478,7 +3554,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
 
-  /api/v1/auth/forgot-password/verify:
+  /auth/forgot-password/verify:
     post:
       tags: [Auth]
       summary: Verifikasi OTP reset password
@@ -3520,7 +3596,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
 
-  /api/v1/auth/forgot-password/reset:
+  /auth/forgot-password/reset:
     post:
       tags: [Auth]
       summary: Reset password menggunakan resetToken
@@ -3566,7 +3642,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
 
-  /api/v1/auth/change-password:
+  /auth/change-password:
     post:
       tags: [Auth]
       summary: Ubah password akun email/password
@@ -3616,7 +3692,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
 
-  /api/v1/patients:
+  /patients:
     get:
       tags: [Patients]
       summary: List patients (Phase 2 target)
@@ -3647,7 +3723,7 @@ paths:
                           pagination:
                             $ref: '#/components/schemas/Pagination'
 
-  /api/v1/patients/{patientId}/profile:
+  /patients/{patientId}/profile:
     get:
       tags: [Patients]
       summary: Detail patient profile (Phase 2 target)
@@ -3707,7 +3783,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/PatientProfile'
 
-  /api/v1/doctors/{doctorId}/profile:
+  /doctors/{doctorId}/profile:
     get:
       tags: [Doctors]
       summary: Detail doctor profile (Phase 2 target)
@@ -3758,7 +3834,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/SuccessEnvelope'
 
-  /api/v1/doctors/{doctorId}/patients:
+  /doctors/{doctorId}/patients:
     get:
       tags: [DoctorPatients]
       summary: List relasi pasien milik dokter
@@ -3823,7 +3899,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/DoctorPatientLink'
 
-  /api/v1/doctors/{doctorId}/patients/{patientId}:
+  /doctors/{doctorId}/patients/{patientId}:
     delete:
       tags: [DoctorPatients]
       summary: Nonaktifkan relasi dokter-pasien
@@ -3855,7 +3931,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/DoctorPatientLink'
 
-  /api/v1/doctors/{doctorId}/patients/link-by-patient-id:
+  /doctors/{doctorId}/patients/link-by-patient-id:
     post:
       tags: [DoctorPatients]
       summary: Link dokter ke pasien dari hasil scan QR frontend (payload patientId)
@@ -3890,7 +3966,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/DoctorPatientLink'
 
-  /api/v1/doctors/{doctorId}/dashboard/pairing-sessions:
+  /doctors/{doctorId}/dashboard/pairing-sessions:
     post:
       tags: [DoctorDashboard]
       summary: Buat session QR pairing untuk dashboard desktop dokter
@@ -3925,7 +4001,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/DashboardPairingSessionCreateData'
 
-  /api/v1/doctors/{doctorId}/dashboard/pairing-sessions/{pairingSessionId}:
+  /doctors/{doctorId}/dashboard/pairing-sessions/{pairingSessionId}:
     get:
       tags: [DoctorDashboard]
       summary: Ambil status session QR pairing dashboard desktop
@@ -3963,7 +4039,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
 
-  /api/v1/doctors/{doctorId}/dashboard/pairing-sessions/{pairingSessionId}/events:
+  /doctors/{doctorId}/dashboard/pairing-sessions/{pairingSessionId}/events:
     get:
       tags: [DoctorDashboard]
       summary: Stream realtime status pairing dashboard via SSE
@@ -4004,7 +4080,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
 
-  /api/v1/dashboard/pairing-sessions/confirm:
+  /dashboard/pairing-sessions/confirm:
     post:
       tags: [DoctorDashboard]
       summary: Konfirmasi pairing dashboard dari hasil scan QR di mobile pasien
@@ -4046,7 +4122,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
 
-  /api/v1/doctors/{doctorId}/dashboard/patients:
+  /doctors/{doctorId}/dashboard/patients:
     get:
       tags: [DoctorDashboard]
       summary: List pasien dashboard dokter (dengan search dan latest vitals)
@@ -4086,7 +4162,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
 
-  /api/v1/doctors/{doctorId}/dashboard/patients/{patientId}:
+  /doctors/{doctorId}/dashboard/patients/{patientId}:
     get:
       tags: [DoctorDashboard]
       summary: Ringkasan pasien untuk dashboard dokter
@@ -4124,7 +4200,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
 
-  /api/v1/doctors/{doctorId}/dashboard/patients/{patientId}/vitals:
+  /doctors/{doctorId}/dashboard/patients/{patientId}/vitals:
     get:
       tags: [DoctorDashboard]
       summary: Time-series vitals pasien siap Chart.js
@@ -4175,7 +4251,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/DoctorDashboardPatientVitalsData'
 
-  /api/v1/doctors/{doctorId}/dashboard/patients/{patientId}/abnormal-report:
+  /doctors/{doctorId}/dashboard/patients/{patientId}/abnormal-report:
     get:
       tags: [DoctorDashboard]
       summary: Laporan abnormal reading pasien untuk dashboard dokter
@@ -4226,7 +4302,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/DoctorDashboardAbnormalReportData'
 
-  /api/v1/users/{userId}/medications:
+  /users/{userId}/medications:
     get:
       tags: [Medications]
       summary: Daftar medication milik user
@@ -4291,7 +4367,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/Medication'
 
-  /api/v1/users/{userId}/medications/calendar:
+  /users/{userId}/medications/calendar:
     get:
       tags: [Medications]
       summary: Feed kalender medication berdasarkan rentang tanggal
@@ -4322,7 +4398,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/MedicationCalendarData'
 
-  /api/v1/users/{userId}/medications/{medicationId}:
+  /users/{userId}/medications/{medicationId}:
     get:
       tags: [Medications]
       summary: Detail medication berdasarkan ID
@@ -4415,7 +4491,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/SuccessEnvelope'
 
-  /api/v1/users/{userId}/medications/{medicationId}/reminders:
+  /users/{userId}/medications/{medicationId}/reminders:
     get:
       tags: [Medications]
       summary: Daftar reminder pada medication
@@ -4492,7 +4568,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/Reminder'
 
-  /api/v1/users/{userId}/reminders/{reminderId}:
+  /users/{userId}/reminders/{reminderId}:
     put:
       tags: [Medications]
       summary: Update reminder berdasarkan ID
@@ -4555,7 +4631,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/SuccessEnvelope'
 
-  /api/v1/users/{userId}/medications/{medicationId}/logs:
+  /users/{userId}/medications/{medicationId}/logs:
     get:
       tags: [Medications]
       summary: Daftar medication log pada medication
@@ -4644,7 +4720,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/MedicationLog'
 
-  /api/v1/users/{userId}/emergency-contacts:
+  /users/{userId}/emergency-contacts:
     get:
       tags: [Patient Care]
       summary: List emergency contacts for a patient
@@ -4709,7 +4785,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/EmergencyContact'
 
-  /api/v1/users/{userId}/emergency-contacts/{emergencyContactId}:
+  /users/{userId}/emergency-contacts/{emergencyContactId}:
     put:
       tags: [Patient Care]
       summary: Update an existing emergency contact
@@ -4772,7 +4848,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/SuccessEnvelope'
 
-  /api/v1/users/{userId}/diaries:
+  /users/{userId}/diaries:
     get:
       tags: [Patient Care]
       summary: List daily heart diary records for a patient
@@ -4849,7 +4925,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/HeartDiary'
 
-  /api/v1/users/{userId}/diaries/by-date:
+  /users/{userId}/diaries/by-date:
     get:
       tags: [Patient Care]
       summary: Get detailed heart diary record by date
@@ -4883,7 +4959,7 @@ paths:
                         allOf:
                           - $ref: '#/components/schemas/HeartDiaryDetail'
 
-  /api/v1/users/{userId}/diaries/by-date/body-metrics:
+  /users/{userId}/diaries/by-date/body-metrics:
     put:
       tags: [Patient Care]
       summary: Upsert daily body metric entry by diary date
@@ -4915,7 +4991,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/DailyBodyMetric'
 
-  /api/v1/users/{userId}/diaries/by-date/symptoms:
+  /users/{userId}/diaries/by-date/symptoms:
     post:
       tags: [Patient Care]
       summary: Add daily symptom entry by diary date with optional time input
@@ -4947,7 +5023,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/DailySymptom'
 
-  /api/v1/users/{userId}/diaries/by-date/activities:
+  /users/{userId}/diaries/by-date/activities:
     post:
       tags: [Patient Care]
       summary: Add daily activity entry by diary date
@@ -4979,7 +5055,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/DailyActivity'
 
-  /api/v1/users/{userId}/diaries/by-date/consumptions:
+  /users/{userId}/diaries/by-date/consumptions:
     post:
       tags: [Patient Care]
       summary: Add daily intake entry by diary date with optional time input
@@ -5011,7 +5087,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/DailyConsumption'
 
-  /api/v1/users/{userId}/diaries/by-date/sleep:
+  /users/{userId}/diaries/by-date/sleep:
     get:
       tags: [Patient Care, ML]
       summary: Get sleep diary by date
@@ -5073,7 +5149,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/DailySleepRecord'
 
-  /api/v1/patients/{patientId}/ml-profile:
+  /patients/{patientId}/ml-profile:
     get:
       tags: [ML]
       summary: Get patient ML profile
@@ -5129,7 +5205,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/PatientMlProfile'
 
-  /api/v1/patients/{patientId}/ml-assessments/latest:
+  /patients/{patientId}/ml-assessments/latest:
     get:
       tags: [ML]
       summary: Get latest patient ML assessment
@@ -5155,7 +5231,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/PatientMlAssessment'
 
-  /api/v1/patients/{patientId}/ml-assessments:
+  /patients/{patientId}/ml-assessments:
     get:
       tags: [ML]
       summary: List patient ML assessments
@@ -5228,7 +5304,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/PatientMlAssessment'
 
-  /api/v1/patients/{patientId}/ml-assessments/{assessmentId}:
+  /patients/{patientId}/ml-assessments/{assessmentId}:
     put:
       tags: [ML]
       summary: Update patient ML assessment
@@ -5266,7 +5342,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/PatientMlAssessment'
 
-  /api/v1/users/{userId}/ml-readiness:
+  /users/{userId}/ml-readiness:
     get:
       tags: [ML]
       summary: Get patient ML readiness
@@ -5303,7 +5379,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/MlReadinessData'
 
-  /api/v1/users/{userId}/ml-payload:
+  /users/{userId}/ml-payload:
     get:
       tags: [ML]
       summary: Build patient ML payload
@@ -5340,7 +5416,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/MlPayloadData'
 
-  /api/v1/users/{userId}/ml-predictions:
+  /users/{userId}/ml-predictions:
     post:
       tags: [ML]
       summary: Get patient ML prediction from HFMS
@@ -5384,7 +5460,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/MlUpstreamData'
 
-  /api/v1/users/{userId}/ml-recommendations:
+  /users/{userId}/ml-recommendations:
     post:
       tags: [ML]
       summary: Get patient ML recommendation from HFMS
@@ -5428,7 +5504,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/MlUpstreamData'
 
-  /api/v1/users/{userId}/ml-predictions/latest:
+  /users/{userId}/ml-predictions/latest:
     get:
       tags: [ML]
       summary: Get latest persisted patient ML prediction
@@ -5454,7 +5530,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/MlInferenceResult'
 
-  /api/v1/users/{userId}/ml-recommendations/latest:
+  /users/{userId}/ml-recommendations/latest:
     get:
       tags: [ML]
       summary: Get latest persisted patient ML recommendation
@@ -5480,7 +5556,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/MlInferenceResult'
 
-  /api/v1/users/{userId}/ml-predictions/history:
+  /users/{userId}/ml-predictions/history:
     get:
       tags: [ML]
       summary: Get patient ML prediction history
@@ -5519,7 +5595,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/MlInferenceHistoryData'
 
-  /api/v1/users/{userId}/ml-recommendations/history:
+  /users/{userId}/ml-recommendations/history:
     get:
       tags: [ML]
       summary: Get patient ML recommendation history
@@ -5558,7 +5634,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/MlInferenceHistoryData'
 
-  /api/v1/doctors/{doctorId}/dashboard/patients/{patientId}/ml-readiness:
+  /doctors/{doctorId}/dashboard/patients/{patientId}/ml-readiness:
     get:
       tags: [ML, Care Management]
       summary: Get doctor dashboard patient ML readiness
@@ -5601,7 +5677,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/MlReadinessData'
 
-  /api/v1/doctors/{doctorId}/dashboard/patients/{patientId}/ml-payload:
+  /doctors/{doctorId}/dashboard/patients/{patientId}/ml-payload:
     get:
       tags: [ML, Care Management]
       summary: Build doctor dashboard patient ML payload
@@ -5644,7 +5720,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/MlPayloadData'
 
-  /api/v1/doctors/{doctorId}/dashboard/patients/{patientId}/ml-predictions:
+  /doctors/{doctorId}/dashboard/patients/{patientId}/ml-predictions:
     post:
       tags: [ML, Care Management]
       summary: Get doctor dashboard patient ML prediction from HFMS
@@ -5694,7 +5770,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/MlUpstreamData'
 
-  /api/v1/doctors/{doctorId}/dashboard/patients/{patientId}/ml-recommendations:
+  /doctors/{doctorId}/dashboard/patients/{patientId}/ml-recommendations:
     post:
       tags: [ML, Care Management]
       summary: Get doctor dashboard patient ML recommendation from HFMS
@@ -5744,7 +5820,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/MlUpstreamData'
 
-  /api/v1/doctors/{doctorId}/dashboard/patients/{patientId}/ml-predictions/latest:
+  /doctors/{doctorId}/dashboard/patients/{patientId}/ml-predictions/latest:
     get:
       tags: [ML, Care Management]
       summary: Get latest persisted doctor dashboard patient ML prediction
@@ -5776,7 +5852,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/MlInferenceResult'
 
-  /api/v1/doctors/{doctorId}/dashboard/patients/{patientId}/ml-recommendations/latest:
+  /doctors/{doctorId}/dashboard/patients/{patientId}/ml-recommendations/latest:
     get:
       tags: [ML, Care Management]
       summary: Get latest persisted doctor dashboard patient ML recommendation
@@ -5808,7 +5884,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/MlInferenceResult'
 
-  /api/v1/doctors/{doctorId}/dashboard/patients/{patientId}/ml-predictions/history:
+  /doctors/{doctorId}/dashboard/patients/{patientId}/ml-predictions/history:
     get:
       tags: [ML, Care Management]
       summary: Get doctor dashboard patient ML prediction history
@@ -5853,7 +5929,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/MlInferenceHistoryData'
 
-  /api/v1/doctors/{doctorId}/dashboard/patients/{patientId}/ml-recommendations/history:
+  /doctors/{doctorId}/dashboard/patients/{patientId}/ml-recommendations/history:
     get:
       tags: [ML, Care Management]
       summary: Get doctor dashboard patient ML recommendation history
@@ -5898,7 +5974,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/MlInferenceHistoryData'
 
-  /api/v1/users/{userId}/diaries/{diaryId}/body-metrics:
+  /users/{userId}/diaries/{diaryId}/body-metrics:
     post:
       tags: [Patient Care]
       summary: Add daily body metric entry to heart diary
@@ -5936,7 +6012,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/DailyBodyMetric'
 
-  /api/v1/users/{userId}/diaries/{diaryId}/symptoms:
+  /users/{userId}/diaries/{diaryId}/symptoms:
     post:
       tags: [Patient Care]
       summary: Add daily symptom entry to heart diary
@@ -5974,7 +6050,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/DailySymptom'
 
-  /api/v1/users/{userId}/diaries/{diaryId}/activities:
+  /users/{userId}/diaries/{diaryId}/activities:
     post:
       tags: [Patient Care]
       summary: Add daily activity entry to heart diary
@@ -6012,7 +6088,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/DailyActivity'
 
-  /api/v1/users/{userId}/diaries/{diaryId}/consumptions:
+  /users/{userId}/diaries/{diaryId}/consumptions:
     post:
       tags: [Patient Care]
       summary: Add daily intake entry to heart diary
@@ -6050,7 +6126,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/DailyConsumption'
 
-  /api/v1/users/{userId}/avatar/upload-signature:
+  /users/{userId}/avatar/upload-signature:
     get:
       tags: [Profile Management]
       summary: Generate secure avatar upload signature
@@ -6082,7 +6158,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/AvatarUploadSignatureResponse'
 
-  /api/v1/users/{userId}/avatar:
+  /users/{userId}/avatar:
     put:
       tags: [Profile Management]
       summary: Save patient avatar after upload
@@ -6114,7 +6190,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/AvatarSaveResponse'
 
-  /api/v1/biometrics:
+  /biometrics:
     post:
       tags: [Biometrics]
       summary: Ingest data biometrik time-series

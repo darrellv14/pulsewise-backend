@@ -14,8 +14,8 @@ Catatan penting:
 - Untuk PulseWise saat ini, CORS production kemungkinan besar hanya relevan untuk **doctor dashboard berbasis web**.
 - Untuk browser, CORS memakai **origin frontend**, bukan URL request lengkap.
 - Jadi `CORS_ALLOWED_ORIGINS` **tidak** diisi dengan path seperti:
-  - `https://api.darrellvalentino.com/api/v1`
-  - `https://ml.darrellvalentino.com/api/v1`
+  - `https://api.darrellvalentino.com/mobile`
+  - `https://ml.darrellvalentino.com/dashboard`
 
 Yang benar adalah origin saja, misalnya:
 
@@ -28,7 +28,7 @@ Yang benar adalah origin saja, misalnya:
 
 Karena app utama saat ini adalah **native mobile**, rekomendasi praktisnya:
 
-- mobile app tetap memanggil `https://api.darrellvalentino.com/api/v1/...`
+- mobile app tetap memanggil `https://api.darrellvalentino.com/...`
 - CORS production dikunci untuk browser dashboard saja
 - jika subdomain dashboard belum final, sementara cukup siapkan pola dan isi saat domain sudah diputuskan
 
@@ -47,7 +47,7 @@ CORS_ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173,https://pulsewi
 CORS_CREDENTIALS=false
 ```
 
-Jika browser frontend memang di-serve dari `api.darrellvalentino.com` atau `ml.darrellvalentino.com`, origin itu boleh dimasukkan, tapi **tetap tanpa `/api/v1`**:
+Jika browser frontend memang di-serve dari `api.darrellvalentino.com` atau `ml.darrellvalentino.com`, origin itu boleh dimasukkan, tapi **tetap tanpa path tambahan**:
 
 ```env
 CORS_ALLOWED_ORIGINS=https://api.darrellvalentino.com,https://ml.darrellvalentino.com

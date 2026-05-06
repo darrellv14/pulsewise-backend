@@ -33,7 +33,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"timestamp\": \"2026-04-10T08:15:00.000Z\",\n    \"dbTime\": \"2026-04-10T08:15:00.000Z\"\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"timestamp\": \"2026-04-10T08:15:00.000Z\",\n    \"dbTime\": \"2026-04-10T08:15:00.000Z\",\n    \"redis\": {\n      \"enabled\": true,\n      \"available\": true,\n      \"backend\": \"string\",\n      \"lastConnectedAt\": \"2026-04-10T08:15:00.000Z\",\n      \"lastError\": \"string\"\n    },\n    \"cache\": {\n      \"hits\": 1,\n      \"misses\": 1,\n      \"requests\": 1,\n      \"hitRate\": 1.5,\n      \"sets\": 1,\n      \"invalidationsExact\": 1,\n      \"invalidationsPrefix\": 1,\n      \"lastOperationAt\": \"2026-04-10T08:15:00.000Z\",\n      \"backends\": {\n        \"redis\": 1,\n        \"memory\": 1\n      },\n      \"windows\": {\n        \"hitRate\": 1.5,\n        \"last60Minutes\": [\n          {\n            \"minute\": \"2026-04-10T08:15:00.000Z\",\n            \"hits\": 1,\n            \"misses\": 1,\n            \"requests\": 1,\n            \"hitRate\": 1.5,\n            \"sets\": 1,\n            \"invalidationsExact\": 1,\n            \"invalidationsPrefix\": 1\n          }\n        ]\n      }\n    }\n  }\n}\n"
             }
           ]
         }
@@ -2136,7 +2136,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"pairingSessionId\": \"92d6f1bf-45ef-470f-a5a3-2f277f3138ca\",\n    \"doctorId\": \"8aca6089-3899-4b85-a715-0a63113e846a\",\n    \"status\": \"pending\",\n    \"expiresAt\": \"2026-04-10T08:20:00.000Z\",\n    \"confirmedAt\": null,\n    \"patientId\": null,\n    \"pairingToken\": \"PWDASH-79F438BA5A36D22D7A4EA247FEC9E928A9CC\",\n    \"qrPayload\": \"PWDASH-79F438BA5A36D22D7A4EA247FEC9E928A9CC\",\n    \"pollingPath\": \"/api/v1/doctors/8aca6089-3899-4b85-a715-0a63113e846a/dashboard/pairing-sessions/92d6f1bf-45ef-470f-a5a3-2f277f3138ca\"\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"pairingSessionId\": \"92d6f1bf-45ef-470f-a5a3-2f277f3138ca\",\n    \"doctorId\": \"8aca6089-3899-4b85-a715-0a63113e846a\",\n    \"status\": \"pending\",\n    \"expiresAt\": \"2026-04-10T08:20:00.000Z\",\n    \"confirmedAt\": null,\n    \"patientId\": null,\n    \"pairingToken\": \"PWDASH-79F438BA5A36D22D7A4EA247FEC9E928A9CC\",\n    \"qrPayload\": \"PWDASH-79F438BA5A36D22D7A4EA247FEC9E928A9CC\",\n    \"pollingPath\": \"/doctors/8aca6089-3899-4b85-a715-0a63113e846a/dashboard/pairing-sessions/92d6f1bf-45ef-470f-a5a3-2f277f3138ca\"\n  }\n}\n"
             }
           ]
         },
@@ -4197,7 +4197,7 @@
           },
           "response": [
             {
-              "name": "200 ML profile success",
+              "name": "200 Patient ML profile",
               "originalRequest": {
                 "method": "GET",
                 "header": [
@@ -4222,7 +4222,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"ML profile pasien berhasil diambil\",\n  \"data\": {\n    \"patientId\": \"29a8cae4-ba34-4418-baf0-0ba776fbec6b\",\n    \"demog1_riagendr\": 1,\n    \"demog1_ridreth3\": 6,\n    \"demog1_dmdeduc\": 4,\n    \"demog1_dmdfmsiz\": 3,\n    \"demog1_dmdhhsiz\": 3,\n    \"demog1_dmdhhsza\": 2,\n    \"demog1_dmdhhszb\": 1,\n    \"demog1_dmdhhsze\": 0,\n    \"demog1_dmdmartl\": 1,\n    \"quest22_smq020\": 1,\n    \"quest22_smq890\": 1,\n    \"quest22_smq900\": 2,\n    \"quest23_smd470\": 0,\n    \"quest1_alq111\": 2,\n    \"createdAt\": \"2026-04-24T22:10:00.000Z\",\n    \"updatedAt\": \"2026-04-24T22:10:00.000Z\"\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"patientId\": \"11111111-1111-4111-8111-111111111111\",\n    \"demog1_riagendr\": 1,\n    \"demog1_ridreth3\": 1,\n    \"demog1_dmdeduc\": 1,\n    \"demog1_dmdfmsiz\": 1,\n    \"demog1_dmdhhsiz\": 1,\n    \"demog1_dmdhhsza\": 1,\n    \"demog1_dmdhhszb\": 1,\n    \"demog1_dmdhhsze\": 1,\n    \"demog1_dmdmartl\": 1,\n    \"quest22_smq020\": 1,\n    \"quest22_smq890\": 1,\n    \"quest22_smq900\": 1,\n    \"quest23_smd470\": 1,\n    \"quest1_alq111\": 1,\n    \"createdAt\": \"2026-04-10T08:15:00.000Z\",\n    \"updatedAt\": \"2026-04-10T08:15:00.000Z\"\n  }\n}\n"
             }
           ]
         },
@@ -4248,7 +4248,7 @@
           },
           "response": [
             {
-              "name": "200 ML profile success",
+              "name": "200 Patient ML profile saved",
               "originalRequest": {
                 "method": "PUT",
                 "header": [
@@ -4277,7 +4277,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"ML profile pasien berhasil diperbarui\",\n  \"data\": {\n    \"patientId\": \"29a8cae4-ba34-4418-baf0-0ba776fbec6b\",\n    \"demog1_riagendr\": 1,\n    \"demog1_ridreth3\": 6,\n    \"demog1_dmdeduc\": 4,\n    \"demog1_dmdfmsiz\": 3,\n    \"demog1_dmdhhsiz\": 3,\n    \"demog1_dmdhhsza\": 2,\n    \"demog1_dmdhhszb\": 1,\n    \"demog1_dmdhhsze\": 0,\n    \"demog1_dmdmartl\": 1,\n    \"quest22_smq020\": 1,\n    \"quest22_smq890\": 1,\n    \"quest22_smq900\": 2,\n    \"quest23_smd470\": 0,\n    \"quest1_alq111\": 2,\n    \"createdAt\": \"2026-04-24T22:10:00.000Z\",\n    \"updatedAt\": \"2026-04-24T22:10:00.000Z\"\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"patientId\": \"11111111-1111-4111-8111-111111111111\",\n    \"demog1_riagendr\": 1,\n    \"demog1_ridreth3\": 1,\n    \"demog1_dmdeduc\": 1,\n    \"demog1_dmdfmsiz\": 1,\n    \"demog1_dmdhhsiz\": 1,\n    \"demog1_dmdhhsza\": 1,\n    \"demog1_dmdhhszb\": 1,\n    \"demog1_dmdhhsze\": 1,\n    \"demog1_dmdmartl\": 1,\n    \"quest22_smq020\": 1,\n    \"quest22_smq890\": 1,\n    \"quest22_smq900\": 1,\n    \"quest23_smd470\": 1,\n    \"quest1_alq111\": 1,\n    \"createdAt\": \"2026-04-10T08:15:00.000Z\",\n    \"updatedAt\": \"2026-04-10T08:15:00.000Z\"\n  }\n}\n"
             }
           ]
         },
@@ -4299,7 +4299,7 @@
           },
           "response": [
             {
-              "name": "200 ML assessment success",
+              "name": "200 Latest patient ML assessment",
               "originalRequest": {
                 "method": "GET",
                 "header": [
@@ -4324,7 +4324,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Assessment ML terbaru berhasil diambil\",\n  \"data\": {\n    \"assessmentId\": \"4fd93f28-a710-4d86-b50f-1cfcb3f97f8e\",\n    \"patientId\": \"29a8cae4-ba34-4418-baf0-0ba776fbec6b\",\n    \"assessmentDate\": \"2026-04-24T00:00:00.000Z\",\n    \"exami1_bpxpls\": 1,\n    \"labor1_lbdtcsi\": 180,\n    \"labor2_urdflow1\": 1.2,\n    \"labor2_urdtime1\": 45,\n    \"labor2_urxvol1\": 200,\n    \"quest11_hiq011\": 1,\n    \"quest12_heq010\": 2,\n    \"quest12_heq030\": 2,\n    \"quest15_kiq022\": 2,\n    \"quest15_kiq026\": 2,\n    \"quest16_mcq010\": 2,\n    \"quest16_mcq160b\": 2,\n    \"quest16_mcq220\": 2,\n    \"quest16_mcq300a\": 2,\n    \"quest16_mcq300c\": 2,\n    \"quest17_dpq020\": 0,\n    \"quest17_dpq030\": 0,\n    \"quest17_dpq040\": 0,\n    \"quest20_pfq061b\": 2,\n    \"quest20_pfq061c\": 2,\n    \"quest20_pfq061h\": 2,\n    \"quest3_cdq009\": 2,\n    \"quest3_cdq010\": 2,\n    \"quest7_diq010\": 2,\n    \"quest9_dlq050\": 2,\n    \"createdAt\": \"2026-04-24T22:11:00.000Z\",\n    \"updatedAt\": \"2026-04-24T22:11:00.000Z\"\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"assessmentId\": \"11111111-1111-4111-8111-111111111111\",\n    \"patientId\": \"11111111-1111-4111-8111-111111111111\",\n    \"assessmentDate\": \"2026-04-10\",\n    \"exami1_bpxpls\": 1,\n    \"labor1_lbdtcsi\": 1.5,\n    \"labor2_urdflow1\": 1.5,\n    \"labor2_urdtime1\": 1.5,\n    \"labor2_urxvol1\": 1.5,\n    \"quest11_hiq011\": 1,\n    \"quest12_heq010\": 1,\n    \"quest12_heq030\": 1,\n    \"quest15_kiq022\": 1,\n    \"quest15_kiq026\": 1,\n    \"quest16_mcq010\": 1,\n    \"quest16_mcq160b\": 1,\n    \"quest16_mcq220\": 1,\n    \"quest16_mcq300a\": 1,\n    \"quest16_mcq300c\": 1,\n    \"quest17_dpq020\": 1,\n    \"quest17_dpq030\": 1,\n    \"quest17_dpq040\": 1,\n    \"quest20_pfq061b\": 1,\n    \"quest20_pfq061c\": 1,\n    \"quest20_pfq061h\": 1,\n    \"quest3_cdq009\": 1,\n    \"quest3_cdq010\": 1,\n    \"quest7_diq010\": 1,\n    \"quest9_dlq050\": 1,\n    \"createdAt\": \"2026-04-10T08:15:00.000Z\",\n    \"updatedAt\": \"2026-04-10T08:15:00.000Z\"\n  }\n}\n"
             }
           ]
         },
@@ -4346,7 +4346,7 @@
           },
           "response": [
             {
-              "name": "200 ML assessment list success",
+              "name": "200 Patient ML assessments",
               "originalRequest": {
                 "method": "GET",
                 "header": [
@@ -4371,7 +4371,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Daftar assessment ML berhasil diambil\",\n  \"data\": {\n    \"items\": [\n      {\n        \"assessmentId\": \"4fd93f28-a710-4d86-b50f-1cfcb3f97f8e\",\n        \"patientId\": \"29a8cae4-ba34-4418-baf0-0ba776fbec6b\",\n        \"assessmentDate\": \"2026-04-24T00:00:00.000Z\",\n        \"exami1_bpxpls\": 1,\n        \"labor1_lbdtcsi\": 180,\n        \"labor2_urdflow1\": 1.2,\n        \"labor2_urdtime1\": 45,\n        \"labor2_urxvol1\": 200,\n        \"quest11_hiq011\": 1,\n        \"quest12_heq010\": 2,\n        \"quest12_heq030\": 2,\n        \"quest15_kiq022\": 2,\n        \"quest15_kiq026\": 2,\n        \"quest16_mcq010\": 2,\n        \"quest16_mcq160b\": 2,\n        \"quest16_mcq220\": 2,\n        \"quest16_mcq300a\": 2,\n        \"quest16_mcq300c\": 2,\n        \"quest17_dpq020\": 0,\n        \"quest17_dpq030\": 0,\n        \"quest17_dpq040\": 0,\n        \"quest20_pfq061b\": 2,\n        \"quest20_pfq061c\": 2,\n        \"quest20_pfq061h\": 2,\n        \"quest3_cdq009\": 2,\n        \"quest3_cdq010\": 2,\n        \"quest7_diq010\": 2,\n        \"quest9_dlq050\": 2,\n        \"createdAt\": \"2026-04-24T22:11:00.000Z\",\n        \"updatedAt\": \"2026-04-24T22:11:00.000Z\"\n      }\n    ]\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": [\n    {\n      \"assessmentId\": \"11111111-1111-4111-8111-111111111111\",\n      \"patientId\": \"11111111-1111-4111-8111-111111111111\",\n      \"assessmentDate\": \"2026-04-10\",\n      \"exami1_bpxpls\": 1,\n      \"labor1_lbdtcsi\": 1.5,\n      \"labor2_urdflow1\": 1.5,\n      \"labor2_urdtime1\": 1.5,\n      \"labor2_urxvol1\": 1.5,\n      \"quest11_hiq011\": 1,\n      \"quest12_heq010\": 1,\n      \"quest12_heq030\": 1,\n      \"quest15_kiq022\": 1,\n      \"quest15_kiq026\": 1,\n      \"quest16_mcq010\": 1,\n      \"quest16_mcq160b\": 1,\n      \"quest16_mcq220\": 1,\n      \"quest16_mcq300a\": 1,\n      \"quest16_mcq300c\": 1,\n      \"quest17_dpq020\": 1,\n      \"quest17_dpq030\": 1,\n      \"quest17_dpq040\": 1,\n      \"quest20_pfq061b\": 1,\n      \"quest20_pfq061c\": 1,\n      \"quest20_pfq061h\": 1,\n      \"quest3_cdq009\": 1,\n      \"quest3_cdq010\": 1,\n      \"quest7_diq010\": 1,\n      \"quest9_dlq050\": 1,\n      \"createdAt\": \"2026-04-10T08:15:00.000Z\",\n      \"updatedAt\": \"2026-04-10T08:15:00.000Z\"\n    }\n  ]\n}\n"
             }
           ]
         },
@@ -4397,7 +4397,7 @@
           },
           "response": [
             {
-              "name": "201 ML assessment success",
+              "name": "200 Patient ML assessment created",
               "originalRequest": {
                 "method": "POST",
                 "header": [
@@ -4416,8 +4416,8 @@
                   "raw": "{\n  \"assessmentDate\": \"{{mlDate}}\",\n  \"exami1_bpxpls\": 1,\n  \"labor1_lbdtcsi\": 180,\n  \"labor2_urdflow1\": 1.2,\n  \"labor2_urdtime1\": 45,\n  \"labor2_urxvol1\": 200,\n  \"quest11_hiq011\": 1,\n  \"quest12_heq010\": 2,\n  \"quest12_heq030\": 2,\n  \"quest15_kiq022\": 2,\n  \"quest15_kiq026\": 2,\n  \"quest16_mcq010\": 2,\n  \"quest16_mcq160b\": 2,\n  \"quest16_mcq220\": 2,\n  \"quest16_mcq300a\": 2,\n  \"quest16_mcq300c\": 2,\n  \"quest17_dpq020\": 0,\n  \"quest17_dpq030\": 0,\n  \"quest17_dpq040\": 0,\n  \"quest20_pfq061b\": 2,\n  \"quest20_pfq061c\": 2,\n  \"quest20_pfq061h\": 2,\n  \"quest3_cdq009\": 2,\n  \"quest3_cdq010\": 2,\n  \"quest7_diq010\": 2,\n  \"quest9_dlq050\": 2\n}"
                 }
               },
-              "status": "Created",
-              "code": 201,
+              "status": "OK",
+              "code": 200,
               "_postman_previewlanguage": "json",
               "header": [
                 {
@@ -4426,7 +4426,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Assessment ML berhasil dibuat\",\n  \"data\": {\n    \"assessmentId\": \"4fd93f28-a710-4d86-b50f-1cfcb3f97f8e\",\n    \"patientId\": \"29a8cae4-ba34-4418-baf0-0ba776fbec6b\",\n    \"assessmentDate\": \"2026-04-24T00:00:00.000Z\",\n    \"exami1_bpxpls\": 1,\n    \"labor1_lbdtcsi\": 180,\n    \"labor2_urdflow1\": 1.2,\n    \"labor2_urdtime1\": 45,\n    \"labor2_urxvol1\": 200,\n    \"quest11_hiq011\": 1,\n    \"quest12_heq010\": 2,\n    \"quest12_heq030\": 2,\n    \"quest15_kiq022\": 2,\n    \"quest15_kiq026\": 2,\n    \"quest16_mcq010\": 2,\n    \"quest16_mcq160b\": 2,\n    \"quest16_mcq220\": 2,\n    \"quest16_mcq300a\": 2,\n    \"quest16_mcq300c\": 2,\n    \"quest17_dpq020\": 0,\n    \"quest17_dpq030\": 0,\n    \"quest17_dpq040\": 0,\n    \"quest20_pfq061b\": 2,\n    \"quest20_pfq061c\": 2,\n    \"quest20_pfq061h\": 2,\n    \"quest3_cdq009\": 2,\n    \"quest3_cdq010\": 2,\n    \"quest7_diq010\": 2,\n    \"quest9_dlq050\": 2,\n    \"createdAt\": \"2026-04-24T22:11:00.000Z\",\n    \"updatedAt\": \"2026-04-24T22:11:00.000Z\"\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"assessmentId\": \"11111111-1111-4111-8111-111111111111\",\n    \"patientId\": \"11111111-1111-4111-8111-111111111111\",\n    \"assessmentDate\": \"2026-04-10\",\n    \"exami1_bpxpls\": 1,\n    \"labor1_lbdtcsi\": 1.5,\n    \"labor2_urdflow1\": 1.5,\n    \"labor2_urdtime1\": 1.5,\n    \"labor2_urxvol1\": 1.5,\n    \"quest11_hiq011\": 1,\n    \"quest12_heq010\": 1,\n    \"quest12_heq030\": 1,\n    \"quest15_kiq022\": 1,\n    \"quest15_kiq026\": 1,\n    \"quest16_mcq010\": 1,\n    \"quest16_mcq160b\": 1,\n    \"quest16_mcq220\": 1,\n    \"quest16_mcq300a\": 1,\n    \"quest16_mcq300c\": 1,\n    \"quest17_dpq020\": 1,\n    \"quest17_dpq030\": 1,\n    \"quest17_dpq040\": 1,\n    \"quest20_pfq061b\": 1,\n    \"quest20_pfq061c\": 1,\n    \"quest20_pfq061h\": 1,\n    \"quest3_cdq009\": 1,\n    \"quest3_cdq010\": 1,\n    \"quest7_diq010\": 1,\n    \"quest9_dlq050\": 1,\n    \"createdAt\": \"2026-04-10T08:15:00.000Z\",\n    \"updatedAt\": \"2026-04-10T08:15:00.000Z\"\n  }\n}\n"
             }
           ],
           "event": [
@@ -4465,7 +4465,7 @@
           },
           "response": [
             {
-              "name": "200 ML assessment success",
+              "name": "200 Patient ML assessment updated",
               "originalRequest": {
                 "method": "PUT",
                 "header": [
@@ -4494,7 +4494,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Assessment ML berhasil diperbarui\",\n  \"data\": {\n    \"assessmentId\": \"4fd93f28-a710-4d86-b50f-1cfcb3f97f8e\",\n    \"patientId\": \"29a8cae4-ba34-4418-baf0-0ba776fbec6b\",\n    \"assessmentDate\": \"2026-04-24T00:00:00.000Z\",\n    \"exami1_bpxpls\": 1,\n    \"labor1_lbdtcsi\": 180,\n    \"labor2_urdflow1\": 1.2,\n    \"labor2_urdtime1\": 45,\n    \"labor2_urxvol1\": 200,\n    \"quest11_hiq011\": 1,\n    \"quest12_heq010\": 2,\n    \"quest12_heq030\": 2,\n    \"quest15_kiq022\": 2,\n    \"quest15_kiq026\": 2,\n    \"quest16_mcq010\": 2,\n    \"quest16_mcq160b\": 2,\n    \"quest16_mcq220\": 2,\n    \"quest16_mcq300a\": 2,\n    \"quest16_mcq300c\": 2,\n    \"quest17_dpq020\": 0,\n    \"quest17_dpq030\": 0,\n    \"quest17_dpq040\": 0,\n    \"quest20_pfq061b\": 2,\n    \"quest20_pfq061c\": 2,\n    \"quest20_pfq061h\": 2,\n    \"quest3_cdq009\": 2,\n    \"quest3_cdq010\": 2,\n    \"quest7_diq010\": 2,\n    \"quest9_dlq050\": 2,\n    \"createdAt\": \"2026-04-24T22:11:00.000Z\",\n    \"updatedAt\": \"2026-04-24T22:11:00.000Z\"\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"assessmentId\": \"11111111-1111-4111-8111-111111111111\",\n    \"patientId\": \"11111111-1111-4111-8111-111111111111\",\n    \"assessmentDate\": \"2026-04-10\",\n    \"exami1_bpxpls\": 1,\n    \"labor1_lbdtcsi\": 1.5,\n    \"labor2_urdflow1\": 1.5,\n    \"labor2_urdtime1\": 1.5,\n    \"labor2_urxvol1\": 1.5,\n    \"quest11_hiq011\": 1,\n    \"quest12_heq010\": 1,\n    \"quest12_heq030\": 1,\n    \"quest15_kiq022\": 1,\n    \"quest15_kiq026\": 1,\n    \"quest16_mcq010\": 1,\n    \"quest16_mcq160b\": 1,\n    \"quest16_mcq220\": 1,\n    \"quest16_mcq300a\": 1,\n    \"quest16_mcq300c\": 1,\n    \"quest17_dpq020\": 1,\n    \"quest17_dpq030\": 1,\n    \"quest17_dpq040\": 1,\n    \"quest20_pfq061b\": 1,\n    \"quest20_pfq061c\": 1,\n    \"quest20_pfq061h\": 1,\n    \"quest3_cdq009\": 1,\n    \"quest3_cdq010\": 1,\n    \"quest7_diq010\": 1,\n    \"quest9_dlq050\": 1,\n    \"createdAt\": \"2026-04-10T08:15:00.000Z\",\n    \"updatedAt\": \"2026-04-10T08:15:00.000Z\"\n  }\n}\n"
             }
           ]
         }
@@ -4521,7 +4521,7 @@
           },
           "response": [
             {
-              "name": "200 Sleep diary success",
+              "name": "200 Sleep diary by date",
               "originalRequest": {
                 "method": "GET",
                 "header": [
@@ -4546,7 +4546,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Sleep diary berdasarkan tanggal berhasil diambil\",\n  \"data\": {\n    \"sleepRecordId\": \"1c3b1d08-55f7-4307-8d61-c75882c98c9f\",\n    \"diaryId\": \"31476548-8604-4a1a-b9d7-c5ae1d40cb74\",\n    \"sleepTime\": \"22:30\",\n    \"wakeTime\": \"06:30\",\n    \"sleepDurationHours\": 8,\n    \"source\": \"postman_manual\",\n    \"createdAt\": \"2026-04-24T22:12:00.000Z\",\n    \"updatedAt\": \"2026-04-24T22:12:00.000Z\"\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"sleepRecordId\": \"11111111-1111-4111-8111-111111111111\",\n    \"diaryId\": \"11111111-1111-4111-8111-111111111111\",\n    \"sleepTime\": \"22:30\",\n    \"wakeTime\": \"06:30\",\n    \"sleepDurationHours\": 1.5,\n    \"source\": \"string\",\n    \"createdAt\": \"2026-04-10T08:15:00.000Z\",\n    \"updatedAt\": \"2026-04-10T08:15:00.000Z\"\n  }\n}\n"
             }
           ]
         },
@@ -4572,7 +4572,7 @@
           },
           "response": [
             {
-              "name": "200 Sleep diary success",
+              "name": "200 Sleep diary saved",
               "originalRequest": {
                 "method": "PUT",
                 "header": [
@@ -4601,7 +4601,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Sleep diary berdasarkan tanggal berhasil disimpan\",\n  \"data\": {\n    \"sleepRecordId\": \"1c3b1d08-55f7-4307-8d61-c75882c98c9f\",\n    \"diaryId\": \"31476548-8604-4a1a-b9d7-c5ae1d40cb74\",\n    \"sleepTime\": \"22:30\",\n    \"wakeTime\": \"06:30\",\n    \"sleepDurationHours\": 8,\n    \"source\": \"postman_manual\",\n    \"createdAt\": \"2026-04-24T22:12:00.000Z\",\n    \"updatedAt\": \"2026-04-24T22:12:00.000Z\"\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"sleepRecordId\": \"11111111-1111-4111-8111-111111111111\",\n    \"diaryId\": \"11111111-1111-4111-8111-111111111111\",\n    \"sleepTime\": \"22:30\",\n    \"wakeTime\": \"06:30\",\n    \"sleepDurationHours\": 1.5,\n    \"source\": \"string\",\n    \"createdAt\": \"2026-04-10T08:15:00.000Z\",\n    \"updatedAt\": \"2026-04-10T08:15:00.000Z\"\n  }\n}\n"
             }
           ]
         },
@@ -4623,7 +4623,7 @@
           },
           "response": [
             {
-              "name": "200 ML readiness success",
+              "name": "200 Patient ML readiness",
               "originalRequest": {
                 "method": "GET",
                 "header": [
@@ -4648,35 +4648,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Status readiness ML pasien berhasil diambil\",\n  \"data\": {\n    \"ready\": true,\n    \"missingFields\": [],\n    \"resolvedFields\": [\n      \"Dieta1_DR1TCALC\",\n      \"Dieta1_DR1TCARB\",\n      \"Dieta1_DR1TCHOL\",\n      \"Dieta1_DR1TFIBE\",\n      \"Dieta1_DR1TKCAL\",\n      \"Dieta1_DR1TMFAT\",\n      \"Dieta1_DR1TPFAT\",\n      \"Dieta1_DR1TPROT\",\n      \"Dieta1_DR1TSFAT\",\n      \"Dieta1_DR1TSUGR\",\n      \"Dieta1_DR1TTFAT\",\n      \"Exami2_BMXBMI\",\n      \"Quest19_PAD615\",\n      \"Quest19_PAD645\",\n      \"Quest19_PAD660\",\n      \"Quest19_PAQ610\",\n      \"Quest19_PAQ635\",\n      \"Quest19_PAQ640\",\n      \"Quest19_PAQ655\",\n      \"Quest21_SLD123\",\n      \"Quest21_SLQ3032\",\n      \"Quest6_DED1225\",\n      \"Demog1_DMDEDUC\",\n      \"Demog1_DMDFMSIZ\",\n      \"Demog1_DMDHHSIZ\",\n      \"Demog1_DMDHHSZA\",\n      \"Demog1_DMDHHSZB\",\n      \"Demog1_DMDHHSZE\",\n      \"Demog1_DMDMARTL\",\n      \"Demog1_RIAGENDR\",\n      \"Demog1_RIDAGEYR\",\n      \"Demog1_RIDRETH3\",\n      \"Exami1_BPXPLS\",\n      \"Exami1_DiaPulse\",\n      \"Exami1_SysPulse\",\n      \"Exami2_BMXHT\",\n      \"Exami2_BMXWT\",\n      \"Labor1_LBDTCSI\",\n      \"Labor2_URDFLOW1\",\n      \"Labor2_URDTIME1\",\n      \"Labor2_URXVOL1\",\n      \"Quest11_HIQ011\",\n      \"Quest12_HEQ010\",\n      \"Quest12_HEQ030\",\n      \"Quest15_KIQ022\",\n      \"Quest15_KIQ026\",\n      \"Quest16_MCQ010\",\n      \"Quest16_MCQ220\",\n      \"Quest16_MCQ300A\",\n      \"Quest16_MCQ300C\",\n      \"Quest17_DPQ020\",\n      \"Quest17_DPQ030\",\n      \"Quest17_DPQ040\",\n      \"Quest1_ALQ111\",\n      \"Quest20_PFQ061B\",\n      \"Quest20_PFQ061C\",\n      \"Quest20_PFQ061H\",\n      \"Quest22_SMQ020\",\n      \"Quest22_SMQ890\",\n      \"Quest22_SMQ900\",\n      \"Quest23_SMD470\",\n      \"Quest3_CDQ008\",\n      \"Quest3_CDQ009\",\n      \"Quest3_CDQ010\",\n      \"Quest7_DIQ010\",\n      \"Quest9_DLQ050\",\n      \"Quest16_MCQ160B\"\n    ],\n    \"window\": {\n      \"startDate\": \"2026-04-18\",\n      \"endDate\": \"2026-04-24\"\n    },\n    \"sourceSummary\": {\n      \"window\": {\n        \"startDate\": \"2026-04-18\",\n        \"endDate\": \"2026-04-24\"\n      },\n      \"diaryDays\": 7,\n      \"dietDaysWithSnapshot\": 1,\n      \"latestAssessmentDate\": \"2026-04-24\",\n      \"latestSleepDiaryDate\": \"2026-04-24\",\n      \"latestBodyMetricDate\": \"2026-04-24\",\n      \"biometricFallbackFields\": []\n    }\n  }\n}\n"
-            },
-            {
-              "name": "409 ML not ready",
-              "originalRequest": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Authorization",
-                    "value": "Bearer {{patientToken}}"
-                  },
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "url": "{{baseUrl}}/users/{{patientId}}/ml-readiness?date={{mlDate}}"
-              },
-              "status": "Conflict",
-              "code": 409,
-              "_postman_previewlanguage": "json",
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json"
-                }
-              ],
-              "cookie": [],
-              "body": "{\n  \"success\": false,\n  \"message\": \"Data pasien belum siap untuk inference ML\",\n  \"details\": {\n    \"code\": \"ML_NOT_READY\",\n    \"ready\": false,\n    \"missingFields\": [\n      \"Quest21_SLD123\",\n      \"Dieta1_DR1TKCAL\"\n    ],\n    \"resolvedFields\": [\n      \"Demog1_RIDAGEYR\",\n      \"Exami2_BMXHT\"\n    ],\n    \"window\": {\n      \"startDate\": \"2026-04-18\",\n      \"endDate\": \"2026-04-24\"\n    },\n    \"sourceSummary\": {\n      \"window\": {\n        \"startDate\": \"2026-04-18\",\n        \"endDate\": \"2026-04-24\"\n      },\n      \"diaryDays\": 7,\n      \"dietDaysWithSnapshot\": 1,\n      \"latestAssessmentDate\": \"2026-04-24\",\n      \"latestSleepDiaryDate\": \"2026-04-24\",\n      \"latestBodyMetricDate\": \"2026-04-24\",\n      \"biometricFallbackFields\": []\n    }\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"ready\": true,\n    \"missingFields\": [\n      \"string\"\n    ],\n    \"resolvedFields\": [\n      \"string\"\n    ],\n    \"window\": {\n      \"startDate\": \"2026-04-10\",\n      \"endDate\": \"2026-04-10\"\n    },\n    \"sourceSummary\": {}\n  }\n}\n"
             }
           ]
         },
@@ -4698,7 +4670,7 @@
           },
           "response": [
             {
-              "name": "200 ML payload success",
+              "name": "200 Patient ML payload",
               "originalRequest": {
                 "method": "GET",
                 "header": [
@@ -4723,7 +4695,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Payload ML pasien berhasil dibentuk\",\n  \"data\": {\n    \"mlVersion\": \"hfms-v3\",\n    \"window\": {\n      \"startDate\": \"2026-04-18\",\n      \"endDate\": \"2026-04-24\"\n    },\n    \"payload\": {\n      \"Dieta1_DR1TCALC\": 300,\n      \"Dieta1_DR1TCARB\": 70,\n      \"Dieta1_DR1TCHOL\": 120,\n      \"Dieta1_DR1TFIBE\": 9,\n      \"Dieta1_DR1TKCAL\": 650,\n      \"Dieta1_DR1TMFAT\": 7,\n      \"Dieta1_DR1TPFAT\": 5,\n      \"Dieta1_DR1TPROT\": 35,\n      \"Dieta1_DR1TSFAT\": 6,\n      \"Dieta1_DR1TSUGR\": 12,\n      \"Dieta1_DR1TTFAT\": 20,\n      \"Exami2_BMXBMI\": 25.5,\n      \"Quest19_PAD615\": 45,\n      \"Quest19_PAD645\": 20,\n      \"Quest19_PAD660\": 30,\n      \"Quest19_PAQ610\": 1,\n      \"Quest19_PAQ635\": 1,\n      \"Quest19_PAQ640\": 1,\n      \"Quest19_PAQ655\": 1,\n      \"Quest21_SLD123\": 8,\n      \"Quest21_SLQ3032\": 1350,\n      \"Quest6_DED1225\": 95,\n      \"Demog1_DMDEDUC\": 4,\n      \"Demog1_DMDFMSIZ\": 3,\n      \"Demog1_DMDHHSIZ\": 3,\n      \"Demog1_DMDHHSZA\": 2,\n      \"Demog1_DMDHHSZB\": 1,\n      \"Demog1_DMDHHSZE\": 0,\n      \"Demog1_DMDMARTL\": 1,\n      \"Demog1_RIAGENDR\": 1,\n      \"Demog1_RIDAGEYR\": 26,\n      \"Demog1_RIDRETH3\": 6,\n      \"Exami1_BPXPLS\": 1,\n      \"Exami1_DiaPulse\": 82,\n      \"Exami1_SysPulse\": 122,\n      \"Exami2_BMXHT\": 168,\n      \"Exami2_BMXWT\": 72,\n      \"Labor1_LBDTCSI\": 180,\n      \"Labor2_URDFLOW1\": 1.2,\n      \"Labor2_URDTIME1\": 45,\n      \"Labor2_URXVOL1\": 200,\n      \"Quest11_HIQ011\": 1,\n      \"Quest12_HEQ010\": 2,\n      \"Quest12_HEQ030\": 2,\n      \"Quest15_KIQ022\": 2,\n      \"Quest15_KIQ026\": 2,\n      \"Quest16_MCQ010\": 2,\n      \"Quest16_MCQ220\": 2,\n      \"Quest16_MCQ300A\": 2,\n      \"Quest16_MCQ300C\": 2,\n      \"Quest17_DPQ020\": 0,\n      \"Quest17_DPQ030\": 0,\n      \"Quest17_DPQ040\": 0,\n      \"Quest1_ALQ111\": 2,\n      \"Quest20_PFQ061B\": 2,\n      \"Quest20_PFQ061C\": 2,\n      \"Quest20_PFQ061H\": 2,\n      \"Quest22_SMQ020\": 1,\n      \"Quest22_SMQ890\": 1,\n      \"Quest22_SMQ900\": 2,\n      \"Quest23_SMD470\": 0,\n      \"Quest3_CDQ008\": 1,\n      \"Quest3_CDQ009\": 2,\n      \"Quest3_CDQ010\": 2,\n      \"Quest7_DIQ010\": 2,\n      \"Quest9_DLQ050\": 2,\n      \"Quest16_MCQ160B\": 2\n    },\n    \"sourceSummary\": {\n      \"window\": {\n        \"startDate\": \"2026-04-18\",\n        \"endDate\": \"2026-04-24\"\n      },\n      \"diaryDays\": 7,\n      \"dietDaysWithSnapshot\": 1,\n      \"latestAssessmentDate\": \"2026-04-24\",\n      \"latestSleepDiaryDate\": \"2026-04-24\",\n      \"latestBodyMetricDate\": \"2026-04-24\",\n      \"biometricFallbackFields\": []\n    }\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"mlVersion\": \"string\",\n    \"window\": {\n      \"startDate\": \"2026-04-10\",\n      \"endDate\": \"2026-04-10\"\n    },\n    \"payload\": {\n      \"example\": 1.5\n    },\n    \"sourceSummary\": {}\n  }\n}\n"
             }
           ]
         },
@@ -4749,7 +4721,7 @@
           },
           "response": [
             {
-              "name": "200 ML prediction success",
+              "name": "200 Patient ML prediction",
               "originalRequest": {
                 "method": "POST",
                 "header": [
@@ -4778,7 +4750,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Prediksi dari microservice ML berhasil diambil\",\n  \"data\": {\n    \"resultId\": \"f0f49556-5fbf-4ed3-b4b4-4f32f9f4ebf2\",\n    \"generatedAt\": \"2026-05-05T12:30:00.000Z\",\n    \"mlVersion\": \"hfms-v3\",\n    \"window\": {\n      \"startDate\": \"2026-04-18\",\n      \"endDate\": \"2026-04-24\"\n    },\n    \"payloadHash\": \"sha256:8dc6b9ce2c1d6db4a98fe1b14d4f5d55f2f3c44f365d0c7aa8aa18be667d6d2d\",\n    \"sourceSummary\": {\n      \"window\": {\n        \"startDate\": \"2026-04-18\",\n        \"endDate\": \"2026-04-24\"\n      },\n      \"diaryDays\": 7,\n      \"dietDaysWithSnapshot\": 1,\n      \"latestAssessmentDate\": \"2026-04-24\",\n      \"latestSleepDiaryDate\": \"2026-04-24\",\n      \"latestBodyMetricDate\": \"2026-04-24\",\n      \"biometricFallbackFields\": []\n    },\n    \"payload\": {\n      \"Dieta1_DR1TCALC\": 300,\n      \"Dieta1_DR1TCARB\": 70,\n      \"Dieta1_DR1TCHOL\": 120,\n      \"Dieta1_DR1TFIBE\": 9,\n      \"Dieta1_DR1TKCAL\": 650,\n      \"Dieta1_DR1TMFAT\": 7,\n      \"Dieta1_DR1TPFAT\": 5,\n      \"Dieta1_DR1TPROT\": 35,\n      \"Dieta1_DR1TSFAT\": 6,\n      \"Dieta1_DR1TSUGR\": 12,\n      \"Dieta1_DR1TTFAT\": 20,\n      \"Exami2_BMXBMI\": 25.5,\n      \"Quest19_PAD615\": 45,\n      \"Quest19_PAD645\": 20,\n      \"Quest19_PAD660\": 30,\n      \"Quest19_PAQ610\": 1,\n      \"Quest19_PAQ635\": 1,\n      \"Quest19_PAQ640\": 1,\n      \"Quest19_PAQ655\": 1,\n      \"Quest21_SLD123\": 8,\n      \"Quest21_SLQ3032\": 1350,\n      \"Quest6_DED1225\": 95,\n      \"Demog1_DMDEDUC\": 4,\n      \"Demog1_DMDFMSIZ\": 3,\n      \"Demog1_DMDHHSIZ\": 3,\n      \"Demog1_DMDHHSZA\": 2,\n      \"Demog1_DMDHHSZB\": 1,\n      \"Demog1_DMDHHSZE\": 0,\n      \"Demog1_DMDMARTL\": 1,\n      \"Demog1_RIAGENDR\": 1,\n      \"Demog1_RIDAGEYR\": 26,\n      \"Demog1_RIDRETH3\": 6,\n      \"Exami1_BPXPLS\": 1,\n      \"Exami1_DiaPulse\": 82,\n      \"Exami1_SysPulse\": 122,\n      \"Exami2_BMXHT\": 168,\n      \"Exami2_BMXWT\": 72,\n      \"Labor1_LBDTCSI\": 180,\n      \"Labor2_URDFLOW1\": 1.2,\n      \"Labor2_URDTIME1\": 45,\n      \"Labor2_URXVOL1\": 200,\n      \"Quest11_HIQ011\": 1,\n      \"Quest12_HEQ010\": 2,\n      \"Quest12_HEQ030\": 2,\n      \"Quest15_KIQ022\": 2,\n      \"Quest15_KIQ026\": 2,\n      \"Quest16_MCQ010\": 2,\n      \"Quest16_MCQ220\": 2,\n      \"Quest16_MCQ300A\": 2,\n      \"Quest16_MCQ300C\": 2,\n      \"Quest17_DPQ020\": 0,\n      \"Quest17_DPQ030\": 0,\n      \"Quest17_DPQ040\": 0,\n      \"Quest1_ALQ111\": 2,\n      \"Quest20_PFQ061B\": 2,\n      \"Quest20_PFQ061C\": 2,\n      \"Quest20_PFQ061H\": 2,\n      \"Quest22_SMQ020\": 1,\n      \"Quest22_SMQ890\": 1,\n      \"Quest22_SMQ900\": 2,\n      \"Quest23_SMD470\": 0,\n      \"Quest3_CDQ008\": 1,\n      \"Quest3_CDQ009\": 2,\n      \"Quest3_CDQ010\": 2,\n      \"Quest7_DIQ010\": 2,\n      \"Quest9_DLQ050\": 2,\n      \"Quest16_MCQ160B\": 2\n    },\n    \"upstream\": {\n      \"endpoint\": \"https://ml.darrellvalentino.com/v3/predictions/\",\n      \"status\": 200,\n      \"body\": {\n        \"result\": {\n          \"label\": \"0\",\n          \"probability\": \"1.105013769119978\"\n        }\n      }\n    }\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"resultId\": \"11111111-1111-4111-8111-111111111111\",\n    \"generatedAt\": \"2026-04-10T08:15:00.000Z\",\n    \"mlVersion\": \"string\",\n    \"window\": {\n      \"startDate\": \"2026-04-10\",\n      \"endDate\": \"2026-04-10\"\n    },\n    \"payloadHash\": \"string\",\n    \"sourceSummary\": {},\n    \"upstream\": {},\n    \"payload\": {}\n  }\n}\n"
             }
           ]
         },
@@ -4800,7 +4772,7 @@
           },
           "response": [
             {
-              "name": "200 ML prediction latest success",
+              "name": "200 Latest patient ML prediction",
               "originalRequest": {
                 "method": "GET",
                 "header": [
@@ -4825,7 +4797,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Prediksi ML terbaru pasien berhasil diambil\",\n  \"data\": {\n    \"resultId\": \"f0f49556-5fbf-4ed3-b4b4-4f32f9f4ebf2\",\n    \"patientId\": \"29a8cae4-ba34-4418-baf0-0ba776fbec6b\",\n    \"requestedByUserId\": \"29a8cae4-ba34-4418-baf0-0ba776fbec6b\",\n    \"inferenceType\": \"prediction\",\n    \"requestContext\": \"patient\",\n    \"mlVersion\": \"hfms-v3\",\n    \"payloadHash\": \"sha256:8dc6b9ce2c1d6db4a98fe1b14d4f5d55f2f3c44f365d0c7aa8aa18be667d6d2d\",\n    \"payload\": null,\n    \"sourceSummary\": {\n      \"window\": {\n        \"startDate\": \"2026-04-18\",\n        \"endDate\": \"2026-04-24\"\n      },\n      \"diaryDays\": 7,\n      \"dietDaysWithSnapshot\": 1,\n      \"latestAssessmentDate\": \"2026-04-24\",\n      \"latestSleepDiaryDate\": \"2026-04-24\",\n      \"latestBodyMetricDate\": \"2026-04-24\",\n      \"biometricFallbackFields\": []\n    },\n    \"window\": {\n      \"startDate\": \"2026-04-18\",\n      \"endDate\": \"2026-04-24\"\n    },\n    \"upstream\": {\n      \"endpoint\": \"https://ml.darrellvalentino.com/v3/predictions/\",\n      \"status\": 200,\n      \"body\": {\n        \"result\": {\n          \"label\": \"0\",\n          \"probability\": \"1.105013769119978\"\n        }\n      }\n    },\n    \"generatedAt\": \"2026-05-05T12:30:00.000Z\",\n    \"createdAt\": \"2026-05-05T12:30:00.000Z\"\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"resultId\": \"11111111-1111-4111-8111-111111111111\",\n    \"patientId\": \"11111111-1111-4111-8111-111111111111\",\n    \"requestedByUserId\": \"11111111-1111-4111-8111-111111111111\",\n    \"inferenceType\": \"prediction\",\n    \"requestContext\": \"string\",\n    \"mlVersion\": \"string\",\n    \"payloadHash\": \"string\",\n    \"payload\": {},\n    \"sourceSummary\": {},\n    \"window\": {\n      \"startDate\": \"2026-04-10\",\n      \"endDate\": \"2026-04-10\"\n    },\n    \"upstream\": {\n      \"endpoint\": \"string\",\n      \"status\": 1,\n      \"body\": {}\n    },\n    \"generatedAt\": \"2026-04-10T08:15:00.000Z\",\n    \"createdAt\": \"2026-04-10T08:15:00.000Z\"\n  }\n}\n"
             }
           ]
         },
@@ -4847,7 +4819,7 @@
           },
           "response": [
             {
-              "name": "200 ML prediction history success",
+              "name": "200 Patient ML prediction history",
               "originalRequest": {
                 "method": "GET",
                 "header": [
@@ -4872,7 +4844,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Riwayat prediksi ML pasien berhasil diambil\",\n  \"data\": {\n    \"items\": [\n      {\n        \"resultId\": \"f0f49556-5fbf-4ed3-b4b4-4f32f9f4ebf2\",\n        \"patientId\": \"29a8cae4-ba34-4418-baf0-0ba776fbec6b\",\n        \"requestedByUserId\": \"29a8cae4-ba34-4418-baf0-0ba776fbec6b\",\n        \"inferenceType\": \"prediction\",\n        \"requestContext\": \"patient\",\n        \"mlVersion\": \"hfms-v3\",\n        \"payloadHash\": \"sha256:8dc6b9ce2c1d6db4a98fe1b14d4f5d55f2f3c44f365d0c7aa8aa18be667d6d2d\",\n        \"payload\": null,\n        \"sourceSummary\": {\n          \"window\": {\n            \"startDate\": \"2026-04-18\",\n            \"endDate\": \"2026-04-24\"\n          },\n          \"diaryDays\": 7,\n          \"dietDaysWithSnapshot\": 1,\n          \"latestAssessmentDate\": \"2026-04-24\",\n          \"latestSleepDiaryDate\": \"2026-04-24\",\n          \"latestBodyMetricDate\": \"2026-04-24\",\n          \"biometricFallbackFields\": []\n        },\n        \"window\": {\n          \"startDate\": \"2026-04-18\",\n          \"endDate\": \"2026-04-24\"\n        },\n        \"upstream\": {\n          \"endpoint\": \"https://ml.darrellvalentino.com/v3/predictions/\",\n          \"status\": 200,\n          \"body\": {\n            \"result\": {\n              \"label\": \"0\",\n              \"probability\": \"1.105013769119978\"\n            }\n          }\n        },\n        \"generatedAt\": \"2026-05-05T12:30:00.000Z\",\n        \"createdAt\": \"2026-05-05T12:30:00.000Z\"\n      }\n    ],\n    \"pagination\": {\n      \"page\": 1,\n      \"limit\": 10,\n      \"totalItems\": 1,\n      \"totalPages\": 1\n    }\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"items\": [\n      {\n        \"resultId\": \"11111111-1111-4111-8111-111111111111\",\n        \"patientId\": \"11111111-1111-4111-8111-111111111111\",\n        \"requestedByUserId\": \"11111111-1111-4111-8111-111111111111\",\n        \"inferenceType\": \"prediction\",\n        \"requestContext\": \"string\",\n        \"mlVersion\": \"string\",\n        \"payloadHash\": \"string\",\n        \"payload\": {},\n        \"sourceSummary\": {},\n        \"window\": {\n          \"startDate\": \"2026-04-10\",\n          \"endDate\": \"2026-04-10\"\n        },\n        \"upstream\": {\n          \"endpoint\": \"string\",\n          \"status\": 1,\n          \"body\": {}\n        },\n        \"generatedAt\": \"2026-04-10T08:15:00.000Z\",\n        \"createdAt\": \"2026-04-10T08:15:00.000Z\"\n      }\n    ],\n    \"pagination\": {\n      \"page\": 1,\n      \"limit\": 20,\n      \"totalItems\": 125,\n      \"totalPages\": 7\n    }\n  }\n}\n"
             }
           ]
         },
@@ -4898,7 +4870,7 @@
           },
           "response": [
             {
-              "name": "200 ML recommendation success",
+              "name": "200 Patient ML recommendation",
               "originalRequest": {
                 "method": "POST",
                 "header": [
@@ -4927,7 +4899,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Rekomendasi dari microservice ML berhasil diambil\",\n  \"data\": {\n    \"resultId\": \"f0f49556-5fbf-4ed3-b4b4-4f32f9f4ebf2\",\n    \"generatedAt\": \"2026-05-05T12:30:00.000Z\",\n    \"mlVersion\": \"hfms-v3\",\n    \"window\": {\n      \"startDate\": \"2026-04-18\",\n      \"endDate\": \"2026-04-24\"\n    },\n    \"payloadHash\": \"sha256:8dc6b9ce2c1d6db4a98fe1b14d4f5d55f2f3c44f365d0c7aa8aa18be667d6d2d\",\n    \"sourceSummary\": {\n      \"window\": {\n        \"startDate\": \"2026-04-18\",\n        \"endDate\": \"2026-04-24\"\n      },\n      \"diaryDays\": 7,\n      \"dietDaysWithSnapshot\": 1,\n      \"latestAssessmentDate\": \"2026-04-24\",\n      \"latestSleepDiaryDate\": \"2026-04-24\",\n      \"latestBodyMetricDate\": \"2026-04-24\",\n      \"biometricFallbackFields\": []\n    },\n    \"payload\": {\n      \"Dieta1_DR1TCALC\": 300,\n      \"Dieta1_DR1TCARB\": 70,\n      \"Dieta1_DR1TCHOL\": 120,\n      \"Dieta1_DR1TFIBE\": 9,\n      \"Dieta1_DR1TKCAL\": 650,\n      \"Dieta1_DR1TMFAT\": 7,\n      \"Dieta1_DR1TPFAT\": 5,\n      \"Dieta1_DR1TPROT\": 35,\n      \"Dieta1_DR1TSFAT\": 6,\n      \"Dieta1_DR1TSUGR\": 12,\n      \"Dieta1_DR1TTFAT\": 20,\n      \"Exami2_BMXBMI\": 25.5,\n      \"Quest19_PAD615\": 45,\n      \"Quest19_PAD645\": 20,\n      \"Quest19_PAD660\": 30,\n      \"Quest19_PAQ610\": 1,\n      \"Quest19_PAQ635\": 1,\n      \"Quest19_PAQ640\": 1,\n      \"Quest19_PAQ655\": 1,\n      \"Quest21_SLD123\": 8,\n      \"Quest21_SLQ3032\": 1350,\n      \"Quest6_DED1225\": 95,\n      \"Demog1_DMDEDUC\": 4,\n      \"Demog1_DMDFMSIZ\": 3,\n      \"Demog1_DMDHHSIZ\": 3,\n      \"Demog1_DMDHHSZA\": 2,\n      \"Demog1_DMDHHSZB\": 1,\n      \"Demog1_DMDHHSZE\": 0,\n      \"Demog1_DMDMARTL\": 1,\n      \"Demog1_RIAGENDR\": 1,\n      \"Demog1_RIDAGEYR\": 26,\n      \"Demog1_RIDRETH3\": 6,\n      \"Exami1_BPXPLS\": 1,\n      \"Exami1_DiaPulse\": 82,\n      \"Exami1_SysPulse\": 122,\n      \"Exami2_BMXHT\": 168,\n      \"Exami2_BMXWT\": 72,\n      \"Labor1_LBDTCSI\": 180,\n      \"Labor2_URDFLOW1\": 1.2,\n      \"Labor2_URDTIME1\": 45,\n      \"Labor2_URXVOL1\": 200,\n      \"Quest11_HIQ011\": 1,\n      \"Quest12_HEQ010\": 2,\n      \"Quest12_HEQ030\": 2,\n      \"Quest15_KIQ022\": 2,\n      \"Quest15_KIQ026\": 2,\n      \"Quest16_MCQ010\": 2,\n      \"Quest16_MCQ220\": 2,\n      \"Quest16_MCQ300A\": 2,\n      \"Quest16_MCQ300C\": 2,\n      \"Quest17_DPQ020\": 0,\n      \"Quest17_DPQ030\": 0,\n      \"Quest17_DPQ040\": 0,\n      \"Quest1_ALQ111\": 2,\n      \"Quest20_PFQ061B\": 2,\n      \"Quest20_PFQ061C\": 2,\n      \"Quest20_PFQ061H\": 2,\n      \"Quest22_SMQ020\": 1,\n      \"Quest22_SMQ890\": 1,\n      \"Quest22_SMQ900\": 2,\n      \"Quest23_SMD470\": 0,\n      \"Quest3_CDQ008\": 1,\n      \"Quest3_CDQ009\": 2,\n      \"Quest3_CDQ010\": 2,\n      \"Quest7_DIQ010\": 2,\n      \"Quest9_DLQ050\": 2,\n      \"Quest16_MCQ160B\": 2\n    },\n    \"upstream\": {\n      \"endpoint\": \"https://ml.darrellvalentino.com/v3/recommendations/\",\n      \"status\": 200,\n      \"body\": {\n        \"result\": \"success\",\n        \"recommendationResult\": {\n          \"riskReduction\": 1.083273136464413,\n          \"lifestyle\": [\n            {\n              \"category\": \"nutrition\",\n              \"title\": \"Kurangi konsumsi garam harian\",\n              \"recommendation\": \"Batasi makanan tinggi sodium dan pilih makanan segar.\"\n            },\n            {\n              \"category\": \"activity\",\n              \"title\": \"Pertahankan aktivitas fisik terstruktur\",\n              \"recommendation\": \"Lakukan aktivitas aerobik intensitas sedang secara konsisten.\"\n            }\n          ]\n        }\n      }\n    }\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"resultId\": \"11111111-1111-4111-8111-111111111111\",\n    \"generatedAt\": \"2026-04-10T08:15:00.000Z\",\n    \"mlVersion\": \"string\",\n    \"window\": {\n      \"startDate\": \"2026-04-10\",\n      \"endDate\": \"2026-04-10\"\n    },\n    \"payloadHash\": \"string\",\n    \"sourceSummary\": {},\n    \"upstream\": {},\n    \"payload\": {}\n  }\n}\n"
             }
           ]
         },
@@ -4949,7 +4921,7 @@
           },
           "response": [
             {
-              "name": "200 ML recommendation latest success",
+              "name": "200 Latest patient ML recommendation",
               "originalRequest": {
                 "method": "GET",
                 "header": [
@@ -4974,7 +4946,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Rekomendasi ML terbaru pasien berhasil diambil\",\n  \"data\": {\n    \"resultId\": \"f0f49556-5fbf-4ed3-b4b4-4f32f9f4ebf2\",\n    \"patientId\": \"29a8cae4-ba34-4418-baf0-0ba776fbec6b\",\n    \"requestedByUserId\": \"29a8cae4-ba34-4418-baf0-0ba776fbec6b\",\n    \"inferenceType\": \"recommendation\",\n    \"requestContext\": \"patient\",\n    \"mlVersion\": \"hfms-v3\",\n    \"payloadHash\": \"sha256:8dc6b9ce2c1d6db4a98fe1b14d4f5d55f2f3c44f365d0c7aa8aa18be667d6d2d\",\n    \"payload\": null,\n    \"sourceSummary\": {\n      \"window\": {\n        \"startDate\": \"2026-04-18\",\n        \"endDate\": \"2026-04-24\"\n      },\n      \"diaryDays\": 7,\n      \"dietDaysWithSnapshot\": 1,\n      \"latestAssessmentDate\": \"2026-04-24\",\n      \"latestSleepDiaryDate\": \"2026-04-24\",\n      \"latestBodyMetricDate\": \"2026-04-24\",\n      \"biometricFallbackFields\": []\n    },\n    \"window\": {\n      \"startDate\": \"2026-04-18\",\n      \"endDate\": \"2026-04-24\"\n    },\n    \"upstream\": {\n      \"endpoint\": \"https://ml.darrellvalentino.com/v3/recommendations/\",\n      \"status\": 200,\n      \"body\": {\n        \"result\": \"success\",\n        \"recommendationResult\": {\n          \"riskReduction\": 1.083273136464413,\n          \"lifestyle\": [\n            {\n              \"category\": \"nutrition\",\n              \"title\": \"Kurangi konsumsi garam harian\",\n              \"recommendation\": \"Batasi makanan tinggi sodium dan pilih makanan segar.\"\n            },\n            {\n              \"category\": \"activity\",\n              \"title\": \"Pertahankan aktivitas fisik terstruktur\",\n              \"recommendation\": \"Lakukan aktivitas aerobik intensitas sedang secara konsisten.\"\n            }\n          ]\n        }\n      }\n    },\n    \"generatedAt\": \"2026-05-05T12:30:00.000Z\",\n    \"createdAt\": \"2026-05-05T12:30:00.000Z\"\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"resultId\": \"11111111-1111-4111-8111-111111111111\",\n    \"patientId\": \"11111111-1111-4111-8111-111111111111\",\n    \"requestedByUserId\": \"11111111-1111-4111-8111-111111111111\",\n    \"inferenceType\": \"prediction\",\n    \"requestContext\": \"string\",\n    \"mlVersion\": \"string\",\n    \"payloadHash\": \"string\",\n    \"payload\": {},\n    \"sourceSummary\": {},\n    \"window\": {\n      \"startDate\": \"2026-04-10\",\n      \"endDate\": \"2026-04-10\"\n    },\n    \"upstream\": {\n      \"endpoint\": \"string\",\n      \"status\": 1,\n      \"body\": {}\n    },\n    \"generatedAt\": \"2026-04-10T08:15:00.000Z\",\n    \"createdAt\": \"2026-04-10T08:15:00.000Z\"\n  }\n}\n"
             }
           ]
         },
@@ -4996,7 +4968,7 @@
           },
           "response": [
             {
-              "name": "200 ML recommendation history success",
+              "name": "200 Patient ML recommendation history",
               "originalRequest": {
                 "method": "GET",
                 "header": [
@@ -5021,7 +4993,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Riwayat rekomendasi ML pasien berhasil diambil\",\n  \"data\": {\n    \"items\": [\n      {\n        \"resultId\": \"f0f49556-5fbf-4ed3-b4b4-4f32f9f4ebf2\",\n        \"patientId\": \"29a8cae4-ba34-4418-baf0-0ba776fbec6b\",\n        \"requestedByUserId\": \"29a8cae4-ba34-4418-baf0-0ba776fbec6b\",\n        \"inferenceType\": \"recommendation\",\n        \"requestContext\": \"patient\",\n        \"mlVersion\": \"hfms-v3\",\n        \"payloadHash\": \"sha256:8dc6b9ce2c1d6db4a98fe1b14d4f5d55f2f3c44f365d0c7aa8aa18be667d6d2d\",\n        \"payload\": null,\n        \"sourceSummary\": {\n          \"window\": {\n            \"startDate\": \"2026-04-18\",\n            \"endDate\": \"2026-04-24\"\n          },\n          \"diaryDays\": 7,\n          \"dietDaysWithSnapshot\": 1,\n          \"latestAssessmentDate\": \"2026-04-24\",\n          \"latestSleepDiaryDate\": \"2026-04-24\",\n          \"latestBodyMetricDate\": \"2026-04-24\",\n          \"biometricFallbackFields\": []\n        },\n        \"window\": {\n          \"startDate\": \"2026-04-18\",\n          \"endDate\": \"2026-04-24\"\n        },\n        \"upstream\": {\n          \"endpoint\": \"https://ml.darrellvalentino.com/v3/recommendations/\",\n          \"status\": 200,\n          \"body\": {\n            \"result\": \"success\",\n            \"recommendationResult\": {\n              \"riskReduction\": 1.083273136464413,\n              \"lifestyle\": [\n                {\n                  \"category\": \"nutrition\",\n                  \"title\": \"Kurangi konsumsi garam harian\",\n                  \"recommendation\": \"Batasi makanan tinggi sodium dan pilih makanan segar.\"\n                },\n                {\n                  \"category\": \"activity\",\n                  \"title\": \"Pertahankan aktivitas fisik terstruktur\",\n                  \"recommendation\": \"Lakukan aktivitas aerobik intensitas sedang secara konsisten.\"\n                }\n              ]\n            }\n          }\n        },\n        \"generatedAt\": \"2026-05-05T12:30:00.000Z\",\n        \"createdAt\": \"2026-05-05T12:30:00.000Z\"\n      }\n    ],\n    \"pagination\": {\n      \"page\": 1,\n      \"limit\": 10,\n      \"totalItems\": 1,\n      \"totalPages\": 1\n    }\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"items\": [\n      {\n        \"resultId\": \"11111111-1111-4111-8111-111111111111\",\n        \"patientId\": \"11111111-1111-4111-8111-111111111111\",\n        \"requestedByUserId\": \"11111111-1111-4111-8111-111111111111\",\n        \"inferenceType\": \"prediction\",\n        \"requestContext\": \"string\",\n        \"mlVersion\": \"string\",\n        \"payloadHash\": \"string\",\n        \"payload\": {},\n        \"sourceSummary\": {},\n        \"window\": {\n          \"startDate\": \"2026-04-10\",\n          \"endDate\": \"2026-04-10\"\n        },\n        \"upstream\": {\n          \"endpoint\": \"string\",\n          \"status\": 1,\n          \"body\": {}\n        },\n        \"generatedAt\": \"2026-04-10T08:15:00.000Z\",\n        \"createdAt\": \"2026-04-10T08:15:00.000Z\"\n      }\n    ],\n    \"pagination\": {\n      \"page\": 1,\n      \"limit\": 20,\n      \"totalItems\": 125,\n      \"totalPages\": 7\n    }\n  }\n}\n"
             }
           ]
         }
@@ -5048,7 +5020,7 @@
           },
           "response": [
             {
-              "name": "200 ML readiness success",
+              "name": "200 Doctor dashboard patient ML readiness",
               "originalRequest": {
                 "method": "GET",
                 "header": [
@@ -5073,35 +5045,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Status readiness ML pasien dashboard berhasil diambil\",\n  \"data\": {\n    \"ready\": true,\n    \"missingFields\": [],\n    \"resolvedFields\": [\n      \"Dieta1_DR1TCALC\",\n      \"Dieta1_DR1TCARB\",\n      \"Dieta1_DR1TCHOL\",\n      \"Dieta1_DR1TFIBE\",\n      \"Dieta1_DR1TKCAL\",\n      \"Dieta1_DR1TMFAT\",\n      \"Dieta1_DR1TPFAT\",\n      \"Dieta1_DR1TPROT\",\n      \"Dieta1_DR1TSFAT\",\n      \"Dieta1_DR1TSUGR\",\n      \"Dieta1_DR1TTFAT\",\n      \"Exami2_BMXBMI\",\n      \"Quest19_PAD615\",\n      \"Quest19_PAD645\",\n      \"Quest19_PAD660\",\n      \"Quest19_PAQ610\",\n      \"Quest19_PAQ635\",\n      \"Quest19_PAQ640\",\n      \"Quest19_PAQ655\",\n      \"Quest21_SLD123\",\n      \"Quest21_SLQ3032\",\n      \"Quest6_DED1225\",\n      \"Demog1_DMDEDUC\",\n      \"Demog1_DMDFMSIZ\",\n      \"Demog1_DMDHHSIZ\",\n      \"Demog1_DMDHHSZA\",\n      \"Demog1_DMDHHSZB\",\n      \"Demog1_DMDHHSZE\",\n      \"Demog1_DMDMARTL\",\n      \"Demog1_RIAGENDR\",\n      \"Demog1_RIDAGEYR\",\n      \"Demog1_RIDRETH3\",\n      \"Exami1_BPXPLS\",\n      \"Exami1_DiaPulse\",\n      \"Exami1_SysPulse\",\n      \"Exami2_BMXHT\",\n      \"Exami2_BMXWT\",\n      \"Labor1_LBDTCSI\",\n      \"Labor2_URDFLOW1\",\n      \"Labor2_URDTIME1\",\n      \"Labor2_URXVOL1\",\n      \"Quest11_HIQ011\",\n      \"Quest12_HEQ010\",\n      \"Quest12_HEQ030\",\n      \"Quest15_KIQ022\",\n      \"Quest15_KIQ026\",\n      \"Quest16_MCQ010\",\n      \"Quest16_MCQ220\",\n      \"Quest16_MCQ300A\",\n      \"Quest16_MCQ300C\",\n      \"Quest17_DPQ020\",\n      \"Quest17_DPQ030\",\n      \"Quest17_DPQ040\",\n      \"Quest1_ALQ111\",\n      \"Quest20_PFQ061B\",\n      \"Quest20_PFQ061C\",\n      \"Quest20_PFQ061H\",\n      \"Quest22_SMQ020\",\n      \"Quest22_SMQ890\",\n      \"Quest22_SMQ900\",\n      \"Quest23_SMD470\",\n      \"Quest3_CDQ008\",\n      \"Quest3_CDQ009\",\n      \"Quest3_CDQ010\",\n      \"Quest7_DIQ010\",\n      \"Quest9_DLQ050\",\n      \"Quest16_MCQ160B\"\n    ],\n    \"window\": {\n      \"startDate\": \"2026-04-18\",\n      \"endDate\": \"2026-04-24\"\n    },\n    \"sourceSummary\": {\n      \"window\": {\n        \"startDate\": \"2026-04-18\",\n        \"endDate\": \"2026-04-24\"\n      },\n      \"diaryDays\": 7,\n      \"dietDaysWithSnapshot\": 1,\n      \"latestAssessmentDate\": \"2026-04-24\",\n      \"latestSleepDiaryDate\": \"2026-04-24\",\n      \"latestBodyMetricDate\": \"2026-04-24\",\n      \"biometricFallbackFields\": []\n    }\n  }\n}\n"
-            },
-            {
-              "name": "409 ML not ready",
-              "originalRequest": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Authorization",
-                    "value": "Bearer {{doctorToken}}"
-                  },
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/ml-readiness?date={{mlDate}}"
-              },
-              "status": "Conflict",
-              "code": 409,
-              "_postman_previewlanguage": "json",
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json"
-                }
-              ],
-              "cookie": [],
-              "body": "{\n  \"success\": false,\n  \"message\": \"Data pasien belum siap untuk inference ML\",\n  \"details\": {\n    \"code\": \"ML_NOT_READY\",\n    \"ready\": false,\n    \"missingFields\": [\n      \"Quest21_SLD123\",\n      \"Dieta1_DR1TKCAL\"\n    ],\n    \"resolvedFields\": [\n      \"Demog1_RIDAGEYR\",\n      \"Exami2_BMXHT\"\n    ],\n    \"window\": {\n      \"startDate\": \"2026-04-18\",\n      \"endDate\": \"2026-04-24\"\n    },\n    \"sourceSummary\": {\n      \"window\": {\n        \"startDate\": \"2026-04-18\",\n        \"endDate\": \"2026-04-24\"\n      },\n      \"diaryDays\": 7,\n      \"dietDaysWithSnapshot\": 1,\n      \"latestAssessmentDate\": \"2026-04-24\",\n      \"latestSleepDiaryDate\": \"2026-04-24\",\n      \"latestBodyMetricDate\": \"2026-04-24\",\n      \"biometricFallbackFields\": []\n    }\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"ready\": true,\n    \"missingFields\": [\n      \"string\"\n    ],\n    \"resolvedFields\": [\n      \"string\"\n    ],\n    \"window\": {\n      \"startDate\": \"2026-04-10\",\n      \"endDate\": \"2026-04-10\"\n    },\n    \"sourceSummary\": {}\n  }\n}\n"
             }
           ]
         },
@@ -5123,7 +5067,7 @@
           },
           "response": [
             {
-              "name": "200 ML payload success",
+              "name": "200 Doctor dashboard patient ML payload",
               "originalRequest": {
                 "method": "GET",
                 "header": [
@@ -5148,7 +5092,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Payload ML pasien dashboard berhasil dibentuk\",\n  \"data\": {\n    \"mlVersion\": \"hfms-v3\",\n    \"window\": {\n      \"startDate\": \"2026-04-18\",\n      \"endDate\": \"2026-04-24\"\n    },\n    \"payload\": {\n      \"Dieta1_DR1TCALC\": 300,\n      \"Dieta1_DR1TCARB\": 70,\n      \"Dieta1_DR1TCHOL\": 120,\n      \"Dieta1_DR1TFIBE\": 9,\n      \"Dieta1_DR1TKCAL\": 650,\n      \"Dieta1_DR1TMFAT\": 7,\n      \"Dieta1_DR1TPFAT\": 5,\n      \"Dieta1_DR1TPROT\": 35,\n      \"Dieta1_DR1TSFAT\": 6,\n      \"Dieta1_DR1TSUGR\": 12,\n      \"Dieta1_DR1TTFAT\": 20,\n      \"Exami2_BMXBMI\": 25.5,\n      \"Quest19_PAD615\": 45,\n      \"Quest19_PAD645\": 20,\n      \"Quest19_PAD660\": 30,\n      \"Quest19_PAQ610\": 1,\n      \"Quest19_PAQ635\": 1,\n      \"Quest19_PAQ640\": 1,\n      \"Quest19_PAQ655\": 1,\n      \"Quest21_SLD123\": 8,\n      \"Quest21_SLQ3032\": 1350,\n      \"Quest6_DED1225\": 95,\n      \"Demog1_DMDEDUC\": 4,\n      \"Demog1_DMDFMSIZ\": 3,\n      \"Demog1_DMDHHSIZ\": 3,\n      \"Demog1_DMDHHSZA\": 2,\n      \"Demog1_DMDHHSZB\": 1,\n      \"Demog1_DMDHHSZE\": 0,\n      \"Demog1_DMDMARTL\": 1,\n      \"Demog1_RIAGENDR\": 1,\n      \"Demog1_RIDAGEYR\": 26,\n      \"Demog1_RIDRETH3\": 6,\n      \"Exami1_BPXPLS\": 1,\n      \"Exami1_DiaPulse\": 82,\n      \"Exami1_SysPulse\": 122,\n      \"Exami2_BMXHT\": 168,\n      \"Exami2_BMXWT\": 72,\n      \"Labor1_LBDTCSI\": 180,\n      \"Labor2_URDFLOW1\": 1.2,\n      \"Labor2_URDTIME1\": 45,\n      \"Labor2_URXVOL1\": 200,\n      \"Quest11_HIQ011\": 1,\n      \"Quest12_HEQ010\": 2,\n      \"Quest12_HEQ030\": 2,\n      \"Quest15_KIQ022\": 2,\n      \"Quest15_KIQ026\": 2,\n      \"Quest16_MCQ010\": 2,\n      \"Quest16_MCQ220\": 2,\n      \"Quest16_MCQ300A\": 2,\n      \"Quest16_MCQ300C\": 2,\n      \"Quest17_DPQ020\": 0,\n      \"Quest17_DPQ030\": 0,\n      \"Quest17_DPQ040\": 0,\n      \"Quest1_ALQ111\": 2,\n      \"Quest20_PFQ061B\": 2,\n      \"Quest20_PFQ061C\": 2,\n      \"Quest20_PFQ061H\": 2,\n      \"Quest22_SMQ020\": 1,\n      \"Quest22_SMQ890\": 1,\n      \"Quest22_SMQ900\": 2,\n      \"Quest23_SMD470\": 0,\n      \"Quest3_CDQ008\": 1,\n      \"Quest3_CDQ009\": 2,\n      \"Quest3_CDQ010\": 2,\n      \"Quest7_DIQ010\": 2,\n      \"Quest9_DLQ050\": 2,\n      \"Quest16_MCQ160B\": 2\n    },\n    \"sourceSummary\": {\n      \"window\": {\n        \"startDate\": \"2026-04-18\",\n        \"endDate\": \"2026-04-24\"\n      },\n      \"diaryDays\": 7,\n      \"dietDaysWithSnapshot\": 1,\n      \"latestAssessmentDate\": \"2026-04-24\",\n      \"latestSleepDiaryDate\": \"2026-04-24\",\n      \"latestBodyMetricDate\": \"2026-04-24\",\n      \"biometricFallbackFields\": []\n    }\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"mlVersion\": \"string\",\n    \"window\": {\n      \"startDate\": \"2026-04-10\",\n      \"endDate\": \"2026-04-10\"\n    },\n    \"payload\": {\n      \"example\": 1.5\n    },\n    \"sourceSummary\": {}\n  }\n}\n"
             }
           ]
         },
@@ -5174,7 +5118,7 @@
           },
           "response": [
             {
-              "name": "200 ML prediction success",
+              "name": "200 Doctor dashboard patient ML prediction",
               "originalRequest": {
                 "method": "POST",
                 "header": [
@@ -5203,7 +5147,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Prediksi ML pasien dashboard berhasil diambil\",\n  \"data\": {\n    \"resultId\": \"f0f49556-5fbf-4ed3-b4b4-4f32f9f4ebf2\",\n    \"generatedAt\": \"2026-05-05T12:30:00.000Z\",\n    \"mlVersion\": \"hfms-v3\",\n    \"window\": {\n      \"startDate\": \"2026-04-18\",\n      \"endDate\": \"2026-04-24\"\n    },\n    \"payloadHash\": \"sha256:8dc6b9ce2c1d6db4a98fe1b14d4f5d55f2f3c44f365d0c7aa8aa18be667d6d2d\",\n    \"sourceSummary\": {\n      \"window\": {\n        \"startDate\": \"2026-04-18\",\n        \"endDate\": \"2026-04-24\"\n      },\n      \"diaryDays\": 7,\n      \"dietDaysWithSnapshot\": 1,\n      \"latestAssessmentDate\": \"2026-04-24\",\n      \"latestSleepDiaryDate\": \"2026-04-24\",\n      \"latestBodyMetricDate\": \"2026-04-24\",\n      \"biometricFallbackFields\": []\n    },\n    \"payload\": {\n      \"Dieta1_DR1TCALC\": 300,\n      \"Dieta1_DR1TCARB\": 70,\n      \"Dieta1_DR1TCHOL\": 120,\n      \"Dieta1_DR1TFIBE\": 9,\n      \"Dieta1_DR1TKCAL\": 650,\n      \"Dieta1_DR1TMFAT\": 7,\n      \"Dieta1_DR1TPFAT\": 5,\n      \"Dieta1_DR1TPROT\": 35,\n      \"Dieta1_DR1TSFAT\": 6,\n      \"Dieta1_DR1TSUGR\": 12,\n      \"Dieta1_DR1TTFAT\": 20,\n      \"Exami2_BMXBMI\": 25.5,\n      \"Quest19_PAD615\": 45,\n      \"Quest19_PAD645\": 20,\n      \"Quest19_PAD660\": 30,\n      \"Quest19_PAQ610\": 1,\n      \"Quest19_PAQ635\": 1,\n      \"Quest19_PAQ640\": 1,\n      \"Quest19_PAQ655\": 1,\n      \"Quest21_SLD123\": 8,\n      \"Quest21_SLQ3032\": 1350,\n      \"Quest6_DED1225\": 95,\n      \"Demog1_DMDEDUC\": 4,\n      \"Demog1_DMDFMSIZ\": 3,\n      \"Demog1_DMDHHSIZ\": 3,\n      \"Demog1_DMDHHSZA\": 2,\n      \"Demog1_DMDHHSZB\": 1,\n      \"Demog1_DMDHHSZE\": 0,\n      \"Demog1_DMDMARTL\": 1,\n      \"Demog1_RIAGENDR\": 1,\n      \"Demog1_RIDAGEYR\": 26,\n      \"Demog1_RIDRETH3\": 6,\n      \"Exami1_BPXPLS\": 1,\n      \"Exami1_DiaPulse\": 82,\n      \"Exami1_SysPulse\": 122,\n      \"Exami2_BMXHT\": 168,\n      \"Exami2_BMXWT\": 72,\n      \"Labor1_LBDTCSI\": 180,\n      \"Labor2_URDFLOW1\": 1.2,\n      \"Labor2_URDTIME1\": 45,\n      \"Labor2_URXVOL1\": 200,\n      \"Quest11_HIQ011\": 1,\n      \"Quest12_HEQ010\": 2,\n      \"Quest12_HEQ030\": 2,\n      \"Quest15_KIQ022\": 2,\n      \"Quest15_KIQ026\": 2,\n      \"Quest16_MCQ010\": 2,\n      \"Quest16_MCQ220\": 2,\n      \"Quest16_MCQ300A\": 2,\n      \"Quest16_MCQ300C\": 2,\n      \"Quest17_DPQ020\": 0,\n      \"Quest17_DPQ030\": 0,\n      \"Quest17_DPQ040\": 0,\n      \"Quest1_ALQ111\": 2,\n      \"Quest20_PFQ061B\": 2,\n      \"Quest20_PFQ061C\": 2,\n      \"Quest20_PFQ061H\": 2,\n      \"Quest22_SMQ020\": 1,\n      \"Quest22_SMQ890\": 1,\n      \"Quest22_SMQ900\": 2,\n      \"Quest23_SMD470\": 0,\n      \"Quest3_CDQ008\": 1,\n      \"Quest3_CDQ009\": 2,\n      \"Quest3_CDQ010\": 2,\n      \"Quest7_DIQ010\": 2,\n      \"Quest9_DLQ050\": 2,\n      \"Quest16_MCQ160B\": 2\n    },\n    \"upstream\": {\n      \"endpoint\": \"https://ml.darrellvalentino.com/v3/predictions/\",\n      \"status\": 200,\n      \"body\": {\n        \"result\": {\n          \"label\": \"0\",\n          \"probability\": \"1.105013769119978\"\n        }\n      }\n    }\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"resultId\": \"11111111-1111-4111-8111-111111111111\",\n    \"generatedAt\": \"2026-04-10T08:15:00.000Z\",\n    \"mlVersion\": \"string\",\n    \"window\": {\n      \"startDate\": \"2026-04-10\",\n      \"endDate\": \"2026-04-10\"\n    },\n    \"payloadHash\": \"string\",\n    \"sourceSummary\": {},\n    \"upstream\": {},\n    \"payload\": {}\n  }\n}\n"
             }
           ]
         },
@@ -5225,7 +5169,7 @@
           },
           "response": [
             {
-              "name": "200 ML prediction latest success",
+              "name": "200 Latest doctor dashboard patient ML prediction",
               "originalRequest": {
                 "method": "GET",
                 "header": [
@@ -5250,7 +5194,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Prediksi ML terbaru pasien dashboard berhasil diambil\",\n  \"data\": {\n    \"resultId\": \"f0f49556-5fbf-4ed3-b4b4-4f32f9f4ebf2\",\n    \"patientId\": \"29a8cae4-ba34-4418-baf0-0ba776fbec6b\",\n    \"requestedByUserId\": \"29a8cae4-ba34-4418-baf0-0ba776fbec6b\",\n    \"inferenceType\": \"prediction\",\n    \"requestContext\": \"patient\",\n    \"mlVersion\": \"hfms-v3\",\n    \"payloadHash\": \"sha256:8dc6b9ce2c1d6db4a98fe1b14d4f5d55f2f3c44f365d0c7aa8aa18be667d6d2d\",\n    \"payload\": null,\n    \"sourceSummary\": {\n      \"window\": {\n        \"startDate\": \"2026-04-18\",\n        \"endDate\": \"2026-04-24\"\n      },\n      \"diaryDays\": 7,\n      \"dietDaysWithSnapshot\": 1,\n      \"latestAssessmentDate\": \"2026-04-24\",\n      \"latestSleepDiaryDate\": \"2026-04-24\",\n      \"latestBodyMetricDate\": \"2026-04-24\",\n      \"biometricFallbackFields\": []\n    },\n    \"window\": {\n      \"startDate\": \"2026-04-18\",\n      \"endDate\": \"2026-04-24\"\n    },\n    \"upstream\": {\n      \"endpoint\": \"https://ml.darrellvalentino.com/v3/predictions/\",\n      \"status\": 200,\n      \"body\": {\n        \"result\": {\n          \"label\": \"0\",\n          \"probability\": \"1.105013769119978\"\n        }\n      }\n    },\n    \"generatedAt\": \"2026-05-05T12:30:00.000Z\",\n    \"createdAt\": \"2026-05-05T12:30:00.000Z\"\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"resultId\": \"11111111-1111-4111-8111-111111111111\",\n    \"patientId\": \"11111111-1111-4111-8111-111111111111\",\n    \"requestedByUserId\": \"11111111-1111-4111-8111-111111111111\",\n    \"inferenceType\": \"prediction\",\n    \"requestContext\": \"string\",\n    \"mlVersion\": \"string\",\n    \"payloadHash\": \"string\",\n    \"payload\": {},\n    \"sourceSummary\": {},\n    \"window\": {\n      \"startDate\": \"2026-04-10\",\n      \"endDate\": \"2026-04-10\"\n    },\n    \"upstream\": {\n      \"endpoint\": \"string\",\n      \"status\": 1,\n      \"body\": {}\n    },\n    \"generatedAt\": \"2026-04-10T08:15:00.000Z\",\n    \"createdAt\": \"2026-04-10T08:15:00.000Z\"\n  }\n}\n"
             }
           ]
         },
@@ -5272,7 +5216,7 @@
           },
           "response": [
             {
-              "name": "200 ML prediction history success",
+              "name": "200 Doctor dashboard patient ML prediction history",
               "originalRequest": {
                 "method": "GET",
                 "header": [
@@ -5297,7 +5241,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Riwayat prediksi ML pasien dashboard berhasil diambil\",\n  \"data\": {\n    \"items\": [\n      {\n        \"resultId\": \"f0f49556-5fbf-4ed3-b4b4-4f32f9f4ebf2\",\n        \"patientId\": \"29a8cae4-ba34-4418-baf0-0ba776fbec6b\",\n        \"requestedByUserId\": \"29a8cae4-ba34-4418-baf0-0ba776fbec6b\",\n        \"inferenceType\": \"prediction\",\n        \"requestContext\": \"patient\",\n        \"mlVersion\": \"hfms-v3\",\n        \"payloadHash\": \"sha256:8dc6b9ce2c1d6db4a98fe1b14d4f5d55f2f3c44f365d0c7aa8aa18be667d6d2d\",\n        \"payload\": null,\n        \"sourceSummary\": {\n          \"window\": {\n            \"startDate\": \"2026-04-18\",\n            \"endDate\": \"2026-04-24\"\n          },\n          \"diaryDays\": 7,\n          \"dietDaysWithSnapshot\": 1,\n          \"latestAssessmentDate\": \"2026-04-24\",\n          \"latestSleepDiaryDate\": \"2026-04-24\",\n          \"latestBodyMetricDate\": \"2026-04-24\",\n          \"biometricFallbackFields\": []\n        },\n        \"window\": {\n          \"startDate\": \"2026-04-18\",\n          \"endDate\": \"2026-04-24\"\n        },\n        \"upstream\": {\n          \"endpoint\": \"https://ml.darrellvalentino.com/v3/predictions/\",\n          \"status\": 200,\n          \"body\": {\n            \"result\": {\n              \"label\": \"0\",\n              \"probability\": \"1.105013769119978\"\n            }\n          }\n        },\n        \"generatedAt\": \"2026-05-05T12:30:00.000Z\",\n        \"createdAt\": \"2026-05-05T12:30:00.000Z\"\n      }\n    ],\n    \"pagination\": {\n      \"page\": 1,\n      \"limit\": 10,\n      \"totalItems\": 1,\n      \"totalPages\": 1\n    }\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"items\": [\n      {\n        \"resultId\": \"11111111-1111-4111-8111-111111111111\",\n        \"patientId\": \"11111111-1111-4111-8111-111111111111\",\n        \"requestedByUserId\": \"11111111-1111-4111-8111-111111111111\",\n        \"inferenceType\": \"prediction\",\n        \"requestContext\": \"string\",\n        \"mlVersion\": \"string\",\n        \"payloadHash\": \"string\",\n        \"payload\": {},\n        \"sourceSummary\": {},\n        \"window\": {\n          \"startDate\": \"2026-04-10\",\n          \"endDate\": \"2026-04-10\"\n        },\n        \"upstream\": {\n          \"endpoint\": \"string\",\n          \"status\": 1,\n          \"body\": {}\n        },\n        \"generatedAt\": \"2026-04-10T08:15:00.000Z\",\n        \"createdAt\": \"2026-04-10T08:15:00.000Z\"\n      }\n    ],\n    \"pagination\": {\n      \"page\": 1,\n      \"limit\": 20,\n      \"totalItems\": 125,\n      \"totalPages\": 7\n    }\n  }\n}\n"
             }
           ]
         },
@@ -5323,7 +5267,7 @@
           },
           "response": [
             {
-              "name": "200 ML recommendation success",
+              "name": "200 Doctor dashboard patient ML recommendation",
               "originalRequest": {
                 "method": "POST",
                 "header": [
@@ -5352,7 +5296,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Rekomendasi ML pasien dashboard berhasil diambil\",\n  \"data\": {\n    \"resultId\": \"f0f49556-5fbf-4ed3-b4b4-4f32f9f4ebf2\",\n    \"generatedAt\": \"2026-05-05T12:30:00.000Z\",\n    \"mlVersion\": \"hfms-v3\",\n    \"window\": {\n      \"startDate\": \"2026-04-18\",\n      \"endDate\": \"2026-04-24\"\n    },\n    \"payloadHash\": \"sha256:8dc6b9ce2c1d6db4a98fe1b14d4f5d55f2f3c44f365d0c7aa8aa18be667d6d2d\",\n    \"sourceSummary\": {\n      \"window\": {\n        \"startDate\": \"2026-04-18\",\n        \"endDate\": \"2026-04-24\"\n      },\n      \"diaryDays\": 7,\n      \"dietDaysWithSnapshot\": 1,\n      \"latestAssessmentDate\": \"2026-04-24\",\n      \"latestSleepDiaryDate\": \"2026-04-24\",\n      \"latestBodyMetricDate\": \"2026-04-24\",\n      \"biometricFallbackFields\": []\n    },\n    \"payload\": {\n      \"Dieta1_DR1TCALC\": 300,\n      \"Dieta1_DR1TCARB\": 70,\n      \"Dieta1_DR1TCHOL\": 120,\n      \"Dieta1_DR1TFIBE\": 9,\n      \"Dieta1_DR1TKCAL\": 650,\n      \"Dieta1_DR1TMFAT\": 7,\n      \"Dieta1_DR1TPFAT\": 5,\n      \"Dieta1_DR1TPROT\": 35,\n      \"Dieta1_DR1TSFAT\": 6,\n      \"Dieta1_DR1TSUGR\": 12,\n      \"Dieta1_DR1TTFAT\": 20,\n      \"Exami2_BMXBMI\": 25.5,\n      \"Quest19_PAD615\": 45,\n      \"Quest19_PAD645\": 20,\n      \"Quest19_PAD660\": 30,\n      \"Quest19_PAQ610\": 1,\n      \"Quest19_PAQ635\": 1,\n      \"Quest19_PAQ640\": 1,\n      \"Quest19_PAQ655\": 1,\n      \"Quest21_SLD123\": 8,\n      \"Quest21_SLQ3032\": 1350,\n      \"Quest6_DED1225\": 95,\n      \"Demog1_DMDEDUC\": 4,\n      \"Demog1_DMDFMSIZ\": 3,\n      \"Demog1_DMDHHSIZ\": 3,\n      \"Demog1_DMDHHSZA\": 2,\n      \"Demog1_DMDHHSZB\": 1,\n      \"Demog1_DMDHHSZE\": 0,\n      \"Demog1_DMDMARTL\": 1,\n      \"Demog1_RIAGENDR\": 1,\n      \"Demog1_RIDAGEYR\": 26,\n      \"Demog1_RIDRETH3\": 6,\n      \"Exami1_BPXPLS\": 1,\n      \"Exami1_DiaPulse\": 82,\n      \"Exami1_SysPulse\": 122,\n      \"Exami2_BMXHT\": 168,\n      \"Exami2_BMXWT\": 72,\n      \"Labor1_LBDTCSI\": 180,\n      \"Labor2_URDFLOW1\": 1.2,\n      \"Labor2_URDTIME1\": 45,\n      \"Labor2_URXVOL1\": 200,\n      \"Quest11_HIQ011\": 1,\n      \"Quest12_HEQ010\": 2,\n      \"Quest12_HEQ030\": 2,\n      \"Quest15_KIQ022\": 2,\n      \"Quest15_KIQ026\": 2,\n      \"Quest16_MCQ010\": 2,\n      \"Quest16_MCQ220\": 2,\n      \"Quest16_MCQ300A\": 2,\n      \"Quest16_MCQ300C\": 2,\n      \"Quest17_DPQ020\": 0,\n      \"Quest17_DPQ030\": 0,\n      \"Quest17_DPQ040\": 0,\n      \"Quest1_ALQ111\": 2,\n      \"Quest20_PFQ061B\": 2,\n      \"Quest20_PFQ061C\": 2,\n      \"Quest20_PFQ061H\": 2,\n      \"Quest22_SMQ020\": 1,\n      \"Quest22_SMQ890\": 1,\n      \"Quest22_SMQ900\": 2,\n      \"Quest23_SMD470\": 0,\n      \"Quest3_CDQ008\": 1,\n      \"Quest3_CDQ009\": 2,\n      \"Quest3_CDQ010\": 2,\n      \"Quest7_DIQ010\": 2,\n      \"Quest9_DLQ050\": 2,\n      \"Quest16_MCQ160B\": 2\n    },\n    \"upstream\": {\n      \"endpoint\": \"https://ml.darrellvalentino.com/v3/recommendations/\",\n      \"status\": 200,\n      \"body\": {\n        \"result\": \"success\",\n        \"recommendationResult\": {\n          \"riskReduction\": 1.083273136464413,\n          \"lifestyle\": [\n            {\n              \"category\": \"nutrition\",\n              \"title\": \"Kurangi konsumsi garam harian\",\n              \"recommendation\": \"Batasi makanan tinggi sodium dan pilih makanan segar.\"\n            },\n            {\n              \"category\": \"activity\",\n              \"title\": \"Pertahankan aktivitas fisik terstruktur\",\n              \"recommendation\": \"Lakukan aktivitas aerobik intensitas sedang secara konsisten.\"\n            }\n          ]\n        }\n      }\n    }\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"resultId\": \"11111111-1111-4111-8111-111111111111\",\n    \"generatedAt\": \"2026-04-10T08:15:00.000Z\",\n    \"mlVersion\": \"string\",\n    \"window\": {\n      \"startDate\": \"2026-04-10\",\n      \"endDate\": \"2026-04-10\"\n    },\n    \"payloadHash\": \"string\",\n    \"sourceSummary\": {},\n    \"upstream\": {},\n    \"payload\": {}\n  }\n}\n"
             }
           ]
         },
@@ -5374,7 +5318,7 @@
           },
           "response": [
             {
-              "name": "200 ML recommendation latest success",
+              "name": "200 Latest doctor dashboard patient ML recommendation",
               "originalRequest": {
                 "method": "GET",
                 "header": [
@@ -5399,7 +5343,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Rekomendasi ML terbaru pasien dashboard berhasil diambil\",\n  \"data\": {\n    \"resultId\": \"f0f49556-5fbf-4ed3-b4b4-4f32f9f4ebf2\",\n    \"patientId\": \"29a8cae4-ba34-4418-baf0-0ba776fbec6b\",\n    \"requestedByUserId\": \"29a8cae4-ba34-4418-baf0-0ba776fbec6b\",\n    \"inferenceType\": \"recommendation\",\n    \"requestContext\": \"patient\",\n    \"mlVersion\": \"hfms-v3\",\n    \"payloadHash\": \"sha256:8dc6b9ce2c1d6db4a98fe1b14d4f5d55f2f3c44f365d0c7aa8aa18be667d6d2d\",\n    \"payload\": null,\n    \"sourceSummary\": {\n      \"window\": {\n        \"startDate\": \"2026-04-18\",\n        \"endDate\": \"2026-04-24\"\n      },\n      \"diaryDays\": 7,\n      \"dietDaysWithSnapshot\": 1,\n      \"latestAssessmentDate\": \"2026-04-24\",\n      \"latestSleepDiaryDate\": \"2026-04-24\",\n      \"latestBodyMetricDate\": \"2026-04-24\",\n      \"biometricFallbackFields\": []\n    },\n    \"window\": {\n      \"startDate\": \"2026-04-18\",\n      \"endDate\": \"2026-04-24\"\n    },\n    \"upstream\": {\n      \"endpoint\": \"https://ml.darrellvalentino.com/v3/recommendations/\",\n      \"status\": 200,\n      \"body\": {\n        \"result\": \"success\",\n        \"recommendationResult\": {\n          \"riskReduction\": 1.083273136464413,\n          \"lifestyle\": [\n            {\n              \"category\": \"nutrition\",\n              \"title\": \"Kurangi konsumsi garam harian\",\n              \"recommendation\": \"Batasi makanan tinggi sodium dan pilih makanan segar.\"\n            },\n            {\n              \"category\": \"activity\",\n              \"title\": \"Pertahankan aktivitas fisik terstruktur\",\n              \"recommendation\": \"Lakukan aktivitas aerobik intensitas sedang secara konsisten.\"\n            }\n          ]\n        }\n      }\n    },\n    \"generatedAt\": \"2026-05-05T12:30:00.000Z\",\n    \"createdAt\": \"2026-05-05T12:30:00.000Z\"\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"resultId\": \"11111111-1111-4111-8111-111111111111\",\n    \"patientId\": \"11111111-1111-4111-8111-111111111111\",\n    \"requestedByUserId\": \"11111111-1111-4111-8111-111111111111\",\n    \"inferenceType\": \"prediction\",\n    \"requestContext\": \"string\",\n    \"mlVersion\": \"string\",\n    \"payloadHash\": \"string\",\n    \"payload\": {},\n    \"sourceSummary\": {},\n    \"window\": {\n      \"startDate\": \"2026-04-10\",\n      \"endDate\": \"2026-04-10\"\n    },\n    \"upstream\": {\n      \"endpoint\": \"string\",\n      \"status\": 1,\n      \"body\": {}\n    },\n    \"generatedAt\": \"2026-04-10T08:15:00.000Z\",\n    \"createdAt\": \"2026-04-10T08:15:00.000Z\"\n  }\n}\n"
             }
           ]
         },
@@ -5421,7 +5365,7 @@
           },
           "response": [
             {
-              "name": "200 ML recommendation history success",
+              "name": "200 Doctor dashboard patient ML recommendation history",
               "originalRequest": {
                 "method": "GET",
                 "header": [
@@ -5446,7 +5390,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Riwayat rekomendasi ML pasien dashboard berhasil diambil\",\n  \"data\": {\n    \"items\": [\n      {\n        \"resultId\": \"f0f49556-5fbf-4ed3-b4b4-4f32f9f4ebf2\",\n        \"patientId\": \"29a8cae4-ba34-4418-baf0-0ba776fbec6b\",\n        \"requestedByUserId\": \"29a8cae4-ba34-4418-baf0-0ba776fbec6b\",\n        \"inferenceType\": \"recommendation\",\n        \"requestContext\": \"patient\",\n        \"mlVersion\": \"hfms-v3\",\n        \"payloadHash\": \"sha256:8dc6b9ce2c1d6db4a98fe1b14d4f5d55f2f3c44f365d0c7aa8aa18be667d6d2d\",\n        \"payload\": null,\n        \"sourceSummary\": {\n          \"window\": {\n            \"startDate\": \"2026-04-18\",\n            \"endDate\": \"2026-04-24\"\n          },\n          \"diaryDays\": 7,\n          \"dietDaysWithSnapshot\": 1,\n          \"latestAssessmentDate\": \"2026-04-24\",\n          \"latestSleepDiaryDate\": \"2026-04-24\",\n          \"latestBodyMetricDate\": \"2026-04-24\",\n          \"biometricFallbackFields\": []\n        },\n        \"window\": {\n          \"startDate\": \"2026-04-18\",\n          \"endDate\": \"2026-04-24\"\n        },\n        \"upstream\": {\n          \"endpoint\": \"https://ml.darrellvalentino.com/v3/recommendations/\",\n          \"status\": 200,\n          \"body\": {\n            \"result\": \"success\",\n            \"recommendationResult\": {\n              \"riskReduction\": 1.083273136464413,\n              \"lifestyle\": [\n                {\n                  \"category\": \"nutrition\",\n                  \"title\": \"Kurangi konsumsi garam harian\",\n                  \"recommendation\": \"Batasi makanan tinggi sodium dan pilih makanan segar.\"\n                },\n                {\n                  \"category\": \"activity\",\n                  \"title\": \"Pertahankan aktivitas fisik terstruktur\",\n                  \"recommendation\": \"Lakukan aktivitas aerobik intensitas sedang secara konsisten.\"\n                }\n              ]\n            }\n          }\n        },\n        \"generatedAt\": \"2026-05-05T12:30:00.000Z\",\n        \"createdAt\": \"2026-05-05T12:30:00.000Z\"\n      }\n    ],\n    \"pagination\": {\n      \"page\": 1,\n      \"limit\": 10,\n      \"totalItems\": 1,\n      \"totalPages\": 1\n    }\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Operation success\",\n  \"data\": {\n    \"items\": [\n      {\n        \"resultId\": \"11111111-1111-4111-8111-111111111111\",\n        \"patientId\": \"11111111-1111-4111-8111-111111111111\",\n        \"requestedByUserId\": \"11111111-1111-4111-8111-111111111111\",\n        \"inferenceType\": \"prediction\",\n        \"requestContext\": \"string\",\n        \"mlVersion\": \"string\",\n        \"payloadHash\": \"string\",\n        \"payload\": {},\n        \"sourceSummary\": {},\n        \"window\": {\n          \"startDate\": \"2026-04-10\",\n          \"endDate\": \"2026-04-10\"\n        },\n        \"upstream\": {\n          \"endpoint\": \"string\",\n          \"status\": 1,\n          \"body\": {}\n        },\n        \"generatedAt\": \"2026-04-10T08:15:00.000Z\",\n        \"createdAt\": \"2026-04-10T08:15:00.000Z\"\n      }\n    ],\n    \"pagination\": {\n      \"page\": 1,\n      \"limit\": 20,\n      \"totalItems\": 125,\n      \"totalPages\": 7\n    }\n  }\n}\n"
             }
           ]
         }

@@ -41,13 +41,13 @@ describe('Auth API contract', () => {
     jest.clearAllMocks();
   });
 
-  test('POST /api/v1/auth/change-password returns standard success envelope', async () => {
+  test('POST /auth/change-password returns standard success envelope', async () => {
     authService.changePassword.mockResolvedValue({
       nextStep: 'LOGIN_AGAIN',
     });
 
     const response = await request(app)
-      .post('/api/v1/auth/change-password')
+      .post('/auth/change-password')
       .set('Authorization', `Bearer ${token}`)
       .send({
         currentPassword: 'old-password',
@@ -65,7 +65,7 @@ describe('Auth API contract', () => {
     });
   });
 
-  test('POST /api/v1/auth/login returns stable success envelope and payload keys', async () => {
+  test('POST /auth/login returns stable success envelope and payload keys', async () => {
     authService.login.mockResolvedValue({
       token: 'jwt-token',
       user: {
@@ -76,7 +76,7 @@ describe('Auth API contract', () => {
       },
     });
 
-    const response = await request(app).post('/api/v1/auth/login').send({
+    const response = await request(app).post('/auth/login').send({
       email: 'patient@pulsewise.local',
       password: 'dev12345',
     });
@@ -87,7 +87,7 @@ describe('Auth API contract', () => {
     expectObjectKeys(response.body.data.user, ['userId', 'email', 'role', 'avatarPhoto']);
   });
 
-  test('GET /api/v1/auth/me returns stable success envelope and profile keys', async () => {
+  test('GET /auth/me returns stable success envelope and profile keys', async () => {
     authService.getCurrentUser.mockResolvedValue({
       userId,
       username: 'patient_demo',
@@ -100,7 +100,7 @@ describe('Auth API contract', () => {
     });
 
     const response = await request(app)
-      .get('/api/v1/auth/me')
+      .get('/auth/me')
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(200);
@@ -117,9 +117,9 @@ describe('Auth API contract', () => {
     ]);
   });
 
-  test('POST /api/v1/auth/change-password validates payload', async () => {
+  test('POST /auth/change-password validates payload', async () => {
     const response = await request(app)
-      .post('/api/v1/auth/change-password')
+      .post('/auth/change-password')
       .set('Authorization', `Bearer ${token}`)
       .send({
         currentPassword: 'old-password',
@@ -130,8 +130,8 @@ describe('Auth API contract', () => {
     expectFailureEnvelope(response, 400, 'Validasi request gagal');
   });
 
-  test('POST /api/v1/auth/change-password requires authentication', async () => {
-    const response = await request(app).post('/api/v1/auth/change-password').send({
+  test('POST /auth/change-password requires authentication', async () => {
+    const response = await request(app).post('/auth/change-password').send({
       currentPassword: 'old-password',
       newPassword: 'new-password-123',
       confirmNewPassword: 'new-password-123',

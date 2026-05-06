@@ -56,10 +56,10 @@ Aksi:
 - Tandai endpoint compatibility Django sebagai deprecated (header/log/peringatan internal).
 - Hentikan pengembangan fitur tambahan pada endpoint compatibility tersebut.
 - Update klien internal agar menggunakan endpoint PulseWise langsung:
-  - `GET /api/v1/doctors/{doctorId}/dashboard/patients`
-  - `GET /api/v1/doctors/{doctorId}/dashboard/patients/{patientId}`
-  - `GET /api/v1/doctors/{doctorId}/dashboard/patients/{patientId}/vitals`
-  - `GET /api/v1/doctors/{doctorId}/dashboard/patients/{patientId}/abnormal-report`
+  - `GET /doctors/{doctorId}/dashboard/patients`
+  - `GET /doctors/{doctorId}/dashboard/patients/{patientId}`
+  - `GET /doctors/{doctorId}/dashboard/patients/{patientId}/vitals`
+  - `GET /doctors/{doctorId}/dashboard/patients/{patientId}/abnormal-report`
 
 Exit criteria:
 

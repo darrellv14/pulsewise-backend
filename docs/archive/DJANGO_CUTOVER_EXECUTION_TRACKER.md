@@ -17,10 +17,10 @@ Tujuan:
 
 Checklist implementasi:
 
-- [ ] View list pasien Django memakai Node endpoint `GET /api/v1/doctors/{doctorId}/dashboard/patients`.
-- [ ] View detail/summary pasien Django memakai Node endpoint `GET /api/v1/doctors/{doctorId}/dashboard/patients/{patientId}`.
-- [ ] Data chart time-series di Django memakai Node endpoint `GET /api/v1/doctors/{doctorId}/dashboard/patients/{patientId}/vitals`.
-- [ ] Data abnormal report di Django memakai Node endpoint `GET /api/v1/doctors/{doctorId}/dashboard/patients/{patientId}/abnormal-report`.
+- [ ] View list pasien Django memakai Node endpoint `GET /doctors/{doctorId}/dashboard/patients`.
+- [ ] View detail/summary pasien Django memakai Node endpoint `GET /doctors/{doctorId}/dashboard/patients/{patientId}`.
+- [ ] Data chart time-series di Django memakai Node endpoint `GET /doctors/{doctorId}/dashboard/patients/{patientId}/vitals`.
+- [ ] Data abnormal report di Django memakai Node endpoint `GET /doctors/{doctorId}/dashboard/patients/{patientId}/abnormal-report`.
 - [ ] Tidak ada query langsung ke source historis non-PulseWise pada view dashboard.
 
 Validasi teknis harian:
@@ -29,7 +29,7 @@ Validasi teknis harian:
 
 ```powershell
 $loginBody = @{ email = 'doctor@pulsewise.local'; password = 'dev12345' } | ConvertTo-Json
-$loginResp = Invoke-RestMethod -Method Post -Uri 'http://localhost:5000/api/v1/auth/login' -ContentType 'application/json' -Body $loginBody
+$loginResp = Invoke-RestMethod -Method Post -Uri 'http://localhost:5000/auth/login' -ContentType 'application/json' -Body $loginBody
 $env:PARITY_NODE_TOKEN = $loginResp.data.token
 $env:PARITY_DOCTOR_ID = $loginResp.data.user.userId
 npm run parity:compare

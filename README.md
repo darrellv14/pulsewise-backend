@@ -145,8 +145,8 @@ Catatan:
 - app native mobile tidak membutuhkan CORS seperti browser
 - untuk project ini, CORS production kemungkinan besar hanya dipakai doctor dashboard web
 - isi `CORS_ALLOWED_ORIGINS` dengan **origin frontend**
-- jangan pakai path seperti `/api/v1`
-- `https://api.darrellvalentino.com/api/v1` bukan format CORS origin yang benar
+- jangan pakai path apa pun di origin CORS, misalnya jangan isi `https://pulsewise.darrellvalentino.com/dashboard`
+- `https://api.darrellvalentino.com` bukan format CORS origin yang benar
 
 ### Database
 

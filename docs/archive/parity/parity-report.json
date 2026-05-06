@@ -1,7 +1,7 @@
 {
   "metadata": {
     "generatedAt": "2026-04-10T08:32:30.927Z",
-    "nodeBaseUrl": "http://localhost:5000/api/v1",
+    "nodeBaseUrl": "http://localhost:5000",
     "doctorId": "8aca6089-3899-4b85-a715-0a63113e846a",
     "sourceDatasetPath": "C:\\Users\\darre\\Downloads\\pulsewise-backend\\docs\\parity\\golden-django-5p-30d.json",
     "tolerancePath": "C:\\Users\\darre\\Downloads\\pulsewise-backend\\docs\\parity\\parity-tolerance.json",

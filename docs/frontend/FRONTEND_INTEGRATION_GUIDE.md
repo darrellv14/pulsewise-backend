@@ -10,23 +10,23 @@ Dokumen handoff production terbaru:
 
 ### Auth
 
-- POST /api/v1/auth/login
-- GET /api/v1/auth/me
+- POST /auth/login
+- GET /auth/me
 
 ### Patient/Doctor Profile
 
-- GET /api/v1/patients/{patientId}/profile
-- PUT /api/v1/patients/{patientId}/profile
-- GET /api/v1/doctors/{doctorId}/profile
-- PUT /api/v1/doctors/{doctorId}/profile
+- GET /patients/{patientId}/profile
+- PUT /patients/{patientId}/profile
+- GET /doctors/{doctorId}/profile
+- PUT /doctors/{doctorId}/profile
 
 Catatan onboarding patient:
 
 - UI onboarding boleh dibuat 1 flow.
 - Proses backend tetap dipecah jadi 2 call:
-  1. `POST /api/v1/auth/register`
-  2. `PUT /api/v1/patients/{patientId}/profile`
-- `PUT /api/v1/patients/{patientId}/profile` gunakan field English yang canonical berikut:
+  1. `POST /auth/register`
+  2. `PUT /patients/{patientId}/profile`
+- `PUT /patients/{patientId}/profile` gunakan field English yang canonical berikut:
 
 ```json
 {
@@ -40,7 +40,7 @@ Catatan onboarding patient:
 
 ### Relasi Dokter-Pasien (Primary)
 
-- POST /api/v1/doctors/{doctorId}/patients/link-by-patient-id
+- POST /doctors/{doctorId}/patients/link-by-patient-id
   - Tujuan: menerima hasil scan QR dari frontend.
   - Body minimal:
 
@@ -53,17 +53,17 @@ Catatan onboarding patient:
 
 ### Dashboard Dokter
 
-- GET /api/v1/doctors/{doctorId}/dashboard/patients
-- GET /api/v1/doctors/{doctorId}/dashboard/patients/{patientId}
-- GET /api/v1/doctors/{doctorId}/dashboard/patients/{patientId}/vitals
-- GET /api/v1/doctors/{doctorId}/dashboard/patients/{patientId}/abnormal-report
+- GET /doctors/{doctorId}/dashboard/patients
+- GET /doctors/{doctorId}/dashboard/patients/{patientId}
+- GET /doctors/{doctorId}/dashboard/patients/{patientId}/vitals
+- GET /doctors/{doctorId}/dashboard/patients/{patientId}/abnormal-report
 
 ## 2) Endpoint Legacy (Opsional)
 
 Endpoint ini masih tersedia untuk kompatibilitas lama, tetapi bukan flow utama frontend terbaru:
 
-- POST /api/v1/patients/{patientId}/shares
-- POST /api/v1/doctors/{doctorId}/patients/link-by-share
+- POST /patients/{patientId}/shares
+- POST /doctors/{doctorId}/patients/link-by-share
 
 ## 3) Mekanisme QR Untuk Desktop Web Pairing
 
@@ -82,10 +82,10 @@ Jawaban: ya, rekomendasi terbaik adalah pakai pairing session id jangka pendek.
 
 ### Endpoint backend yang sudah tersedia
 
-- POST /api/v1/doctors/{doctorId}/dashboard/pairing-sessions
-- POST /api/v1/dashboard/pairing-sessions/confirm
-- GET /api/v1/doctors/{doctorId}/dashboard/pairing-sessions/{pairingSessionId}
-- GET /api/v1/doctors/{doctorId}/dashboard/pairing-sessions/{pairingSessionId}/events (SSE)
+- POST /doctors/{doctorId}/dashboard/pairing-sessions
+- POST /dashboard/pairing-sessions/confirm
+- GET /doctors/{doctorId}/dashboard/pairing-sessions/{pairingSessionId}
+- GET /doctors/{doctorId}/dashboard/pairing-sessions/{pairingSessionId}/events (SSE)
 
 Catatan status response confirm pairing:
 
@@ -105,7 +105,7 @@ Catatan status response confirm pairing:
 
 - QR berisi string patientId (di-generate frontend).
 - Hasil scan dikirim ke:
-  - POST /api/v1/doctors/{doctorId}/patients/link-by-patient-id
+  - POST /doctors/{doctorId}/patients/link-by-patient-id
 
 ### Desktop pairing flow (yang direkomendasikan untuk ditambah nanti)
 
@@ -128,7 +128,7 @@ Status saat ini untuk roadmap integrasi teknis:
 
 Step implementasi berikutnya di sisi Django:
 
-1. Login dokter via `POST /api/v1/auth/login` dan simpan JWT di server-side session.
+1. Login dokter via `POST /auth/login` dan simpan JWT di server-side session.
 2. Untuk request data dashboard, kirim header `Authorization: Bearer <jwt>`.
 3. Tangani fallback UI untuk status `401/403` dan timeout agar UX dashboard tetap aman.
 

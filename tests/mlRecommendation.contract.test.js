@@ -83,7 +83,7 @@ describe('ML recommendation API contract', () => {
     });
 
     const response = await request(app)
-      .post(`/api/v1/users/${patientId}/ml-predictions`)
+      .post(`/users/${patientId}/ml-predictions`)
       .set('Authorization', `Bearer ${patientToken}`)
       .send({});
 
@@ -122,7 +122,7 @@ describe('ML recommendation API contract', () => {
     });
 
     const response = await request(app)
-      .get(`/api/v1/users/${patientId}/ml-predictions/latest`)
+      .get(`/users/${patientId}/ml-predictions/latest`)
       .set('Authorization', `Bearer ${patientToken}`);
 
     expect(response.status).toBe(200);
@@ -156,7 +156,7 @@ describe('ML recommendation API contract', () => {
     });
 
     const response = await request(app)
-      .get(`/api/v1/users/${patientId}/ml-predictions/history?page=1&limit=10`)
+      .get(`/users/${patientId}/ml-predictions/history?page=1&limit=10`)
       .set('Authorization', `Bearer ${patientToken}`);
 
     expect(response.status).toBe(200);
@@ -186,7 +186,7 @@ describe('ML recommendation API contract', () => {
     });
 
     const response = await request(app)
-      .get(`/api/v1/doctors/${doctorId}/dashboard/patients/${patientId}/ml-recommendations/latest`)
+      .get(`/doctors/${doctorId}/dashboard/patients/${patientId}/ml-recommendations/latest`)
       .set('Authorization', `Bearer ${doctorToken}`);
 
     expect(response.status).toBe(200);

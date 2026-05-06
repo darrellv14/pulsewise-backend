@@ -25,7 +25,7 @@ Import **hanya** file berikut:
 Untuk test production domain:
 
 1. Pilih environment **PulseWise Production**.
-2. Pastikan `baseUrl = https://api.darrellvalentino.com/api/v1`.
+2. Pastikan `baseUrl = https://api.darrellvalentino.com`.
 3. Login ulang untuk mengisi token baru di environment production.
 4. Jalankan smoke collection berurutan dari login hingga endpoint ML.
 

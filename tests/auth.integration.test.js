@@ -41,7 +41,7 @@ describe('Auth integration', () => {
     userRepository.findUserById.mockResolvedValue(patientUser);
     bcrypt.compare.mockResolvedValue(true);
 
-    const loginResponse = await request(app).post('/api/v1/auth/login').send({
+    const loginResponse = await request(app).post('/auth/login').send({
       email: 'dev@pulsewise.local',
       password: 'dev12345',
     });
@@ -68,7 +68,7 @@ describe('Auth integration', () => {
     );
 
     const meResponse = await request(app)
-      .get('/api/v1/auth/me')
+      .get('/auth/me')
       .set('Authorization', `Bearer ${loginResponse.body.data.token}`);
 
     expect(meResponse.status).toBe(200);
@@ -84,7 +84,7 @@ describe('Auth integration', () => {
   });
 
   test('invalid payload: register without required fields', async () => {
-    const response = await request(app).post('/api/v1/auth/register').send({
+    const response = await request(app).post('/auth/register').send({
       username: 'invalid_user_only',
     });
 
@@ -94,7 +94,7 @@ describe('Auth integration', () => {
   });
 
   test('unauthorized: /auth/me without token', async () => {
-    const response = await request(app).get('/api/v1/auth/me');
+    const response = await request(app).get('/auth/me');
 
     expect(response.status).toBe(401);
     expect(response.body.success).toBe(false);

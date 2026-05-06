@@ -7,35 +7,35 @@ Dokumen ini menjelaskan fitur Django yang sudah memiliki pengganti di PulseWise 
 ### A. Dashboard Patient List
 
 - Django compatibility: `GET /api/list-patients/`
-- Node replacement: `GET /api/v1/doctors/{doctorId}/dashboard/patients`
+- Node replacement: `GET /doctors/{doctorId}/dashboard/patients`
 - Status: parity lulus, siap dipakai sebagai source utama read path.
 
 ### B. Dashboard Patient Summary
 
 - Django compatibility: bagian summary dari `GET /{patientId}/json/`
-- Node replacement: `GET /api/v1/doctors/{doctorId}/dashboard/patients/{patientId}`
+- Node replacement: `GET /doctors/{doctorId}/dashboard/patients/{patientId}`
 - Status: parity lulus termasuk `age`, `latestVitals`, `thresholds`.
 
 ### C. Dashboard Vitals Series
 
 - Django compatibility: bagian vitals/chart dari `GET /{patientId}/json/`
-- Node replacement: `GET /api/v1/doctors/{doctorId}/dashboard/patients/{patientId}/vitals`
+- Node replacement: `GET /doctors/{doctorId}/dashboard/patients/{patientId}/vitals`
 - Status: parity lulus untuk series metrik kritikal.
 
 ### D. Dashboard Abnormal Report
 
 - Django compatibility: `GET /api/{patientId}/generate-abnormal-report/`
-- Node replacement: `GET /api/v1/doctors/{doctorId}/dashboard/patients/{patientId}/abnormal-report`
+- Node replacement: `GET /doctors/{doctorId}/dashboard/patients/{patientId}/abnormal-report`
 - Status: parity lulus pada `stats`, `abnormalInstances`, `thresholds`.
 
 ### E. Dashboard Pairing (QR Session)
 
 - Django pattern lama: pairing non-standar / custom flow (bervariasi implementasi).
 - Node replacement:
-  - `POST /api/v1/doctors/{doctorId}/dashboard/pairing-sessions`
-  - `GET /api/v1/doctors/{doctorId}/dashboard/pairing-sessions/{pairingSessionId}`
-  - `GET /api/v1/doctors/{doctorId}/dashboard/pairing-sessions/{pairingSessionId}/events`
-  - `POST /api/v1/dashboard/pairing-sessions/confirm`
+  - `POST /doctors/{doctorId}/dashboard/pairing-sessions`
+  - `GET /doctors/{doctorId}/dashboard/pairing-sessions/{pairingSessionId}`
+  - `GET /doctors/{doctorId}/dashboard/pairing-sessions/{pairingSessionId}/events`
+  - `POST /dashboard/pairing-sessions/confirm`
 - Status: tersedia + idempotent final response (`200/201`).
 
 ## 2. Yang Bisa Dihapus Sekarang (Aman di Tahap 1)

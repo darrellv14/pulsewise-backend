@@ -36,7 +36,7 @@ describe('Patient care API contract', () => {
     jest.clearAllMocks();
   });
 
-  test('POST /api/v1/users/:userId/diaries/:diaryId/body-metrics returns enriched body metric contract', async () => {
+  test('POST /users/:userId/diaries/:diaryId/body-metrics returns enriched body metric contract', async () => {
     patientCareService.createDailyBodyMetric.mockResolvedValue({
       metricId: '7b5d8f10-1111-4222-8333-1234567890ab',
       diaryId,
@@ -55,7 +55,7 @@ describe('Patient care API contract', () => {
     });
 
     const response = await request(app)
-      .post(`/api/v1/users/${userId}/diaries/${diaryId}/body-metrics`)
+      .post(`/users/${userId}/diaries/${diaryId}/body-metrics`)
       .set('Authorization', `Bearer ${token}`)
       .send({
         conditionTag: 'after_breakfast',
@@ -88,7 +88,7 @@ describe('Patient care API contract', () => {
     ]);
   });
 
-  test('PUT /api/v1/users/:userId/diaries/by-date/body-metrics returns enriched body metric contract', async () => {
+  test('PUT /users/:userId/diaries/by-date/body-metrics returns enriched body metric contract', async () => {
     patientCareService.createDailyBodyMetricByDate.mockResolvedValue({
       metricId: '7b5d8f10-1111-4222-8333-1234567890ab',
       diaryId,
@@ -107,7 +107,7 @@ describe('Patient care API contract', () => {
     });
 
     const response = await request(app)
-      .put(`/api/v1/users/${userId}/diaries/by-date/body-metrics`)
+      .put(`/users/${userId}/diaries/by-date/body-metrics`)
       .set('Authorization', `Bearer ${token}`)
       .send({
         diaryDate: '2026-04-10',
@@ -140,7 +140,7 @@ describe('Patient care API contract', () => {
     ]);
   });
 
-  test('GET /api/v1/users/:userId/diaries/by-date returns enriched diary detail contract', async () => {
+  test('GET /users/:userId/diaries/by-date returns enriched diary detail contract', async () => {
     patientCareService.getHeartDiaryByDate.mockResolvedValue({
       diaryId,
       userId,
@@ -171,7 +171,7 @@ describe('Patient care API contract', () => {
     });
 
     const response = await request(app)
-      .get(`/api/v1/users/${userId}/diaries/by-date?date=2026-04-10`)
+      .get(`/users/${userId}/diaries/by-date?date=2026-04-10`)
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(200);
@@ -205,9 +205,9 @@ describe('Patient care API contract', () => {
     ]);
   });
 
-  test('GET /api/v1/users/:userId/diaries/:diaryId is no longer exposed', async () => {
+  test('GET /users/:userId/diaries/:diaryId is no longer exposed', async () => {
     const response = await request(app)
-      .get(`/api/v1/users/${userId}/diaries/${diaryId}`)
+      .get(`/users/${userId}/diaries/${diaryId}`)
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(404);

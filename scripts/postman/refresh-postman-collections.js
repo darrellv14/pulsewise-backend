@@ -998,7 +998,7 @@ function main() {
   upsertFolder(smokeCollection, 'Dashboard ML Smoke', buildSmokeMlFolder().item);
   upsertFolder(smokeCollection, 'Auth Reference (Manual)', buildSmokeAuthReferenceFolder().item);
 
-  upsertEnvironmentValue(environment, 'baseUrl', 'http://localhost:5000/api/v1');
+  upsertEnvironmentValue(environment, 'baseUrl', 'http://localhost:5000');
   upsertEnvironmentValue(environment, 'hfmsBaseUrl', 'http://localhost:8080');
   upsertEnvironmentValue(environment, 'patientEmail', 'postman.patient@pulsewise.local');
   upsertEnvironmentValue(environment, 'patientUsername', 'postman_patient_local');
@@ -1008,10 +1008,10 @@ function main() {
   upsertEnvironmentValue(environment, 'mlDate', '2026-04-24');
   upsertEnvironmentValue(environment, 'mlAssessmentId', '');
 
-  upsertEnvironmentValue(productionEnvironment, 'baseUrl', 'https://api.darrellvalentino.com/api/v1');
+  upsertEnvironmentValue(productionEnvironment, 'baseUrl', 'https://api.darrellvalentino.com');
   upsertEnvironmentValue(productionEnvironment, 'publicApiOrigin', 'https://api.darrellvalentino.com');
   upsertEnvironmentValue(productionEnvironment, 'mlPublicOrigin', 'https://ml.darrellvalentino.com');
-  upsertEnvironmentValue(productionEnvironment, 'fallbackIpBaseUrl', 'http://168.144.44.43/api/v1');
+  upsertEnvironmentValue(productionEnvironment, 'fallbackIpBaseUrl', 'http://168.144.44.43');
   upsertEnvironmentValue(productionEnvironment, 'hfmsBaseUrl', 'https://ml.darrellvalentino.com');
   upsertEnvironmentValue(productionEnvironment, 'patientEmail', 'seed.patient2@pulsewise.local');
   upsertEnvironmentValue(productionEnvironment, 'patientPassword', 'dev12345', 'secret');

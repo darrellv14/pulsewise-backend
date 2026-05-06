@@ -167,8 +167,8 @@ Browser CORS harus memakai **origin frontend**, bukan URL API lengkap.
 
 Contoh yang salah:
 
-- `https://api.darrellvalentino.com/api/v1`
-- `https://ml.darrellvalentino.com/api/v1`
+- `https://api.darrellvalentino.com`
+- `https://ml.darrellvalentino.com`
 
 Contoh yang benar:
 
@@ -447,7 +447,7 @@ sudo certbot --nginx -d api.darrellvalentino.com -d ml.darrellvalentino.com
 Verifikasi:
 
 ```bash
-curl -I https://api.darrellvalentino.com/api/v1/health
+curl -I https://api.darrellvalentino.com/health
 curl -I https://ml.darrellvalentino.com/
 ```
 
@@ -474,7 +474,7 @@ docker exec -it pulsewise-backend npx prisma generate
 
 ### Backend health
 ```bash
-curl https://api.pulsewise.yourdomain.com/api/v1/health
+curl https://api.pulsewise.yourdomain.com/health
 ```
 
 ### HFMS health
@@ -484,25 +484,25 @@ curl https://ml.pulsewise.yourdomain.com/
 
 ### PulseWise login
 Test:
-- `POST /api/v1/auth/login`
+- `POST /auth/login`
 
 ### Dashboard dokter
 Test:
-- `GET /api/v1/doctors/:doctorId/dashboard/patients`
-- `GET /api/v1/doctors/:doctorId/dashboard/patients/:patientId`
+- `GET /doctors/:doctorId/dashboard/patients`
+- `GET /doctors/:doctorId/dashboard/patients/:patientId`
 
 ### ML patient flow
 Test:
-- `GET /api/v1/users/:userId/ml-readiness`
-- `GET /api/v1/users/:userId/ml-payload`
-- `POST /api/v1/users/:userId/ml-predictions`
-- `POST /api/v1/users/:userId/ml-recommendations`
+- `GET /users/:userId/ml-readiness`
+- `GET /users/:userId/ml-payload`
+- `POST /users/:userId/ml-predictions`
+- `POST /users/:userId/ml-recommendations`
 
 ### ML doctor dashboard flow
 Test:
-- `GET /api/v1/doctors/:doctorId/dashboard/patients/:patientId/ml-readiness`
-- `POST /api/v1/doctors/:doctorId/dashboard/patients/:patientId/ml-predictions`
-- `POST /api/v1/doctors/:doctorId/dashboard/patients/:patientId/ml-recommendations`
+- `GET /doctors/:doctorId/dashboard/patients/:patientId/ml-readiness`
+- `POST /doctors/:doctorId/dashboard/patients/:patientId/ml-predictions`
+- `POST /doctors/:doctorId/dashboard/patients/:patientId/ml-recommendations`
 
 ## Security Checklist
 - jangan expose `5432` ke publik

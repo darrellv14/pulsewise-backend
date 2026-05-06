@@ -72,8 +72,8 @@ Dokumen ini memecah roadmap refactor besar menjadi batch yang bisa dikerjakan be
 ## Batch 5 - Cache and Invalidation Expansion
 
 - [x] Tambah cache untuk:
-  - [x] `GET /api/v1/doctors/:doctorId/dashboard/patients/:patientId/vitals`
-  - [x] `GET /api/v1/doctors/:doctorId/dashboard/patients/:patientId/abnormal-report`
+  - [x] `GET /doctors/:doctorId/dashboard/patients/:patientId/vitals`
+  - [x] `GET /doctors/:doctorId/dashboard/patients/:patientId/abnormal-report`
   - [x] kandidat aman lain setelah profiling
 - [x] Tambah invalidation setelah mutation yang memengaruhi dashboard:
   - [x] profile update
@@ -114,7 +114,7 @@ Dokumen ini memecah roadmap refactor besar menjadi batch yang bisa dikerjakan be
 
 - [x] Kumpulkan semua origin frontend production/staging/dev
 - [x] Isi `CORS_ALLOWED_ORIGINS` dengan origin frontend saja
-- [x] Jangan masukkan path seperti `/api/v1`
+- [x] Jangan masukkan path apa pun ke origin CORS
 - [x] Jangan gunakan domain API/ML sebagai origin FE kecuali browser app memang di-serve dari sana
 - [x] Set `CORS_ALLOW_ALL=false` di production
 
@@ -161,8 +161,8 @@ Catatan:
   - [x] counter sederhana untuk invalidation per domain
   - [x] health/debug visibility untuk status Redis client dan cache metrics
 - [x] Sinkronkan OpenAPI dan Postman penuh dengan contract yang sudah dikunci test
-- [ ] Rencanakan penghilangan prefix `/api/v1` sebagai major version migration, bukan breaking change langsung:
-  - [ ] tambahkan alias route tanpa prefix versi
-  - [ ] siapkan masa transisi dual-route
-  - [ ] update FE/mobile/web secara bertahap
-  - [ ] deprecate `/api/v1` setelah telemetry dan traffic migration aman
+- [x] Migrasikan base path canonical ke root tanpa prefix versi:
+  - [x] update runtime route menjadi tanpa `/api/v1`
+  - [x] update OpenAPI + Postman + smoke tooling ke base path baru
+  - [x] update FE/mobile/web base URL handoff docs
+  - [x] dokumentasikan perubahan sebagai breaking API base-path change

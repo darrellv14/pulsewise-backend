@@ -2,8 +2,8 @@
 
 Dokumen ini adalah kontrak resmi frontend untuk endpoint:
 
-- `POST /api/v1/users/{userId}/diaries/{diaryId}/symptoms`
-- `POST /api/v1/users/{userId}/diaries/by-date/symptoms`
+- `POST /users/{userId}/diaries/{diaryId}/symptoms`
+- `POST /users/{userId}/diaries/by-date/symptoms`
 
 Tujuan dokumen ini:
 

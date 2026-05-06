@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const DEFAULT_NODE_BASE_URL = 'http://localhost:5000/api/v1';
+const DEFAULT_NODE_BASE_URL = 'http://localhost:5000';
 const DEFAULT_OUTPUT_PATH = path.join('docs', 'archive', 'parity', 'golden-django-5p-30d.json');
 const DEFAULT_REPORT_PATH = path.join('docs', 'archive', 'parity', 'parity-report.json');
 const DEFAULT_TOLERANCE_PATH = path.join('docs', 'archive', 'parity', 'parity-tolerance.json');

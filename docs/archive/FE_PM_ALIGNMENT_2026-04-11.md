@@ -14,9 +14,9 @@ Quick win ini sudah diimplementasikan.
 
 Perubahan:
 
-- response `GET /api/v1/users/{userId}/emergency-contacts` sekarang membawa `isPriority`
-- payload `POST /api/v1/users/{userId}/emergency-contacts` sekarang menerima `isPriority`
-- payload `PUT /api/v1/users/{userId}/emergency-contacts/{emergencyContactId}` sekarang menerima `isPriority`
+- response `GET /users/{userId}/emergency-contacts` sekarang membawa `isPriority`
+- payload `POST /users/{userId}/emergency-contacts` sekarang menerima `isPriority`
+- payload `PUT /users/{userId}/emergency-contacts/{emergencyContactId}` sekarang menerima `isPriority`
 - hanya satu emergency contact per user yang boleh memiliki `isPriority = true`
 - kontak prioritas akan muncul lebih dulu di hasil `GET`
 
@@ -53,8 +53,8 @@ Catatan implementasi:
 
 Backend sudah punya endpoint profile onboarding patient:
 
-- `GET /api/v1/patients/{patientId}/profile`
-- `PUT /api/v1/patients/{patientId}/profile`
+- `GET /patients/{patientId}/profile`
+- `PUT /patients/{patientId}/profile`
 
 Payload yang sudah didukung:
 
@@ -70,7 +70,7 @@ Payload yang sudah didukung:
 }
 ```
 
-Kenapa tidak digabung penuh ke `POST /api/v1/auth/register`:
+Kenapa tidak digabung penuh ke `POST /auth/register`:
 
 - endpoint register sebaiknya tetap fokus ke akun/auth
 - field biodata patient masuk domain profile, bukan auth
@@ -79,9 +79,9 @@ Kenapa tidak digabung penuh ke `POST /api/v1/auth/register`:
 
 Flow yang disarankan:
 
-1. `POST /api/v1/auth/register`
+1. `POST /auth/register`
 2. email verification / login
-3. `PUT /api/v1/patients/{patientId}/profile`
+3. `PUT /patients/{patientId}/profile`
 
 Catatan implementasi FE:
 
@@ -93,7 +93,7 @@ Catatan implementasi FE:
 
 ### 3. Medication V2
 
-Medication sudah dipindahkan ke kontrak V2 untuk `POST/GET/PUT /api/v1/users/{userId}/medications`.
+Medication sudah dipindahkan ke kontrak V2 untuk `POST/GET/PUT /users/{userId}/medications`.
 
 Kontrak V2 yang dipakai:
 

@@ -290,7 +290,7 @@ function normalizeRequestUrl(url) {
   const raw = typeof url === 'string' ? url : url?.raw || '';
   const withoutBase = raw.replace(/^{{baseUrl}}/, '');
   const pathOnly = withoutBase.split('?')[0] || '/';
-  const normalizedPath = pathOnly.startsWith('/api/') ? pathOnly : `/api/v1${pathOnly}`;
+  const normalizedPath = pathOnly || '/';
 
   return (
     normalizedPath

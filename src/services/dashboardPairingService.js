@@ -122,7 +122,7 @@ async function createDashboardPairingSession({ actor, doctorId, expiresInSeconds
     expiresAt: toIso(pairingSession.expires_at),
     pairingToken,
     qrPayload: pairingToken,
-    pollingPath: `/api/v1/doctors/${doctorId}/dashboard/pairing-sessions/${pairingSession.pairing_session_id}`,
+    pollingPath: `/doctors/${doctorId}/dashboard/pairing-sessions/${pairingSession.pairing_session_id}`,
   };
 }
 

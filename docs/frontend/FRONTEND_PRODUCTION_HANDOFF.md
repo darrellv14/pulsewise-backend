@@ -30,11 +30,11 @@ Gunakan konfigurasi berikut di frontend:
 
 ### Sebelum domain + SSL aktif
 
-- API base: `http://168.144.44.43/api/v1`
+- API base: `http://168.144.44.43`
 
 ### Setelah domain + SSL aktif
 
-- API base final: `https://api.darrellvalentino.com/api/v1`
+- API base final: `https://api.darrellvalentino.com`
 
 Catatan:
 
@@ -79,13 +79,13 @@ Gunakan hanya untuk QA/staging-style verification. Jangan expose ke user nyata.
 Contoh `.env` frontend web:
 
 ```env
-NEXT_PUBLIC_API_BASE_URL=https://api.darrellvalentino.com/api/v1
+NEXT_PUBLIC_API_BASE_URL=https://api.darrellvalentino.com
 ```
 
 Contoh React/Vite:
 
 ```env
-VITE_API_BASE_URL=https://api.darrellvalentino.com/api/v1
+VITE_API_BASE_URL=https://api.darrellvalentino.com
 ```
 
 ## 6. Catatan Integrasi Penting
@@ -97,7 +97,7 @@ VITE_API_BASE_URL=https://api.darrellvalentino.com/api/v1
 
 ## 7. Checklist Go-Live Frontend
 
-1. Ganti base URL dari IP ke `https://api.darrellvalentino.com/api/v1`.
+1. Ganti base URL dari IP ke `https://api.darrellvalentino.com`.
 2. Pastikan semua call auth/profile/dashboard/ML memakai base URL yang sama.
 3. Jalankan smoke test login doctor + patient.
 4. Validasi halaman dashboard dokter detail pasien.

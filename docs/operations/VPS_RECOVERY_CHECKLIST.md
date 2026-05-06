@@ -53,7 +53,7 @@ docker compose -f docker-compose.prod.yml ps
 Cek health backend:
 
 ```bash
-curl -sS https://api.darrellvalentino.com/api/v1/health
+curl -sS https://api.darrellvalentino.com/health
 ```
 
 Cek ML root:
@@ -221,7 +221,7 @@ ssh root@168.144.44.43 "ln -sf /etc/nginx/sites-available/pulsewise /etc/nginx/s
 ### Health
 
 ```bash
-curl -sS https://api.darrellvalentino.com/api/v1/health
+curl -sS https://api.darrellvalentino.com/health
 curl -sS https://ml.darrellvalentino.com/
 ```
 

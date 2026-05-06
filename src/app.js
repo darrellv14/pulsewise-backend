@@ -24,8 +24,8 @@ app.get('/', (req, res) => {
   return success(res, 'Pulse Wise Backend API', {
     docs: isProduction ? null : '/docs',
     openApi: isProduction ? null : '/openapi.json',
-    health: '/api/v1/health',
-    apiBase: '/api/v1',
+    health: '/health',
+    apiBase: '/',
   });
 });
 
@@ -36,8 +36,7 @@ if (!isProduction) {
   });
 }
 
-app.use('/api/v1', apiRoutes);
-app.use('/api', apiRoutes);
+app.use('/', apiRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

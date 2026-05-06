@@ -1,8 +1,8 @@
-# PulseWise API Style Guide (v1)
+# PulseWise API Style Guide
 
 ## Base Rules
 
-- Base URL: `/api/v1`
+- Base URL: `/`
 - Accept and respond with JSON only.
 - Gunakan noun (bukan verb) pada endpoint path.
 - Collection wajib plural nouns.
@@ -11,12 +11,12 @@
 ## Naming and URL Structure
 
 - Collection:
-  - `GET /api/v1/patients`
-  - `GET /api/v1/doctors`
+  - `GET /patients`
+  - `GET /doctors`
 - Single resource:
-  - `GET /api/v1/patients/{patientId}`
+  - `GET /patients/{patientId}`
 - Nested resource:
-  - `GET /api/v1/doctors/{doctorId}/patients`
+  - `GET /doctors/{doctorId}/patients`
 
 ## Standard Response Envelope
 
@@ -96,6 +96,6 @@ Response list wajib menyertakan:
 
 ## Versioning
 
-- Wajib prefix version pada path: `/api/v1/...`
-- Endpoint baru atau breaking change harus ke versi baru (`/api/v2`).
-- Swagger/OpenAPI harus sinkron per versi.
+- Jalur canonical saat ini **tanpa** prefix versi pada URL.
+- Breaking change berikutnya harus diumumkan eksplisit di changelog dan handoff FE.
+- Swagger/OpenAPI dan Postman wajib sinkron dengan jalur canonical yang aktif.

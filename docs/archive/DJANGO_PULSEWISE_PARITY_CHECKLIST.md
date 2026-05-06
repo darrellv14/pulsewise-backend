@@ -28,19 +28,19 @@ Checklist field yang harus tersedia dan konsisten makna klinisnya:
 ## 3. Endpoint Parity (Wajib)
 
 - [x] List pasien dashboard
-  - Endpoint: `GET /api/v1/doctors/{doctorId}/dashboard/patients`
+  - Endpoint: `GET /doctors/{doctorId}/dashboard/patients`
   - Validasi: list item berisi identity + latest vital minimum.
 
 - [x] Summary pasien
-  - Endpoint: `GET /api/v1/doctors/{doctorId}/dashboard/patients/{patientId}`
+  - Endpoint: `GET /doctors/{doctorId}/dashboard/patients/{patientId}`
   - Validasi: `patient`, `latestVitals`, `thresholds`.
 
 - [x] Vitals series
-  - Endpoint: `GET /api/v1/doctors/{doctorId}/dashboard/patients/{patientId}/vitals`
+  - Endpoint: `GET /doctors/{doctorId}/dashboard/patients/{patientId}/vitals`
   - Validasi: `series.timestamps`, seluruh seri metrik, `latestVitals`.
 
 - [x] Abnormal report
-  - Endpoint: `GET /api/v1/doctors/{doctorId}/dashboard/patients/{patientId}/abnormal-report`
+  - Endpoint: `GET /doctors/{doctorId}/dashboard/patients/{patientId}/abnormal-report`
   - Validasi: `stats`, `abnormalInstances`, `thresholds`.
 
 ## 4. Process-Level Parity (Wajib)
