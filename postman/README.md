@@ -226,6 +226,29 @@ Catatan:
 - Kalau masih ada request `unmatched` saat sync examples, biasanya itu karena nama request Postman tidak identik 1:1 dengan path OpenAPI atau ada endpoint smoke yang sengaja diringkas.
 - Untuk verifikasi live production, gunakan environment `postman/environments/PulseWise-Production.postman_environment.json`.
 
+## Publish ke Postman Workspace
+
+Kalau ingin mendorong collection/environment canonical repo ini ke Postman workspace via API:
+
+```bash
+set POSTMAN_WORKSPACE_ID=<workspace-id>
+set POSTMAN_API_KEY=<postman-api-key>
+npm run postman:publish:workspace
+```
+
+Script ini akan meng-upsert:
+
+- `PulseWise API (Canonical)`
+- `PulseWise Dashboard Smoke`
+- `PulseWise Local`
+- `PulseWise Production`
+
+Catatan:
+
+- Ini sinkronisasi ke Postman workspace, **bukan** auto-sync magic dari extension VS Code.
+- Extension Postman di VS Code tetap bisa membaca/import file JSON canonical dari repo ini.
+- Untuk auto-publish ke workspace, script ini adalah jalur yang paling konsisten dan bisa diulang.
+
 Catatan:
 
 - Script ini tidak perlu memanggil endpoint satu-satu.

@@ -26,6 +26,7 @@
     "seed:patient-care": "node scripts/seed/seed-patient-care.js",
     "postman:sync-examples": "node scripts/postman/sync-openapi-postman-examples.js",
     "postman:refresh": "node scripts/postman/refresh-postman-collections.js",
+    "postman:publish:workspace": "node scripts/postman/publish-postman-workspace.js",
     "postman:smoke:prod": "npx newman run postman/PulseWise-Dashboard-Smoke.postman_collection.json -e postman/environments/PulseWise-Production.postman_environment.json --folder \"Dashboard Smoke E2E\" --folder \"Dashboard ML Smoke\" --reporters cli",
     "postman:capture-live:prod": "node scripts/postman/capture-live-postman-examples.js --collection postman/PulseWise-Dashboard-Smoke.postman_collection.json --environment postman/environments/PulseWise-Production.postman_environment.json --folder \"Dashboard Smoke E2E\" --folder \"Dashboard ML Smoke\"",
     "smoke:hfms:e2e": "node scripts/smoke/smoke-hfms-e2e.js",

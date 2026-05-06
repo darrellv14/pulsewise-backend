@@ -151,7 +151,7 @@ Catatan:
   - [x] ML payload assembly service
   - [x] ML transport/client service
   - [x] ML prediction/recommendation orchestration service
-- [ ] Haluskan `src/services/care/doctorDashboardService.js`:
+- [x] Haluskan `src/services/care/doctorDashboardService.js`:
   - [x] split summary service
   - [x] split vitals series service
   - [x] split abnormal report service
