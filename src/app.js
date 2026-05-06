@@ -3,8 +3,6 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
-const swaggerUi = require('swagger-ui-express');
-const { loadOpenApiSpec } = require('./config/swagger');
 const { buildCorsOptions } = require('./config/cors');
 const { success } = require('./utils/response');
 const apiRoutes = require('./routes');
@@ -13,7 +11,6 @@ const errorHandler = require('./middlewares/errorHandler');
 
 const app = express();
 const isProduction = process.env.NODE_ENV === 'production';
-const openApiSpec = isProduction ? null : loadOpenApiSpec();
 
 app.use(helmet());
 app.use(cors(buildCorsOptions()));
@@ -30,6 +27,13 @@ app.get('/', (req, res) => {
 });
 
 if (!isProduction) {
+  // Load doc tooling only outside production so it does not enlarge the prod runtime surface.
+  // eslint-disable-next-line global-require
+  const swaggerUi = require('swagger-ui-express');
+  // eslint-disable-next-line global-require
+  const { loadOpenApiSpec } = require('./config/swagger');
+  const openApiSpec = loadOpenApiSpec();
+
   app.use('/docs', swaggerUi.serve, swaggerUi.setup(openApiSpec));
   app.get('/openapi.json', (req, res) => {
     res.json(openApiSpec);

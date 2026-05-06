@@ -3278,6 +3278,36 @@ paths:
                                           type: integer
                                         invalidationsPrefix:
                                           type: integer
+  /metrics:
+    get:
+      tags: [Health]
+      summary: Export metrics Prometheus text format
+      description: |
+        Endpoint ini ditujukan untuk observability/monitoring dan dikunci oleh token metrics.
+        Kirim `x-metrics-token` atau `Authorization: Bearer <token>` sesuai `METRICS_TOKEN`.
+      responses:
+        '200':
+          description: Metrics text payload
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: |
+                  # HELP pulsewise_cache_hits_total Total cache hits.
+                  # TYPE pulsewise_cache_hits_total counter
+                  pulsewise_cache_hits_total 42
+        '401':
+          description: Missing or invalid metrics token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Metrics endpoint disabled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
 
   /auth/register:
     post:

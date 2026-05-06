@@ -155,6 +155,10 @@ const env = {
     diaryByDateTtlSeconds: Number(process.env.CACHE_DIARY_BY_DATE_TTL_SECONDS || 30),
     sleepByDateTtlSeconds: Number(process.env.CACHE_SLEEP_BY_DATE_TTL_SECONDS || 30),
   },
+  metrics: {
+    enabled: process.env.METRICS_ENABLED === 'true',
+    token: process.env.METRICS_TOKEN || '',
+  },
   mlService: {
     baseUrl: process.env.ML_SERVICE_BASE_URL || 'http://localhost:8080',
     timeoutMs: Number(process.env.ML_SERVICE_TIMEOUT_MS || 20000),

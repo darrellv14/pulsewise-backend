@@ -1,34 +1,29 @@
-const { requestMlEndpoint } = require('./transportService');
-const { getStrictMlPayload, ensureMlReady, toReadiness } = require('./payloadService');
 const {
   INFERENCE_TYPES,
-  assertPatientRouteAccess,
-  assertDoctorDashboardRouteAccess,
-  resolveInferenceLabels,
 } = require('./shared');
 const {
-  saveInferenceResult,
+  toReadiness,
+  assertDoctorDashboardRouteAccess,
+  getPatientPayloadResult,
+  getDoctorPayloadResult,
+  getReadyPatientPayloadResult,
+  getReadyDoctorPayloadResult,
+  toPayloadResponse,
+} = require('./accessService');
+const { runInference } = require('./inferenceExecutionService');
+const {
   getLatestPatientInferenceResult,
   listPatientInferenceResults,
 } = require('./historyService');
 
 async function getPatientMlReadiness({ actor, userId, query = {} }) {
-  await assertPatientRouteAccess({ actor, userId });
-  const payloadResult = await getStrictMlPayload({ userId, endDate: query.date || null });
+  const payloadResult = await getPatientPayloadResult({ actor, userId, query });
   return toReadiness(payloadResult);
 }
 
 async function getPatientMlPayload({ actor, userId, query = {} }) {
-  await assertPatientRouteAccess({ actor, userId });
-  const payloadResult = await getStrictMlPayload({ userId, endDate: query.date || null });
-  ensureMlReady(payloadResult);
-
-  return {
-    mlVersion: payloadResult.mlVersion,
-    window: payloadResult.window,
-    payload: payloadResult.payload,
-    sourceSummary: payloadResult.sourceSummary,
-  };
+  const payloadResult = await getReadyPatientPayloadResult({ actor, userId, query });
+  return toPayloadResponse(payloadResult);
 }
 
 async function runPatientInference({
@@ -38,41 +33,15 @@ async function runPatientInference({
   inferenceType,
   requestContext = 'patient',
 }) {
-  await assertPatientRouteAccess({ actor, userId });
-  const payloadResult = await getStrictMlPayload({ userId, endDate: query.date || null });
-  ensureMlReady(payloadResult);
-
-  const labels = resolveInferenceLabels(inferenceType);
-  const upstream = await requestMlEndpoint({
-    endpointPath: labels.endpointPath,
-    payload: payloadResult.payload,
-  });
-
-  const saved = await saveInferenceResult({
+  const payloadResult = await getReadyPatientPayloadResult({ actor, userId, query });
+  return runInference({
     actor,
     patientId: userId,
     inferenceType,
     requestContext,
     payloadResult,
-    upstream,
-    includePayload: Boolean(query.includePayload),
+    query,
   });
-
-  const responseData = {
-    resultId: saved.resultId,
-    generatedAt: saved.generatedAt,
-    mlVersion: payloadResult.mlVersion,
-    window: payloadResult.window,
-    payloadHash: payloadResult.payloadHash,
-    sourceSummary: payloadResult.sourceSummary,
-    upstream,
-  };
-
-  if (query.includePayload) {
-    responseData.payload = payloadResult.payload;
-  }
-
-  return responseData;
 }
 
 async function runDoctorPatientInference({
@@ -83,60 +52,25 @@ async function runDoctorPatientInference({
   inferenceType,
   requestContext = 'doctor_dashboard',
 }) {
-  await assertDoctorDashboardRouteAccess({ actor, doctorId, patientId });
-  const payloadResult = await getStrictMlPayload({ userId: patientId, endDate: query.date || null });
-  ensureMlReady(payloadResult);
-
-  const labels = resolveInferenceLabels(inferenceType);
-  const upstream = await requestMlEndpoint({
-    endpointPath: labels.endpointPath,
-    payload: payloadResult.payload,
-  });
-
-  const saved = await saveInferenceResult({
+  const payloadResult = await getReadyDoctorPayloadResult({ actor, doctorId, patientId, query });
+  return runInference({
     actor,
     patientId,
     inferenceType,
     requestContext,
     payloadResult,
-    upstream,
-    includePayload: Boolean(query.includePayload),
+    query,
   });
-
-  const responseData = {
-    resultId: saved.resultId,
-    generatedAt: saved.generatedAt,
-    mlVersion: payloadResult.mlVersion,
-    window: payloadResult.window,
-    payloadHash: payloadResult.payloadHash,
-    sourceSummary: payloadResult.sourceSummary,
-    upstream,
-  };
-
-  if (query.includePayload) {
-    responseData.payload = payloadResult.payload;
-  }
-
-  return responseData;
 }
 
 async function getDoctorDashboardPatientMlReadiness({ actor, doctorId, patientId, query = {} }) {
-  await assertDoctorDashboardRouteAccess({ actor, doctorId, patientId });
-  const payloadResult = await getStrictMlPayload({ userId: patientId, endDate: query.date || null });
+  const payloadResult = await getDoctorPayloadResult({ actor, doctorId, patientId, query });
   return toReadiness(payloadResult);
 }
 
 async function getDoctorDashboardPatientMlPayload({ actor, doctorId, patientId, query = {} }) {
-  await assertDoctorDashboardRouteAccess({ actor, doctorId, patientId });
-  const payloadResult = await getStrictMlPayload({ userId: patientId, endDate: query.date || null });
-  ensureMlReady(payloadResult);
-
-  return {
-    mlVersion: payloadResult.mlVersion,
-    window: payloadResult.window,
-    payload: payloadResult.payload,
-    sourceSummary: payloadResult.sourceSummary,
-  };
+  const payloadResult = await getReadyDoctorPayloadResult({ actor, doctorId, patientId, query });
+  return toPayloadResponse(payloadResult);
 }
 
 async function getPatientMlPredictions(args) {

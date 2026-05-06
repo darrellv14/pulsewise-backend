@@ -1,6 +1,7 @@
 const { healthCheck } = require('../config/database');
 const { getRedisRuntimeStatus } = require('../config/redis');
 const { getCacheMetricsSnapshot } = require('../services/cache/cacheService');
+const { buildMetricsLines } = require('../services/cache/exporter');
 const { success } = require('../utils/response');
 
 async function health(req, res, next) {
@@ -18,6 +19,12 @@ async function health(req, res, next) {
   }
 }
 
+function metrics(req, res) {
+  res.setHeader('Content-Type', 'text/plain; version=0.0.4; charset=utf-8');
+  res.send(buildMetricsLines());
+}
+
 module.exports = {
   health,
+  metrics,
 };

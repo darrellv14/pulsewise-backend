@@ -36,6 +36,11 @@ Model ML hidup di repo terpisah [ml-cnn-backend](https://github.com/darrellv14/m
 
 Model ML hidup di repo terpisah [ml-cnn-backend](https://github.com/darrellv14/ml-cnn-backend). Frontend utama hidup di repo terpisah [PulseWise](https://github.com/fransnicklaus/PulseWise). Repo ini hanya menjadi application backend dan broker data ke service tersebut.
 
+## Docs Navigation
+
+Untuk dokumen yang masih canonical, mulai dari [docs/README.md](./docs/README.md).
+Folder `docs/archive/` disimpan sebagai konteks historis, bukan source of truth aktif.
+
 ## High-Level Architecture
 
 ```text

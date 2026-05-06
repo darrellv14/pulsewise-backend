@@ -1,37 +1,30 @@
-# PulseWise Docs Index
+# PulseWise Docs Map
 
-Dokumen aktif di repo ini dibagi per domain supaya tidak menumpuk di satu folder.
+Ini adalah peta dokumen canonical yang masih aktif dipakai tim.
 
-## API
+## Canonical Docs
 
-- [OpenAPI](api/openapi.yaml)
-- [API Style Guide](api/API_STYLE_GUIDE.md)
+- API contract:
+  - [OpenAPI spec](./api/openapi.yaml)
+  - [API style guide](./api/API_STYLE_GUIDE.md)
+- Frontend handoff:
+  - [Frontend integration guide](./frontend/FRONTEND_INTEGRATION_GUIDE.md)
+  - [Frontend live integration guide](./frontend/FRONTEND_LIVE_INTEGRATION_GUIDE.md)
+  - [Frontend production handoff](./frontend/FRONTEND_PRODUCTION_HANDOFF.md)
+- Operations:
+  - [Refactor implementation TODO](./operations/REFACTOR_IMPLEMENTATION_TODO.md)
+  - [API base-path migration note](./operations/API_BASE_PATH_MIGRATION_2026-05-06.md)
+  - [Dependency audit 2026-05-06](./operations/DEPENDENCY_AUDIT_2026-05-06.md)
+  - [API contract PR checklist](./operations/API_CONTRACT_PR_CHECKLIST.md)
+  - [VPS recovery checklist](./operations/VPS_RECOVERY_CHECKLIST.md)
+- Deploy:
+  - [DigitalOcean single droplet deployment](./deploy/DIGITALOCEAN_SINGLE_DROPLET_DEPLOYMENT.md)
+  - [Redis and CORS notes](./deploy/REDIS_AND_CORS_NOTES.md)
 
-## Frontend
+## Archive Policy
 
-- [Frontend Integration Guide](frontend/FRONTEND_INTEGRATION_GUIDE.md)
-- [Frontend Live Integration Guide](frontend/FRONTEND_LIVE_INTEGRATION_GUIDE.md)
-- [Frontend Production Handoff](frontend/FRONTEND_PRODUCTION_HANDOFF.md)
-- [Frontend Symptom Contract Sheet](frontend/FRONTEND_SYMPTOM_CONTRACT_SHEET.md)
-- [Frontend Activity Contract Sheet](frontend/FRONTEND_ACTIVITY_CONTRACT_SHEET.md)
+Folder [archive](./archive) berisi catatan historis, parity notes, dan handoff lama.
 
-## Deployment
-
-- [DigitalOcean Single Droplet Deployment](deploy/DIGITALOCEAN_SINGLE_DROPLET_DEPLOYMENT.md)
-
-## Architecture
-
-- [ML HFMS v3 Blueprint](architecture/ML_HFMS_V3_BLUEPRINT.md)
-- [ERD V1](architecture/ERD_V1.md)
-
-## Operations
-
-- [VPS Recovery Checklist](operations/VPS_RECOVERY_CHECKLIST.md)
-
-## Archive
-
-Dokumen historis, parity, tracker migrasi lama, dan notes lama disimpan di:
-
-- [docs/archive](archive/)
-
-Dokumen archive dipertahankan untuk referensi, tetapi **bukan source of truth aktif**.
+- Treat as reference only
+- Do not use as source of truth for current API contract
+- If a statement in `archive/` conflicts with docs canonical above, follow the canonical docs

@@ -166,3 +166,23 @@ Catatan:
   - [x] update OpenAPI + Postman + smoke tooling ke base path baru
   - [x] update FE/mobile/web base URL handoff docs
   - [x] dokumentasikan perubahan sebagai breaking API base-path change
+
+## Post-95 Hardening Pass
+
+- [x] Triase dependency vulnerability dengan `npm audit`
+  - [x] update dependency direct yang punya patch aman
+  - [x] hapus dependency tak terpakai (`firebase-admin`)
+  - [x] pindahkan tooling docs (`swagger-ui-express`, `yamljs`) ke `devDependencies`
+  - [x] catat sisa vulnerability yang masih blocked oleh upstream/no-fix
+- [x] Tambah observability endpoint yang lebih proper
+  - [x] endpoint `GET /metrics` berformat Prometheus text exposition
+  - [x] token gate untuk metrics (`METRICS_ENABLED`, `METRICS_TOKEN`)
+  - [x] ekspor hit/miss/set/invalidation/cache backend counters
+  - [x] ekspor status Redis enabled/available/backend
+- [x] Pruning docs lama yang redundant terhadap canonical docs map
+  - [x] tambah `docs/README.md` sebagai canonical entrypoint
+  - [x] tandai `docs/archive` sebagai historical reference
+- [x] Kecilkan lagi modul yang masih padat
+  - [x] ekstrak persistence/update plan dari `mutationService`
+  - [x] ekstrak access + inference execution dari `ml/orchestrationService`
+- [x] Sinkronkan Postman collections setelah perubahan docs/contract
