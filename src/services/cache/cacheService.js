@@ -126,8 +126,13 @@ async function invalidateByPrefixes(prefixes) {
         COUNT: 100,
       });
 
-      for await (const key of iterator) {
-        await client.del(key);
+      for await (const scannedKeys of iterator) {
+        const keys = (Array.isArray(scannedKeys) ? scannedKeys : [scannedKeys]).filter(Boolean);
+        if (!keys.length) {
+          continue;
+        }
+
+        await client.del(...keys);
       }
     }
     return;
