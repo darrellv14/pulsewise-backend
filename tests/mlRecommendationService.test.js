@@ -89,7 +89,7 @@ describe('mlRecommendationService', () => {
     });
   });
 
-  test('getPatientMlPayload rejects when the patient is not ML-ready', async () => {
+  test('getPatientMlPayload still returns payload and readiness details when the patient is not ML-ready', async () => {
     mlRecommendationRepository.getPatientMlSnapshot.mockResolvedValue({
       patientProfile: {
         dateOfBirth: '2000-04-10',
@@ -102,17 +102,19 @@ describe('mlRecommendationService', () => {
       },
     });
 
-    await expect(
-      getPatientMlPayload({
-        actor: { userId: 'user-1', role: 'patient' },
-        userId: 'user-1',
-        query: {},
-      })
-    ).rejects.toMatchObject({
-      statusCode: 409,
-      details: expect.objectContaining({
-        code: 'ML_NOT_READY',
-      }),
+    const result = await getPatientMlPayload({
+      actor: { userId: 'user-1', role: 'patient' },
+      userId: 'user-1',
+      query: {},
+    });
+
+    expect(result).toMatchObject({
+      ready: false,
+      missingFields: expect.any(Array),
+      resolvedFields: expect.any(Array),
+      mlVersion: 'hfms-v3',
+      payload: expect.any(Object),
+      sourceSummary: expect.any(Object),
     });
   });
 

@@ -100,6 +100,41 @@ describe('ML recommendation API contract', () => {
     ]);
   });
 
+  test('GET patient ml-payload returns payload even when readiness is false', async () => {
+    mlRecommendationService.getPatientMlPayload.mockResolvedValue({
+      ready: false,
+      missingFields: ['Quest21_SLD123'],
+      resolvedFields: ['Demog1_RIDAGEYR'],
+      mlVersion: 'hfms-v3',
+      window: {
+        startDate: '2026-04-29',
+        endDate: '2026-05-05',
+      },
+      payload: {
+        Demog1_RIDAGEYR: 31,
+      },
+      sourceSummary: {
+        diaryDays: 1,
+      },
+    });
+
+    const response = await request(app)
+      .get(`/users/${patientId}/ml-payload`)
+      .set('Authorization', `Bearer ${patientToken}`);
+
+    expect(response.status).toBe(200);
+    expectSuccessEnvelope(response, 'Payload ML pasien berhasil dibentuk');
+    expectObjectKeys(response.body.data, [
+      'ready',
+      'missingFields',
+      'resolvedFields',
+      'mlVersion',
+      'window',
+      'payload',
+      'sourceSummary',
+    ]);
+  });
+
   test('GET patient latest ml-prediction returns stable shape', async () => {
     mlRecommendationService.getPatientLatestMlPrediction.mockResolvedValue({
       resultId: 'c7aafc39-0692-4c1f-b991-5881ac7f6c31',

@@ -25,6 +25,9 @@ async function getReadyDoctorPayloadResult(args) {
 
 function toPayloadResponse(payloadResult) {
   return {
+    ready: payloadResult.missingFields.length === 0,
+    missingFields: payloadResult.missingFields,
+    resolvedFields: payloadResult.resolvedFields,
     mlVersion: payloadResult.mlVersion,
     window: payloadResult.window,
     payload: payloadResult.payload,

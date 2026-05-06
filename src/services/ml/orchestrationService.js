@@ -22,7 +22,7 @@ async function getPatientMlReadiness({ actor, userId, query = {} }) {
 }
 
 async function getPatientMlPayload({ actor, userId, query = {} }) {
-  const payloadResult = await getReadyPatientPayloadResult({ actor, userId, query });
+  const payloadResult = await getPatientPayloadResult({ actor, userId, query });
   return toPayloadResponse(payloadResult);
 }
 
@@ -69,7 +69,7 @@ async function getDoctorDashboardPatientMlReadiness({ actor, doctorId, patientId
 }
 
 async function getDoctorDashboardPatientMlPayload({ actor, doctorId, patientId, query = {} }) {
-  const payloadResult = await getReadyDoctorPayloadResult({ actor, doctorId, patientId, query });
+  const payloadResult = await getDoctorPayloadResult({ actor, doctorId, patientId, query });
   return toPayloadResponse(payloadResult);
 }
 

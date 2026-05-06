@@ -132,7 +132,7 @@ async function invalidateByPrefixes(prefixes) {
           continue;
         }
 
-        await client.del(keys);
+        await client.del(...keys);
       }
     }
     return;
