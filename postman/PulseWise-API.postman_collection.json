@@ -885,7 +885,7 @@
           },
           "response": [
             {
-              "name": "500 Live Capture",
+              "name": "200 Live Capture",
               "originalRequest": {
                 "method": "PUT",
                 "header": [
@@ -904,8 +904,8 @@
                 },
                 "url": "{{baseUrl}}/patients/{{patientId}}/profile"
               },
-              "status": "Internal Server Error",
-              "code": 500,
+              "status": "OK",
+              "code": 200,
               "_postman_previewlanguage": "json",
               "header": [
                 {
@@ -1705,7 +1705,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": false,\n  \"message\": \"ERR wrong number of arguments for 'del' command\",\n  \"details\": null\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Sleep diary berdasarkan tanggal berhasil disimpan\",\n  \"data\": {\n    \"sleepRecordId\": \"17316ab3-924b-40d4-b498-27d5ac7cf938\",\n    \"diaryId\": \"7a211867-f3f1-44af-822b-e531d9bec9da\",\n    \"sleepTime\": \"22:30\",\n    \"wakeTime\": \"06:30\",\n    \"sleepDurationHours\": 8,\n    \"source\": \"postman_manual\",\n    \"createdAt\": \"2026-05-06T16:54:12.465Z\",\n    \"updatedAt\": \"2026-05-06T16:54:12.465Z\"\n  }\n}\n"
             }
           ]
         },
@@ -3796,7 +3796,7 @@
           },
           "response": [
             {
-              "name": "409 Live Capture",
+              "name": "200 Live Capture",
               "originalRequest": {
                 "method": "GET",
                 "header": [
@@ -3811,8 +3811,8 @@
                 ],
                 "url": "{{baseUrl}}/users/{{patientId}}/ml-payload?date={{mlDate}}"
               },
-              "status": "Conflict",
-              "code": 409,
+              "status": "OK",
+              "code": 200,
               "_postman_previewlanguage": "json",
               "header": [
                 {
@@ -3821,7 +3821,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": false,\n  \"message\": \"Data pasien belum siap untuk inference ML\",\n  \"details\": null\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Payload ML pasien berhasil dibentuk\",\n  \"data\": {\n    \"ready\": false,\n    \"missingFields\": [\n      \"Demog1_DMDEDUC\",\n      \"Demog1_DMDFMSIZ\",\n      \"Demog1_DMDHHSIZ\",\n      \"Demog1_DMDHHSZA\",\n      \"Demog1_DMDHHSZB\",\n      \"Demog1_DMDHHSZE\",\n      \"Demog1_DMDMARTL\",\n      \"Demog1_RIAGENDR\",\n      \"Demog1_RIDAGEYR\",\n      \"Demog1_RIDRETH3\",\n      \"Dieta1_DR1TCALC\",\n      \"Dieta1_DR1TCARB\",\n      \"Dieta1_DR1TCHOL\",\n      \"Dieta1_DR1TFIBE\",\n      \"Dieta1_DR1TKCAL\",\n      \"Dieta1_DR1TMFAT\",\n      \"Dieta1_DR1TPFAT\",\n      \"Dieta1_DR1TPROT\",\n      \"Dieta1_DR1TSFAT\",\n      \"Dieta1_DR1TSUGR\",\n      \"Dieta1_DR1TTFAT\",\n      \"Exami1_BPXPLS\",\n      \"Labor1_LBDTCSI\",\n      \"Labor2_URDFLOW1\",\n      \"Labor2_URDTIME1\",\n      \"Labor2_URXVOL1\",\n      \"Quest11_HIQ011\",\n      \"Quest12_HEQ010\",\n      \"Quest12_HEQ030\",\n      \"Quest15_KIQ022\",\n      \"Quest15_KIQ026\",\n      \"Quest16_MCQ010\",\n      \"Quest16_MCQ160B\",\n      \"Quest16_MCQ220\",\n      \"Quest16_MCQ300A\",\n      \"Quest16_MCQ300C\",\n      \"Quest17_DPQ020\",\n      \"Quest17_DPQ030\",\n      \"Quest17_DPQ040\",\n      \"Quest1_ALQ111\",\n      \"Quest20_PFQ061B\",\n      \"Quest20_PFQ061C\",\n      \"Quest20_PFQ061H\",\n      \"Quest21_SLD123\",\n      \"Quest21_SLQ3032\",\n      \"Quest22_SMQ020\",\n      \"Quest22_SMQ890\",\n      \"Quest22_SMQ900\",\n      \"Quest23_SMD470\",\n      \"Quest3_CDQ009\",\n      \"Quest3_CDQ010\",\n      \"Quest6_DED1225\",\n      \"Quest7_DIQ010\",\n      \"Quest9_DLQ050\"\n    ],\n    \"resolvedFields\": [\n      \"Exami1_DiaPulse\",\n      \"Exami1_SysPulse\",\n      \"Exami2_BMXBMI\",\n      \"Exami2_BMXHT\",\n      \"Exami2_BMXWT\",\n      \"Quest19_PAD615\",\n      \"Quest19_PAD645\",\n      \"Quest19_PAD660\",\n      \"Quest19_PAQ610\",\n      \"Quest19_PAQ635\",\n      \"Quest19_PAQ640\",\n      \"Quest19_PAQ655\",\n      \"Quest3_CDQ008\"\n    ],\n    \"mlVersion\": \"hfms-v3\",\n    \"window\": {\n      \"startDate\": \"2026-04-18\",\n      \"endDate\": \"2026-04-24\"\n    },\n    \"payload\": {\n      \"Exami2_BMXHT\": 172,\n      \"Exami2_BMXWT\": 69.5,\n      \"Exami2_BMXBMI\": 23.5,\n      \"Exami1_SysPulse\": 122,\n      \"Exami1_DiaPulse\": 80,\n      \"Quest19_PAD615\": 0,\n      \"Quest19_PAQ610\": 0,\n      \"Quest19_PAD645\": 0,\n      \"Quest19_PAQ635\": 0,\n      \"Quest19_PAQ640\": 0,\n      \"Quest19_PAD660\": 0,\n      \"Quest19_PAQ655\": 0,\n      \"Quest3_CDQ008\": 0\n    },\n    \"sourceSummary\": {\n      \"window\": {\n        \"startDate\": \"2026-04-18\",\n        \"endDate\": \"2026-04-24\"\n      },\n      \"diaryDays\": 3,\n      \"dietDaysWithSnapshot\": 0,\n      \"latestAssessmentDate\": null,\n      \"latestSleepDiaryDate\": null,\n      \"latestBodyMetricDate\": \"2026-04-24\",\n      \"biometricFallbackFields\": []\n    }\n  }\n}\n"
             }
           ]
         },
