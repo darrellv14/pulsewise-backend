@@ -138,7 +138,10 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "const firstPatientId = json?.data?.items?.[0]?.patientId;",
+                  "if (firstPatientId) { pm.environment.set('dashboardPatientId', firstPatientId); }"
                 ]
               }
             }
@@ -176,7 +179,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Daftar pasien dashboard dokter berhasil diambil\",\n  \"data\": {\n    \"items\": [\n      {\n        \"patientId\": \"29a8cae4-ba34-4418-baf0-0ba776fbec6b\",\n        \"firstName\": \"Nadia\",\n        \"lastName\": \"Saraswati\",\n        \"email\": \"seed.patient2@pulsewise.local\",\n        \"dateOfBirth\": \"1994-09-03\",\n        \"age\": 31,\n        \"sex\": \"female\",\n        \"latestVitals\": {\n          \"measuredAt\": \"2026-05-04T10:12:30.024Z\",\n          \"systolicBp\": null,\n          \"diastolicBp\": null,\n          \"heartRate\": 78,\n          \"oxygenSaturation\": 98,\n          \"weight\": null,\n          \"height\": null,\n          \"bmi\": null\n        }\n      },\n      {\n        \"patientId\": \"997b7e51-d5c3-4cde-b676-efbcc37384e9\",\n        \"firstName\": \"Ari\",\n        \"lastName\": \"Pratama\",\n        \"email\": \"seed.patient1@pulsewise.local\",\n        \"dateOfBirth\": \"1990-05-12\",\n        \"age\": 35,\n        \"sex\": \"male\",\n        \"latestVitals\": {\n          \"measuredAt\": \"2026-04-24T09:15:00.000Z\",\n          \"systolicBp\": 116,\n          \"diastolicBp\": 70,\n          \"heartRate\": 78,\n          \"oxygenSaturation\": 98,\n          \"weight\": 74.11,\n          \"height\": 170,\n          \"bmi\": 25.64\n        }\n      }\n    ],\n    \"pagination\": {\n      \"page\": 1,\n      \"limit\": 20,\n      \"totalItems\": 2,\n      \"totalPages\": 1\n    }\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Daftar pasien dashboard dokter berhasil diambil\",\n  \"data\": {\n    \"items\": [\n      {\n        \"patientId\": \"29a8cae4-ba34-4418-baf0-0ba776fbec6b\",\n        \"firstName\": \"Nadia\",\n        \"lastName\": \"Saraswati\",\n        \"email\": \"seed.patient2@pulsewise.local\",\n        \"dateOfBirth\": \"1994-09-03\",\n        \"age\": 31,\n        \"sex\": \"female\",\n        \"latestVitals\": {\n          \"measuredAt\": \"2026-05-04T10:12:30.024Z\",\n          \"systolicBp\": null,\n          \"diastolicBp\": null,\n          \"heartRate\": 78,\n          \"oxygenSaturation\": 98,\n          \"weight\": null,\n          \"height\": null,\n          \"bmi\": null\n        }\n      },\n      {\n        \"patientId\": \"228d9c78-e308-4a45-8988-04dfa1ac0b97\",\n        \"firstName\": \"Meja\",\n        \"lastName\": \"Patient\",\n        \"email\": \"mejapa7070@justnapa.com\",\n        \"dateOfBirth\": \"2001-09-11\",\n        \"age\": 24,\n        \"sex\": \"male\",\n        \"latestVitals\": {\n          \"measuredAt\": \"2026-05-04T08:00:00.000Z\",\n          \"systolicBp\": null,\n          \"diastolicBp\": null,\n          \"heartRate\": 78,\n          \"oxygenSaturation\": 97,\n          \"weight\": null,\n          \"height\": null,\n          \"bmi\": null\n        }\n      },\n      {\n        \"patientId\": \"997b7e51-d5c3-4cde-b676-efbcc37384e9\",\n        \"firstName\": \"Ari\",\n        \"lastName\": \"Pratama\",\n        \"email\": \"seed.patient1@pulsewise.local\",\n        \"dateOfBirth\": \"1990-05-12\",\n        \"age\": 35,\n        \"sex\": \"male\",\n        \"latestVitals\": {\n          \"measuredAt\": \"2026-04-24T09:15:00.000Z\",\n          \"systolicBp\": 116,\n          \"diastolicBp\": 70,\n          \"heartRate\": 78,\n          \"oxygenSaturation\": 98,\n          \"weight\": 74.11,\n          \"height\": 170,\n          \"bmi\": 25.64\n        }\n      }\n    ],\n    \"pagination\": {\n      \"page\": 1,\n      \"limit\": 20,\n      \"totalItems\": 3,\n      \"totalPages\": 1\n    }\n  }\n}\n"
             }
           ]
         },
@@ -190,11 +193,11 @@
                 "value": "Bearer {{doctorToken}}"
               }
             ],
-            "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}"
+            "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{dashboardPatientId}}"
           },
           "response": [
             {
-              "name": "404 Live Capture",
+              "name": "200 Live Capture",
               "originalRequest": {
                 "method": "GET",
                 "header": [
@@ -203,10 +206,10 @@
                     "value": "Bearer {{doctorToken}}"
                   }
                 ],
-                "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}"
+                "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{dashboardPatientId}}"
               },
-              "status": "Not Found",
-              "code": 404,
+              "status": "OK",
+              "code": 200,
               "_postman_previewlanguage": "json",
               "header": [
                 {
@@ -215,7 +218,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": false,\n  \"message\": \"Data pasien dokter tidak ditemukan\",\n  \"details\": null\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Ringkasan pasien dashboard dokter berhasil diambil\",\n  \"data\": {\n    \"patient\": {\n      \"patientId\": \"29a8cae4-ba34-4418-baf0-0ba776fbec6b\",\n      \"firstName\": \"Nadia\",\n      \"lastName\": \"Saraswati\",\n      \"email\": \"seed.patient2@pulsewise.local\",\n      \"phone\": \"081200000102\",\n      \"dateOfBirth\": \"1994-09-03\",\n      \"age\": 31,\n      \"sex\": \"female\"\n    },\n    \"latestVitals\": {\n      \"measuredAt\": \"2026-05-04T10:12:30.024Z\",\n      \"systolicBp\": null,\n      \"diastolicBp\": null,\n      \"heartRate\": 78,\n      \"oxygenSaturation\": 98,\n      \"weight\": null,\n      \"height\": null,\n      \"bmi\": null\n    },\n    \"thresholds\": {\n      \"SPO2_CRITICAL_THRESHOLD\": 90,\n      \"SPO2_CAUTION_THRESHOLD\": 95,\n      \"WEIGHT_DAILY_INCREASE_CRITICAL_KG\": 3,\n      \"HR_NORMAL_MIN\": 60,\n      \"HR_NORMAL_MAX\": 100,\n      \"BP_NORMAL_SYSTOLIC_MAX\": 119,\n      \"BP_NORMAL_DIASTOLIC_MAX\": 79,\n      \"BP_ELEVATED_SYSTOLIC_MIN\": 120,\n      \"BP_ELEVATED_SYSTOLIC_MAX\": 129,\n      \"BP_ELEVATED_DIASTOLIC_MAX\": 79,\n      \"BP_STAGE1_SYSTOLIC_MIN\": 130,\n      \"BP_STAGE1_SYSTOLIC_MAX\": 139,\n      \"BP_STAGE1_DIASTOLIC_MIN\": 80,\n      \"BP_STAGE1_DIASTOLIC_MAX\": 89,\n      \"BP_STAGE2_SYSTOLIC_MIN\": 140,\n      \"BP_STAGE2_DIASTOLIC_MIN\": 90\n    }\n  }\n}\n"
             }
           ]
         },
@@ -229,11 +232,11 @@
                 "value": "Bearer {{doctorToken}}"
               }
             ],
-            "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/vitals?timePeriod=last_30_days"
+            "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{dashboardPatientId}}/vitals?timePeriod=last_30_days"
           },
           "response": [
             {
-              "name": "404 Live Capture",
+              "name": "200 Live Capture",
               "originalRequest": {
                 "method": "GET",
                 "header": [
@@ -242,10 +245,10 @@
                     "value": "Bearer {{doctorToken}}"
                   }
                 ],
-                "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/vitals?timePeriod=last_30_days"
+                "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{dashboardPatientId}}/vitals?timePeriod=last_30_days"
               },
-              "status": "Not Found",
-              "code": 404,
+              "status": "OK",
+              "code": 200,
               "_postman_previewlanguage": "json",
               "header": [
                 {
@@ -254,7 +257,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": false,\n  \"message\": \"Data pasien dokter tidak ditemukan\",\n  \"details\": null\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Time-series vital pasien dashboard dokter berhasil diambil\",\n  \"data\": {\n    \"patient\": {\n      \"patientId\": \"29a8cae4-ba34-4418-baf0-0ba776fbec6b\",\n      \"firstName\": \"Nadia\",\n      \"lastName\": \"Saraswati\",\n      \"email\": \"seed.patient2@pulsewise.local\",\n      \"phone\": \"081200000102\",\n      \"dateOfBirth\": \"1994-09-03\",\n      \"age\": 31,\n      \"sex\": \"female\"\n    },\n    \"period\": {\n      \"startAt\": \"2026-04-07T00:00:00.000Z\",\n      \"endAt\": \"2026-05-06T09:08:44.982Z\",\n      \"timePeriod\": \"last_30_days\"\n    },\n    \"series\": {\n      \"timestamps\": [\n        \"2026-04-07T07:15:00.000Z\",\n        \"2026-04-08T08:15:00.000Z\",\n        \"2026-04-09T09:15:00.000Z\",\n        \"2026-04-10T07:15:00.000Z\",\n        \"2026-04-11T08:15:00.000Z\",\n        \"2026-04-12T09:15:00.000Z\",\n        \"2026-04-13T07:15:00.000Z\",\n        \"2026-04-14T08:15:00.000Z\",\n        \"2026-04-15T09:15:00.000Z\",\n        \"2026-04-16T07:15:00.000Z\",\n        \"2026-04-17T08:15:00.000Z\",\n        \"2026-04-18T09:15:00.000Z\",\n        \"2026-04-19T07:15:00.000Z\",\n        \"2026-04-20T08:15:00.000Z\",\n        \"2026-04-21T09:15:00.000Z\",\n        \"2026-04-22T07:15:00.000Z\",\n        \"2026-04-23T08:15:00.000Z\",\n        \"2026-04-24T09:15:00.000Z\",\n        \"2026-05-04T10:12:30.024Z\"\n      ],\n      \"systolicBp\": [\n        112,\n        111,\n        110,\n        110,\n        111,\n        113,\n        116,\n        118,\n        121,\n        123,\n        143,\n        126,\n        126,\n        125,\n        124,\n        121,\n        119,\n        122,\n        null\n      ],\n      \"diastolicBp\": [\n        72,\n        74,\n        76,\n        78,\n        79,\n        81,\n        82,\n        82,\n        82,\n        81,\n        89,\n        77,\n        75,\n        73,\n        72,\n        71,\n        70,\n        82,\n        null\n      ],\n      \"heartRate\": [\n        70,\n        73,\n        76,\n        78,\n        78,\n        77,\n        88,\n        72,\n        69,\n        67,\n        66,\n        67,\n        69,\n        72,\n        75,\n        91,\n        78,\n        78,\n        null\n      ],\n      \"oxygenSaturation\": [\n        96,\n        90,\n        96,\n        96,\n        96,\n        96,\n        96,\n        96,\n        96,\n        96,\n        97,\n        97,\n        97,\n        97,\n        92,\n        98,\n        98,\n        98,\n        null\n      ],\n      \"weight\": [\n        60.71,\n        60.56,\n        60.42,\n        60.29,\n        60.19,\n        60.13,\n        60.12,\n        60.15,\n        60.23,\n        60.36,\n        60.54,\n        60.74,\n        60.98,\n        61.22,\n        61.47,\n        61.71,\n        61.93,\n        72,\n        null\n      ],\n      \"height\": [\n        160,\n        160,\n        160,\n        160,\n        160,\n        160,\n        160,\n        160,\n        160,\n        160,\n        160,\n        160,\n        160,\n        160,\n        160,\n        160,\n        160,\n        168,\n        null\n      ],\n      \"bmi\": [\n        23.71,\n        23.66,\n        23.6,\n        23.55,\n        23.51,\n        23.49,\n        23.48,\n        23.5,\n        23.53,\n        23.58,\n        23.65,\n        23.73,\n        23.82,\n        23.91,\n        24.01,\n        24.11,\n        24.19,\n        25.5,\n        null\n      ]\n    },\n    \"latestVitals\": {\n      \"measuredAt\": \"2026-05-04T10:12:30.024Z\",\n      \"systolicBp\": 122,\n      \"diastolicBp\": 82,\n      \"heartRate\": 78,\n      \"oxygenSaturation\": 98,\n      \"weight\": 72,\n      \"height\": 168,\n      \"bmi\": 25.5\n    },\n    \"thresholds\": {\n      \"SPO2_CRITICAL_THRESHOLD\": 90,\n      \"SPO2_CAUTION_THRESHOLD\": 95,\n      \"WEIGHT_DAILY_INCREASE_CRITICAL_KG\": 3,\n      \"HR_NORMAL_MIN\": 60,\n      \"HR_NORMAL_MAX\": 100,\n      \"BP_NORMAL_SYSTOLIC_MAX\": 119,\n      \"BP_NORMAL_DIASTOLIC_MAX\": 79,\n      \"BP_ELEVATED_SYSTOLIC_MIN\": 120,\n      \"BP_ELEVATED_SYSTOLIC_MAX\": 129,\n      \"BP_ELEVATED_DIASTOLIC_MAX\": 79,\n      \"BP_STAGE1_SYSTOLIC_MIN\": 130,\n      \"BP_STAGE1_SYSTOLIC_MAX\": 139,\n      \"BP_STAGE1_DIASTOLIC_MIN\": 80,\n      \"BP_STAGE1_DIASTOLIC_MAX\": 89,\n      \"BP_STAGE2_SYSTOLIC_MIN\": 140,\n      \"BP_STAGE2_DIASTOLIC_MIN\": 90\n    }\n  }\n}\n"
             }
           ]
         },
@@ -268,11 +271,11 @@
                 "value": "Bearer {{doctorToken}}"
               }
             ],
-            "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/abnormal-report?timePeriod=last_30_days"
+            "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{dashboardPatientId}}/abnormal-report?timePeriod=last_30_days"
           },
           "response": [
             {
-              "name": "404 Live Capture",
+              "name": "200 Live Capture",
               "originalRequest": {
                 "method": "GET",
                 "header": [
@@ -281,10 +284,10 @@
                     "value": "Bearer {{doctorToken}}"
                   }
                 ],
-                "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/abnormal-report?timePeriod=last_30_days"
+                "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{dashboardPatientId}}/abnormal-report?timePeriod=last_30_days"
               },
-              "status": "Not Found",
-              "code": 404,
+              "status": "OK",
+              "code": 200,
               "_postman_previewlanguage": "json",
               "header": [
                 {
@@ -293,7 +296,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": false,\n  \"message\": \"Data pasien dokter tidak ditemukan\",\n  \"details\": null\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Abnormal report pasien dashboard dokter berhasil diambil\",\n  \"data\": {\n    \"patient\": {\n      \"patientId\": \"29a8cae4-ba34-4418-baf0-0ba776fbec6b\",\n      \"firstName\": \"Nadia\",\n      \"lastName\": \"Saraswati\",\n      \"email\": \"seed.patient2@pulsewise.local\",\n      \"phone\": \"081200000102\",\n      \"dateOfBirth\": \"1994-09-03\",\n      \"age\": 31,\n      \"sex\": \"female\"\n    },\n    \"period\": {\n      \"startAt\": \"2026-04-07T00:00:00.000Z\",\n      \"endAt\": \"2026-05-06T09:08:45.152Z\",\n      \"timePeriod\": \"last_30_days\"\n    },\n    \"stats\": {\n      \"systolicBp\": {\n        \"avg\": 119.5,\n        \"min\": 110,\n        \"max\": 143\n      },\n      \"diastolicBp\": {\n        \"avg\": 77.6,\n        \"min\": 70,\n        \"max\": 89\n      },\n      \"heartRate\": {\n        \"avg\": 74.7,\n        \"min\": 66,\n        \"max\": 91\n      },\n      \"oxygenSaturation\": {\n        \"avg\": 96,\n        \"min\": 90,\n        \"max\": 98\n      },\n      \"weight\": {\n        \"avg\": 61.3,\n        \"min\": 60.12,\n        \"max\": 72\n      },\n      \"bmi\": {\n        \"avg\": 23.8,\n        \"min\": 23.48,\n        \"max\": 25.5\n      }\n    },\n    \"abnormalInstances\": [\n      {\n        \"timestamp\": \"2026-04-08T08:15:00.000Z\",\n        \"details\": {\n          \"oxygenSaturation\": \"90% (Caution)\"\n        }\n      },\n      {\n        \"timestamp\": \"2026-04-12T09:15:00.000Z\",\n        \"details\": {\n          \"bloodPressure\": \"113/81 mmHg (Stage 1 Hypertension)\"\n        }\n      },\n      {\n        \"timestamp\": \"2026-04-13T07:15:00.000Z\",\n        \"details\": {\n          \"bloodPressure\": \"116/82 mmHg (Stage 1 Hypertension)\"\n        }\n      },\n      {\n        \"timestamp\": \"2026-04-14T08:15:00.000Z\",\n        \"details\": {\n          \"bloodPressure\": \"118/82 mmHg (Stage 1 Hypertension)\"\n        }\n      },\n      {\n        \"timestamp\": \"2026-04-15T09:15:00.000Z\",\n        \"details\": {\n          \"bloodPressure\": \"121/82 mmHg (Stage 1 Hypertension)\"\n        }\n      },\n      {\n        \"timestamp\": \"2026-04-16T07:15:00.000Z\",\n        \"details\": {\n          \"bloodPressure\": \"123/81 mmHg (Stage 1 Hypertension)\"\n        }\n      },\n      {\n        \"timestamp\": \"2026-04-17T08:15:00.000Z\",\n        \"details\": {\n          \"bloodPressure\": \"143/89 mmHg (Stage 2 Hypertension)\"\n        }\n      },\n      {\n        \"timestamp\": \"2026-04-18T09:15:00.000Z\",\n        \"details\": {\n          \"bloodPressure\": \"126/77 mmHg (Elevated)\"\n        }\n      },\n      {\n        \"timestamp\": \"2026-04-19T07:15:00.000Z\",\n        \"details\": {\n          \"bloodPressure\": \"126/75 mmHg (Elevated)\"\n        }\n      },\n      {\n        \"timestamp\": \"2026-04-20T08:15:00.000Z\",\n        \"details\": {\n          \"bloodPressure\": \"125/73 mmHg (Elevated)\"\n        }\n      },\n      {\n        \"timestamp\": \"2026-04-21T09:15:00.000Z\",\n        \"details\": {\n          \"bloodPressure\": \"124/72 mmHg (Elevated)\",\n          \"oxygenSaturation\": \"92% (Caution)\"\n        }\n      },\n      {\n        \"timestamp\": \"2026-04-22T07:15:00.000Z\",\n        \"details\": {\n          \"bloodPressure\": \"121/71 mmHg (Elevated)\"\n        }\n      },\n      {\n        \"timestamp\": \"2026-04-24T09:15:00.000Z\",\n        \"details\": {\n          \"bloodPressure\": \"122/82 mmHg (Stage 1 Hypertension)\",\n          \"weightChange\": \"+10.07 kg from previous reading (Significant Change)\"\n        }\n      }\n    ],\n    \"thresholds\": {\n      \"SPO2_CRITICAL_THRESHOLD\": 90,\n      \"SPO2_CAUTION_THRESHOLD\": 95,\n      \"WEIGHT_DAILY_INCREASE_CRITICAL_KG\": 3,\n      \"HR_NORMAL_MIN\": 60,\n      \"HR_NORMAL_MAX\": 100,\n      \"BP_NORMAL_SYSTOLIC_MAX\": 119,\n      \"BP_NORMAL_DIASTOLIC_MAX\": 79,\n      \"BP_ELEVATED_SYSTOLIC_MIN\": 120,\n      \"BP_ELEVATED_SYSTOLIC_MAX\": 129,\n      \"BP_ELEVATED_DIASTOLIC_MAX\": 79,\n      \"BP_STAGE1_SYSTOLIC_MIN\": 130,\n      \"BP_STAGE1_SYSTOLIC_MAX\": 139,\n      \"BP_STAGE1_DIASTOLIC_MIN\": 80,\n      \"BP_STAGE1_DIASTOLIC_MAX\": 89,\n      \"BP_STAGE2_SYSTOLIC_MIN\": 140,\n      \"BP_STAGE2_DIASTOLIC_MIN\": 90\n    }\n  }\n}\n"
             }
           ]
         },
@@ -359,7 +362,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Relasi dokter-pasien berhasil dibuat dari scan patient ID\",\n  \"data\": {\n    \"doctor_id\": \"1a9bb74d-d921-4da4-9d82-ffca8956b793\",\n    \"patient_id\": \"228d9c78-e308-4a45-8988-04dfa1ac0b97\",\n    \"source\": \"qr_patient_id\",\n    \"linked_at\": \"2026-05-06T08:57:41.727Z\",\n    \"is_active\": true,\n    \"first_name\": null,\n    \"last_name\": null,\n    \"email\": null\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Relasi dokter-pasien berhasil dibuat dari scan patient ID\",\n  \"data\": {\n    \"doctor_id\": \"1a9bb74d-d921-4da4-9d82-ffca8956b793\",\n    \"patient_id\": \"228d9c78-e308-4a45-8988-04dfa1ac0b97\",\n    \"source\": \"qr_patient_id\",\n    \"linked_at\": \"2026-05-06T09:08:45.595Z\",\n    \"is_active\": true,\n    \"first_name\": null,\n    \"last_name\": null,\n    \"email\": null\n  }\n}\n"
             }
           ]
         }
@@ -484,7 +487,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/ml-readiness?date={{mlDate}}"
+            "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{dashboardPatientId}}/ml-readiness?date={{mlDate}}"
           },
           "response": [
             {
@@ -501,7 +504,7 @@
                     "value": "application/json"
                   }
                 ],
-                "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/ml-readiness?date={{mlDate}}"
+                "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{dashboardPatientId}}/ml-readiness?date={{mlDate}}"
               },
               "status": "OK",
               "code": 200,
@@ -513,7 +516,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Status readiness ML pasien dashboard berhasil diambil\",\n  \"data\": {\n    \"ready\": false,\n    \"missingFields\": [\n      \"Demog1_DMDEDUC\",\n      \"Demog1_DMDFMSIZ\",\n      \"Demog1_DMDHHSIZ\",\n      \"Demog1_DMDHHSZA\",\n      \"Demog1_DMDHHSZB\",\n      \"Demog1_DMDHHSZE\",\n      \"Demog1_DMDMARTL\",\n      \"Demog1_RIAGENDR\",\n      \"Demog1_RIDRETH3\",\n      \"Dieta1_DR1TCALC\",\n      \"Dieta1_DR1TCARB\",\n      \"Dieta1_DR1TCHOL\",\n      \"Dieta1_DR1TFIBE\",\n      \"Dieta1_DR1TKCAL\",\n      \"Dieta1_DR1TMFAT\",\n      \"Dieta1_DR1TPFAT\",\n      \"Dieta1_DR1TPROT\",\n      \"Dieta1_DR1TSFAT\",\n      \"Dieta1_DR1TSUGR\",\n      \"Dieta1_DR1TTFAT\",\n      \"Exami1_BPXPLS\",\n      \"Exami1_DiaPulse\",\n      \"Exami1_SysPulse\",\n      \"Exami2_BMXBMI\",\n      \"Exami2_BMXHT\",\n      \"Exami2_BMXWT\",\n      \"Labor1_LBDTCSI\",\n      \"Labor2_URDFLOW1\",\n      \"Labor2_URDTIME1\",\n      \"Labor2_URXVOL1\",\n      \"Quest11_HIQ011\",\n      \"Quest12_HEQ010\",\n      \"Quest12_HEQ030\",\n      \"Quest15_KIQ022\",\n      \"Quest15_KIQ026\",\n      \"Quest16_MCQ010\",\n      \"Quest16_MCQ160B\",\n      \"Quest16_MCQ220\",\n      \"Quest16_MCQ300A\",\n      \"Quest16_MCQ300C\",\n      \"Quest17_DPQ020\",\n      \"Quest17_DPQ030\",\n      \"Quest17_DPQ040\",\n      \"Quest19_PAD615\",\n      \"Quest19_PAD645\",\n      \"Quest19_PAD660\",\n      \"Quest19_PAQ610\",\n      \"Quest19_PAQ635\",\n      \"Quest19_PAQ640\",\n      \"Quest19_PAQ655\",\n      \"Quest1_ALQ111\",\n      \"Quest20_PFQ061B\",\n      \"Quest20_PFQ061C\",\n      \"Quest20_PFQ061H\",\n      \"Quest21_SLD123\",\n      \"Quest21_SLQ3032\",\n      \"Quest22_SMQ020\",\n      \"Quest22_SMQ890\",\n      \"Quest22_SMQ900\",\n      \"Quest23_SMD470\",\n      \"Quest3_CDQ008\",\n      \"Quest3_CDQ009\",\n      \"Quest3_CDQ010\",\n      \"Quest6_DED1225\",\n      \"Quest7_DIQ010\",\n      \"Quest9_DLQ050\"\n    ],\n    \"resolvedFields\": [\n      \"Demog1_RIDAGEYR\"\n    ],\n    \"window\": {\n      \"startDate\": \"2026-04-18\",\n      \"endDate\": \"2026-04-24\"\n    },\n    \"sourceSummary\": {\n      \"window\": {\n        \"startDate\": \"2026-04-18\",\n        \"endDate\": \"2026-04-24\"\n      },\n      \"diaryDays\": 0,\n      \"dietDaysWithSnapshot\": 0,\n      \"latestAssessmentDate\": null,\n      \"latestSleepDiaryDate\": null,\n      \"latestBodyMetricDate\": null,\n      \"biometricFallbackFields\": []\n    }\n  }\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Status readiness ML pasien dashboard berhasil diambil\",\n  \"data\": {\n    \"ready\": true,\n    \"missingFields\": [],\n    \"resolvedFields\": [\n      \"Demog1_DMDEDUC\",\n      \"Demog1_DMDFMSIZ\",\n      \"Demog1_DMDHHSIZ\",\n      \"Demog1_DMDHHSZA\",\n      \"Demog1_DMDHHSZB\",\n      \"Demog1_DMDHHSZE\",\n      \"Demog1_DMDMARTL\",\n      \"Demog1_RIAGENDR\",\n      \"Demog1_RIDAGEYR\",\n      \"Demog1_RIDRETH3\",\n      \"Dieta1_DR1TCALC\",\n      \"Dieta1_DR1TCARB\",\n      \"Dieta1_DR1TCHOL\",\n      \"Dieta1_DR1TFIBE\",\n      \"Dieta1_DR1TKCAL\",\n      \"Dieta1_DR1TMFAT\",\n      \"Dieta1_DR1TPFAT\",\n      \"Dieta1_DR1TPROT\",\n      \"Dieta1_DR1TSFAT\",\n      \"Dieta1_DR1TSUGR\",\n      \"Dieta1_DR1TTFAT\",\n      \"Exami1_BPXPLS\",\n      \"Exami1_DiaPulse\",\n      \"Exami1_SysPulse\",\n      \"Exami2_BMXBMI\",\n      \"Exami2_BMXHT\",\n      \"Exami2_BMXWT\",\n      \"Labor1_LBDTCSI\",\n      \"Labor2_URDFLOW1\",\n      \"Labor2_URDTIME1\",\n      \"Labor2_URXVOL1\",\n      \"Quest11_HIQ011\",\n      \"Quest12_HEQ010\",\n      \"Quest12_HEQ030\",\n      \"Quest15_KIQ022\",\n      \"Quest15_KIQ026\",\n      \"Quest16_MCQ010\",\n      \"Quest16_MCQ160B\",\n      \"Quest16_MCQ220\",\n      \"Quest16_MCQ300A\",\n      \"Quest16_MCQ300C\",\n      \"Quest17_DPQ020\",\n      \"Quest17_DPQ030\",\n      \"Quest17_DPQ040\",\n      \"Quest19_PAD615\",\n      \"Quest19_PAD645\",\n      \"Quest19_PAD660\",\n      \"Quest19_PAQ610\",\n      \"Quest19_PAQ635\",\n      \"Quest19_PAQ640\",\n      \"Quest19_PAQ655\",\n      \"Quest1_ALQ111\",\n      \"Quest20_PFQ061B\",\n      \"Quest20_PFQ061C\",\n      \"Quest20_PFQ061H\",\n      \"Quest21_SLD123\",\n      \"Quest21_SLQ3032\",\n      \"Quest22_SMQ020\",\n      \"Quest22_SMQ890\",\n      \"Quest22_SMQ900\",\n      \"Quest23_SMD470\",\n      \"Quest3_CDQ008\",\n      \"Quest3_CDQ009\",\n      \"Quest3_CDQ010\",\n      \"Quest6_DED1225\",\n      \"Quest7_DIQ010\",\n      \"Quest9_DLQ050\"\n    ],\n    \"window\": {\n      \"startDate\": \"2026-04-18\",\n      \"endDate\": \"2026-04-24\"\n    },\n    \"sourceSummary\": {\n      \"window\": {\n        \"startDate\": \"2026-04-18\",\n        \"endDate\": \"2026-04-24\"\n      },\n      \"diaryDays\": 7,\n      \"dietDaysWithSnapshot\": 1,\n      \"latestAssessmentDate\": \"2026-04-24\",\n      \"latestSleepDiaryDate\": \"2026-04-24\",\n      \"latestBodyMetricDate\": \"2026-04-24\",\n      \"biometricFallbackFields\": []\n    }\n  }\n}\n"
             }
           ]
         },
@@ -531,7 +534,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/ml-recommendations?date={{mlDate}}&includePayload=true",
+            "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{dashboardPatientId}}/ml-recommendations?date={{mlDate}}&includePayload=true",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -539,7 +542,7 @@
           },
           "response": [
             {
-              "name": "409 Live Capture",
+              "name": "200 Live Capture",
               "originalRequest": {
                 "method": "POST",
                 "header": [
@@ -552,14 +555,14 @@
                     "value": "application/json"
                   }
                 ],
-                "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{patientId}}/ml-recommendations?date={{mlDate}}&includePayload=true",
+                "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{dashboardPatientId}}/ml-recommendations?date={{mlDate}}&includePayload=true",
                 "body": {
                   "mode": "raw",
                   "raw": "{}"
                 }
               },
-              "status": "Conflict",
-              "code": 409,
+              "status": "OK",
+              "code": 200,
               "_postman_previewlanguage": "json",
               "header": [
                 {
@@ -568,7 +571,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": false,\n  \"message\": \"Data pasien belum siap untuk inference ML\",\n  \"details\": null\n}\n"
+              "body": "{\n  \"success\": true,\n  \"message\": \"Rekomendasi ML pasien dashboard berhasil diambil\",\n  \"data\": {\n    \"resultId\": \"6304a9b2-42e2-4fc3-b7b4-8afedc08b74b\",\n    \"generatedAt\": \"2026-05-06T09:08:49.102Z\",\n    \"mlVersion\": \"hfms-v3\",\n    \"window\": {\n      \"startDate\": \"2026-04-18\",\n      \"endDate\": \"2026-04-24\"\n    },\n    \"payloadHash\": \"sha256:f72ae00e8ea68930532b38f886a9204a3ea43258647bc5606629c03fe620a073\",\n    \"sourceSummary\": {\n      \"window\": {\n        \"startDate\": \"2026-04-18\",\n        \"endDate\": \"2026-04-24\"\n      },\n      \"diaryDays\": 7,\n      \"dietDaysWithSnapshot\": 1,\n      \"latestAssessmentDate\": \"2026-04-24\",\n      \"latestSleepDiaryDate\": \"2026-04-24\",\n      \"latestBodyMetricDate\": \"2026-04-24\",\n      \"biometricFallbackFields\": []\n    },\n    \"upstream\": {\n      \"endpoint\": \"http://hfms-backend:8080/v3/recommendations/\",\n      \"status\": 200,\n      \"body\": {\n        \"recommendationResult\": {\n          \"currentRisk\": 0.397628033533692,\n          \"currentRiskThresh\": 0.97577,\n          \"lifestyle\": [\n            {\n              \"changeStatus\": \"True\",\n              \"codeValue\": \"2\",\n              \"comparison\": \"Tingkatkan Calcium (Mg)\",\n              \"currentValue\": \"(-0.001, 572.0]\",\n              \"description\": \"Calcium (Mg)\",\n              \"recommendedValueInterval\": \"Tingkatkan Calcium (Mg) (840.393, 1094.0]\",\n              \"variable\": \"Dieta1_DR1TCALC\"\n            },\n            {\n              \"changeStatus\": \"True\",\n              \"codeValue\": \"1\",\n              \"comparison\": \"Tingkatkan Carbohydrate (Gm)\",\n              \"currentValue\": \"(-0.001, 172.57]\",\n              \"description\": \"Carbohydrate (Gm)\",\n              \"recommendedValueInterval\": \"Tingkatkan Carbohydrate (Gm) (172.57, 233.864]\",\n              \"variable\": \"Dieta1_DR1TCARB\"\n            },\n            {\n              \"changeStatus\": \"True\",\n              \"codeValue\": \"1\",\n              \"comparison\": \"Tingkatkan Cholesterol (Mg)\",\n              \"currentValue\": \"(-0.001, 144.0]\",\n              \"description\": \"Cholesterol (Mg)\",\n              \"recommendedValueInterval\": \"Tingkatkan Cholesterol (Mg) (144.0, 275.039]\",\n              \"variable\": \"Dieta1_DR1TCHOL\"\n            },\n            {\n              \"changeStatus\": \"True\",\n              \"codeValue\": \"3\",\n              \"comparison\": \"Tingkatkan Dietary Fiber (Gm)\",\n              \"currentValue\": \"(-0.001, 10.2]\",\n              \"description\": \"Dietary Fiber (Gm)\",\n              \"recommendedValueInterval\": \"Tingkatkan Dietary Fiber (Gm) (20.2, 107.8]\",\n              \"variable\": \"Dieta1_DR1TFIBE\"\n            },\n            {\n              \"changeStatus\": \"False\",\n              \"codeValue\": \"0\",\n              \"comparison\": \"Tidak ada perubahan\",\n              \"currentValue\": \"(-0.001, 1502.0]\",\n              \"description\": \"Energy (Kcal)\",\n              \"recommendedValueInterval\": \"Tidak ada perubahan (-0.001, 1502.0]\",\n              \"variable\": \"Dieta1_DR1TKCAL\"\n            },\n            {\n              \"changeStatus\": \"True\",\n              \"codeValue\": \"3\",\n              \"comparison\": \"Tingkatkan Total Monounsaturated Fatty Acids (Gm)\",\n              \"currentValue\": \"(-0.001, 18.698]\",\n              \"description\": \"Total Monounsaturated Fatty Acids (Gm)\",\n              \"recommendedValueInterval\": \"Tingkatkan Total Monounsaturated Fatty Acids (Gm) (35.11, 200.097]\",\n              \"variable\": \"Dieta1_DR1TMFAT\"\n            },\n            {\n              \"changeStatus\": \"True\",\n              \"codeValue\": \"1\",\n              \"comparison\": \"Tingkatkan Total Polyunsaturated Fatty Acids (Gm)\",\n              \"currentValue\": \"(-0.001, 12.052]\",\n              \"description\": \"Total Polyunsaturated Fatty Acids (Gm)\",\n              \"recommendedValueInterval\": \"Tingkatkan Total Polyunsaturated Fatty Acids (Gm) (12.052, 18.545]\",\n              \"variable\": \"Dieta1_DR1TPFAT\"\n            },\n            {\n              \"changeStatus\": \"True\",\n              \"codeValue\": \"3\",\n              \"comparison\": \"Tingkatkan Protein (Gm)\",\n              \"currentValue\": \"(-0.001, 54.27]\",\n              \"description\": \"Protein (Gm)\",\n              \"recommendedValueInterval\": \"Tingkatkan Protein (Gm) (94.43, 545.2]\",\n              \"variable\": \"Dieta1_DR1TPROT\"\n            },\n            {\n              \"changeStatus\": \"True\",\n              \"codeValue\": \"1\",\n              \"comparison\": \"Tingkatkan Total Saturated Fatty Acids (Gm)\",\n              \"currentValue\": \"(-0.001, 16.384]\",\n              \"description\": \"Total Saturated Fatty Acids (Gm)\",\n              \"recommendedValueInterval\": \"Tingkatkan Total Saturated Fatty Acids (Gm) (16.384, 24.859]\",\n              \"variable\": \"Dieta1_DR1TSFAT\"\n            },\n            {\n              \"changeStatus\": \"False\",\n              \"codeValue\": \"0\",\n              \"comparison\": \"Tidak ada perubahan\",\n              \"currentValue\": \"(-0.001, 60.47]\",\n              \"description\": \"Total Sugars (Gm)\",\n              \"recommendedValueInterval\": \"Tidak ada perubahan (-0.001, 60.47]\",\n              \"variable\": \"Dieta1_DR1TSUGR\"\n            },\n            {\n              \"changeStatus\": \"True\",\n              \"codeValue\": \"1\",\n              \"comparison\": \"Tingkatkan Total Fat (Gm)\",\n              \"currentValue\": \"(-0.001, 55.46]\",\n              \"description\": \"Total Fat (Gm)\",\n              \"recommendedValueInterval\": \"Tingkatkan Total Fat (Gm) (55.46, 79.88]\",\n              \"variable\": \"Dieta1_DR1TTFAT\"\n            },\n            {\n              \"changeStatus\": \"True\",\n              \"codeValue\": \"0\",\n              \"comparison\": \"Kurangi Body Mass Index (Kg/M**2)\",\n              \"currentValue\": \"(25.1, 28.8]\",\n              \"description\": \"Body Mass Index (Kg/M**2)\",\n              \"recommendedValueInterval\": \"Kurangi Body Mass Index (Kg/M**2) (14.199, 25.1]\",\n              \"variable\": \"Exami2_BMXBMI\"\n            },\n            {\n              \"changeStatus\": \"True\",\n              \"codeValue\": \"2\",\n              \"comparison\": \"Tingkatkan Minutes Vigorous-Intensity Work\",\n              \"currentValue\": \"(9.999, 164.54]\",\n              \"description\": \"Minutes Vigorous-Intensity Work\",\n              \"recommendedValueInterval\": \"Tingkatkan Minutes Vigorous-Intensity Work (185.482, 219.854]\",\n              \"variable\": \"Quest19_PAD615\"\n            },\n            {\n              \"changeStatus\": \"False\",\n              \"codeValue\": \"0\",\n              \"comparison\": \"Tidak ada perubahan\",\n              \"currentValue\": \"(9.999, 50.351]\",\n              \"description\": \"Minutes Walk/Bicycle For Transportation\",\n              \"recommendedValueInterval\": \"Tidak ada perubahan (9.999, 50.351]\",\n              \"variable\": \"Quest19_PAD645\"\n            },\n            {\n              \"changeStatus\": \"False\",\n              \"codeValue\": \"0\",\n              \"comparison\": \"Tidak ada perubahan\",\n              \"currentValue\": \"(9.999, 62.482]\",\n              \"description\": \"Minutes Vigorous Recreational Activities\",\n              \"recommendedValueInterval\": \"Tidak ada perubahan (9.999, 62.482]\",\n              \"variable\": \"Quest19_PAD660\"\n            },\n            {\n              \"changeStatus\": \"True\",\n              \"codeValue\": \"2\",\n              \"comparison\": \"Tingkatkan Number Of Days Vigorous Work\",\n              \"currentValue\": \"(0.999, 3.466]\",\n              \"description\": \"Number Of Days Vigorous Work\",\n              \"recommendedValueInterval\": \"Tingkatkan Number Of Days Vigorous Work (4.091, 4.433]\",\n              \"variable\": \"Quest19_PAQ610\"\n            },\n            {\n              \"changeStatus\": \"False\",\n              \"codeValue\": \"1.0\",\n              \"comparison\": \"Tidak ada perubahan\",\n              \"currentValue\": 1,\n              \"description\": \"Walk Or Bicycle\",\n              \"recommendedValueInterval\": \"Tidak ada perubahan 1.0\",\n              \"variable\": \"Quest19_PAQ635\"\n            },\n            {\n              \"changeStatus\": \"False\",\n              \"codeValue\": \"0\",\n              \"comparison\": \"Tidak ada perubahan\",\n              \"currentValue\": \"(0.999, 4.527]\",\n              \"description\": \"Number Of Days Walk Or Bicycle\",\n              \"recommendedValueInterval\": \"Tidak ada perubahan (0.999, 4.527]\",\n              \"variable\": \"Quest19_PAQ640\"\n            },\n            {\n              \"changeStatus\": \"True\",\n              \"codeValue\": \"2\",\n              \"comparison\": \"Tingkatkan Days Vigorous Recreational Activities\",\n              \"currentValue\": \"(0.999, 3.118]\",\n              \"description\": \"Days Vigorous Recreational Activities\",\n              \"recommendedValueInterval\": \"Tingkatkan Days Vigorous Recreational Activities (3.308, 3.441]\",\n              \"variable\": \"Quest19_PAQ655\"\n            },\n            {\n              \"changeStatus\": \"True\",\n              \"codeValue\": \"3\",\n              \"comparison\": \"Tingkatkan Average value of sleep hours (Weekdays and weekends combined)\",\n              \"currentValue\": \"(7.0, 8.0]\",\n              \"description\": \"Average value of sleep hours (Weekdays and weekends combined)\",\n              \"recommendedValueInterval\": \"Tingkatkan Average value of sleep hours (Weekdays and weekends combined) (9.0, 14.0]\",\n              \"variable\": \"Quest21_SLD123\"\n            },\n            {\n              \"changeStatus\": \"True\",\n              \"codeValue\": \"3\",\n              \"comparison\": \"Tingkatkan Average value of sleep time (Weekdays and weekends combined)\",\n              \"currentValue\": \"(1260.0, 1350.0]\",\n              \"description\": \"Average value of sleep time (Weekdays and weekends combined)\",\n              \"recommendedValueInterval\": \"Tingkatkan Average value of sleep time (Weekdays and weekends combined) (1350.0, 1425.0]\",\n              \"variable\": \"Quest21_SLQ3032\"\n            },\n            {\n              \"changeStatus\": \"False\",\n              \"codeValue\": \"1\",\n              \"comparison\": \"Tidak ada perubahan\",\n              \"currentValue\": \"(90.0, 132.185]\",\n              \"description\": \"Average value of Minutes Outdoors 9Am - 5Pm (Workday and weekends combined)\",\n              \"recommendedValueInterval\": \"Tidak ada perubahan (90.0, 132.185]\",\n              \"variable\": \"Quest6_DED1225\"\n            }\n          ],\n          \"riskAfterRecommendation\": 0.005850366142113,\n          \"riskAfterRecommendationThresh\": 0.01436,\n          \"riskReduction\": 0.39177766739157904,\n          \"riskReductionThresh\": 0.96141,\n          \"timeGenerated\": \"2026-05-06\",\n          \"timeTaken\": \"2.159s\"\n        },\n        \"resultHistory\": [\n          0.013980142830405,\n          0.013980142830405,\n          0.008120091661112,\n          0.008120091661112,\n          0.008120091661112,\n          0.008120084385155,\n          0.008120084385155,\n          0.007382385228993,\n          0.006101670078351,\n          0.005850366142113\n        ],\n        \"status\": 200,\n        \"statusMessage\": \"Success retrieving recommendation data\"\n      }\n    },\n    \"payload\": {\n      \"Demog1_RIDAGEYR\": 31,\n      \"Demog1_RIAGENDR\": 1,\n      \"Demog1_RIDRETH3\": 6,\n      \"Demog1_DMDEDUC\": 4,\n      \"Demog1_DMDFMSIZ\": 3,\n      \"Demog1_DMDHHSIZ\": 3,\n      \"Demog1_DMDHHSZA\": 2,\n      \"Demog1_DMDHHSZB\": 1,\n      \"Demog1_DMDHHSZE\": 0,\n      \"Demog1_DMDMARTL\": 1,\n      \"Quest22_SMQ020\": 1,\n      \"Quest22_SMQ890\": 1,\n      \"Quest22_SMQ900\": 2,\n      \"Quest23_SMD470\": 0,\n      \"Quest1_ALQ111\": 2,\n      \"Quest11_HIQ011\": 1,\n      \"Quest12_HEQ010\": 2,\n      \"Quest12_HEQ030\": 2,\n      \"Quest15_KIQ022\": 2,\n      \"Quest15_KIQ026\": 2,\n      \"Quest16_MCQ010\": 2,\n      \"Quest16_MCQ160B\": 2,\n      \"Quest16_MCQ220\": 2,\n      \"Quest16_MCQ300A\": 2,\n      \"Quest16_MCQ300C\": 2,\n      \"Quest17_DPQ020\": 1,\n      \"Quest17_DPQ030\": 0,\n      \"Quest17_DPQ040\": 0,\n      \"Quest20_PFQ061B\": 2,\n      \"Quest20_PFQ061C\": 2,\n      \"Quest20_PFQ061H\": 2,\n      \"Quest3_CDQ009\": 2,\n      \"Quest3_CDQ010\": 2,\n      \"Quest7_DIQ010\": 2,\n      \"Quest9_DLQ050\": 2,\n      \"Exami2_BMXHT\": 168,\n      \"Exami2_BMXWT\": 72,\n      \"Exami2_BMXBMI\": 25.5,\n      \"Exami1_SysPulse\": 122,\n      \"Exami1_DiaPulse\": 82,\n      \"Exami1_BPXPLS\": 1,\n      \"Labor1_LBDTCSI\": 175,\n      \"Labor2_URDFLOW1\": 1.2,\n      \"Labor2_URDTIME1\": 45,\n      \"Labor2_URXVOL1\": 200,\n      \"Quest21_SLQ3032\": 1350,\n      \"Quest21_SLD123\": 8,\n      \"Dieta1_DR1TKCAL\": 650,\n      \"Dieta1_DR1TPROT\": 35,\n      \"Dieta1_DR1TCARB\": 70,\n      \"Dieta1_DR1TSUGR\": 12,\n      \"Dieta1_DR1TFIBE\": 9,\n      \"Dieta1_DR1TTFAT\": 20,\n      \"Dieta1_DR1TSFAT\": 6,\n      \"Dieta1_DR1TMFAT\": 7,\n      \"Dieta1_DR1TPFAT\": 5,\n      \"Dieta1_DR1TCHOL\": 120,\n      \"Dieta1_DR1TCALC\": 300,\n      \"Quest19_PAD615\": 45,\n      \"Quest19_PAQ610\": 1,\n      \"Quest19_PAD645\": 20,\n      \"Quest19_PAQ635\": 1,\n      \"Quest19_PAQ640\": 1,\n      \"Quest19_PAD660\": 30,\n      \"Quest19_PAQ655\": 1,\n      \"Quest6_DED1225\": 95,\n      \"Quest3_CDQ008\": 1\n    }\n  }\n}\n"
             }
           ]
         }
@@ -594,12 +597,12 @@
             "url": "{{baseUrl}}/auth/change-password",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"currentPassword\": \"{{patientPassword}}\",\n  \"newPassword\": \"new-password-123\",\n  \"confirmNewPassword\": \"new-password-123\"\n}"
+              "raw": "{\n  \"currentPassword\": \"{{patientPassword}}\",\n  \"newPassword\": \"{{patientChangedPassword}}\",\n  \"confirmNewPassword\": \"{{patientChangedPassword}}\"\n}"
             }
           },
           "response": [
             {
-              "name": "429 Live Capture",
+              "name": "401 Live Capture",
               "originalRequest": {
                 "method": "POST",
                 "header": [
@@ -615,11 +618,11 @@
                 "url": "{{baseUrl}}/auth/change-password",
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"currentPassword\": \"{{patientPassword}}\",\n  \"newPassword\": \"new-password-123\",\n  \"confirmNewPassword\": \"new-password-123\"\n}"
+                  "raw": "{\n  \"currentPassword\": \"{{patientPassword}}\",\n  \"newPassword\": \"{{patientChangedPassword}}\",\n  \"confirmNewPassword\": \"{{patientChangedPassword}}\"\n}"
                 }
               },
-              "status": "Too Many Requests",
-              "code": 429,
+              "status": "Unauthorized",
+              "code": 401,
               "_postman_previewlanguage": "json",
               "header": [
                 {
@@ -628,7 +631,18 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": false,\n  \"message\": \"Terlalu banyak percobaan autentikasi\"\n}\n"
+              "body": "{\n  \"success\": false,\n  \"message\": \"Password saat ini salah\",\n  \"details\": null\n}\n"
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.environment.set('patientPassword', pm.environment.get('patientChangedPassword')); "
+                ]
+              }
             }
           ]
         }
