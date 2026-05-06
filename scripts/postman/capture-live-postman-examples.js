@@ -220,7 +220,8 @@ function main() {
     throw run.error;
   }
 
-  if (run.status !== 0) {
+  const reportExists = fs.existsSync(reportPath);
+  if (run.status !== 0 && !reportExists) {
     throw new Error(`Newman gagal dengan exit code ${run.status}`);
   }
 
@@ -240,6 +241,11 @@ function main() {
 
   writeJson(collectionPath, collection);
   fs.rmSync(reportPath, { force: true });
+  if (run.status !== 0) {
+    console.warn(
+      `[capture-live-postman-examples] collection completed with assertion failures (exit ${run.status}), but live responses were still captured`
+    );
+  }
   console.log(`[capture-live-postman-examples] updated ${collectionPath}`);
 }
 
