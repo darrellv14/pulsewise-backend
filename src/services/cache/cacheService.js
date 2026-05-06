@@ -95,7 +95,7 @@ async function invalidateExact(keys) {
   if (client) {
     cacheMetrics.incrementBackend('redis');
     cacheMetrics.increment('invalidationsExact');
-    await client.del(...normalizedKeys);
+    await client.del(normalizedKeys);
     return;
   }
 
@@ -132,7 +132,7 @@ async function invalidateByPrefixes(prefixes) {
           continue;
         }
 
-        await client.del(...keys);
+        await client.del(keys);
       }
     }
     return;
