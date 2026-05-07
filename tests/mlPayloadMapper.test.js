@@ -160,4 +160,132 @@ describe('mlPayloadMapper.buildMlV3Payload', () => {
     expect(result.missingFields).toContain('Dieta1_DR1TKCAL');
     expect(result.payload.Quest22_SMQ890).toBeUndefined();
   });
+
+  test('falls back height to patient profile and derives BMI when body metric BMI is missing', () => {
+    const result = buildMlV3Payload({
+      patientProfile: {
+        dateOfBirth: '2000-04-10',
+        bodyHeightCm: 172,
+      },
+      patientMlProfile: {
+        demog1_riagendr: 1,
+        demog1_ridreth3: 6,
+        demog1_dmdeduc: 4,
+        demog1_dmdfmsiz: 3,
+        demog1_dmdhhsiz: 4,
+        demog1_dmdhhsza: 2,
+        demog1_dmdhhszb: 1,
+        demog1_dmdhhsze: 0,
+        demog1_dmdmartl: 1,
+        quest22_smq020: 1,
+        quest22_smq890: 1,
+        quest22_smq900: 0,
+        quest23_smd470: 5,
+        quest1_alq111: 1,
+      },
+      latestAssessment: {
+        exami1_bpxpls: 1,
+        labor1_lbdtcsi: 190,
+        labor2_urdflow1: 12,
+        labor2_urdtime1: 30,
+        labor2_urxvol1: 250,
+        quest11_hiq011: 1,
+        quest12_heq010: 2,
+        quest12_heq030: 2,
+        quest15_kiq022: 2,
+        quest15_kiq026: 2,
+        quest16_mcq010: 1,
+        quest16_mcq160b: 2,
+        quest16_mcq220: 2,
+        quest16_mcq300a: 2,
+        quest16_mcq300c: 2,
+        quest17_dpq020: 0,
+        quest17_dpq030: 1,
+        quest17_dpq040: 0,
+        quest20_pfq061b: 2,
+        quest20_pfq061c: 2,
+        quest20_pfq061h: 2,
+        quest3_cdq009: 1,
+        quest3_cdq010: 2,
+        quest7_diq010: 2,
+        quest9_dlq050: 1,
+      },
+      diaries: [
+        {
+          diaryDate: '2026-04-24',
+          sleepRecord: {
+            sleepTime: '1970-01-01T22:30:00.000Z',
+            wakeTime: '1970-01-01T06:30:00.000Z',
+            sleepDurationHours: 8,
+          },
+          bodyMetrics: [
+            {
+              bodyHeight: null,
+              bodyWeight: 90,
+              bmi: null,
+              systolicPressure: 128,
+              diastolicPressure: 82,
+              timeStamp: '2026-04-24T07:00:00.000Z',
+            },
+          ],
+          symptoms: [
+            {
+              symptomCode: 'chest_pain',
+              isChestPain: true,
+              timeStamp: '2026-04-24T09:00:00.000Z',
+            },
+          ],
+          activities: [
+            {
+              activityCategory: 'work',
+              intensityLevel: 'vigorous',
+              duration: 45,
+              outdoorMinutes: 30,
+              timeStamp: '2026-04-24T07:00:00.000Z',
+            },
+            {
+              activityCategory: 'transport',
+              transportMode: 'walk',
+              duration: 20,
+              outdoorMinutes: 15,
+              timeStamp: '2026-04-24T09:00:00.000Z',
+            },
+            {
+              activityCategory: 'recreation',
+              intensityLevel: 'vigorous',
+              duration: 35,
+              outdoorMinutes: 10,
+              timeStamp: '2026-04-24T17:00:00.000Z',
+            },
+          ],
+          consumptions: [
+            {
+              energyKcal: 1800,
+              proteinG: 90,
+              carbohydrateG: 220,
+              sugarG: 40,
+              fiberG: 25,
+              totalFatG: 60,
+              saturatedFatG: 18,
+              monounsaturatedFatG: 14,
+              polyunsaturatedFatG: 9,
+              cholesterolMg: 180,
+              calciumMg: 900,
+            },
+          ],
+        },
+      ],
+      vitalSignReadings: [],
+      window: {
+        startDate: '2026-04-18',
+        endDate: '2026-04-24',
+      },
+    });
+
+    expect(result.payload.Exami2_BMXHT).toBe(172);
+    expect(result.payload.Exami2_BMXWT).toBe(90);
+    expect(result.payload.Exami2_BMXBMI).toBe(30.42);
+    expect(result.missingFields).not.toContain('Exami2_BMXHT');
+    expect(result.missingFields).not.toContain('Exami2_BMXBMI');
+  });
 });

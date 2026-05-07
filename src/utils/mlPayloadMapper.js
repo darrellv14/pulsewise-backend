@@ -173,6 +173,23 @@ function calculateSleepDurationHours(sleepTime, wakeTime) {
   return (adjustedWakeMinutes - sleepMinutes) / 60;
 }
 
+function calculateBmi(weightKg, heightCm) {
+  const weight = toFiniteNumber(weightKg);
+  const height = toFiniteNumber(heightCm);
+
+  if (weight === null || height === null || height <= 0) {
+    return null;
+  }
+
+  const heightMeters = height / 100;
+  if (heightMeters <= 0) {
+    return null;
+  }
+
+  const bmi = weight / (heightMeters * heightMeters);
+  return Number.isFinite(bmi) ? Number(bmi.toFixed(2)) : null;
+}
+
 function flattenDiaries(diaries = []) {
   const bodyMetrics = [];
   const symptoms = [];
@@ -231,9 +248,9 @@ function pickLatestBiometric(readings = [], aliases = []) {
   return readings.find((reading) => aliases.includes(normalizeMetricType(reading.metricType)));
 }
 
-function resolveBodyMetricValue({ latestBodyMetric, vitalSignReadings }, field) {
+function resolveBodyMetricValue({ latestBodyMetric, patientProfile, vitalSignReadings }, field) {
   const candidates = {
-    Exami2_BMXHT: latestBodyMetric?.bodyHeight,
+    Exami2_BMXHT: latestBodyMetric?.bodyHeight ?? patientProfile?.bodyHeightCm,
     Exami2_BMXWT: latestBodyMetric?.bodyWeight,
     Exami2_BMXBMI: latestBodyMetric?.bmi,
     Exami1_SysPulse: latestBodyMetric?.systolicPressure,
@@ -244,8 +261,30 @@ function resolveBodyMetricValue({ latestBodyMetric, vitalSignReadings }, field) 
   if (directValue !== null) {
     return {
       value: directValue,
-      source: 'daily_body_metric',
+      source:
+        field === 'Exami2_BMXHT' &&
+        toFiniteNumber(latestBodyMetric?.bodyHeight) === null &&
+        toFiniteNumber(patientProfile?.bodyHeightCm) !== null
+          ? 'patient_profile'
+          : 'daily_body_metric',
     };
+  }
+
+  if (field === 'Exami2_BMXBMI') {
+    const derivedBmi = calculateBmi(
+      latestBodyMetric?.bodyWeight,
+      latestBodyMetric?.bodyHeight ?? patientProfile?.bodyHeightCm
+    );
+
+    if (derivedBmi !== null) {
+      return {
+        value: derivedBmi,
+        source:
+          toFiniteNumber(latestBodyMetric?.bodyHeight) !== null
+            ? 'daily_body_metric_derived_bmi'
+            : 'patient_profile_height_derived_bmi',
+      };
+    }
   }
 
   const reading = pickLatestBiometric(vitalSignReadings, BIOMETRIC_ALIASES[field] || []);
@@ -462,6 +501,7 @@ function buildMlV3Payload(snapshot = {}) {
   ]) {
     const resolved = resolveBodyMetricValue({
       latestBodyMetric,
+      patientProfile,
       vitalSignReadings: snapshot.vitalSignReadings || [],
     }, field);
 
