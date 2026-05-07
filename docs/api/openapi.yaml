@@ -4989,44 +4989,6 @@ paths:
                         allOf:
                           - $ref: '#/components/schemas/HeartDiaryDetail'
 
-  /users/{userId}/diaries/{diaryId}:
-    get:
-      tags: [Patient Care]
-      summary: Get detailed heart diary record by diary id
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-        - name: diaryId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: Detail heart diary berdasarkan id
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessEnvelope'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/HeartDiaryDetail'
-        '404':
-          description: Heart diary tidak ditemukan
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorEnvelope'
-
   /users/{userId}/diaries/by-date/body-metrics:
     put:
       tags: [Patient Care]

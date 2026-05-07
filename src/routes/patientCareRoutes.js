@@ -78,12 +78,6 @@ router.get(
   patientCareController.getHeartDiaryByDate
 );
 router.get(
-  '/users/:userId/diaries/:diaryId',
-  authenticate,
-  validateRequest(diaryParamsSchema, 'params'),
-  patientCareController.getHeartDiaryDetail
-);
-router.get(
   '/users/:userId/diaries/by-date/sleep',
   authenticate,
   validateRequest(userIdParamSchema, 'params'),

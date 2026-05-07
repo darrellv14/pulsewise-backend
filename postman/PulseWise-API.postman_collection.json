@@ -2676,56 +2676,6 @@
           ]
         },
         {
-          "name": "GET Heart Diary Detail",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{patientToken}}"
-              }
-            ],
-            "url": "{{baseUrl}}/users/{{patientId}}/diaries/{{diaryId}}"
-          },
-          "response": [
-            {
-              "name": "200 Example",
-              "originalRequest": {
-                "method": "GET",
-                "header": [
-                  {
-                    "key": "Authorization",
-                    "value": "Bearer {{patientToken}}"
-                  }
-                ],
-                "url": "{{baseUrl}}/users/{{patientId}}/diaries/{{diaryId}}"
-              },
-              "status": "OK",
-              "code": 200,
-              "_postman_previewlanguage": "json",
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json"
-                }
-              ],
-              "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"message\": \"Detail heart diary berhasil diambil\",\n  \"data\": {\n    \"diaryId\": \"14d0047d-2926-4367-87f5-c846fdda3dc4\",\n    \"userId\": \"228d9c78-e308-4a45-8988-04dfa1ac0b97\",\n    \"diaryDate\": \"2026-04-10\",\n    \"createdAt\": \"2026-05-06T09:10:25.851Z\",\n    \"bodyMetrics\": [],\n    \"symptoms\": [],\n    \"activities\": [],\n    \"consumptions\": [],\n    \"sleepRecord\": null\n  }\n}\n"
-            }
-          ]
-        },
-        {
           "name": "PUT Diary Body Metric By Date",
           "event": [
             {
