@@ -40,6 +40,7 @@ function resolveInferenceLabels(inferenceType) {
     return {
       singular: 'Prediksi',
       notFound: 'Riwayat prediksi ML pasien belum tersedia',
+      detailNotFound: 'Detail riwayat prediksi ML pasien tidak ditemukan',
       success: 'Prediksi',
       endpointPath: '/predictions/',
     };
@@ -48,6 +49,7 @@ function resolveInferenceLabels(inferenceType) {
   return {
     singular: 'Rekomendasi',
     notFound: 'Riwayat rekomendasi ML pasien belum tersedia',
+    detailNotFound: 'Detail riwayat rekomendasi ML pasien tidak ditemukan',
     success: 'Rekomendasi',
     endpointPath: '/recommendations/',
   };
@@ -61,10 +63,19 @@ function ensureLatestResult(result, inferenceType) {
   return result;
 }
 
+function ensureHistoryDetailResult(result, inferenceType) {
+  if (!result) {
+    throw createHttpError(resolveInferenceLabels(inferenceType).detailNotFound, NOT_FOUND);
+  }
+
+  return result;
+}
+
 module.exports = {
   INFERENCE_TYPES,
   assertPatientRouteAccess,
   assertDoctorDashboardRouteAccess,
   resolveInferenceLabels,
   ensureLatestResult,
+  ensureHistoryDetailResult,
 };

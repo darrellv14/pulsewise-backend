@@ -2016,13 +2016,50 @@ components:
           type: string
           format: date-time
 
+    MlInferenceHistoryItem:
+      type: object
+      properties:
+        resultId:
+          type: string
+          format: uuid
+        patientId:
+          type: string
+          format: uuid
+        requestedByUserId:
+          type: string
+          format: uuid
+          nullable: true
+        inferenceType:
+          type: string
+          enum: [prediction, recommendation]
+        requestContext:
+          type: string
+          nullable: true
+        mlVersion:
+          type: string
+        window:
+          type: object
+          properties:
+            startDate:
+              type: string
+              format: date
+            endDate:
+              type: string
+              format: date
+        generatedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
     MlInferenceHistoryData:
       type: object
       properties:
         items:
           type: array
           items:
-            $ref: '#/components/schemas/MlInferenceResult'
+            $ref: '#/components/schemas/MlInferenceHistoryItem'
         pagination:
           $ref: '#/components/schemas/Pagination'
 
@@ -5625,6 +5662,38 @@ paths:
                       data:
                         $ref: '#/components/schemas/MlInferenceHistoryData'
 
+  /users/{userId}/ml-predictions/history/{resultId}:
+    get:
+      tags: [ML]
+      summary: Get patient ML prediction history detail
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: resultId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Patient ML prediction history detail
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/MlInferenceResult'
+
   /users/{userId}/ml-recommendations/history:
     get:
       tags: [ML]
@@ -5663,6 +5732,38 @@ paths:
                     properties:
                       data:
                         $ref: '#/components/schemas/MlInferenceHistoryData'
+
+  /users/{userId}/ml-recommendations/history/{resultId}:
+    get:
+      tags: [ML]
+      summary: Get patient ML recommendation history detail
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: resultId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Patient ML recommendation history detail
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/MlInferenceResult'
 
   /doctors/{doctorId}/dashboard/patients/{patientId}/ml-readiness:
     get:
@@ -5959,6 +6060,44 @@ paths:
                       data:
                         $ref: '#/components/schemas/MlInferenceHistoryData'
 
+  /doctors/{doctorId}/dashboard/patients/{patientId}/ml-predictions/history/{resultId}:
+    get:
+      tags: [ML, Care Management]
+      summary: Get doctor dashboard patient ML prediction history detail
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: doctorId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: resultId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Doctor dashboard patient ML prediction history detail
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/MlInferenceResult'
+
   /doctors/{doctorId}/dashboard/patients/{patientId}/ml-recommendations/history:
     get:
       tags: [ML, Care Management]
@@ -6003,6 +6142,44 @@ paths:
                     properties:
                       data:
                         $ref: '#/components/schemas/MlInferenceHistoryData'
+
+  /doctors/{doctorId}/dashboard/patients/{patientId}/ml-recommendations/history/{resultId}:
+    get:
+      tags: [ML, Care Management]
+      summary: Get doctor dashboard patient ML recommendation history detail
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: doctorId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: resultId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Doctor dashboard patient ML recommendation history detail
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/MlInferenceResult'
 
   /users/{userId}/diaries/{diaryId}/body-metrics:
     post:

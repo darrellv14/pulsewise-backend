@@ -171,6 +171,34 @@ async function listPatientMlRecommendationHistory(req, res, next) {
   }
 }
 
+async function getPatientMlPredictionHistoryDetail(req, res, next) {
+  try {
+    const data = await mlRecommendationService.getPatientMlPredictionHistoryDetail({
+      actor: req.user,
+      userId: req.params.userId,
+      resultId: req.params.resultId,
+    });
+
+    return success(res, 'Detail riwayat prediksi ML pasien berhasil diambil', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function getPatientMlRecommendationHistoryDetail(req, res, next) {
+  try {
+    const data = await mlRecommendationService.getPatientMlRecommendationHistoryDetail({
+      actor: req.user,
+      userId: req.params.userId,
+      resultId: req.params.resultId,
+    });
+
+    return success(res, 'Detail riwayat rekomendasi ML pasien berhasil diambil', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
 async function getDoctorDashboardPatientLatestMlPrediction(req, res, next) {
   try {
     const data = await mlRecommendationService.getDoctorDashboardPatientLatestMlPrediction({
@@ -229,6 +257,37 @@ async function listDoctorDashboardPatientMlRecommendationHistory(req, res, next)
   }
 }
 
+async function getDoctorDashboardPatientMlPredictionHistoryDetail(req, res, next) {
+  try {
+    const data = await mlRecommendationService.getDoctorDashboardPatientMlPredictionHistoryDetail({
+      actor: req.user,
+      doctorId: req.params.doctorId,
+      patientId: req.params.patientId,
+      resultId: req.params.resultId,
+    });
+
+    return success(res, 'Detail riwayat prediksi ML pasien dashboard berhasil diambil', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function getDoctorDashboardPatientMlRecommendationHistoryDetail(req, res, next) {
+  try {
+    const data =
+      await mlRecommendationService.getDoctorDashboardPatientMlRecommendationHistoryDetail({
+        actor: req.user,
+        doctorId: req.params.doctorId,
+        patientId: req.params.patientId,
+        resultId: req.params.resultId,
+      });
+
+    return success(res, 'Detail riwayat rekomendasi ML pasien dashboard berhasil diambil', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
 module.exports = {
   getPatientMlReadiness,
   getPatientMlPayload,
@@ -238,6 +297,8 @@ module.exports = {
   getPatientLatestMlRecommendation,
   listPatientMlPredictionHistory,
   listPatientMlRecommendationHistory,
+  getPatientMlPredictionHistoryDetail,
+  getPatientMlRecommendationHistoryDetail,
   getDoctorDashboardPatientMlReadiness,
   getDoctorDashboardPatientMlPayload,
   getDoctorDashboardPatientMlPredictions,
@@ -246,4 +307,6 @@ module.exports = {
   getDoctorDashboardPatientLatestMlRecommendation,
   listDoctorDashboardPatientMlPredictionHistory,
   listDoctorDashboardPatientMlRecommendationHistory,
+  getDoctorDashboardPatientMlPredictionHistoryDetail,
+  getDoctorDashboardPatientMlRecommendationHistoryDetail,
 };

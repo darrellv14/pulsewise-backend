@@ -44,6 +44,27 @@ function mapInferenceResult(row) {
   };
 }
 
+function mapInferenceResultSummary(row) {
+  if (!row) {
+    return null;
+  }
+
+  return {
+    resultId: row.resultId,
+    patientId: row.patientId,
+    requestedByUserId: row.requestedByUserId,
+    inferenceType: row.inferenceType,
+    requestContext: row.requestContext,
+    mlVersion: row.mlVersion,
+    window: {
+      startDate: row.windowStartDate?.toISOString().slice(0, 10) || null,
+      endDate: row.windowEndDate?.toISOString().slice(0, 10) || null,
+    },
+    generatedAt: row.generatedAt?.toISOString() || null,
+    createdAt: row.createdAt?.toISOString() || null,
+  };
+}
+
 async function createInferenceResult({ patientId, requestedByUserId, payload }) {
   const row = await prisma.patientMlInferenceResult.create({
     data: {
@@ -79,6 +100,18 @@ async function getLatestInferenceResult({ patientId, inferenceType }) {
   return mapInferenceResult(row);
 }
 
+async function getInferenceResultById({ patientId, inferenceType, resultId }) {
+  const row = await prisma.patientMlInferenceResult.findFirst({
+    where: {
+      resultId,
+      patientId,
+      inferenceType,
+    },
+  });
+
+  return mapInferenceResult(row);
+}
+
 async function listInferenceResults({ patientId, inferenceType, query = {} }) {
   const { page, limit } = normalizePaginationInput(query);
   const skip = (page - 1) * limit;
@@ -98,7 +131,7 @@ async function listInferenceResults({ patientId, inferenceType, query = {} }) {
   ]);
 
   return {
-    items: rows.map(mapInferenceResult),
+    items: rows.map(mapInferenceResultSummary),
     pagination: buildPagination({ page, limit, totalItems }),
   };
 }
@@ -106,5 +139,6 @@ async function listInferenceResults({ patientId, inferenceType, query = {} }) {
 module.exports = {
   createInferenceResult,
   getLatestInferenceResult,
+  getInferenceResultById,
   listInferenceResults,
 };

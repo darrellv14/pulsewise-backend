@@ -11,9 +11,20 @@ const patientMlParamsSchema = z.object({
   userId: uuidV4Schema,
 });
 
+const patientMlHistoryDetailParamsSchema = z.object({
+  userId: uuidV4Schema,
+  resultId: uuidV4Schema,
+});
+
 const doctorDashboardMlParamsSchema = z.object({
   doctorId: uuidV4Schema,
   patientId: uuidV4Schema,
+});
+
+const doctorDashboardMlHistoryDetailParamsSchema = z.object({
+  doctorId: uuidV4Schema,
+  patientId: uuidV4Schema,
+  resultId: uuidV4Schema,
 });
 
 const mlRequestQuerySchema = z.object({
@@ -30,7 +41,9 @@ const emptyMlBodySchema = z.object({}).strict();
 
 module.exports = {
   patientMlParamsSchema,
+  patientMlHistoryDetailParamsSchema,
   doctorDashboardMlParamsSchema,
+  doctorDashboardMlHistoryDetailParamsSchema,
   mlRequestQuerySchema,
   mlHistoryQuerySchema,
   emptyMlBodySchema,

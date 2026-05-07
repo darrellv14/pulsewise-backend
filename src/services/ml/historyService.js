@@ -2,7 +2,7 @@ const patientMlInferenceRepository = require('../../repositories/patientMlInfere
 const {
   assertPatientResourceAccess,
 } = require('../shared/guards');
-const { ensureLatestResult } = require('./shared');
+const { ensureLatestResult, ensureHistoryDetailResult } = require('./shared');
 
 async function saveInferenceResult({
   actor,
@@ -48,8 +48,19 @@ async function listPatientInferenceResults({ actor, patientId, inferenceType, qu
   });
 }
 
+async function getPatientInferenceResultDetail({ actor, patientId, inferenceType, resultId }) {
+  await assertPatientResourceAccess({ actor, patientId });
+  const result = await patientMlInferenceRepository.getInferenceResultById({
+    patientId,
+    inferenceType,
+    resultId,
+  });
+  return ensureHistoryDetailResult(result, inferenceType);
+}
+
 module.exports = {
   saveInferenceResult,
   getLatestPatientInferenceResult,
   listPatientInferenceResults,
+  getPatientInferenceResultDetail,
 };

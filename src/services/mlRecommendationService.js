@@ -12,10 +12,14 @@ const {
   getPatientLatestMlRecommendation,
   listPatientMlPredictionHistory,
   listPatientMlRecommendationHistory,
+  getPatientMlPredictionHistoryDetail,
+  getPatientMlRecommendationHistoryDetail,
   getDoctorDashboardPatientLatestMlPrediction,
   getDoctorDashboardPatientLatestMlRecommendation,
   listDoctorDashboardPatientMlPredictionHistory,
   listDoctorDashboardPatientMlRecommendationHistory,
+  getDoctorDashboardPatientMlPredictionHistoryDetail,
+  getDoctorDashboardPatientMlRecommendationHistoryDetail,
 } = require('./ml/orchestrationService');
 
 module.exports = {
@@ -32,8 +36,12 @@ module.exports = {
   getPatientLatestMlRecommendation,
   listPatientMlPredictionHistory,
   listPatientMlRecommendationHistory,
+  getPatientMlPredictionHistoryDetail,
+  getPatientMlRecommendationHistoryDetail,
   getDoctorDashboardPatientLatestMlPrediction,
   getDoctorDashboardPatientLatestMlRecommendation,
   listDoctorDashboardPatientMlPredictionHistory,
   listDoctorDashboardPatientMlRecommendationHistory,
+  getDoctorDashboardPatientMlPredictionHistoryDetail,
+  getDoctorDashboardPatientMlRecommendationHistoryDetail,
 };

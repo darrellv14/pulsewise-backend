@@ -14,6 +14,7 @@ const { runInference } = require('./inferenceExecutionService');
 const {
   getLatestPatientInferenceResult,
   listPatientInferenceResults,
+  getPatientInferenceResultDetail,
 } = require('./historyService');
 
 async function getPatientMlReadiness({ actor, userId, query = {} }) {
@@ -135,6 +136,24 @@ async function listPatientMlRecommendationHistory({ actor, userId, query = {} })
   });
 }
 
+async function getPatientMlPredictionHistoryDetail({ actor, userId, resultId }) {
+  return getPatientInferenceResultDetail({
+    actor,
+    patientId: userId,
+    inferenceType: INFERENCE_TYPES.prediction,
+    resultId,
+  });
+}
+
+async function getPatientMlRecommendationHistoryDetail({ actor, userId, resultId }) {
+  return getPatientInferenceResultDetail({
+    actor,
+    patientId: userId,
+    inferenceType: INFERENCE_TYPES.recommendation,
+    resultId,
+  });
+}
+
 async function getDoctorDashboardPatientLatestMlPrediction({ actor, doctorId, patientId }) {
   await assertDoctorDashboardRouteAccess({ actor, doctorId, patientId });
   return getLatestPatientInferenceResult({
@@ -183,6 +202,36 @@ async function listDoctorDashboardPatientMlRecommendationHistory({
   });
 }
 
+async function getDoctorDashboardPatientMlPredictionHistoryDetail({
+  actor,
+  doctorId,
+  patientId,
+  resultId,
+}) {
+  await assertDoctorDashboardRouteAccess({ actor, doctorId, patientId });
+  return getPatientInferenceResultDetail({
+    actor,
+    patientId,
+    inferenceType: INFERENCE_TYPES.prediction,
+    resultId,
+  });
+}
+
+async function getDoctorDashboardPatientMlRecommendationHistoryDetail({
+  actor,
+  doctorId,
+  patientId,
+  resultId,
+}) {
+  await assertDoctorDashboardRouteAccess({ actor, doctorId, patientId });
+  return getPatientInferenceResultDetail({
+    actor,
+    patientId,
+    inferenceType: INFERENCE_TYPES.recommendation,
+    resultId,
+  });
+}
+
 module.exports = {
   getPatientMlReadiness,
   getPatientMlPayload,
@@ -196,8 +245,12 @@ module.exports = {
   getPatientLatestMlRecommendation,
   listPatientMlPredictionHistory,
   listPatientMlRecommendationHistory,
+  getPatientMlPredictionHistoryDetail,
+  getPatientMlRecommendationHistoryDetail,
   getDoctorDashboardPatientLatestMlPrediction,
   getDoctorDashboardPatientLatestMlRecommendation,
   listDoctorDashboardPatientMlPredictionHistory,
   listDoctorDashboardPatientMlRecommendationHistory,
+  getDoctorDashboardPatientMlPredictionHistoryDetail,
+  getDoctorDashboardPatientMlRecommendationHistoryDetail,
 };

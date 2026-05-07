@@ -15,6 +15,8 @@ jest.mock('../src/services/mlRecommendationService', () => ({
   getPatientLatestMlRecommendation: jest.fn(),
   listPatientMlPredictionHistory: jest.fn(),
   listPatientMlRecommendationHistory: jest.fn(),
+  getPatientMlPredictionHistoryDetail: jest.fn(),
+  getPatientMlRecommendationHistoryDetail: jest.fn(),
   getDoctorDashboardPatientMlReadiness: jest.fn(),
   getDoctorDashboardPatientMlPayload: jest.fn(),
   getDoctorDashboardPatientMlPredictions: jest.fn(),
@@ -23,6 +25,8 @@ jest.mock('../src/services/mlRecommendationService', () => ({
   getDoctorDashboardPatientLatestMlRecommendation: jest.fn(),
   listDoctorDashboardPatientMlPredictionHistory: jest.fn(),
   listDoctorDashboardPatientMlRecommendationHistory: jest.fn(),
+  getDoctorDashboardPatientMlPredictionHistoryDetail: jest.fn(),
+  getDoctorDashboardPatientMlRecommendationHistoryDetail: jest.fn(),
 }));
 
 const mlRecommendationService = require('../src/services/mlRecommendationService');
@@ -181,12 +185,24 @@ describe('ML recommendation API contract', () => {
 
   test('GET patient ml-prediction history returns list envelope', async () => {
     mlRecommendationService.listPatientMlPredictionHistory.mockResolvedValue({
-      items: [],
+      items: [
+        {
+          resultId: 'c7aafc39-0692-4c1f-b991-5881ac7f6c31',
+          patientId,
+          requestedByUserId: patientId,
+          inferenceType: 'prediction',
+          requestContext: 'patient',
+          mlVersion: 'hfms-v3',
+          window: { startDate: '2026-04-29', endDate: '2026-05-05' },
+          generatedAt: '2026-05-05T12:30:00.000Z',
+          createdAt: '2026-05-05T12:30:00.000Z',
+        },
+      ],
       pagination: {
         page: 1,
         limit: 10,
-        totalItems: 0,
-        totalPages: 0,
+        totalItems: 1,
+        totalPages: 1,
       },
     });
 
@@ -197,6 +213,61 @@ describe('ML recommendation API contract', () => {
     expect(response.status).toBe(200);
     expectSuccessEnvelope(response, 'Riwayat prediksi ML pasien berhasil diambil');
     expectObjectKeys(response.body.data, ['items', 'pagination']);
+    expectObjectKeys(response.body.data.items[0], [
+      'resultId',
+      'patientId',
+      'requestedByUserId',
+      'inferenceType',
+      'requestContext',
+      'mlVersion',
+      'window',
+      'generatedAt',
+      'createdAt',
+    ]);
+  });
+
+  test('GET patient ml-prediction history detail returns stable shape', async () => {
+    mlRecommendationService.getPatientMlPredictionHistoryDetail.mockResolvedValue({
+      resultId: 'c7aafc39-0692-4c1f-b991-5881ac7f6c31',
+      patientId,
+      requestedByUserId: patientId,
+      inferenceType: 'prediction',
+      requestContext: 'patient',
+      mlVersion: 'hfms-v3',
+      payloadHash: 'sha256:abc',
+      payload: null,
+      sourceSummary: { diaries: 7 },
+      window: { startDate: '2026-04-29', endDate: '2026-05-05' },
+      upstream: {
+        endpoint: 'http://ml/v3/predictions/',
+        status: 200,
+        body: { risk: 0.72 },
+      },
+      generatedAt: '2026-05-05T12:30:00.000Z',
+      createdAt: '2026-05-05T12:30:00.000Z',
+    });
+
+    const response = await request(app)
+      .get(`/users/${patientId}/ml-predictions/history/c7aafc39-0692-4c1f-b991-5881ac7f6c31`)
+      .set('Authorization', `Bearer ${patientToken}`);
+
+    expect(response.status).toBe(200);
+    expectSuccessEnvelope(response, 'Detail riwayat prediksi ML pasien berhasil diambil');
+    expectObjectKeys(response.body.data, [
+      'resultId',
+      'patientId',
+      'requestedByUserId',
+      'inferenceType',
+      'requestContext',
+      'mlVersion',
+      'payloadHash',
+      'payload',
+      'sourceSummary',
+      'window',
+      'upstream',
+      'generatedAt',
+      'createdAt',
+    ]);
   });
 
   test('GET doctor dashboard latest recommendation route is registered', async () => {
@@ -226,5 +297,36 @@ describe('ML recommendation API contract', () => {
 
     expect(response.status).toBe(200);
     expectSuccessEnvelope(response, 'Rekomendasi ML terbaru pasien dashboard berhasil diambil');
+  });
+
+  test('GET doctor dashboard recommendation history detail route is registered', async () => {
+    mlRecommendationService.getDoctorDashboardPatientMlRecommendationHistoryDetail.mockResolvedValue({
+      resultId: 'c7aafc39-0692-4c1f-b991-5881ac7f6c31',
+      patientId,
+      requestedByUserId: doctorId,
+      inferenceType: 'recommendation',
+      requestContext: 'doctor_dashboard',
+      mlVersion: 'hfms-v3',
+      payloadHash: 'sha256:def',
+      payload: null,
+      sourceSummary: { diaries: 7 },
+      window: { startDate: '2026-04-29', endDate: '2026-05-05' },
+      upstream: {
+        endpoint: 'http://ml/v3/recommendations/',
+        status: 200,
+        body: { recommendations: [] },
+      },
+      generatedAt: '2026-05-05T12:30:00.000Z',
+      createdAt: '2026-05-05T12:30:00.000Z',
+    });
+
+    const response = await request(app)
+      .get(
+        `/doctors/${doctorId}/dashboard/patients/${patientId}/ml-recommendations/history/c7aafc39-0692-4c1f-b991-5881ac7f6c31`
+      )
+      .set('Authorization', `Bearer ${doctorToken}`);
+
+    expect(response.status).toBe(200);
+    expectSuccessEnvelope(response, 'Detail riwayat rekomendasi ML pasien dashboard berhasil diambil');
   });
 });
