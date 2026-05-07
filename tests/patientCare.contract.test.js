@@ -10,6 +10,7 @@ jest.mock('../src/services/patientCareService', () => ({
   createDailyBodyMetric: jest.fn(),
   createDailyBodyMetricByDate: jest.fn(),
   getHeartDiaryByDate: jest.fn(),
+  getHeartDiaryDetail: jest.fn(),
 }));
 
 const patientCareService = require('../src/services/patientCareService');
@@ -205,7 +206,60 @@ describe('Patient care API contract', () => {
     ]);
   });
 
-  test('GET /users/:userId/diaries/:diaryId is no longer exposed', async () => {
+  test('GET /users/:userId/diaries/:diaryId returns enriched diary detail contract', async () => {
+    patientCareService.getHeartDiaryDetail.mockResolvedValue({
+      diaryId,
+      userId,
+      diaryDate: '2026-04-10',
+      createdAt: '2026-04-10T08:15:00.000Z',
+      bodyMetrics: [
+        {
+          metricId: '7b5d8f10-1111-4222-8333-1234567890ab',
+          diaryId,
+          conditionTag: 'after_breakfast',
+          bodyHeight: 172.5,
+          bodyWeight: 68.2,
+          bmi: 22.9,
+          systolicPressure: 122,
+          diastolicPressure: 78,
+          heartRate: 74,
+          latestHeartRate: 81,
+          latestHeartRateMeasuredAt: '2026-05-04T08:30:00.000Z',
+          latestOxygenSaturation: 98,
+          latestOxygenSaturationMeasuredAt: '2026-05-04T08:31:00.000Z',
+          timeStamp: '2026-04-10T07:30:00.000Z',
+        },
+      ],
+      symptoms: [],
+      activities: [],
+      consumptions: [],
+      sleepRecord: null,
+    });
+
+    const response = await request(app)
+      .get(`/users/${userId}/diaries/${diaryId}`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expectSuccessEnvelope(response, 'Detail heart diary berhasil diambil');
+    expectObjectKeys(response.body.data, [
+      'diaryId',
+      'userId',
+      'diaryDate',
+      'createdAt',
+      'bodyMetrics',
+      'symptoms',
+      'activities',
+      'consumptions',
+      'sleepRecord',
+    ]);
+  });
+
+  test('GET /users/:userId/diaries/:diaryId returns 404 when diary is missing', async () => {
+    patientCareService.getHeartDiaryDetail.mockRejectedValue(
+      Object.assign(new Error('Heart diary tidak ditemukan'), { statusCode: 404 })
+    );
+
     const response = await request(app)
       .get(`/users/${userId}/diaries/${diaryId}`)
       .set('Authorization', `Bearer ${token}`);

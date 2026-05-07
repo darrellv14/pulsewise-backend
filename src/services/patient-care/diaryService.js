@@ -1,6 +1,8 @@
 const env = require('../../config/env');
 const patientCareRepository = require('../../repositories/patientCareRepository');
 const { buildPagination, normalizePaginationInput } = require('../../utils/pagination');
+const { createHttpError } = require('../../utils/httpError');
+const { NOT_FOUND } = require('../../constants/httpStatus');
 const { assertUserScope } = require('./shared');
 const { getOrSetJson, diaryByDateKey, invalidateDiaryCache } = require('./cache');
 const { mapDiary, mapHeartDiaryDetail } = require('./mappers');
@@ -54,6 +56,17 @@ async function getHeartDiaryByDate({ actor, userId, diaryDate }) {
   );
 }
 
+async function getHeartDiaryDetail({ actor, userId, diaryId }) {
+  assertUserScope({ actor, userId });
+
+  const diary = await patientCareRepository.getHeartDiary({ userId, diaryId });
+  if (!diary) {
+    throw createHttpError('Heart diary tidak ditemukan', NOT_FOUND);
+  }
+
+  return mapHeartDiaryDetail(diary);
+}
+
 async function ensureHeartDiaryByDate({ userId, diaryDate }) {
   return patientCareRepository.upsertHeartDiary({
     userId,
@@ -65,5 +78,6 @@ module.exports = {
   upsertHeartDiary,
   listHeartDiaries,
   getHeartDiaryByDate,
+  getHeartDiaryDetail,
   ensureHeartDiaryByDate,
 };
