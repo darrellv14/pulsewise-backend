@@ -18,6 +18,10 @@ function dashboardPatientSummaryKey({ doctorId, patientId }) {
   return `${CACHE_PREFIX}:dashboard:summary:patient:${patientId}:doctor:${doctorId}`;
 }
 
+function patientSelfDashboardSummaryKey({ userId }) {
+  return `${CACHE_PREFIX}:dashboard:summary:patient:${userId}:self`;
+}
+
 function dashboardPatientSummaryPrefix(patientId) {
   return `${CACHE_PREFIX}:dashboard:summary:patient:${patientId}:`;
 }
@@ -26,12 +30,20 @@ function dashboardPatientVitalsKey({ doctorId, patientId, query }) {
   return `${CACHE_PREFIX}:dashboard:vitals:patient:${patientId}:doctor:${doctorId}:${hashPayload(query || {})}`;
 }
 
+function patientSelfDashboardVitalsKey({ userId, query }) {
+  return `${CACHE_PREFIX}:dashboard:vitals:patient:${userId}:self:${hashPayload(query || {})}`;
+}
+
 function dashboardPatientVitalsPrefix(patientId) {
   return `${CACHE_PREFIX}:dashboard:vitals:patient:${patientId}:`;
 }
 
 function dashboardPatientAbnormalReportKey({ doctorId, patientId, query }) {
   return `${CACHE_PREFIX}:dashboard:abnormal-report:patient:${patientId}:doctor:${doctorId}:${hashPayload(query || {})}`;
+}
+
+function patientSelfDashboardAbnormalReportKey({ userId, query }) {
+  return `${CACHE_PREFIX}:dashboard:abnormal-report:patient:${userId}:self:${hashPayload(query || {})}`;
 }
 
 function dashboardPatientAbnormalReportPrefix(patientId) {
@@ -58,10 +70,13 @@ module.exports = {
   dashboardPatientsListKey,
   dashboardPatientsListPrefix,
   dashboardPatientSummaryKey,
+  patientSelfDashboardSummaryKey,
   dashboardPatientSummaryPrefix,
   dashboardPatientVitalsKey,
+  patientSelfDashboardVitalsKey,
   dashboardPatientVitalsPrefix,
   dashboardPatientAbnormalReportKey,
+  patientSelfDashboardAbnormalReportKey,
   dashboardPatientAbnormalReportPrefix,
   diaryByDateKey,
   diaryByDatePrefix,

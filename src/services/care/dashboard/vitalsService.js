@@ -3,8 +3,10 @@ const {
   dashboardRepository,
   getOrSetJson,
   dashboardPatientVitalsKey,
+  patientSelfDashboardVitalsKey,
   NOT_FOUND,
   assertDoctorScope,
+  assertPatientScope,
   createHttpError,
   formatPatientIdentity,
   buildLatestVitals,
@@ -13,46 +15,71 @@ const {
   mergeSeries,
 } = require('./shared');
 
+async function buildDashboardPatientVitals(patientId, query, identityLoader, notFoundMessage) {
+  const identity = await identityLoader();
+  if (!identity) {
+    throw createHttpError(notFoundMessage, NOT_FOUND);
+  }
+
+  const period = buildPeriodRange(query);
+
+  const [dailyRows, vitalRows] = await Promise.all([
+    dashboardRepository.listDailyMetricsSeries({
+      patientId,
+      startAt: period.startAt,
+      endAt: period.endAt,
+    }),
+    dashboardRepository.listVitalReadingSeries({
+      patientId,
+      startAt: period.startAt,
+      endAt: period.endAt,
+    }),
+  ]);
+
+  const merged = mergeSeries({ dailyRows, vitalRows });
+
+  return {
+    patient: formatPatientIdentity(identity),
+    period,
+    series: merged.series,
+    latestVitals: buildLatestVitals(merged.points),
+    thresholds,
+  };
+}
+
 async function getDoctorDashboardPatientVitals({ actor, doctorId, patientId, query }) {
   assertDoctorScope({ actor, doctorId });
 
   return getOrSetJson(
     dashboardPatientVitalsKey({ doctorId, patientId, query: query || {} }),
     env.cache.dashboardVitalsTtlSeconds,
-    async () => {
-      const identity = await dashboardRepository.getDoctorPatientIdentity({ doctorId, patientId });
-      if (!identity) {
-        throw createHttpError('Data pasien dokter tidak ditemukan', NOT_FOUND);
-      }
+    () =>
+      buildDashboardPatientVitals(
+        patientId,
+        query,
+        () => dashboardRepository.getDoctorPatientIdentity({ doctorId, patientId }),
+        'Data pasien dokter tidak ditemukan'
+      )
+  );
+}
 
-      const period = buildPeriodRange(query);
+async function getPatientSelfDashboardVitals({ actor, userId, query }) {
+  assertPatientScope({ actor, patientId: userId });
 
-      const [dailyRows, vitalRows] = await Promise.all([
-        dashboardRepository.listDailyMetricsSeries({
-          patientId,
-          startAt: period.startAt,
-          endAt: period.endAt,
-        }),
-        dashboardRepository.listVitalReadingSeries({
-          patientId,
-          startAt: period.startAt,
-          endAt: period.endAt,
-        }),
-      ]);
-
-      const merged = mergeSeries({ dailyRows, vitalRows });
-
-      return {
-        patient: formatPatientIdentity(identity),
-        period,
-        series: merged.series,
-        latestVitals: buildLatestVitals(merged.points),
-        thresholds,
-      };
-    }
+  return getOrSetJson(
+    patientSelfDashboardVitalsKey({ userId, query: query || {} }),
+    env.cache.dashboardVitalsTtlSeconds,
+    () =>
+      buildDashboardPatientVitals(
+        userId,
+        query,
+        () => dashboardRepository.getPatientIdentity(userId),
+        'Data dashboard pasien tidak ditemukan'
+      )
   );
 }
 
 module.exports = {
   getDoctorDashboardPatientVitals,
+  getPatientSelfDashboardVitals,
 };

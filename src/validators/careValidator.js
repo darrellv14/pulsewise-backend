@@ -21,6 +21,10 @@ const patientIdParamSchema = z.object({
   patientId: uuidV4Schema,
 });
 
+const userIdParamSchema = z.object({
+  userId: uuidV4Schema,
+});
+
 const doctorIdParamSchema = z.object({
   doctorId: uuidV4Schema,
 });
@@ -228,6 +232,7 @@ const patientMlAssessmentUpdateSchema = patientMlAssessmentCreateSchema
   });
 
 module.exports = {
+  userIdParamSchema,
   patientIdParamSchema,
   doctorIdParamSchema,
   doctorPatientParamsSchema,

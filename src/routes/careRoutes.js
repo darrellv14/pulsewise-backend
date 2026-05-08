@@ -3,6 +3,7 @@ const authenticate = require('../middlewares/authenticate');
 const validateRequest = require('../middlewares/validateRequest');
 const careController = require('../controllers/careController');
 const {
+  userIdParamSchema,
   patientIdParamSchema,
   doctorIdParamSchema,
   doctorPatientParamsSchema,
@@ -26,6 +27,27 @@ const {
 } = require('../validators/careValidator');
 
 const router = express.Router();
+
+router.get(
+  '/users/:userId/dashboard',
+  authenticate,
+  validateRequest(userIdParamSchema, 'params'),
+  careController.getPatientSelfDashboardSummary
+);
+router.get(
+  '/users/:userId/dashboard/vitals',
+  authenticate,
+  validateRequest(userIdParamSchema, 'params'),
+  validateRequest(dashboardSeriesQuerySchema, 'query'),
+  careController.getPatientSelfDashboardVitals
+);
+router.get(
+  '/users/:userId/dashboard/abnormal-report',
+  authenticate,
+  validateRequest(userIdParamSchema, 'params'),
+  validateRequest(dashboardSeriesQuerySchema, 'query'),
+  careController.getPatientSelfDashboardAbnormalReport
+);
 
 router.get(
   '/patients',

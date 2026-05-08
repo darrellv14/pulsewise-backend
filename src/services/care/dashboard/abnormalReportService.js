@@ -3,8 +3,10 @@ const {
   dashboardRepository,
   getOrSetJson,
   dashboardPatientAbnormalReportKey,
+  patientSelfDashboardAbnormalReportKey,
   NOT_FOUND,
   assertDoctorScope,
+  assertPatientScope,
   createHttpError,
   formatPatientIdentity,
   extractNumberValues,
@@ -15,55 +17,80 @@ const {
   buildAbnormalInstances,
 } = require('./shared');
 
+async function buildDashboardAbnormalReport(patientId, query, identityLoader, notFoundMessage) {
+  const identity = await identityLoader();
+  if (!identity) {
+    throw createHttpError(notFoundMessage, NOT_FOUND);
+  }
+
+  const period = buildPeriodRange(query);
+
+  const [dailyRows, vitalRows] = await Promise.all([
+    dashboardRepository.listDailyMetricsSeries({
+      patientId,
+      startAt: period.startAt,
+      endAt: period.endAt,
+    }),
+    dashboardRepository.listVitalReadingSeries({
+      patientId,
+      startAt: period.startAt,
+      endAt: period.endAt,
+    }),
+  ]);
+
+  const merged = mergeSeries({ dailyRows, vitalRows });
+
+  const stats = {
+    systolicBp: aggregateStats(extractNumberValues(merged.points, 'systolicBp')),
+    diastolicBp: aggregateStats(extractNumberValues(merged.points, 'diastolicBp')),
+    heartRate: aggregateStats(extractNumberValues(merged.points, 'heartRate')),
+    oxygenSaturation: aggregateStats(extractNumberValues(merged.points, 'oxygenSaturation')),
+    weight: aggregateStats(extractNumberValues(merged.points, 'weight')),
+    bmi: aggregateStats(extractNumberValues(merged.points, 'bmi')),
+  };
+
+  return {
+    patient: formatPatientIdentity(identity),
+    period,
+    stats,
+    abnormalInstances: buildAbnormalInstances(merged.points),
+    thresholds,
+  };
+}
+
 async function getDoctorDashboardAbnormalReport({ actor, doctorId, patientId, query }) {
   assertDoctorScope({ actor, doctorId });
 
   return getOrSetJson(
     dashboardPatientAbnormalReportKey({ doctorId, patientId, query: query || {} }),
     env.cache.dashboardAbnormalReportTtlSeconds,
-    async () => {
-      const identity = await dashboardRepository.getDoctorPatientIdentity({ doctorId, patientId });
-      if (!identity) {
-        throw createHttpError('Data pasien dokter tidak ditemukan', NOT_FOUND);
-      }
+    () =>
+      buildDashboardAbnormalReport(
+        patientId,
+        query,
+        () => dashboardRepository.getDoctorPatientIdentity({ doctorId, patientId }),
+        'Data pasien dokter tidak ditemukan'
+      )
+  );
+}
 
-      const period = buildPeriodRange(query);
+async function getPatientSelfDashboardAbnormalReport({ actor, userId, query }) {
+  assertPatientScope({ actor, patientId: userId });
 
-      const [dailyRows, vitalRows] = await Promise.all([
-        dashboardRepository.listDailyMetricsSeries({
-          patientId,
-          startAt: period.startAt,
-          endAt: period.endAt,
-        }),
-        dashboardRepository.listVitalReadingSeries({
-          patientId,
-          startAt: period.startAt,
-          endAt: period.endAt,
-        }),
-      ]);
-
-      const merged = mergeSeries({ dailyRows, vitalRows });
-
-      const stats = {
-        systolicBp: aggregateStats(extractNumberValues(merged.points, 'systolicBp')),
-        diastolicBp: aggregateStats(extractNumberValues(merged.points, 'diastolicBp')),
-        heartRate: aggregateStats(extractNumberValues(merged.points, 'heartRate')),
-        oxygenSaturation: aggregateStats(extractNumberValues(merged.points, 'oxygenSaturation')),
-        weight: aggregateStats(extractNumberValues(merged.points, 'weight')),
-        bmi: aggregateStats(extractNumberValues(merged.points, 'bmi')),
-      };
-
-      return {
-        patient: formatPatientIdentity(identity),
-        period,
-        stats,
-        abnormalInstances: buildAbnormalInstances(merged.points),
-        thresholds,
-      };
-    }
+  return getOrSetJson(
+    patientSelfDashboardAbnormalReportKey({ userId, query: query || {} }),
+    env.cache.dashboardAbnormalReportTtlSeconds,
+    () =>
+      buildDashboardAbnormalReport(
+        userId,
+        query,
+        () => dashboardRepository.getPatientIdentity(userId),
+        'Data dashboard pasien tidak ditemukan'
+      )
   );
 }
 
 module.exports = {
   getDoctorDashboardAbnormalReport,
+  getPatientSelfDashboardAbnormalReport,
 };

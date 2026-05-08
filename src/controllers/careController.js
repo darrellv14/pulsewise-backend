@@ -378,6 +378,19 @@ async function getDoctorDashboardPatientSummary(req, res, next) {
   }
 }
 
+async function getPatientSelfDashboardSummary(req, res, next) {
+  try {
+    const data = await careService.getPatientSelfDashboardSummary({
+      actor: req.user,
+      userId: req.params.userId,
+    });
+
+    return success(res, 'Ringkasan dashboard pasien berhasil diambil', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
 async function getDoctorDashboardPatientVitals(req, res, next) {
   try {
     const data = await careService.getDoctorDashboardPatientVitals({
@@ -393,6 +406,20 @@ async function getDoctorDashboardPatientVitals(req, res, next) {
   }
 }
 
+async function getPatientSelfDashboardVitals(req, res, next) {
+  try {
+    const data = await careService.getPatientSelfDashboardVitals({
+      actor: req.user,
+      userId: req.params.userId,
+      query: req.query,
+    });
+
+    return success(res, 'Time-series vital dashboard pasien berhasil diambil', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
 async function getDoctorDashboardAbnormalReport(req, res, next) {
   try {
     const data = await careService.getDoctorDashboardAbnormalReport({
@@ -403,6 +430,20 @@ async function getDoctorDashboardAbnormalReport(req, res, next) {
     });
 
     return success(res, 'Abnormal report pasien dashboard dokter berhasil diambil', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function getPatientSelfDashboardAbnormalReport(req, res, next) {
+  try {
+    const data = await careService.getPatientSelfDashboardAbnormalReport({
+      actor: req.user,
+      userId: req.params.userId,
+      query: req.query,
+    });
+
+    return success(res, 'Abnormal report dashboard pasien berhasil diambil', data);
   } catch (error) {
     return next(error);
   }
@@ -432,6 +473,9 @@ module.exports = {
   unlinkDoctorPatient,
   listDoctorDashboardPatients,
   getDoctorDashboardPatientSummary,
+  getPatientSelfDashboardSummary,
   getDoctorDashboardPatientVitals,
+  getPatientSelfDashboardVitals,
   getDoctorDashboardAbnormalReport,
+  getPatientSelfDashboardAbnormalReport,
 };

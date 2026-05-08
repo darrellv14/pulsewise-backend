@@ -9,8 +9,11 @@ const {
 jest.mock('../src/services/careService', () => ({
   listDoctorDashboardPatients: jest.fn(),
   getDoctorDashboardPatientSummary: jest.fn(),
+  getPatientSelfDashboardSummary: jest.fn(),
   getDoctorDashboardPatientVitals: jest.fn(),
+  getPatientSelfDashboardVitals: jest.fn(),
   getDoctorDashboardAbnormalReport: jest.fn(),
+  getPatientSelfDashboardAbnormalReport: jest.fn(),
   linkDoctorPatientByPatientId: jest.fn(),
   createDashboardPairingSession: jest.fn(),
   getDashboardPairingSessionStatus: jest.fn(),
@@ -141,6 +144,42 @@ describe('Dashboard API contract', () => {
     expectObjectKeys(response.body.data, ['patient', 'latestVitals', 'thresholds']);
   });
 
+  test('GET patient self dashboard summary returns doctor-like shape', async () => {
+    careService.getPatientSelfDashboardSummary.mockResolvedValue({
+      patient: {
+        patientId,
+        firstName: 'Nadia',
+        lastName: 'Saraswati',
+        email: 'seed.patient2@pulsewise.local',
+        phone: '081200000102',
+        dateOfBirth: '1994-09-03',
+        age: 31,
+        sex: 'female',
+      },
+      latestVitals: {
+        measuredAt: '2026-04-08T09:15:00.000Z',
+        systolicBp: 122,
+        diastolicBp: 80,
+        heartRate: 79,
+        oxygenSaturation: 98,
+        weight: 61.2,
+        height: 160,
+        bmi: 23.9,
+      },
+      thresholds: {
+        SPO2_CRITICAL_THRESHOLD: 90,
+      },
+    });
+
+    const response = await request(app)
+      .get(`/users/${patientId}/dashboard`)
+      .set('Authorization', `Bearer ${patientToken}`);
+
+    expect(response.status).toBe(200);
+    expectSuccessEnvelope(response, 'Ringkasan dashboard pasien berhasil diambil');
+    expectObjectKeys(response.body.data, ['patient', 'latestVitals', 'thresholds']);
+  });
+
   test('GET dashboard patient vitals returns stable shape', async () => {
     careService.getDoctorDashboardPatientVitals.mockResolvedValue({
       patient: {
@@ -202,6 +241,57 @@ describe('Dashboard API contract', () => {
     ]);
   });
 
+  test('GET patient self dashboard vitals returns doctor-like shape', async () => {
+    careService.getPatientSelfDashboardVitals.mockResolvedValue({
+      patient: {
+        patientId,
+        firstName: 'Nadia',
+        lastName: 'Saraswati',
+        email: 'seed.patient2@pulsewise.local',
+        phone: '081200000102',
+        dateOfBirth: '1994-09-03',
+        age: 31,
+        sex: 'female',
+      },
+      period: {
+        startAt: '2026-04-01T00:00:00.000Z',
+        endAt: '2026-04-30T23:59:59.999Z',
+        timePeriod: 'custom',
+      },
+      series: {
+        timestamps: ['2026-04-10T07:30:00.000Z'],
+        systolicBp: [122],
+        diastolicBp: [78],
+        heartRate: [81],
+        oxygenSaturation: [98],
+        weight: [68.2],
+        height: [172.5],
+        bmi: [22.9],
+      },
+      latestVitals: {
+        measuredAt: '2026-04-10T07:30:00.000Z',
+        systolicBp: 122,
+        diastolicBp: 78,
+        heartRate: 81,
+        oxygenSaturation: 98,
+        weight: 68.2,
+        height: 172.5,
+        bmi: 22.9,
+      },
+      thresholds: {
+        SPO2_CRITICAL_THRESHOLD: 90,
+      },
+    });
+
+    const response = await request(app)
+      .get(`/users/${patientId}/dashboard/vitals?timePeriod=last_30_days`)
+      .set('Authorization', `Bearer ${patientToken}`);
+
+    expect(response.status).toBe(200);
+    expectSuccessEnvelope(response, 'Time-series vital dashboard pasien berhasil diambil');
+    expectObjectKeys(response.body.data, ['patient', 'period', 'series', 'latestVitals', 'thresholds']);
+  });
+
   test('GET dashboard abnormal report returns stable shape', async () => {
     careService.getDoctorDashboardAbnormalReport.mockResolvedValue({
       patient: {
@@ -239,6 +329,46 @@ describe('Dashboard API contract', () => {
 
     expect(response.status).toBe(200);
     expectSuccessEnvelope(response, 'Abnormal report pasien dashboard dokter berhasil diambil');
+    expectObjectKeys(response.body.data, ['patient', 'period', 'stats', 'abnormalInstances', 'thresholds']);
+  });
+
+  test('GET patient self dashboard abnormal report returns doctor-like shape', async () => {
+    careService.getPatientSelfDashboardAbnormalReport.mockResolvedValue({
+      patient: {
+        patientId,
+        firstName: 'Nadia',
+        lastName: 'Saraswati',
+        email: 'seed.patient2@pulsewise.local',
+        phone: '081200000102',
+        dateOfBirth: '1994-09-03',
+        age: 31,
+        sex: 'female',
+      },
+      period: {
+        startAt: '2026-04-01T00:00:00.000Z',
+        endAt: '2026-04-30T23:59:59.999Z',
+        timePeriod: 'custom',
+      },
+      stats: {
+        systolicBp: { avg: 122, min: 122, max: 122 },
+        diastolicBp: { avg: 78, min: 78, max: 78 },
+        heartRate: { avg: 81, min: 81, max: 81 },
+        oxygenSaturation: { avg: 98, min: 98, max: 98 },
+        weight: { avg: 68.2, min: 68.2, max: 68.2 },
+        bmi: { avg: 22.9, min: 22.9, max: 22.9 },
+      },
+      abnormalInstances: [],
+      thresholds: {
+        SPO2_CRITICAL_THRESHOLD: 90,
+      },
+    });
+
+    const response = await request(app)
+      .get(`/users/${patientId}/dashboard/abnormal-report?timePeriod=last_30_days`)
+      .set('Authorization', `Bearer ${patientToken}`);
+
+    expect(response.status).toBe(200);
+    expectSuccessEnvelope(response, 'Abnormal report dashboard pasien berhasil diambil');
     expectObjectKeys(response.body.data, ['patient', 'period', 'stats', 'abnormalInstances', 'thresholds']);
   });
 

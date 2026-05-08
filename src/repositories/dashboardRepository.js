@@ -120,6 +120,25 @@ async function getDoctorPatientIdentity({ doctorId, patientId }) {
   return result[0] || null;
 }
 
+async function getPatientIdentity(patientId) {
+  const result = await prisma.$queryRaw`
+    SELECT
+      u.user_id AS patient_id,
+      u.first_name,
+      u.last_name,
+      u.email,
+      u.tel_no,
+      p.date_of_birth,
+      p.sex
+    FROM users u
+    LEFT JOIN patient_profiles p ON p.patient_id = u.user_id
+    WHERE u.user_id = ${patientId}::uuid
+    LIMIT 1
+  `;
+
+  return result[0] || null;
+}
+
 async function getLatestDailyMetrics(patientId) {
   const result = await prisma.$queryRaw`
     SELECT
@@ -184,6 +203,7 @@ async function getLatestVitalSnapshot(patientId) {
 module.exports = {
   listDoctorDashboardPatients,
   getDoctorPatientIdentity,
+  getPatientIdentity,
   getLatestDailyMetrics,
   listDailyMetricsSeries,
   listVitalReadingSeries,
