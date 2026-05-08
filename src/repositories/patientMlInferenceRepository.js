@@ -15,6 +15,16 @@ function toDateOnly(value) {
   return parsed;
 }
 
+function toEndOfDate(value) {
+  const parsed = toDateOnly(value);
+  if (!parsed) {
+    return null;
+  }
+
+  parsed.setUTCHours(23, 59, 59, 999);
+  return parsed;
+}
+
 function mapInferenceResult(row) {
   if (!row) {
     return null;
@@ -119,6 +129,18 @@ async function listInferenceResults({ patientId, inferenceType, query = {} }) {
     patientId,
     inferenceType,
   };
+
+  if (query.startDate || query.endDate) {
+    where.generatedAt = {};
+
+    if (query.startDate) {
+      where.generatedAt.gte = toDateOnly(query.startDate);
+    }
+
+    if (query.endDate) {
+      where.generatedAt.lte = toEndOfDate(query.endDate);
+    }
+  }
 
   const [rows, totalItems] = await Promise.all([
     prisma.patientMlInferenceResult.findMany({

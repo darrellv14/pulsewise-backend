@@ -5649,6 +5649,20 @@ paths:
             type: integer
             minimum: 1
             maximum: 100
+        - name: startDate
+          in: query
+          required: false
+          description: Filter history by generated date, inclusive. Format YYYY-MM-DD.
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          required: false
+          description: Filter history by generated date, inclusive. Format YYYY-MM-DD.
+          schema:
+            type: string
+            format: date
       responses:
         '200':
           description: Patient ML prediction history
@@ -5720,6 +5734,20 @@ paths:
             type: integer
             minimum: 1
             maximum: 100
+        - name: startDate
+          in: query
+          required: false
+          description: Filter history by generated date, inclusive. Format YYYY-MM-DD.
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          required: false
+          description: Filter history by generated date, inclusive. Format YYYY-MM-DD.
+          schema:
+            type: string
+            format: date
       responses:
         '200':
           description: Patient ML recommendation history
@@ -6047,6 +6075,20 @@ paths:
             type: integer
             minimum: 1
             maximum: 100
+        - name: startDate
+          in: query
+          required: false
+          description: Filter history by generated date, inclusive. Format YYYY-MM-DD.
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          required: false
+          description: Filter history by generated date, inclusive. Format YYYY-MM-DD.
+          schema:
+            type: string
+            format: date
       responses:
         '200':
           description: Doctor dashboard patient ML prediction history
@@ -6130,6 +6172,20 @@ paths:
             type: integer
             minimum: 1
             maximum: 100
+        - name: startDate
+          in: query
+          required: false
+          description: Filter history by generated date, inclusive. Format YYYY-MM-DD.
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          required: false
+          description: Filter history by generated date, inclusive. Format YYYY-MM-DD.
+          schema:
+            type: string
+            format: date
       responses:
         '200':
           description: Doctor dashboard patient ML recommendation history

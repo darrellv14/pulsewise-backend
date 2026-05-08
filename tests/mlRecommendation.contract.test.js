@@ -207,11 +207,23 @@ describe('ML recommendation API contract', () => {
     });
 
     const response = await request(app)
-      .get(`/users/${patientId}/ml-predictions/history?page=1&limit=10`)
+      .get(
+        `/users/${patientId}/ml-predictions/history?page=1&limit=10&startDate=2026-05-01&endDate=2026-05-08`
+      )
       .set('Authorization', `Bearer ${patientToken}`);
 
     expect(response.status).toBe(200);
     expectSuccessEnvelope(response, 'Riwayat prediksi ML pasien berhasil diambil');
+    expect(mlRecommendationService.listPatientMlPredictionHistory).toHaveBeenCalledWith({
+      actor: expect.objectContaining({ userId: patientId }),
+      userId: patientId,
+      query: {
+        page: '1',
+        limit: '10',
+        startDate: '2026-05-01',
+        endDate: '2026-05-08',
+      },
+    });
     expectObjectKeys(response.body.data, ['items', 'pagination']);
     expectObjectKeys(response.body.data.items[0], [
       'resultId',
@@ -268,6 +280,63 @@ describe('ML recommendation API contract', () => {
       'generatedAt',
       'createdAt',
     ]);
+  });
+
+  test('GET patient ml-recommendation history accepts generated date filters', async () => {
+    mlRecommendationService.listPatientMlRecommendationHistory.mockResolvedValue({
+      items: [
+        {
+          resultId: 'c7aafc39-0692-4c1f-b991-5881ac7f6c31',
+          patientId,
+          requestedByUserId: patientId,
+          inferenceType: 'recommendation',
+          requestContext: 'patient',
+          mlVersion: 'hfms-v3',
+          window: { startDate: '2026-04-29', endDate: '2026-05-05' },
+          generatedAt: '2026-05-05T12:30:00.000Z',
+          createdAt: '2026-05-05T12:30:00.000Z',
+        },
+      ],
+      pagination: {
+        page: 1,
+        limit: 10,
+        totalItems: 1,
+        totalPages: 1,
+      },
+    });
+
+    const response = await request(app)
+      .get(
+        `/users/${patientId}/ml-recommendations/history?page=1&limit=10&startDate=2026-05-01&endDate=2026-05-08`
+      )
+      .set('Authorization', `Bearer ${patientToken}`);
+
+    expect(response.status).toBe(200);
+    expectSuccessEnvelope(response, 'Riwayat rekomendasi ML pasien berhasil diambil');
+    expect(mlRecommendationService.listPatientMlRecommendationHistory).toHaveBeenCalledWith({
+      actor: expect.objectContaining({ userId: patientId }),
+      userId: patientId,
+      query: {
+        page: '1',
+        limit: '10',
+        startDate: '2026-05-01',
+        endDate: '2026-05-08',
+      },
+    });
+  });
+
+  test('GET patient ml-recommendation history rejects inverted date range', async () => {
+    const response = await request(app)
+      .get(
+        `/users/${patientId}/ml-recommendations/history?page=1&limit=10&startDate=2026-05-08&endDate=2026-05-01`
+      )
+      .set('Authorization', `Bearer ${patientToken}`);
+
+    expect(response.status).toBe(400);
+    expect(response.body).toMatchObject({
+      success: false,
+      message: 'Validasi request gagal',
+    });
   });
 
   test('GET doctor dashboard latest recommendation route is registered', async () => {

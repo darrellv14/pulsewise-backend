@@ -35,7 +35,21 @@ const mlRequestQuerySchema = z.object({
 const mlHistoryQuerySchema = z.object({
   page: z.coerce.number().int().min(1).optional().default(1),
   limit: z.coerce.number().int().min(1).max(100).optional().default(10),
-});
+  startDate: dateSchema.optional(),
+  endDate: dateSchema.optional(),
+}).refine(
+  (value) => {
+    if (!value.startDate || !value.endDate) {
+      return true;
+    }
+
+    return new Date(value.endDate).getTime() >= new Date(value.startDate).getTime();
+  },
+  {
+    message: 'endDate tidak boleh lebih kecil dari startDate',
+    path: ['endDate'],
+  }
+);
 
 const emptyMlBodySchema = z.object({}).strict();
 

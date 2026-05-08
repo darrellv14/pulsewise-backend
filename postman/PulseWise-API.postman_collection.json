@@ -3941,7 +3941,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/users/{{patientId}}/ml-predictions/history?page=1&limit=10"
+            "url": "{{baseUrl}}/users/{{patientId}}/ml-predictions/history?page=1&limit=10&startDate={{mlHistoryStartDate}}&endDate={{mlHistoryEndDate}}"
           },
           "response": [
             {
@@ -3958,7 +3958,7 @@
                     "value": "application/json"
                   }
                 ],
-                "url": "{{baseUrl}}/users/{{patientId}}/ml-predictions/history?page=1&limit=10"
+                "url": "{{baseUrl}}/users/{{patientId}}/ml-predictions/history?page=1&limit=10&startDate={{mlHistoryStartDate}}&endDate={{mlHistoryEndDate}}"
               },
               "status": "OK",
               "code": 200,
@@ -4137,7 +4137,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/users/{{patientId}}/ml-recommendations/history?page=1&limit=10"
+            "url": "{{baseUrl}}/users/{{patientId}}/ml-recommendations/history?page=1&limit=10&startDate={{mlHistoryStartDate}}&endDate={{mlHistoryEndDate}}"
           },
           "response": [
             {
@@ -4154,7 +4154,7 @@
                     "value": "application/json"
                   }
                 ],
-                "url": "{{baseUrl}}/users/{{patientId}}/ml-recommendations/history?page=1&limit=10"
+                "url": "{{baseUrl}}/users/{{patientId}}/ml-recommendations/history?page=1&limit=10&startDate={{mlHistoryStartDate}}&endDate={{mlHistoryEndDate}}"
               },
               "status": "OK",
               "code": 200,
@@ -4432,7 +4432,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{dashboardPatientId}}/ml-predictions/history?page=1&limit=10"
+            "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{dashboardPatientId}}/ml-predictions/history?page=1&limit=10&startDate={{mlHistoryStartDate}}&endDate={{mlHistoryEndDate}}"
           },
           "response": [
             {
@@ -4449,7 +4449,7 @@
                     "value": "application/json"
                   }
                 ],
-                "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{dashboardPatientId}}/ml-predictions/history?page=1&limit=10"
+                "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{dashboardPatientId}}/ml-predictions/history?page=1&limit=10&startDate={{mlHistoryStartDate}}&endDate={{mlHistoryEndDate}}"
               },
               "status": "OK",
               "code": 200,
@@ -4628,7 +4628,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{dashboardPatientId}}/ml-recommendations/history?page=1&limit=10"
+            "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{dashboardPatientId}}/ml-recommendations/history?page=1&limit=10&startDate={{mlHistoryStartDate}}&endDate={{mlHistoryEndDate}}"
           },
           "response": [
             {
@@ -4645,7 +4645,7 @@
                     "value": "application/json"
                   }
                 ],
-                "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{dashboardPatientId}}/ml-recommendations/history?page=1&limit=10"
+                "url": "{{baseUrl}}/doctors/{{doctorId}}/dashboard/patients/{{dashboardPatientId}}/ml-recommendations/history?page=1&limit=10&startDate={{mlHistoryStartDate}}&endDate={{mlHistoryEndDate}}"
               },
               "status": "OK",
               "code": 200,
