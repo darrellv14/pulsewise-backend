@@ -44,6 +44,10 @@ async function updatePatientProfile(patientId, payload) {
     dateOfBirth: payload.dateOfBirth !== undefined ? payload.dateOfBirth : undefined,
     sex: payload.sex !== undefined ? payload.sex : undefined,
     bodyHeightCm: payload.heightCm !== undefined ? payload.heightCm : undefined,
+    healthConnectPreference:
+      payload.healthConnectPreference !== undefined ? payload.healthConnectPreference : undefined,
+    healthConnectStatus:
+      payload.healthConnectStatus !== undefined ? payload.healthConnectStatus : undefined,
     isSmoking: payload.isSmoking !== undefined ? payload.isSmoking : undefined,
     isElectricSmoking:
       payload.isElectricSmoking !== undefined ? payload.isElectricSmoking : undefined,

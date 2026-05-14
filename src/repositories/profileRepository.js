@@ -26,6 +26,8 @@ function mapPatientProfile(profile) {
     date_of_birth: profile.dateOfBirth,
     sex: profile.sex,
     body_height_cm: toNullableNumber(profile.bodyHeightCm),
+    healthConnectPreference: profile.healthConnectPreference || null,
+    healthConnectStatus: profile.healthConnectStatus || null,
     is_smoking: profile.isSmoking,
     is_electric_smoking: profile.isElectricSmoking,
     blood_type: profile.bloodType,
@@ -152,6 +154,8 @@ async function upsertPatientProfile({
   dateOfBirth,
   sex,
   bodyHeightCm,
+  healthConnectPreference,
+  healthConnectStatus,
   isSmoking,
   isElectricSmoking,
   bloodType,
@@ -177,6 +181,12 @@ async function upsertPatientProfile({
     }
     if (bodyHeightCm !== undefined) {
       profileData.bodyHeightCm = bodyHeightCm;
+    }
+    if (healthConnectPreference !== undefined) {
+      profileData.healthConnectPreference = healthConnectPreference;
+    }
+    if (healthConnectStatus !== undefined) {
+      profileData.healthConnectStatus = healthConnectStatus;
     }
     if (isSmoking !== undefined) {
       profileData.isSmoking = isSmoking;

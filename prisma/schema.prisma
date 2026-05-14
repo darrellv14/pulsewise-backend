@@ -249,6 +249,8 @@ model PatientProfile {
   dateOfBirth        DateTime? @map("date_of_birth") @db.Date
   sex                String?   @db.VarChar(16)
   bodyHeightCm       Decimal?  @map("body_height_cm") @db.Decimal(5, 2)
+  healthConnectPreference String? @map("health_connect_preference") @db.VarChar(32)
+  healthConnectStatus     String? @map("health_connect_status") @db.VarChar(32)
   isSmoking          Boolean?  @map("is_smoking")
   isElectricSmoking  Boolean?  @map("is_electric_smoking")
   bloodType          String?   @map("blood_type") @db.VarChar(3)
