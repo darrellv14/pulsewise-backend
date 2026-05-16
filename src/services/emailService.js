@@ -256,6 +256,19 @@ function getClient() {
   });
 }
 
+function logMailtrapSendResult({ category, toEmail, response }) {
+  if (env.nodeEnv === 'test') {
+    return;
+  }
+
+  console.info('[mailtrap] email accepted by provider', {
+    category,
+    toEmail,
+    success: Boolean(response?.success),
+    messageIds: Array.isArray(response?.message_ids) ? response.message_ids : [],
+  });
+}
+
 async function sendOtpEmail({ toEmail, otpCode, expiresInMinutes }) {
   const client = getClient();
   if (!client) {
@@ -269,7 +282,7 @@ async function sendOtpEmail({ toEmail, otpCode, expiresInMinutes }) {
     name: env.mailtrap.senderName,
   };
 
-  await client.send({
+  const response = await client.send({
     from: sender,
     to: [{ email: toEmail }],
     subject: 'Pulse Wise - Kode Verifikasi OTP',
@@ -279,6 +292,12 @@ async function sendOtpEmail({ toEmail, otpCode, expiresInMinutes }) {
       expiresInMinutes,
     }),
     category: 'OTP Verification',
+  });
+
+  logMailtrapSendResult({
+    category: 'OTP Verification',
+    toEmail,
+    response,
   });
 }
 
@@ -295,7 +314,7 @@ async function sendForgotPasswordOtpEmail({ toEmail, otpCode, expiresInMinutes }
     name: env.mailtrap.senderName,
   };
 
-  await client.send({
+  const response = await client.send({
     from: sender,
     to: [{ email: toEmail }],
     subject: 'Pulse Wise - Kode OTP Reset Password',
@@ -305,6 +324,12 @@ async function sendForgotPasswordOtpEmail({ toEmail, otpCode, expiresInMinutes }
       expiresInMinutes,
     }),
     category: 'Forgot Password OTP',
+  });
+
+  logMailtrapSendResult({
+    category: 'Forgot Password OTP',
+    toEmail,
+    response,
   });
 }
 
