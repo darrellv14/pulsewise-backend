@@ -3,6 +3,7 @@ const userRepository = require('../../repositories/userRepository');
 const { createHttpError } = require('../../utils/httpError');
 const { ACCOUNT_STATUSES } = require('../../constants/enums');
 const { ALLOWED_ROLES, buildUserProfile } = require('./shared');
+const { issueEmailVerification } = require('./verificationService');
 
 async function register(payload) {
   const username = String(payload.username || '').trim();
@@ -22,7 +23,30 @@ async function register(payload) {
     throw createHttpError('Password minimal 8 karakter', 400);
   }
 
+  const existingUser = await userRepository.findUserByEmail(email);
   const passwordHash = await bcrypt.hash(password, 10);
+
+  if (existingUser) {
+    if (existingUser.account_status !== ACCOUNT_STATUSES.PENDING_VERIFICATION) {
+      throw createHttpError('Username atau email sudah terdaftar', 409);
+    }
+
+    const updatedPendingUser = await userRepository.updatePendingUserRegistration({
+      userId: existingUser.user_id,
+      username,
+      passwordHash,
+      firstName,
+      lastName,
+    });
+
+    await userRepository.deleteEmailVerificationsByEmail(email);
+    await issueEmailVerification(updatedPendingUser);
+
+    return {
+      user: buildUserProfile(updatedPendingUser),
+      nextStep: 'EMAIL_VERIFICATION_REQUIRED',
+    };
+  }
 
   const user = await userRepository.createUserWithRole({
     username,
@@ -34,6 +58,8 @@ async function register(payload) {
     accountStatus: ACCOUNT_STATUSES.PENDING_VERIFICATION,
     emailVerifiedAt: null,
   });
+
+  await issueEmailVerification(user);
 
   return {
     user: buildUserProfile(user),

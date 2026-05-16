@@ -22,11 +22,13 @@ jest.mock('../src/repositories/userRepository', () => ({
   findUserById: jest.fn(),
   createUserWithRole: jest.fn(),
   createEmailVerification: jest.fn(),
+  deleteEmailVerificationsByEmail: jest.fn(),
   deleteEmailVerification: jest.fn(),
   findLatestValidEmailVerification: jest.fn(),
   consumeEmailVerification: jest.fn(),
   activateUserByEmail: jest.fn(),
   linkGoogleIdentity: jest.fn(),
+  updatePendingUserRegistration: jest.fn(),
   updateUserPasswordHash: jest.fn(),
 }));
 
@@ -37,6 +39,149 @@ jest.mock('../src/services/emailService', () => ({
 const userRepository = require('../src/repositories/userRepository');
 const { sendOtpEmail } = require('../src/services/emailService');
 const authService = require('../src/services/authService');
+
+describe('authService.register', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test('creates pending user, sends OTP, and returns email verification step for new email', async () => {
+    userRepository.findUserByEmail.mockResolvedValue(null);
+    userRepository.createUserWithRole.mockResolvedValue({
+      user_id: '11111111-1111-4111-8111-111111111111',
+      username: 'patient',
+      email: 'patient@example.com',
+      first_name: 'Pat',
+      last_name: 'Ient',
+      role: 'patient',
+      account_status: 'pending_verification',
+      email_verified_at: null,
+      onboarding_completed: true,
+    });
+    userRepository.createEmailVerification.mockResolvedValue({
+      verification_id: '22222222-2222-4222-8222-222222222222',
+    });
+    sendOtpEmail.mockResolvedValue(undefined);
+
+    const result = await authService.register({
+      username: 'patient',
+      email: 'Patient@Example.com',
+      password: 'password123',
+      firstName: 'Pat',
+      lastName: 'Ient',
+      role: 'patient',
+    });
+
+    expect(userRepository.findUserByEmail).toHaveBeenCalledWith('patient@example.com');
+    expect(userRepository.createUserWithRole).toHaveBeenCalledWith(
+      expect.objectContaining({
+        username: 'patient',
+        email: 'patient@example.com',
+        role: 'patient',
+        accountStatus: 'pending_verification',
+        emailVerifiedAt: null,
+      })
+    );
+    expect(userRepository.createEmailVerification).toHaveBeenCalledTimes(1);
+    expect(sendOtpEmail).toHaveBeenCalledTimes(1);
+    expect(result).toMatchObject({
+      nextStep: 'EMAIL_VERIFICATION_REQUIRED',
+      user: {
+        email: 'patient@example.com',
+        accountStatus: 'pending_verification',
+      },
+    });
+  });
+
+  test('updates pending verification user, invalidates old OTP, and sends new OTP', async () => {
+    userRepository.findUserByEmail.mockResolvedValue({
+      user_id: '33333333-3333-4333-8333-333333333333',
+      username: 'old_patient',
+      email: 'patient@example.com',
+      first_name: 'Old',
+      last_name: 'Name',
+      role: 'patient',
+      account_status: 'pending_verification',
+      email_verified_at: null,
+      onboarding_completed: true,
+    });
+    userRepository.updatePendingUserRegistration.mockResolvedValue({
+      user_id: '33333333-3333-4333-8333-333333333333',
+      username: 'new_patient',
+      email: 'patient@example.com',
+      first_name: 'New',
+      last_name: 'Name',
+      role: 'patient',
+      account_status: 'pending_verification',
+      email_verified_at: null,
+      onboarding_completed: true,
+    });
+    userRepository.deleteEmailVerificationsByEmail.mockResolvedValue(2);
+    userRepository.createEmailVerification.mockResolvedValue({
+      verification_id: '44444444-4444-4444-8444-444444444444',
+    });
+    sendOtpEmail.mockResolvedValue(undefined);
+
+    const result = await authService.register({
+      username: 'new_patient',
+      email: 'patient@example.com',
+      password: 'password123',
+      firstName: 'New',
+      lastName: 'Name',
+      role: 'patient',
+    });
+
+    expect(userRepository.updatePendingUserRegistration).toHaveBeenCalledWith(
+      expect.objectContaining({
+        userId: '33333333-3333-4333-8333-333333333333',
+        username: 'new_patient',
+        firstName: 'New',
+        lastName: 'Name',
+        passwordHash: expect.any(String),
+      })
+    );
+    expect(userRepository.deleteEmailVerificationsByEmail).toHaveBeenCalledWith(
+      'patient@example.com'
+    );
+    expect(userRepository.createEmailVerification).toHaveBeenCalledTimes(1);
+    expect(sendOtpEmail).toHaveBeenCalledTimes(1);
+    expect(result).toMatchObject({
+      nextStep: 'EMAIL_VERIFICATION_REQUIRED',
+      user: {
+        username: 'new_patient',
+        email: 'patient@example.com',
+        accountStatus: 'pending_verification',
+      },
+    });
+  });
+
+  test('rejects register when email already belongs to active account', async () => {
+    userRepository.findUserByEmail.mockResolvedValue({
+      user_id: '55555555-5555-4555-8555-555555555555',
+      email: 'patient@example.com',
+      account_status: 'active',
+      role: 'patient',
+    });
+
+    await expect(
+      authService.register({
+        username: 'patient',
+        email: 'patient@example.com',
+        password: 'password123',
+        firstName: 'Pat',
+        lastName: 'Ient',
+        role: 'patient',
+      })
+    ).rejects.toMatchObject({
+      statusCode: 409,
+      message: 'Username atau email sudah terdaftar',
+    });
+
+    expect(userRepository.createUserWithRole).not.toHaveBeenCalled();
+    expect(userRepository.updatePendingUserRegistration).not.toHaveBeenCalled();
+    expect(sendOtpEmail).not.toHaveBeenCalled();
+  });
+});
 
 describe('authService.sendEmailVerification', () => {
   afterEach(() => {

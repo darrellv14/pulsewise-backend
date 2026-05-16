@@ -212,6 +212,17 @@ async function createEmailVerification({ userId, email, otpCodeHash, expiresAt }
   return mapEmailVerification(verification);
 }
 
+async function deleteEmailVerificationsByEmail(email) {
+  const result = await prisma.emailVerification.deleteMany({
+    where: {
+      email,
+      consumedAt: null,
+    },
+  });
+
+  return result.count;
+}
+
 async function findLatestValidEmailVerification(email) {
   const verification = await prisma.emailVerification.findFirst({
     where: {
@@ -273,6 +284,47 @@ async function activateUserByEmail(email) {
   });
 
   return mapUserWithRole(user);
+}
+
+async function updatePendingUserRegistration({
+  userId,
+  username,
+  passwordHash,
+  firstName,
+  lastName,
+}) {
+  try {
+    const user = await prisma.user.update({
+      where: {
+        userId,
+      },
+      data: {
+        username,
+        passwordHash,
+        firstName,
+        lastName,
+        updatedAt: new Date(),
+      },
+      include: {
+        userRoles: {
+          include: {
+            role: true,
+          },
+          take: 1,
+        },
+      },
+    });
+
+    return mapUserWithRole(user);
+  } catch (error) {
+    if (isUniqueConstraintError(error)) {
+      const conflict = new Error('Username atau email sudah terdaftar');
+      conflict.statusCode = 409;
+      throw conflict;
+    }
+
+    throw error;
+  }
 }
 
 async function linkGoogleIdentity(userId, googleSub) {
@@ -340,10 +392,12 @@ module.exports = {
   findUserById,
   createUserWithRole,
   createEmailVerification,
+  deleteEmailVerificationsByEmail,
   findLatestValidEmailVerification,
   consumeEmailVerification,
   deleteEmailVerification,
   activateUserByEmail,
+  updatePendingUserRegistration,
   linkGoogleIdentity,
   updateUserPasswordHash,
 };
