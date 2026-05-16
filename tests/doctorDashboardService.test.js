@@ -64,6 +64,20 @@ describe('doctorDashboardService', () => {
       systolicBp: 122,
       diastolicBp: 78,
     });
+    expect(result.latestVitalsByField).toMatchObject({
+      systolicBp: {
+        value: 122,
+        measuredAt: '2026-04-10T07:30:00.000Z',
+      },
+      heartRate: {
+        value: 81,
+        measuredAt: '2026-04-10T07:35:00.000Z',
+      },
+      oxygenSaturation: {
+        value: 98,
+        measuredAt: '2026-04-10T07:36:00.000Z',
+      },
+    });
   });
 
   test('patient self summary reuses the same aggregation shape', async () => {
@@ -112,6 +126,20 @@ describe('doctorDashboardService', () => {
       oxygenSaturation: 98,
       systolicBp: 122,
       diastolicBp: 78,
+    });
+    expect(result.latestVitalsByField).toMatchObject({
+      systolicBp: {
+        value: 122,
+        measuredAt: '2026-04-10T07:30:00.000Z',
+      },
+      heartRate: {
+        value: 81,
+        measuredAt: '2026-04-10T07:35:00.000Z',
+      },
+      oxygenSaturation: {
+        value: 98,
+        measuredAt: '2026-04-10T07:36:00.000Z',
+      },
     });
   });
 });

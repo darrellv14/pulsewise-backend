@@ -73,6 +73,12 @@ function latestIso(...values) {
   return normalized.reduce((max, value) => (value > max ? value : max));
 }
 
+function buildLatestVitalField(value, measuredAt) {
+  return {
+    value: value !== undefined ? value : null,
+    measuredAt: toIso(measuredAt),
+  };
+}
 
 function generateShareCode() {
   return `PW-${crypto.randomBytes(6).toString('hex').toUpperCase()}`;
@@ -102,6 +108,17 @@ function latestValue(points, key) {
   return null;
 }
 
+function latestPointWithValue(points, key) {
+  for (let i = points.length - 1; i >= 0; i -= 1) {
+    const value = points[i][key];
+    if (value !== null && value !== undefined) {
+      return points[i];
+    }
+  }
+
+  return null;
+}
+
 function buildLatestVitals(points) {
   return {
     measuredAt: points.length ? points[points.length - 1].timestamp : null,
@@ -112,6 +129,32 @@ function buildLatestVitals(points) {
     weight: latestValue(points, 'weight'),
     height: latestValue(points, 'height'),
     bmi: latestValue(points, 'bmi'),
+  };
+}
+
+function buildLatestVitalsByField(points) {
+  const systolicPoint = latestPointWithValue(points, 'systolicBp');
+  const diastolicPoint = latestPointWithValue(points, 'diastolicBp');
+  const heartRatePoint = latestPointWithValue(points, 'heartRate');
+  const oxygenPoint = latestPointWithValue(points, 'oxygenSaturation');
+  const weightPoint = latestPointWithValue(points, 'weight');
+  const heightPoint = latestPointWithValue(points, 'height');
+  const bmiPoint = latestPointWithValue(points, 'bmi');
+
+  return {
+    systolicBp: buildLatestVitalField(systolicPoint?.systolicBp ?? null, systolicPoint?.timestamp),
+    diastolicBp: buildLatestVitalField(
+      diastolicPoint?.diastolicBp ?? null,
+      diastolicPoint?.timestamp
+    ),
+    heartRate: buildLatestVitalField(heartRatePoint?.heartRate ?? null, heartRatePoint?.timestamp),
+    oxygenSaturation: buildLatestVitalField(
+      oxygenPoint?.oxygenSaturation ?? null,
+      oxygenPoint?.timestamp
+    ),
+    weight: buildLatestVitalField(weightPoint?.weight ?? null, weightPoint?.timestamp),
+    height: buildLatestVitalField(heightPoint?.height ?? null, heightPoint?.timestamp),
+    bmi: buildLatestVitalField(bmiPoint?.bmi ?? null, bmiPoint?.timestamp),
   };
 }
 
@@ -147,12 +190,14 @@ module.exports = {
   toDateOnlyIso,
   calculateAge,
   latestIso,
+  buildLatestVitalField,
   assertDoctorScope,
   assertPatientScope,
   assertPatientResourceAccess,
   generateShareCode,
   createPoint,
   buildLatestVitals,
+  buildLatestVitalsByField,
   extractNumberValues,
   aggregateStats,
 };

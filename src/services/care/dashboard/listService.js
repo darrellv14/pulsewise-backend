@@ -9,6 +9,7 @@ const {
   toDateOnlyIso,
   calculateAge,
   latestIso,
+  buildLatestVitalField,
   assertDoctorScope,
 } = require('./shared');
 
@@ -31,6 +32,33 @@ async function listDoctorDashboardPatients({ actor, doctorId, query }) {
 
       return {
         items: result.items.map((item) => ({
+          latestVitalsByField: {
+            systolicBp: buildLatestVitalField(
+              toNumberOrNull(item.latest_systolic_bp),
+              item.latest_measured_at
+            ),
+            diastolicBp: buildLatestVitalField(
+              toNumberOrNull(item.latest_diastolic_bp),
+              item.latest_measured_at
+            ),
+            heartRate: buildLatestVitalField(
+              toNumberOrNull(item.latest_heart_rate),
+              item.latest_heart_rate_measured_at
+            ),
+            oxygenSaturation: buildLatestVitalField(
+              toNumberOrNull(item.latest_oxygen_saturation),
+              item.latest_oxygen_saturation_measured_at
+            ),
+            weight: buildLatestVitalField(
+              toNumberOrNull(item.latest_weight),
+              item.latest_measured_at
+            ),
+            height: buildLatestVitalField(
+              toNumberOrNull(item.latest_height),
+              item.latest_measured_at
+            ),
+            bmi: buildLatestVitalField(toNumberOrNull(item.latest_bmi), item.latest_measured_at),
+          },
           patientId: item.patient_id,
           firstName: item.first_name,
           lastName: item.last_name,

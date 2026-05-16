@@ -79,6 +79,15 @@ describe('Dashboard API contract', () => {
             height: 160,
             bmi: 23.9,
           },
+          latestVitalsByField: {
+            systolicBp: { value: 122, measuredAt: '2026-04-08T09:10:00.000Z' },
+            diastolicBp: { value: 80, measuredAt: '2026-04-08T09:10:00.000Z' },
+            heartRate: { value: 79, measuredAt: '2026-04-08T09:15:00.000Z' },
+            oxygenSaturation: { value: 98, measuredAt: '2026-04-08T09:14:00.000Z' },
+            weight: { value: 61.2, measuredAt: '2026-04-08T09:10:00.000Z' },
+            height: { value: 160, measuredAt: '2026-04-08T09:10:00.000Z' },
+            bmi: { value: 23.9, measuredAt: '2026-04-08T09:10:00.000Z' },
+          },
         },
       ],
       pagination: {
@@ -105,6 +114,7 @@ describe('Dashboard API contract', () => {
       'age',
       'sex',
       'latestVitals',
+      'latestVitalsByField',
     ]);
   });
 
@@ -130,6 +140,15 @@ describe('Dashboard API contract', () => {
         height: 160,
         bmi: 23.9,
       },
+      latestVitalsByField: {
+        systolicBp: { value: 122, measuredAt: '2026-04-08T09:10:00.000Z' },
+        diastolicBp: { value: 80, measuredAt: '2026-04-08T09:10:00.000Z' },
+        heartRate: { value: 79, measuredAt: '2026-04-08T09:15:00.000Z' },
+        oxygenSaturation: { value: 98, measuredAt: '2026-04-08T09:14:00.000Z' },
+        weight: { value: 61.2, measuredAt: '2026-04-08T09:10:00.000Z' },
+        height: { value: 160, measuredAt: '2026-04-08T09:10:00.000Z' },
+        bmi: { value: 23.9, measuredAt: '2026-04-08T09:10:00.000Z' },
+      },
       thresholds: {
         SPO2_CRITICAL_THRESHOLD: 90,
       },
@@ -141,7 +160,12 @@ describe('Dashboard API contract', () => {
 
     expect(response.status).toBe(200);
     expectSuccessEnvelope(response, 'Ringkasan pasien dashboard dokter berhasil diambil');
-    expectObjectKeys(response.body.data, ['patient', 'latestVitals', 'thresholds']);
+    expectObjectKeys(response.body.data, [
+      'patient',
+      'latestVitals',
+      'latestVitalsByField',
+      'thresholds',
+    ]);
   });
 
   test('GET patient self dashboard summary returns doctor-like shape', async () => {
@@ -166,6 +190,15 @@ describe('Dashboard API contract', () => {
         height: 160,
         bmi: 23.9,
       },
+      latestVitalsByField: {
+        systolicBp: { value: 122, measuredAt: '2026-04-08T09:10:00.000Z' },
+        diastolicBp: { value: 80, measuredAt: '2026-04-08T09:10:00.000Z' },
+        heartRate: { value: 79, measuredAt: '2026-04-08T09:15:00.000Z' },
+        oxygenSaturation: { value: 98, measuredAt: '2026-04-08T09:14:00.000Z' },
+        weight: { value: 61.2, measuredAt: '2026-04-08T09:10:00.000Z' },
+        height: { value: 160, measuredAt: '2026-04-08T09:10:00.000Z' },
+        bmi: { value: 23.9, measuredAt: '2026-04-08T09:10:00.000Z' },
+      },
       thresholds: {
         SPO2_CRITICAL_THRESHOLD: 90,
       },
@@ -177,7 +210,12 @@ describe('Dashboard API contract', () => {
 
     expect(response.status).toBe(200);
     expectSuccessEnvelope(response, 'Ringkasan dashboard pasien berhasil diambil');
-    expectObjectKeys(response.body.data, ['patient', 'latestVitals', 'thresholds']);
+    expectObjectKeys(response.body.data, [
+      'patient',
+      'latestVitals',
+      'latestVitalsByField',
+      'thresholds',
+    ]);
   });
 
   test('GET dashboard patient vitals returns stable shape', async () => {
@@ -217,6 +255,15 @@ describe('Dashboard API contract', () => {
         height: 172.5,
         bmi: 22.9,
       },
+      latestVitalsByField: {
+        systolicBp: { value: 122, measuredAt: '2026-04-10T07:30:00.000Z' },
+        diastolicBp: { value: 78, measuredAt: '2026-04-10T07:30:00.000Z' },
+        heartRate: { value: 81, measuredAt: '2026-04-10T07:30:00.000Z' },
+        oxygenSaturation: { value: 98, measuredAt: '2026-04-10T07:30:00.000Z' },
+        weight: { value: 68.2, measuredAt: '2026-04-10T07:30:00.000Z' },
+        height: { value: 172.5, measuredAt: '2026-04-10T07:30:00.000Z' },
+        bmi: { value: 22.9, measuredAt: '2026-04-10T07:30:00.000Z' },
+      },
       thresholds: {
         SPO2_CRITICAL_THRESHOLD: 90,
       },
@@ -228,7 +275,14 @@ describe('Dashboard API contract', () => {
 
     expect(response.status).toBe(200);
     expectSuccessEnvelope(response, 'Time-series vital pasien dashboard dokter berhasil diambil');
-    expectObjectKeys(response.body.data, ['patient', 'period', 'series', 'latestVitals', 'thresholds']);
+    expectObjectKeys(response.body.data, [
+      'patient',
+      'period',
+      'series',
+      'latestVitals',
+      'latestVitalsByField',
+      'thresholds',
+    ]);
     expectObjectKeys(response.body.data.series, [
       'timestamps',
       'systolicBp',
@@ -278,6 +332,15 @@ describe('Dashboard API contract', () => {
         height: 172.5,
         bmi: 22.9,
       },
+      latestVitalsByField: {
+        systolicBp: { value: 122, measuredAt: '2026-04-10T07:30:00.000Z' },
+        diastolicBp: { value: 78, measuredAt: '2026-04-10T07:30:00.000Z' },
+        heartRate: { value: 81, measuredAt: '2026-04-10T07:30:00.000Z' },
+        oxygenSaturation: { value: 98, measuredAt: '2026-04-10T07:30:00.000Z' },
+        weight: { value: 68.2, measuredAt: '2026-04-10T07:30:00.000Z' },
+        height: { value: 172.5, measuredAt: '2026-04-10T07:30:00.000Z' },
+        bmi: { value: 22.9, measuredAt: '2026-04-10T07:30:00.000Z' },
+      },
       thresholds: {
         SPO2_CRITICAL_THRESHOLD: 90,
       },
@@ -289,7 +352,14 @@ describe('Dashboard API contract', () => {
 
     expect(response.status).toBe(200);
     expectSuccessEnvelope(response, 'Time-series vital dashboard pasien berhasil diambil');
-    expectObjectKeys(response.body.data, ['patient', 'period', 'series', 'latestVitals', 'thresholds']);
+    expectObjectKeys(response.body.data, [
+      'patient',
+      'period',
+      'series',
+      'latestVitals',
+      'latestVitalsByField',
+      'thresholds',
+    ]);
   });
 
   test('GET dashboard abnormal report returns stable shape', async () => {

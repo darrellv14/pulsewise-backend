@@ -10,6 +10,7 @@ const {
   createHttpError,
   formatPatientIdentity,
   buildLatestVitals,
+  buildLatestVitalsByField,
   thresholds,
   buildPeriodRange,
   mergeSeries,
@@ -43,6 +44,7 @@ async function buildDashboardPatientVitals(patientId, query, identityLoader, not
     period,
     series: merged.series,
     latestVitals: buildLatestVitals(merged.points),
+    latestVitalsByField: buildLatestVitalsByField(merged.points),
     thresholds,
   };
 }

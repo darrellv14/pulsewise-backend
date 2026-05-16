@@ -7,6 +7,8 @@ const {
   NOT_FOUND,
   toIso,
   toNumberOrNull,
+  latestIso,
+  buildLatestVitalField,
   assertDoctorScope,
   assertPatientScope,
   createHttpError,
@@ -26,15 +28,29 @@ async function buildDashboardPatientSummary(patientId, identityLoader, notFoundM
     dashboardRepository.getLatestVitalSnapshot(patientId),
   ]);
 
+  const dailyMeasuredAt = toIso(latestDaily?.measured_at);
+  const latestVitalsByField = {
+    systolicBp: buildLatestVitalField(toNumberOrNull(latestDaily?.systolic_bp), dailyMeasuredAt),
+    diastolicBp: buildLatestVitalField(
+      toNumberOrNull(latestDaily?.diastolic_bp),
+      dailyMeasuredAt
+    ),
+    heartRate: buildLatestVitalField(null, null),
+    oxygenSaturation: buildLatestVitalField(null, null),
+    weight: buildLatestVitalField(toNumberOrNull(latestDaily?.weight), dailyMeasuredAt),
+    height: buildLatestVitalField(toNumberOrNull(latestDaily?.height), dailyMeasuredAt),
+    bmi: buildLatestVitalField(toNumberOrNull(latestDaily?.bmi), dailyMeasuredAt),
+  };
+
   const latestVitals = {
-    measuredAt: toIso(latestDaily?.measured_at),
-    systolicBp: toNumberOrNull(latestDaily?.systolic_bp),
-    diastolicBp: toNumberOrNull(latestDaily?.diastolic_bp),
+    measuredAt: dailyMeasuredAt,
+    systolicBp: latestVitalsByField.systolicBp.value,
+    diastolicBp: latestVitalsByField.diastolicBp.value,
     heartRate: null,
     oxygenSaturation: null,
-    weight: toNumberOrNull(latestDaily?.weight),
-    height: toNumberOrNull(latestDaily?.height),
-    bmi: toNumberOrNull(latestDaily?.bmi),
+    weight: latestVitalsByField.weight.value,
+    height: latestVitalsByField.height.value,
+    bmi: latestVitalsByField.bmi.value,
   };
 
   for (const reading of latestVitalSnapshot) {
@@ -43,17 +59,27 @@ async function buildDashboardPatientSummary(patientId, identityLoader, notFoundM
       continue;
     }
 
-    latestVitals[key] = toNumberOrNull(reading.value_numeric);
-
     const measuredAt = toIso(reading.measured_at);
-    if (!latestVitals.measuredAt || (measuredAt && measuredAt > latestVitals.measuredAt)) {
-      latestVitals.measuredAt = measuredAt;
-    }
+    const value = toNumberOrNull(reading.value_numeric);
+
+    latestVitals[key] = value;
+    latestVitalsByField[key] = buildLatestVitalField(value, measuredAt);
   }
+
+  latestVitals.measuredAt = latestIso(
+    latestVitalsByField.systolicBp.measuredAt,
+    latestVitalsByField.diastolicBp.measuredAt,
+    latestVitalsByField.heartRate.measuredAt,
+    latestVitalsByField.oxygenSaturation.measuredAt,
+    latestVitalsByField.weight.measuredAt,
+    latestVitalsByField.height.measuredAt,
+    latestVitalsByField.bmi.measuredAt
+  );
 
   return mapDashboardSummary({
     identity,
     latestVitals,
+    latestVitalsByField,
     thresholds,
   });
 }

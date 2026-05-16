@@ -60,12 +60,18 @@ function formatPatientIdentity(row) {
   };
 }
 
-function mapDashboardSummary({ identity, latestVitals, thresholds }) {
-  return {
+function mapDashboardSummary({ identity, latestVitals, latestVitalsByField, thresholds }) {
+  const response = {
     patient: formatPatientIdentity(identity),
     latestVitals,
     thresholds,
   };
+
+  if (latestVitalsByField) {
+    response.latestVitalsByField = latestVitalsByField;
+  }
+
+  return response;
 }
 
 function mapEmergencyContact(row) {
