@@ -31,7 +31,7 @@ async function register(payload) {
       throw createHttpError('Username atau email sudah terdaftar', 409);
     }
 
-    await userRepository.updatePendingUserRegistration({
+    const updatedPendingUser = await userRepository.updatePendingUserRegistration({
       userId: existingUser.user_id,
       username,
       passwordHash,
@@ -40,20 +40,15 @@ async function register(payload) {
     });
 
     await userRepository.deleteEmailVerificationsByEmail(email);
-    const refreshedPendingUser = await userRepository.findUserByEmail(email);
-    if (!refreshedPendingUser) {
-      throw createHttpError('User tidak ditemukan', 404);
-    }
-
-    await issueEmailVerification(refreshedPendingUser);
+    await issueEmailVerification(updatedPendingUser);
 
     return {
-      user: buildUserProfile(refreshedPendingUser),
+      user: buildUserProfile(updatedPendingUser),
       nextStep: 'EMAIL_VERIFICATION_REQUIRED',
     };
   }
 
-  await userRepository.createUserWithRole({
+  const user = await userRepository.createUserWithRole({
     username,
     email,
     passwordHash,
@@ -64,15 +59,10 @@ async function register(payload) {
     emailVerifiedAt: null,
   });
 
-  const refreshedUser = await userRepository.findUserByEmail(email);
-  if (!refreshedUser) {
-    throw createHttpError('User tidak ditemukan', 404);
-  }
-
-  await issueEmailVerification(refreshedUser);
+  await issueEmailVerification(user);
 
   return {
-    user: buildUserProfile(refreshedUser),
+    user: buildUserProfile(user),
     nextStep: 'EMAIL_VERIFICATION_REQUIRED',
   };
 }
