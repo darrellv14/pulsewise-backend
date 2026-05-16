@@ -46,7 +46,19 @@ describe('authService.register', () => {
   });
 
   test('creates pending user, sends OTP, and returns email verification step for new email', async () => {
-    userRepository.findUserByEmail.mockResolvedValue(null);
+    userRepository.findUserByEmail
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({
+        user_id: '11111111-1111-4111-8111-111111111111',
+        username: 'patient',
+        email: 'patient@example.com',
+        first_name: 'Pat',
+        last_name: 'Ient',
+        role: 'patient',
+        account_status: 'pending_verification',
+        email_verified_at: null,
+        onboarding_completed: true,
+      });
     userRepository.createUserWithRole.mockResolvedValue({
       user_id: '11111111-1111-4111-8111-111111111111',
       username: 'patient',
@@ -94,17 +106,29 @@ describe('authService.register', () => {
   });
 
   test('updates pending verification user, invalidates old OTP, and sends new OTP', async () => {
-    userRepository.findUserByEmail.mockResolvedValue({
-      user_id: '33333333-3333-4333-8333-333333333333',
-      username: 'old_patient',
-      email: 'patient@example.com',
-      first_name: 'Old',
-      last_name: 'Name',
-      role: 'patient',
-      account_status: 'pending_verification',
-      email_verified_at: null,
-      onboarding_completed: true,
-    });
+    userRepository.findUserByEmail
+      .mockResolvedValueOnce({
+        user_id: '33333333-3333-4333-8333-333333333333',
+        username: 'old_patient',
+        email: 'patient@example.com',
+        first_name: 'Old',
+        last_name: 'Name',
+        role: 'patient',
+        account_status: 'pending_verification',
+        email_verified_at: null,
+        onboarding_completed: true,
+      })
+      .mockResolvedValueOnce({
+        user_id: '33333333-3333-4333-8333-333333333333',
+        username: 'new_patient',
+        email: 'patient@example.com',
+        first_name: 'New',
+        last_name: 'Name',
+        role: 'patient',
+        account_status: 'pending_verification',
+        email_verified_at: null,
+        onboarding_completed: true,
+      });
     userRepository.updatePendingUserRegistration.mockResolvedValue({
       user_id: '33333333-3333-4333-8333-333333333333',
       username: 'new_patient',
