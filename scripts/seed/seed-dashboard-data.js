@@ -354,6 +354,95 @@ async function ensurePatientMlAssessment(client, patientId, assessmentDate) {
   );
 }
 
+async function ensureMedicationSetup(client, patientId) {
+  const medicationResult = await client.query(
+    `
+      INSERT INTO medications (
+        user_id,
+        name,
+        description,
+        condition_tag,
+        form,
+        color,
+        single_dose,
+        single_dose_unit,
+        start_date,
+        frequency,
+        num_of_days,
+        note
+      )
+      VALUES (
+        $1,
+        'Aspirin',
+        'Seed dashboard medication',
+        'heart',
+        'tablet',
+        'white',
+        1,
+        'tablet',
+        CURRENT_DATE,
+        'daily',
+        14,
+        'Setelah makan pagi dan malam'
+      )
+      ON CONFLICT DO NOTHING
+      RETURNING medication_id
+    `,
+    [patientId]
+  );
+
+  let medicationId = medicationResult.rows[0]?.medication_id || null;
+  if (!medicationId) {
+    const existing = await client.query(
+      `
+        SELECT medication_id
+        FROM medications
+        WHERE user_id = $1
+        ORDER BY created_at DESC
+        LIMIT 1
+      `,
+      [patientId]
+    );
+    medicationId = existing.rows[0]?.medication_id || null;
+  }
+
+  if (!medicationId) {
+    throw new Error(`Medication seed gagal untuk patientId ${patientId}`);
+  }
+
+  await client.query(
+    `
+      UPDATE medications
+      SET
+        form = 'tablet',
+        color = 'white',
+        single_dose = 1,
+        single_dose_unit = 'tablet',
+        start_date = CURRENT_DATE,
+        frequency = 'daily',
+        num_of_days = 14,
+        note = 'Setelah makan pagi dan malam'
+      WHERE medication_id = $1
+    `,
+    [medicationId]
+  );
+
+  await client.query('DELETE FROM medication_schedules WHERE user_id = $1 AND medication_id = $2', [
+    patientId,
+    medicationId,
+  ]);
+
+  await client.query(
+    `
+      INSERT INTO medication_schedules (user_id, medication_id, schedule_time, day_of_week)
+      VALUES
+        ($1, $2, '08:00', NULL),
+        ($1, $2, '20:00', NULL)
+    `,
+    [patientId, medicationId]
+  );
+}
+
 async function clearPatientHealthData(client, patientId) {
   // Hapus data lama khusus user seed supaya rerun seeder tetap idempotent.
   await client.query('DELETE FROM vital_sign_readings WHERE user_id = $1', [patientId]);
@@ -598,6 +687,7 @@ async function run() {
       await ensurePatientMlProfile(client, patientUserId, patientConfig);
       await ensureDoctorPatientLink(client, doctorUserId, patientUserId);
       await seedPatientTimeseries(client, patientUserId, patientConfig);
+      await ensureMedicationSetup(client, patientUserId);
 
       seededPatients.push({
         userId: patientUserId,
