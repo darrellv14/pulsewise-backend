@@ -30,6 +30,51 @@ const SEED_PATIENTS = [
   },
 ];
 
+const DEFAULT_ML_PROFILE = {
+  demog1Riagendr: 2,
+  demog1Ridreth3: 6,
+  demog1Dmdeduc: 4,
+  demog1Dmdfmsiz: 3,
+  demog1Dmdhhsiz: 3,
+  demog1Dmdhhsza: 2,
+  demog1Dmdhhszb: 1,
+  demog1Dmdhhsze: 0,
+  demog1Dmdmartl: 1,
+  quest22Smq020: 1,
+  quest22Smq890: 1,
+  quest22Smq900: 2,
+  quest23Smd470: 0,
+  quest1Alq111: 2,
+};
+
+const DEFAULT_ML_ASSESSMENT = {
+  exami1Bpxpls: 1,
+  labor1Lbdtcsi: 180,
+  labor2Urdflow1: 1.2,
+  labor2Urdtime1: 45,
+  labor2Urxvol1: 200,
+  quest11Hiq011: 1,
+  quest12Heq010: 2,
+  quest12Heq030: 2,
+  quest15Kiq022: 2,
+  quest15Kiq026: 2,
+  quest16Mcq010: 2,
+  quest16Mcq160b: 2,
+  quest16Mcq220: 2,
+  quest16Mcq300a: 2,
+  quest16Mcq300c: 2,
+  quest17Dpq020: 0,
+  quest17Dpq030: 0,
+  quest17Dpq040: 0,
+  quest20Pfq061b: 2,
+  quest20Pfq061c: 2,
+  quest20Pfq061h: 2,
+  quest3Cdq009: 2,
+  quest3Cdq010: 2,
+  quest7Diq010: 2,
+  quest9Dlq050: 2,
+};
+
 function getPool() {
   return new Pool({
     host: process.env.POSTGRES_HOST || 'localhost',
@@ -145,6 +190,170 @@ async function ensureDoctorPatientLink(client, doctorId, patientId) {
   );
 }
 
+async function ensurePatientMlProfile(client, patientId, patientConfig) {
+  const mlProfile = {
+    ...DEFAULT_ML_PROFILE,
+    demog1Riagendr: patientConfig.sex === 'female' ? 2 : 1,
+  };
+
+  await client.query(
+    `
+      INSERT INTO patient_ml_profiles (
+        patient_id,
+        demog1_riagendr,
+        demog1_ridreth3,
+        demog1_dmdeduc,
+        demog1_dmdfmsiz,
+        demog1_dmdhhsiz,
+        demog1_dmdhhsza,
+        demog1_dmdhhszb,
+        demog1_dmdhhsze,
+        demog1_dmdmartl,
+        quest22_smq020,
+        quest22_smq890,
+        quest22_smq900,
+        quest23_smd470,
+        quest1_alq111
+      ) VALUES (
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
+        $11, $12, $13, $14, $15
+      )
+      ON CONFLICT (patient_id)
+      DO UPDATE SET
+        demog1_riagendr = EXCLUDED.demog1_riagendr,
+        demog1_ridreth3 = EXCLUDED.demog1_ridreth3,
+        demog1_dmdeduc = EXCLUDED.demog1_dmdeduc,
+        demog1_dmdfmsiz = EXCLUDED.demog1_dmdfmsiz,
+        demog1_dmdhhsiz = EXCLUDED.demog1_dmdhhsiz,
+        demog1_dmdhhsza = EXCLUDED.demog1_dmdhhsza,
+        demog1_dmdhhszb = EXCLUDED.demog1_dmdhhszb,
+        demog1_dmdhhsze = EXCLUDED.demog1_dmdhhsze,
+        demog1_dmdmartl = EXCLUDED.demog1_dmdmartl,
+        quest22_smq020 = EXCLUDED.quest22_smq020,
+        quest22_smq890 = EXCLUDED.quest22_smq890,
+        quest22_smq900 = EXCLUDED.quest22_smq900,
+        quest23_smd470 = EXCLUDED.quest23_smd470,
+        quest1_alq111 = EXCLUDED.quest1_alq111,
+        updated_at = NOW()
+    `,
+    [
+      patientId,
+      mlProfile.demog1Riagendr,
+      mlProfile.demog1Ridreth3,
+      mlProfile.demog1Dmdeduc,
+      mlProfile.demog1Dmdfmsiz,
+      mlProfile.demog1Dmdhhsiz,
+      mlProfile.demog1Dmdhhsza,
+      mlProfile.demog1Dmdhhszb,
+      mlProfile.demog1Dmdhhsze,
+      mlProfile.demog1Dmdmartl,
+      mlProfile.quest22Smq020,
+      mlProfile.quest22Smq890,
+      mlProfile.quest22Smq900,
+      mlProfile.quest23Smd470,
+      mlProfile.quest1Alq111,
+    ]
+  );
+}
+
+async function ensurePatientMlAssessment(client, patientId, assessmentDate) {
+  await client.query(
+    `
+      INSERT INTO patient_ml_assessments (
+        patient_id,
+        assessment_date,
+        exami1_bpxpls,
+        labor1_lbdtcsi,
+        labor2_urdflow1,
+        labor2_urdtime1,
+        labor2_urxvol1,
+        quest11_hiq011,
+        quest12_heq010,
+        quest12_heq030,
+        quest15_kiq022,
+        quest15_kiq026,
+        quest16_mcq010,
+        quest16_mcq160b,
+        quest16_mcq220,
+        quest16_mcq300a,
+        quest16_mcq300c,
+        quest17_dpq020,
+        quest17_dpq030,
+        quest17_dpq040,
+        quest20_pfq061b,
+        quest20_pfq061c,
+        quest20_pfq061h,
+        quest3_cdq009,
+        quest3_cdq010,
+        quest7_diq010,
+        quest9_dlq050
+      ) VALUES (
+        $1, $2, $3, $4, $5, $6, $7,
+        $8, $9, $10, $11, $12, $13, $14,
+        $15, $16, $17, $18, $19, $20, $21,
+        $22, $23, $24, $25, $26, $27
+      )
+      ON CONFLICT (patient_id, assessment_date)
+      DO UPDATE SET
+        exami1_bpxpls = EXCLUDED.exami1_bpxpls,
+        labor1_lbdtcsi = EXCLUDED.labor1_lbdtcsi,
+        labor2_urdflow1 = EXCLUDED.labor2_urdflow1,
+        labor2_urdtime1 = EXCLUDED.labor2_urdtime1,
+        labor2_urxvol1 = EXCLUDED.labor2_urxvol1,
+        quest11_hiq011 = EXCLUDED.quest11_hiq011,
+        quest12_heq010 = EXCLUDED.quest12_heq010,
+        quest12_heq030 = EXCLUDED.quest12_heq030,
+        quest15_kiq022 = EXCLUDED.quest15_kiq022,
+        quest15_kiq026 = EXCLUDED.quest15_kiq026,
+        quest16_mcq010 = EXCLUDED.quest16_mcq010,
+        quest16_mcq160b = EXCLUDED.quest16_mcq160b,
+        quest16_mcq220 = EXCLUDED.quest16_mcq220,
+        quest16_mcq300a = EXCLUDED.quest16_mcq300a,
+        quest16_mcq300c = EXCLUDED.quest16_mcq300c,
+        quest17_dpq020 = EXCLUDED.quest17_dpq020,
+        quest17_dpq030 = EXCLUDED.quest17_dpq030,
+        quest17_dpq040 = EXCLUDED.quest17_dpq040,
+        quest20_pfq061b = EXCLUDED.quest20_pfq061b,
+        quest20_pfq061c = EXCLUDED.quest20_pfq061c,
+        quest20_pfq061h = EXCLUDED.quest20_pfq061h,
+        quest3_cdq009 = EXCLUDED.quest3_cdq009,
+        quest3_cdq010 = EXCLUDED.quest3_cdq010,
+        quest7_diq010 = EXCLUDED.quest7_diq010,
+        quest9_dlq050 = EXCLUDED.quest9_dlq050,
+        updated_at = NOW()
+    `,
+    [
+      patientId,
+      assessmentDate,
+      DEFAULT_ML_ASSESSMENT.exami1Bpxpls,
+      DEFAULT_ML_ASSESSMENT.labor1Lbdtcsi,
+      DEFAULT_ML_ASSESSMENT.labor2Urdflow1,
+      DEFAULT_ML_ASSESSMENT.labor2Urdtime1,
+      DEFAULT_ML_ASSESSMENT.labor2Urxvol1,
+      DEFAULT_ML_ASSESSMENT.quest11Hiq011,
+      DEFAULT_ML_ASSESSMENT.quest12Heq010,
+      DEFAULT_ML_ASSESSMENT.quest12Heq030,
+      DEFAULT_ML_ASSESSMENT.quest15Kiq022,
+      DEFAULT_ML_ASSESSMENT.quest15Kiq026,
+      DEFAULT_ML_ASSESSMENT.quest16Mcq010,
+      DEFAULT_ML_ASSESSMENT.quest16Mcq160b,
+      DEFAULT_ML_ASSESSMENT.quest16Mcq220,
+      DEFAULT_ML_ASSESSMENT.quest16Mcq300a,
+      DEFAULT_ML_ASSESSMENT.quest16Mcq300c,
+      DEFAULT_ML_ASSESSMENT.quest17Dpq020,
+      DEFAULT_ML_ASSESSMENT.quest17Dpq030,
+      DEFAULT_ML_ASSESSMENT.quest17Dpq040,
+      DEFAULT_ML_ASSESSMENT.quest20Pfq061b,
+      DEFAULT_ML_ASSESSMENT.quest20Pfq061c,
+      DEFAULT_ML_ASSESSMENT.quest20Pfq061h,
+      DEFAULT_ML_ASSESSMENT.quest3Cdq009,
+      DEFAULT_ML_ASSESSMENT.quest3Cdq010,
+      DEFAULT_ML_ASSESSMENT.quest7Diq010,
+      DEFAULT_ML_ASSESSMENT.quest9Dlq050,
+    ]
+  );
+}
+
 async function clearPatientHealthData(client, patientId) {
   // Hapus data lama khusus user seed supaya rerun seeder tetap idempotent.
   await client.query('DELETE FROM vital_sign_readings WHERE user_id = $1', [patientId]);
@@ -227,6 +436,106 @@ async function seedOneDay(client, patientId, diaryDate, measuredAt, metrics) {
     `,
     [patientId, DATA_SOURCE, metrics.heartRate, measuredAt, metrics.oxygenSaturation]
   );
+
+  await client.query(
+    `
+      INSERT INTO daily_symptoms (
+        diary_id,
+        symptom_name,
+        symptom_code,
+        body_area,
+        is_chest_pain,
+        pain_frequency_code,
+        pain_location_code,
+        intensity,
+        note,
+        time_stamp
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+    `,
+    [
+      diaryId,
+      'Mild chest discomfort',
+      'chest_pain',
+      'chest',
+      true,
+      1,
+      2,
+      3,
+      'Keluhan singkat setelah aktivitas berat',
+      measuredAt,
+    ]
+  );
+
+  await client.query(
+    `
+      INSERT INTO daily_activities (
+        diary_id,
+        name,
+        duration,
+        heart_rate,
+        activity_category,
+        intensity_level,
+        transport_mode,
+        outdoor_minutes,
+        user_feeling,
+        note,
+        time_stamp
+      )
+      VALUES
+        ($1, 'Berkebun', 45, 108, 'work', 'vigorous', NULL, 30, 'baik', 'Aktivitas luar ruangan', $2),
+        ($1, 'Jalan kaki ke minimarket', 20, 92, 'transport', 'moderate', 'walk', 15, 'baik', 'Pergi sore hari', $3),
+        ($1, 'Latihan kardio ringan', 30, 118, 'recreation', 'vigorous', NULL, 10, 'cukup', 'Sesi rutin', $4)
+    `,
+    [
+      diaryId,
+      `${diaryDate}T06:45:00.000Z`,
+      `${diaryDate}T17:10:00.000Z`,
+      `${diaryDate}T19:00:00.000Z`,
+    ]
+  );
+
+  await client.query(
+    `
+      INSERT INTO daily_consumptions (
+        diary_id,
+        type,
+        name,
+        portion,
+        nutrition_source,
+        energy_kcal,
+        protein_g,
+        carbohydrate_g,
+        sugar_g,
+        fiber_g,
+        total_fat_g,
+        saturated_fat_g,
+        monounsaturated_fat_g,
+        polyunsaturated_fat_g,
+        cholesterol_mg,
+        calcium_mg,
+        note,
+        time_stamp
+      )
+      VALUES ($1, 'food', 'Menu sarapan seimbang', '1 porsi', 'seed-dashboard-data', $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, 'Snapshot nutrisi harian', $13)
+    `,
+    [diaryId, 650, 35, 70, 12, 9, 20, 6, 7, 5, 120, 300, `${diaryDate}T07:30:00.000Z`]
+  );
+
+  await client.query(
+    `
+      INSERT INTO daily_sleep_records (diary_id, sleep_time, wake_time, sleep_duration_hours, source)
+      VALUES ($1, $2::time, $3::time, $4, $5)
+      ON CONFLICT (diary_id)
+      DO UPDATE SET
+        sleep_time = EXCLUDED.sleep_time,
+        wake_time = EXCLUDED.wake_time,
+        sleep_duration_hours = EXCLUDED.sleep_duration_hours,
+        source = EXCLUDED.source,
+        updated_at = NOW()
+    `,
+    [diaryId, '22:30', '06:30', 8, 'seed-dashboard-data']
+  );
 }
 
 async function seedPatientTimeseries(client, patientId, patientConfig) {
@@ -247,6 +556,11 @@ async function seedPatientTimeseries(client, patientId, patientConfig) {
     const metrics = computeSeedMetrics(i, patientConfig);
     await seedOneDay(client, patientId, diaryDate, measuredAt.toISOString(), metrics);
   }
+
+  const assessmentDate = new Date();
+  assessmentDate.setUTCDate(assessmentDate.getUTCDate() - 1);
+  assessmentDate.setUTCHours(0, 0, 0, 0);
+  await ensurePatientMlAssessment(client, patientId, assessmentDate.toISOString().slice(0, 10));
 }
 
 async function run() {
@@ -281,6 +595,7 @@ async function run() {
 
       await ensureUserRole(client, patientUserId, patientRoleId);
       await ensurePatientProfile(client, patientUserId, patientConfig);
+      await ensurePatientMlProfile(client, patientUserId, patientConfig);
       await ensureDoctorPatientLink(client, doctorUserId, patientUserId);
       await seedPatientTimeseries(client, patientUserId, patientConfig);
 
