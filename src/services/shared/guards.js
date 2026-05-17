@@ -14,6 +14,11 @@ const DEFAULT_PATIENT_SCOPE_MESSAGES = {
   scopeDenied: 'Akses data pasien ditolak',
 };
 
+const DEFAULT_USER_SCOPE_MESSAGES = {
+  invalidActor: 'Aktor tidak valid',
+  scopeDenied: 'Akses data user ditolak',
+};
+
 const DEFAULT_PATIENT_RESOURCE_MESSAGES = {
   invalidActor: 'Aktor tidak valid',
   roleDenied: 'Role tidak memiliki akses pasien',
@@ -68,6 +73,22 @@ function assertPatientScope({ actor, patientId, messages }) {
   }
 }
 
+function assertUserScope({ actor, userId, messages }) {
+  const resolved = resolveMessages(DEFAULT_USER_SCOPE_MESSAGES, messages);
+
+  if (!actor) {
+    throw createHttpError(resolved.invalidActor, FORBIDDEN);
+  }
+
+  if (actor.role === 'admin') {
+    return;
+  }
+
+  if (actor.userId !== userId) {
+    throw createHttpError(resolved.scopeDenied, FORBIDDEN);
+  }
+}
+
 async function assertDoctorPatientLinkedAccess({ doctorId, patientId, message }) {
   const link = await doctorPatientRepository.findDoctorPatientLink({
     doctorId,
@@ -116,6 +137,7 @@ async function assertPatientResourceAccess({ actor, patientId, messages }) {
 module.exports = {
   assertDoctorScope,
   assertPatientScope,
+  assertUserScope,
   assertDoctorPatientLinkedAccess,
   assertPatientResourceAccess,
 };

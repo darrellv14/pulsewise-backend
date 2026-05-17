@@ -46,7 +46,10 @@ model User {
   reminders                        Reminder[]
   medicationLogs                   MedicationLog[]
   emailVerifications               EmailVerification[]
+  fcmDeviceTokens                  FcmDeviceToken[]
   vitalSignReadings                VitalSignReading[]
+  pushNotificationLogs             PushNotificationLog[]   @relation("PushNotificationRecipient")
+  pushNotificationRequests         PushNotificationLog[]   @relation("PushNotificationRequester")
   patientShares                    PatientShare[]            @relation("PatientShares")
   createdPatientShares             PatientShare[]            @relation("PatientShareCreator")
   doctorPatientsAsDoctor           DoctorPatient[]           @relation("DoctorPatientDoctor")
@@ -372,6 +375,63 @@ model EmailVerification {
   @@index([email, createdAt(sort: Desc)], map: "idx_email_verifications_email_time")
   @@index([userId, createdAt(sort: Desc)], map: "idx_email_verifications_user")
   @@map("email_verifications")
+}
+
+model FcmDeviceToken {
+  fcmTokenId       String                @id @default(dbgenerated("gen_random_uuid()")) @map("fcm_token_id") @db.Uuid
+  userId           String                @map("user_id") @db.Uuid
+  fcmToken         String                @unique @map("fcm_token")
+  platform         String                @db.VarChar(16)
+  deviceId         String?               @map("device_id") @db.VarChar(255)
+  deviceName       String?               @map("device_name") @db.VarChar(255)
+  appVersion       String?               @map("app_version") @db.VarChar(64)
+  appBuild         String?               @map("app_build") @db.VarChar(32)
+  locale           String?               @db.VarChar(16)
+  timezone         String?               @db.VarChar(64)
+  isActive         Boolean               @default(true) @map("is_active")
+  lastSeenAt       DateTime              @default(now()) @map("last_seen_at") @db.Timestamptz(6)
+  revokedAt        DateTime?             @map("revoked_at") @db.Timestamptz(6)
+  failureCount     Int                   @default(0) @map("failure_count")
+  lastFailureCode  String?               @map("last_failure_code") @db.VarChar(128)
+  lastSentAt       DateTime?             @map("last_sent_at") @db.Timestamptz(6)
+  createdAt        DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime              @default(now()) @map("updated_at") @db.Timestamptz(6)
+  user             User                  @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  notificationLogs PushNotificationLog[]
+
+  @@index([userId, isActive], map: "idx_fcm_device_tokens_user_active")
+  @@index([deviceId], map: "idx_fcm_device_tokens_device")
+  @@index([lastSeenAt], map: "idx_fcm_device_tokens_last_seen")
+  @@map("fcm_device_tokens")
+}
+
+model PushNotificationLog {
+  notificationLogId String          @id @default(dbgenerated("gen_random_uuid()")) @map("notification_log_id") @db.Uuid
+  userId            String          @map("user_id") @db.Uuid
+  fcmTokenId        String?         @map("fcm_token_id") @db.Uuid
+  requestedByUserId String?         @map("requested_by_user_id") @db.Uuid
+  dedupeKey         String?         @map("dedupe_key") @db.VarChar(255)
+  notificationType  String          @map("notification_type") @db.VarChar(64)
+  title             String          @db.VarChar(255)
+  body              String
+  dataPayload       Json?           @map("data_payload")
+  deliveryStatus    String          @default("queued") @map("delivery_status") @db.VarChar(32)
+  providerMessageId String?         @map("provider_message_id") @db.VarChar(255)
+  providerErrorCode String?         @map("provider_error_code") @db.VarChar(128)
+  providerResponse  Json?           @map("provider_response")
+  sentAt            DateTime?       @map("sent_at") @db.Timestamptz(6)
+  deliveredAt       DateTime?       @map("delivered_at") @db.Timestamptz(6)
+  failedAt          DateTime?       @map("failed_at") @db.Timestamptz(6)
+  createdAt         DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  user              User            @relation("PushNotificationRecipient", fields: [userId], references: [userId], onDelete: Cascade)
+  fcmDeviceToken    FcmDeviceToken? @relation(fields: [fcmTokenId], references: [fcmTokenId], onDelete: SetNull)
+  requestedByUser   User?           @relation("PushNotificationRequester", fields: [requestedByUserId], references: [userId], onDelete: SetNull)
+
+  @@index([userId, createdAt(sort: Desc)], map: "idx_push_notification_logs_user_created")
+  @@index([dedupeKey], map: "idx_push_notification_logs_dedupe_key")
+  @@index([notificationType, createdAt(sort: Desc)], map: "idx_push_notification_logs_type_created")
+  @@index([deliveryStatus, createdAt(sort: Desc)], map: "idx_push_notification_logs_status_created")
+  @@map("push_notification_logs")
 }
 
 model VitalSignReading {
