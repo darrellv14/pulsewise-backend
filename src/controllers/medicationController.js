@@ -176,6 +176,21 @@ async function createMedicationLog(req, res, next) {
   }
 }
 
+async function sendMedicationReminderNotification(req, res, next) {
+  try {
+    const data = await medicationService.sendMedicationReminderNotification({
+      actor: req.user,
+      userId: req.params.userId,
+      medicationId: req.params.medicationId,
+      payload: req.body,
+    });
+
+    return success(res, 'Medication reminder notification berhasil dikirim', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
 module.exports = {
   listMedications,
   listMedicationCalendar,
@@ -189,4 +204,5 @@ module.exports = {
   deleteReminder,
   listMedicationLogs,
   createMedicationLog,
+  sendMedicationReminderNotification,
 };

@@ -14,6 +14,7 @@ const {
   reminderCreateSchema,
   reminderUpdateSchema,
   medicationLogCreateSchema,
+  medicationReminderNotificationSchema,
   medicationLogQuerySchema,
 } = require('../validators/medicationValidator');
 
@@ -101,6 +102,13 @@ router.post(
   validateRequest(medicationParamsSchema, 'params'),
   validateRequest(medicationLogCreateSchema),
   medicationController.createMedicationLog
+);
+router.post(
+  '/users/:userId/medications/:medicationId/reminder-notification',
+  authenticate,
+  validateRequest(medicationParamsSchema, 'params'),
+  validateRequest(medicationReminderNotificationSchema),
+  medicationController.sendMedicationReminderNotification
 );
 
 module.exports = router;

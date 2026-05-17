@@ -491,6 +491,7 @@ module.exports = {
   toMedicationDto,
   buildMedicationLogLookup,
   buildMedicationCalendarEvents,
+  getMondayBasedDayOfWeek,
   assertPatientScope,
   ensureMedicationOwnership,
   assertNoDuplicateReminderTime,

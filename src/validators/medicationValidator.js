@@ -190,6 +190,20 @@ const medicationLogCreateSchema = z.object({
   status: medicationLogStatusSchema.default('taken'),
 });
 
+const medicationReminderNotificationSchema = z
+  .object({
+    reminderId: uuidV4Schema.optional(),
+    scheduledDate: medicationDateSchema,
+    scheduledTime: timeStringSchema.optional(),
+    status: z.string().trim().min(1).max(64).default('Open'),
+    title: z.string().trim().min(1).max(255).optional(),
+    body: z.string().trim().min(1).max(2000).optional(),
+  })
+  .refine((value) => value.reminderId || value.scheduledTime, {
+    message: 'reminderId atau scheduledTime wajib diisi',
+    path: ['reminderId'],
+  });
+
 const medicationListQuerySchema = paginationQuerySchema;
 const reminderListQuerySchema = paginationQuerySchema;
 
@@ -245,5 +259,6 @@ module.exports = {
   reminderCreateSchema,
   reminderUpdateSchema,
   medicationLogCreateSchema,
+  medicationReminderNotificationSchema,
   medicationLogQuerySchema,
 };

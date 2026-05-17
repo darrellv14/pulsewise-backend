@@ -15,6 +15,15 @@ const {
   deleteReminder,
 } = require('./medication/reminderService');
 const { listMedicationLogs, createMedicationLog } = require('./medication/logService');
+const {
+  sendMedicationReminderNotification,
+  sendMedicationReminderNotificationInternal,
+} = require('./medication/reminderNotificationService');
+const {
+  processMedicationReminderWindow,
+  startMedicationReminderScheduler,
+  stopMedicationReminderScheduler,
+} = require('./medication/reminderSchedulerService');
 
 module.exports = {
   listMedications,
@@ -29,4 +38,9 @@ module.exports = {
   deleteReminder,
   listMedicationLogs,
   createMedicationLog,
+  sendMedicationReminderNotification,
+  sendMedicationReminderNotificationInternal,
+  processMedicationReminderWindow,
+  startMedicationReminderScheduler,
+  stopMedicationReminderScheduler,
 };
