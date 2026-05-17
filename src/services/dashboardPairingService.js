@@ -3,6 +3,8 @@ const { NOT_FOUND, FORBIDDEN, CREATED, OK } = require('../constants/httpStatus')
 const { PAIRING_STATUSES } = require('../constants/enums');
 const doctorPatientRepository = require('../repositories/doctorPatientRepository');
 const dashboardPairingRepository = require('../repositories/dashboardPairingRepository');
+const pushNotificationLogRepository = require('../repositories/pushNotificationLogRepository');
+const notificationService = require('./notificationService');
 const { assertDoctorScope } = require('./shared/guards');
 
 const DEFAULT_PAIRING_SOURCE = 'qr_dashboard_pairing';
@@ -47,6 +49,77 @@ function buildPairingTokenNotFoundError() {
   const error = new Error('Pairing token tidak valid atau sudah kadaluarsa');
   error.statusCode = NOT_FOUND;
   return error;
+}
+
+function buildDashboardPairingNotificationDedupeKey({ pairingSessionId, patientId }) {
+  return ['dashboard_pairing', pairingSessionId, patientId, 'confirmed'].join(':');
+}
+
+function buildDashboardPairingNotificationPayload({ pairingSessionId, doctorId, patientId, source, confirmedAt }) {
+  return {
+    title: 'Dashboard berhasil terhubung',
+    body: 'Akun PulseWise Anda kini terhubung dengan dashboard dokter.',
+    data: {
+      action: 'open_dashboard_pairing',
+      type: 'dashboard_pairing',
+      pairingSessionId,
+      doctorId,
+      patientId,
+      status: PAIRING_STATUSES.CONFIRMED,
+      source: source || DEFAULT_PAIRING_SOURCE,
+      confirmedAt: toIso(confirmedAt),
+    },
+  };
+}
+
+async function sendDashboardPairingNotificationBestEffort({
+  pairingSessionId,
+  doctorId,
+  patientId,
+  source,
+  confirmedAt,
+}) {
+  if (!patientId || !pairingSessionId) {
+    return false;
+  }
+
+  const dedupeKey = buildDashboardPairingNotificationDedupeKey({
+    pairingSessionId,
+    patientId,
+  });
+  const existingLog = await pushNotificationLogRepository.findPushNotificationLogByDedupeKey(
+    dedupeKey
+  );
+  if (existingLog) {
+    return false;
+  }
+
+  const notificationPayload = buildDashboardPairingNotificationPayload({
+    pairingSessionId,
+    doctorId,
+    patientId,
+    source,
+    confirmedAt,
+  });
+
+  try {
+    await notificationService.deliverNotificationToUser({
+      userId: patientId,
+      title: notificationPayload.title,
+      body: notificationPayload.body,
+      data: notificationPayload.data,
+      notificationType: 'dashboard_pairing',
+      dedupeKey,
+    });
+    return true;
+  } catch (error) {
+    if (error?.statusCode === NOT_FOUND) {
+      return false;
+    }
+
+    console.warn('[FCM] Dashboard pairing notification skipped due to delivery error', error);
+    return false;
+  }
 }
 
 async function buildFinalizedPairingResponse({ pairingSession, requestedSource }) {
@@ -208,7 +281,7 @@ async function confirmDashboardPairingSession({
   });
 
   if (confirmation) {
-    return {
+    const result = {
       pairingSessionId: confirmation.pairingSession.pairing_session_id,
       doctorId: confirmation.pairingSession.doctor_id,
       status: confirmation.pairingSession.status,
@@ -218,6 +291,16 @@ async function confirmDashboardPairingSession({
       doctorPatientLink: confirmation.doctorPatientLink,
       httpStatus: CREATED,
     };
+
+    await sendDashboardPairingNotificationBestEffort({
+      pairingSessionId: result.pairingSessionId,
+      doctorId: result.doctorId,
+      patientId: result.patientId,
+      source,
+      confirmedAt: result.confirmedAt,
+    });
+
+    return result;
   }
 
   pairingSession =
@@ -239,13 +322,27 @@ async function confirmDashboardPairingSession({
       };
   }
 
-  return buildFinalizedPairingResponse({
+  const finalized = await buildFinalizedPairingResponse({
     pairingSession,
     requestedSource: source,
   });
+
+  if (finalized.status === PAIRING_STATUSES.CONFIRMED && finalized.patientId) {
+    await sendDashboardPairingNotificationBestEffort({
+      pairingSessionId: finalized.pairingSessionId,
+      doctorId: finalized.doctorId,
+      patientId: finalized.patientId,
+      source,
+      confirmedAt: finalized.confirmedAt,
+    });
+  }
+
+  return finalized;
 }
 
 module.exports = {
+  buildDashboardPairingNotificationDedupeKey,
+  buildDashboardPairingNotificationPayload,
   createDashboardPairingSession,
   getDashboardPairingSessionStatus,
   confirmDashboardPairingSession,

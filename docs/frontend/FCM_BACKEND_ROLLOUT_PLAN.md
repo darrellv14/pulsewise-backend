@@ -92,13 +92,19 @@ Catatan:
 
 ## Stage 4 - Dashboard Pairing Notifications
 
-Status: **Planned**
+Status: **Implemented**
 
 Cakupan target:
 
-- [ ] builder payload `dashboard_pairing`
-- [ ] trigger saat pairing session dibuat / confirmed
-- [ ] payload deep-link action untuk mobile
+- [x] builder payload `dashboard_pairing`
+- [x] trigger saat pairing session confirmed
+- [x] payload deep-link action untuk mobile
+- [x] dedupe pairing confirmation notification via `push_notification_logs.dedupe_key`
+
+Catatan:
+
+- notifikasi pairing saat ini dikirim ke pasien yang berhasil mengonfirmasi pairing
+- delivery bersifat best-effort agar flow pairing tidak gagal bila token FCM user belum tersedia
 
 ## Stage 5 - Abnormal Vital Alerts
 
