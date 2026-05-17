@@ -186,6 +186,7 @@ describe('mlRecommendationService', () => {
     expect(patientMlInferenceRepository.createInferenceResult).toHaveBeenCalled();
     expect(domainNotificationService.sendMlResultReadyNotificationBestEffort).toHaveBeenCalledWith({
       patientId: 'user-1',
+      requestedByUserId: 'user-1',
       result: {
         resultId: 'latest-result-id',
         generatedAt: '2026-05-05T12:45:00.000Z',

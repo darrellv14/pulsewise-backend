@@ -136,12 +136,13 @@ Cakupan target:
 - [x] builder payload `ml_result_ready`
 - [x] trigger setelah inference result berhasil dipersist
 - [x] notifikasi best-effort ke pasien
+- [x] notifikasi tambahan ke requester non-patient (mis. dokter dashboard)
 - [x] dedupe notification via `push_notification_logs.dedupe_key`
 
 Catatan:
 
-- stage ini saat ini mengirim notifikasi ke pasien setelah hasil inference tersimpan
-- distribusi notifikasi khusus ke requester selain pasien belum ditambahkan
+- patient tetap menjadi recipient utama
+- bila inference diminta user lain selain patient, backend juga mengirim copy notifikasi ke requester tersebut
 
 ## Contract Stage 1
 

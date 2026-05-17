@@ -32,6 +32,7 @@ async function saveInferenceResult({
 
   await sendMlResultReadyNotificationBestEffort({
     patientId,
+    requestedByUserId: actor?.userId || null,
     result: saved,
     inferenceType,
   });

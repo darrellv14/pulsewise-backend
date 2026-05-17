@@ -66,6 +66,7 @@ describe('domain notification service', () => {
 
     const result = await domainNotificationService.sendMlResultReadyNotificationBestEffort({
       patientId: '11111111-1111-4111-8111-111111111111',
+      requestedByUserId: '11111111-1111-4111-8111-111111111111',
       inferenceType: 'recommendation',
       result: {
         resultId: '33333333-3333-4333-8333-333333333333',
@@ -82,6 +83,47 @@ describe('domain notification service', () => {
           action: 'open_ml_result',
           inferenceType: 'recommendation',
           resultId: '33333333-3333-4333-8333-333333333333',
+        }),
+      })
+    );
+    expect(result).toBe(true);
+  });
+
+  test('sendMlResultReadyNotificationBestEffort also notifies requester when requester differs from patient', async () => {
+    pushNotificationLogRepository.findPushNotificationLogByDedupeKey
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce(null);
+    deliverNotificationToUser
+      .mockResolvedValueOnce({ sentCount: 1 })
+      .mockResolvedValueOnce({ sentCount: 1 });
+
+    const result = await domainNotificationService.sendMlResultReadyNotificationBestEffort({
+      patientId: '11111111-1111-4111-8111-111111111111',
+      requestedByUserId: '44444444-4444-4444-8444-444444444444',
+      inferenceType: 'prediction',
+      result: {
+        resultId: '33333333-3333-4333-8333-333333333333',
+        generatedAt: '2026-05-17T10:00:00.000Z',
+        requestContext: 'doctor_dashboard',
+      },
+    });
+
+    expect(deliverNotificationToUser).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        userId: '11111111-1111-4111-8111-111111111111',
+        data: expect.objectContaining({
+          action: 'open_ml_result',
+        }),
+      })
+    );
+    expect(deliverNotificationToUser).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({
+        userId: '44444444-4444-4444-8444-444444444444',
+        data: expect.objectContaining({
+          action: 'open_doctor_dashboard_ml_result',
+          patientId: '11111111-1111-4111-8111-111111111111',
         }),
       })
     );

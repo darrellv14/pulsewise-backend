@@ -134,8 +134,29 @@ function buildMlResultReadyDedupeKey({ patientId, resultId }) {
   return ['ml_result_ready', patientId, resultId].join(':');
 }
 
-function buildMlResultReadyPayload({ patientId, result, inferenceType }) {
+function buildMlResultReadyRecipientDedupeKey({ recipientUserId, resultId, audience }) {
+  return ['ml_result_ready', recipientUserId, resultId, audience].join(':');
+}
+
+function buildMlResultReadyPayload({ patientId, result, inferenceType, audience = 'patient' }) {
   const readableType = inferenceType === 'recommendation' ? 'rekomendasi' : 'prediksi';
+
+  if (audience === 'requester') {
+    return {
+      title: 'Hasil analisis pasien tersedia',
+      body: `Hasil ${readableType} terbaru pasien sudah siap dilihat di dashboard.`,
+      data: {
+        action: 'open_doctor_dashboard_ml_result',
+        type: 'ml_result_ready',
+        resultId: result.resultId,
+        patientId,
+        inferenceType,
+        requestContext: result.requestContext || null,
+        generatedAt: result.generatedAt,
+        source: 'pulsewise-ml-result-ready',
+      },
+    };
+  }
 
   return {
     title: 'Hasil analisis terbaru tersedia',
@@ -153,46 +174,72 @@ function buildMlResultReadyPayload({ patientId, result, inferenceType }) {
   };
 }
 
-async function sendMlResultReadyNotificationBestEffort({ patientId, result, inferenceType }) {
+async function sendMlResultReadyNotificationBestEffort({
+  patientId,
+  requestedByUserId,
+  result,
+  inferenceType,
+}) {
   if (!patientId || !result?.resultId) {
     return false;
   }
 
-  const dedupeKey = buildMlResultReadyDedupeKey({
-    patientId,
-    resultId: result.resultId,
-  });
-  const existingLog = await pushNotificationLogRepository.findPushNotificationLogByDedupeKey(
-    dedupeKey
-  );
-  if (existingLog) {
-    return false;
+  const recipients = [
+    {
+      userId: patientId,
+      audience: 'patient',
+    },
+  ];
+
+  if (requestedByUserId && requestedByUserId !== patientId) {
+    recipients.push({
+      userId: requestedByUserId,
+      audience: 'requester',
+    });
   }
 
-  const payload = buildMlResultReadyPayload({
-    patientId,
-    result,
-    inferenceType,
-  });
+  let delivered = false;
 
-  try {
-    await deliverNotificationToUser({
-      userId: patientId,
-      title: payload.title,
-      body: payload.body,
-      notificationType: 'ml_result_ready',
-      dedupeKey,
-      data: payload.data,
+  for (const recipient of recipients) {
+    const dedupeKey = buildMlResultReadyRecipientDedupeKey({
+      recipientUserId: recipient.userId,
+      resultId: result.resultId,
+      audience: recipient.audience,
     });
-    return true;
-  } catch (error) {
-    if (error?.statusCode === NOT_FOUND) {
-      return false;
+    const existingLog = await pushNotificationLogRepository.findPushNotificationLogByDedupeKey(
+      dedupeKey
+    );
+    if (existingLog) {
+      continue;
     }
 
-    console.warn('[FCM] ML result ready notification skipped due to delivery error', error);
-    return false;
+    const payload = buildMlResultReadyPayload({
+      patientId,
+      result,
+      inferenceType,
+      audience: recipient.audience,
+    });
+
+    try {
+      await deliverNotificationToUser({
+        userId: recipient.userId,
+        title: payload.title,
+        body: payload.body,
+        notificationType: 'ml_result_ready',
+        dedupeKey,
+        data: payload.data,
+      });
+      delivered = true;
+    } catch (error) {
+      if (error?.statusCode === NOT_FOUND) {
+        continue;
+      }
+
+      console.warn('[FCM] ML result ready notification skipped due to delivery error', error);
+    }
   }
+
+  return delivered;
 }
 
 module.exports = {
@@ -200,6 +247,7 @@ module.exports = {
   resolveAbnormalVitalAlertMetadata,
   sendAbnormalVitalAlertBestEffort,
   buildMlResultReadyDedupeKey,
+  buildMlResultReadyRecipientDedupeKey,
   buildMlResultReadyPayload,
   sendMlResultReadyNotificationBestEffort,
 };
