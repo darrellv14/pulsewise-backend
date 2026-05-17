@@ -89,6 +89,8 @@ Catatan:
 - scheduler dijalankan di runtime backend dengan interval per menit
 - slot reminder diproses dengan lookback kecil agar aman saat restart singkat
 - dedupe saat ini mengutamakan anti-double-send untuk slot reminder yang sama
+- smoke test otomatis tersedia via `npm run smoke:fcm:scheduler`
+- smoke test ini membuat medication sementara, menunggu scheduler pickup, lalu memverifikasi perubahan `lastSentAt` token
 
 ## Stage 4 - Dashboard Pairing Notifications
 
