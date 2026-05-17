@@ -114,6 +114,7 @@ async function ensureUser(client, userPayload) {
     ON CONFLICT (email)
     DO UPDATE SET
       username = EXCLUDED.username,
+      password_hash = EXCLUDED.password_hash,
       first_name = EXCLUDED.first_name,
       last_name = EXCLUDED.last_name,
       tel_no = EXCLUDED.tel_no,
