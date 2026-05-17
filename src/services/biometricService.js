@@ -6,6 +6,7 @@ const { normalizePaginationInput } = require('../utils/pagination');
 const { normalizeMetricType } = require('../utils/metricTypes');
 const { normalizeBiometricSource } = require('../constants/enums');
 const { invalidateDashboardPatientCaches } = require('./cache/invalidation');
+const { sendAbnormalVitalAlertBestEffort } = require('./notification/domainNotificationService');
 
 function toIso(value) {
   if (!value) {
@@ -110,6 +111,7 @@ async function ingestBiometrics({ actor, payload }) {
 
   const source = normalizeBiometricSource(payload.source) || '';
   const results = [];
+  const createdReadings = [];
   let insertedCount = 0;
   let duplicateCount = 0;
 
@@ -166,6 +168,7 @@ async function ingestBiometrics({ actor, payload }) {
     });
 
     insertedCount += 1;
+    createdReadings.push(created);
     results.push({
       readingId: created.reading_id,
       metricType,
@@ -177,6 +180,13 @@ async function ingestBiometrics({ actor, payload }) {
   }
 
   await invalidateDashboardPatientCaches(targetPatientId);
+
+  for (const createdReading of createdReadings) {
+    await sendAbnormalVitalAlertBestEffort({
+      userId: targetPatientId,
+      reading: createdReading,
+    });
+  }
 
   return {
     patientId: targetPatientId,

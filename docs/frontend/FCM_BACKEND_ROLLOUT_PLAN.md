@@ -108,23 +108,38 @@ Catatan:
 
 ## Stage 5 - Abnormal Vital Alerts
 
-Status: **Planned**
+Status: **Implemented**
 
 Cakupan target:
 
-- [ ] builder payload `abnormal_vital_alert`
-- [ ] trigger dari hasil evaluasi abnormal report / vital ingestion
-- [ ] threshold-aware notification policy
+- [x] builder payload `abnormal_vital_alert`
+- [x] trigger dari hasil ingest biometrics
+- [x] threshold-aware notification policy untuk heart rate dan SpO2
+- [x] dedupe alert via `push_notification_logs.dedupe_key`
+
+Catatan:
+
+- stage ini saat ini fokus pada metrik vital yang masuk lewat ingestion biometrics:
+  - `heart_rate`
+  - `oxygen_saturation`
+- blood pressure dan weight-based abnormality belum otomatis menembakkan push notification
+- delivery bersifat best-effort agar ingest biometrics tidak gagal bila token FCM user belum tersedia
 
 ## Stage 6 - ML Result Ready Notifications
 
-Status: **Planned**
+Status: **Implemented**
 
 Cakupan target:
 
-- [ ] builder payload `ml_result_ready`
-- [ ] trigger setelah inference result berhasil dipersist
-- [ ] notifikasi untuk patient dan/atau doctor context sesuai kebutuhan produk
+- [x] builder payload `ml_result_ready`
+- [x] trigger setelah inference result berhasil dipersist
+- [x] notifikasi best-effort ke pasien
+- [x] dedupe notification via `push_notification_logs.dedupe_key`
+
+Catatan:
+
+- stage ini saat ini mengirim notifikasi ke pasien setelah hasil inference tersimpan
+- distribusi notifikasi khusus ke requester selain pasien belum ditambahkan
 
 ## Contract Stage 1
 

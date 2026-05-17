@@ -12,6 +12,10 @@ jest.mock('../src/repositories/patientMlInferenceRepository', () => ({
   listInferenceResults: jest.fn(),
 }));
 
+jest.mock('../src/services/notification/domainNotificationService', () => ({
+  sendMlResultReadyNotificationBestEffort: jest.fn(),
+}));
+
 jest.mock('../src/utils/mlPayloadMapper', () => {
   const actual = jest.requireActual('../src/utils/mlPayloadMapper');
   return {
@@ -23,6 +27,7 @@ jest.mock('../src/utils/mlPayloadMapper', () => {
 const doctorPatientRepository = require('../src/repositories/doctorPatientRepository');
 const mlRecommendationRepository = require('../src/repositories/mlRecommendationRepository');
 const patientMlInferenceRepository = require('../src/repositories/patientMlInferenceRepository');
+const domainNotificationService = require('../src/services/notification/domainNotificationService');
 const { buildMlV3Payload } = require('../src/utils/mlPayloadMapper');
 const {
   requestMlEndpoint,
@@ -179,6 +184,14 @@ describe('mlRecommendationService', () => {
     });
 
     expect(patientMlInferenceRepository.createInferenceResult).toHaveBeenCalled();
+    expect(domainNotificationService.sendMlResultReadyNotificationBestEffort).toHaveBeenCalledWith({
+      patientId: 'user-1',
+      result: {
+        resultId: 'latest-result-id',
+        generatedAt: '2026-05-05T12:45:00.000Z',
+      },
+      inferenceType: 'prediction',
+    });
     expect(result).toMatchObject({
       resultId: 'latest-result-id',
       generatedAt: '2026-05-05T12:45:00.000Z',

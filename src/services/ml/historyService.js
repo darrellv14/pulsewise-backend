@@ -1,4 +1,5 @@
 const patientMlInferenceRepository = require('../../repositories/patientMlInferenceRepository');
+const { sendMlResultReadyNotificationBestEffort } = require('../notification/domainNotificationService');
 const {
   assertPatientResourceAccess,
 } = require('../shared/guards');
@@ -13,7 +14,7 @@ async function saveInferenceResult({
   upstream,
   includePayload = false,
 }) {
-  return patientMlInferenceRepository.createInferenceResult({
+  const saved = await patientMlInferenceRepository.createInferenceResult({
     patientId,
     requestedByUserId: actor?.userId || null,
     payload: {
@@ -28,6 +29,14 @@ async function saveInferenceResult({
       generatedAt: new Date().toISOString(),
     },
   });
+
+  await sendMlResultReadyNotificationBestEffort({
+    patientId,
+    result: saved,
+    inferenceType,
+  });
+
+  return saved;
 }
 
 async function getLatestPatientInferenceResult({ actor, patientId, inferenceType }) {
