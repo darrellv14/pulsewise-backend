@@ -164,6 +164,28 @@ const env = {
     timeoutMs: Number(process.env.ML_SERVICE_TIMEOUT_MS || 20000),
     version: Number(process.env.ML_SERVICE_VERSION || 3),
   },
+  firebase: {
+    projectId: process.env.FIREBASE_PROJECT_ID || '',
+    serviceAccountPath: process.env.FIREBASE_SERVICE_ACCOUNT_PATH || '',
+    privateKeyId: process.env.FIREBASE_PRIVATE_KEY_ID || '',
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL || '',
+    privateKey: process.env.FIREBASE_PRIVATE_KEY
+      ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
+      : '',
+    androidChannelId: process.env.FCM_ANDROID_CHANNEL_ID || 'pulsewise_reminders',
+  },
+  schedulers: {
+    enabled: process.env.FCM_SCHEDULER_ENABLED === 'true',
+    medicationReminderEnabled: process.env.MEDICATION_REMINDER_CRON_ENABLED === 'true',
+    medicationReminderLookbackMinutes: Math.max(
+      1,
+      Number(process.env.MEDICATION_REMINDER_LOOKBACK_MINUTES || 2)
+    ),
+    medicationReminderTickMs: Math.max(
+      1000,
+      Number(process.env.MEDICATION_REMINDER_TICK_MS || 60 * 1000)
+    ),
+  },
   postgres: {
     host: ensureEnv(
       'POSTGRES_HOST',
