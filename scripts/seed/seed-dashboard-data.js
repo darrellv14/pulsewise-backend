@@ -382,7 +382,7 @@ async function ensureMedicationSetup(client, patientId) {
         'tablet',
         CURRENT_DATE,
         'daily',
-        14,
+        7,
         'Setelah makan pagi dan malam'
       )
       ON CONFLICT DO NOTHING
@@ -420,7 +420,7 @@ async function ensureMedicationSetup(client, patientId) {
         single_dose_unit = 'tablet',
         start_date = CURRENT_DATE,
         frequency = 'daily',
-        num_of_days = 14,
+        num_of_days = 7,
         note = 'Setelah makan pagi dan malam'
       WHERE medication_id = $1
     `,
