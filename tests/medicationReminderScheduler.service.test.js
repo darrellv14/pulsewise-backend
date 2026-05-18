@@ -3,6 +3,7 @@ jest.mock('../src/config/env', () => ({
   schedulers: {
     enabled: true,
     medicationReminderEnabled: true,
+    timeZone: 'Asia/Jakarta',
     medicationReminderLookbackMinutes: 2,
     medicationReminderTickMs: 60000,
   },
@@ -32,11 +33,25 @@ describe('medication reminder scheduler service', () => {
   });
 
   test('buildSchedulerSlots returns current minute and grace lookback minute', () => {
-    const slots = schedulerService.buildSchedulerSlots(new Date('2026-05-17T08:05:44.000Z'), 2);
+    const slots = schedulerService.buildSchedulerSlots(
+      new Date('2026-05-17T01:05:44.000Z'),
+      2,
+      'Asia/Jakarta'
+    );
 
-    expect(slots.map((slot) => slot.toISOString())).toEqual([
-      '2026-05-17T08:04:00.000Z',
-      '2026-05-17T08:05:00.000Z',
+    expect(slots).toEqual([
+      {
+        at: new Date('2026-05-17T01:04:44.000Z'),
+        scheduledDate: '2026-05-17',
+        scheduledTime: '08:04',
+        dayOfWeek: 7,
+      },
+      {
+        at: new Date('2026-05-17T01:05:44.000Z'),
+        scheduledDate: '2026-05-17',
+        scheduledTime: '08:05',
+        dayOfWeek: 7,
+      },
     ]);
   });
 
@@ -86,7 +101,7 @@ describe('medication reminder scheduler service', () => {
     };
 
     const result = await schedulerService.processMedicationReminderWindow({
-      now: new Date('2026-05-17T08:05:44.000Z'),
+      now: new Date('2026-05-17T01:05:44.000Z'),
       logger,
     });
 
@@ -171,7 +186,7 @@ describe('medication reminder scheduler service', () => {
     };
 
     const result = await schedulerService.processMedicationReminderWindow({
-      now: new Date('2026-05-17T08:05:44.000Z'),
+      now: new Date('2026-05-17T01:05:44.000Z'),
       logger,
     });
 

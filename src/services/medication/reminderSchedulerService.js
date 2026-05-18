@@ -5,35 +5,54 @@ const {
   buildMedicationReminderDedupeKey,
   sendMedicationReminderNotificationInternal,
 } = require('./reminderNotificationService');
-const { formatTimeValue, toDateOnlyValue, getMondayBasedDayOfWeek } = require('./shared');
 
 let schedulerHandle = null;
 let isRunning = false;
 
-function floorToUtcMinute(dateValue) {
-  return new Date(
-    Date.UTC(
-      dateValue.getUTCFullYear(),
-      dateValue.getUTCMonth(),
-      dateValue.getUTCDate(),
-      dateValue.getUTCHours(),
-      dateValue.getUTCMinutes(),
-      0,
-      0
-    )
-  );
+const WEEKDAY_TO_MONDAY_INDEX = {
+  Mon: 1,
+  Tue: 2,
+  Wed: 3,
+  Thu: 4,
+  Fri: 5,
+  Sat: 6,
+  Sun: 7,
+};
+
+function getZonedSlotParts(dateValue, timeZone) {
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    weekday: 'short',
+    hourCycle: 'h23',
+  });
+  const parts = formatter.formatToParts(dateValue);
+  const mapped = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+
+  return {
+    scheduledDate: `${mapped.year}-${mapped.month}-${mapped.day}`,
+    scheduledTime: `${mapped.hour}:${mapped.minute}`,
+    dayOfWeek: WEEKDAY_TO_MONDAY_INDEX[mapped.weekday],
+  };
 }
 
-function addUtcMinutes(dateValue, minutes) {
+function addMinutes(dateValue, minutes) {
   return new Date(dateValue.getTime() + minutes * 60 * 1000);
 }
 
-function buildSchedulerSlots(now, lookbackMinutes) {
-  const currentMinute = floorToUtcMinute(now);
+function buildSchedulerSlots(now, lookbackMinutes, timeZone = env.schedulers.timeZone) {
   const slots = [];
 
   for (let offset = lookbackMinutes - 1; offset >= 0; offset -= 1) {
-    slots.push(addUtcMinutes(currentMinute, -offset));
+    const slotTime = addMinutes(now, -offset);
+    slots.push({
+      at: slotTime,
+      ...getZonedSlotParts(slotTime, timeZone),
+    });
   }
 
   return slots;
@@ -47,9 +66,7 @@ async function processMedicationReminderWindow({ now = new Date(), logger = cons
   let failedCount = 0;
 
   for (const slot of slots) {
-    const scheduledDate = toDateOnlyValue(slot);
-    const scheduledTime = formatTimeValue(slot);
-    const dayOfWeek = getMondayBasedDayOfWeek(slot);
+    const { scheduledDate, scheduledTime, dayOfWeek } = slot;
     const candidates = await medicationReminderRepository.listDueMedicationReminderCandidates({
       scheduledDate,
       scheduledTime,
@@ -148,7 +165,7 @@ function startMedicationReminderScheduler() {
     console.error('[SCHEDULER] Initial medication reminder tick failed', error);
   });
   console.log(
-    `[SCHEDULER] Medication reminder scheduler started (tick=${env.schedulers.medicationReminderTickMs}ms, lookback=${env.schedulers.medicationReminderLookbackMinutes}m)`
+    `[SCHEDULER] Medication reminder scheduler started (tick=${env.schedulers.medicationReminderTickMs}ms, lookback=${env.schedulers.medicationReminderLookbackMinutes}m, timezone=${env.schedulers.timeZone})`
   );
 
   return true;

@@ -87,6 +87,7 @@ Cakupan target:
 Catatan:
 
 - scheduler dijalankan di runtime backend dengan interval per menit
+- scheduler membaca slot reminder berdasarkan timezone aplikasi (`MEDICATION_REMINDER_TIMEZONE`, default `Asia/Jakarta`)
 - slot reminder diproses dengan lookback kecil agar aman saat restart singkat
 - dedupe saat ini mengutamakan anti-double-send untuk slot reminder yang sama
 - smoke test otomatis tersedia via `npm run smoke:fcm:scheduler`

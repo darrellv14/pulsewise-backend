@@ -177,6 +177,7 @@ const env = {
   schedulers: {
     enabled: process.env.FCM_SCHEDULER_ENABLED === 'true',
     medicationReminderEnabled: process.env.MEDICATION_REMINDER_CRON_ENABLED === 'true',
+    timeZone: process.env.MEDICATION_REMINDER_TIMEZONE || 'Asia/Jakarta',
     medicationReminderLookbackMinutes: Math.max(
       1,
       Number(process.env.MEDICATION_REMINDER_LOOKBACK_MINUTES || 2)
