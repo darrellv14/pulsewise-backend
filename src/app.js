@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
+const env = require('./config/env');
 const { buildCorsOptions } = require('./config/cors');
 const { success } = require('./utils/response');
 const apiRoutes = require('./routes');
@@ -14,7 +15,8 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 app.use(helmet());
 app.use(cors(buildCorsOptions()));
-app.use(express.json());
+app.use(express.json({ limit: env.requestBodyLimit }));
+app.use(express.urlencoded({ extended: true, limit: env.requestBodyLimit }));
 app.use(morgan('dev'));
 
 app.get('/', (req, res) => {

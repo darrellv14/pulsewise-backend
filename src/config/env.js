@@ -89,6 +89,7 @@ const env = {
   isDevelopment,
   isTest,
   port: Number(process.env.PORT || 5000),
+  requestBodyLimit: process.env.REQUEST_BODY_LIMIT || '20mb',
   databaseUrl: process.env.DATABASE_URL || '',
   directUrl: directDatabaseUrl,
   jwtSecret: ensureEnv('JWT_SECRET', 'replace_with_strong_secret', {
