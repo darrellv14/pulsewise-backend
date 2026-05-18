@@ -286,6 +286,31 @@ const consumptionCreateByDateSchema = consumptionCreateSchema.extend({
   time: timeOnlySchema.optional(),
 });
 
+const nutritionEstimateSchema = z
+  .object({
+    mealName: z.string().trim().min(1).max(120),
+    mealDescription: optionalNullableString(2000),
+    imageBase64: optionalNullableString(15_000_000),
+    locale: optionalNullableString(16),
+  })
+  .superRefine((value, ctx) => {
+    if (!value.mealDescription && !value.imageBase64) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['mealDescription'],
+        message: 'Minimal salah satu dari mealDescription atau imageBase64 wajib diisi',
+      });
+    }
+  });
+
+const nutritionEstimateAndSaveSchema = nutritionEstimateSchema.extend({
+  diaryDate: dateSchema,
+  type: optionalNullableString(50),
+  name: optionalNullableString(120),
+  time: timeOnlySchema.optional(),
+  timeStamp: dateTimeSchema.optional(),
+});
+
 const sleepDiaryQuerySchema = z.object({
   date: dateSchema,
 });
@@ -336,6 +361,8 @@ module.exports = {
   activityCreateByDateSchema,
   consumptionCreateSchema,
   consumptionCreateByDateSchema,
+  nutritionEstimateSchema,
+  nutritionEstimateAndSaveSchema,
   sleepDiaryQuerySchema,
   sleepRecordUpsertSchema,
   emergencyContactListQuerySchema,

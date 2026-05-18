@@ -27,6 +27,8 @@ const {
   bodyMetricCreateByDateSchema,
   symptomCreateByDateSchema,
   consumptionCreateByDateSchema,
+  nutritionEstimateSchema,
+  nutritionEstimateAndSaveSchema,
 } = require('../src/validators/patientCareValidator');
 
 describe('patient care by-date flow', () => {
@@ -135,6 +137,41 @@ describe('patient care by-date flow', () => {
       diaryDate: '2026-04-11',
       type: 'food',
       name: 'Nasi padang',
+    });
+  });
+
+  test('nutritionEstimateSchema requires mealDescription or imageBase64 in addition to mealName', () => {
+    expect(() =>
+      nutritionEstimateSchema.parse({
+        mealName: 'Nasi padang',
+      })
+    ).toThrow();
+  });
+
+  test('nutritionEstimateSchema accepts mealName with mealDescription', () => {
+    expect(
+      nutritionEstimateSchema.parse({
+        mealName: 'Nasi padang',
+        mealDescription:
+          '1 plate nasi padang with a mound of rice, 1 egg portion, 1 perkedel, 1 serving beef rendang',
+      })
+    ).toMatchObject({
+      mealName: 'Nasi padang',
+    });
+  });
+
+  test('nutritionEstimateAndSaveSchema accepts diary save payload with imageBase64', () => {
+    expect(
+      nutritionEstimateAndSaveSchema.parse({
+        diaryDate: '2026-05-18',
+        mealName: 'Nasi padang',
+        imageBase64: 'data:image/jpeg;base64,ZmFrZUJhc2U2NA==',
+        type: 'food',
+      })
+    ).toMatchObject({
+      diaryDate: '2026-05-18',
+      mealName: 'Nasi padang',
+      type: 'food',
     });
   });
 
