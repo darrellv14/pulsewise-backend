@@ -171,4 +171,48 @@ describe('nutrition estimation service', () => {
     expect(result.estimation.portion).toBe('1 plate nasi padang with rice and beef rendang');
     expect(result.consumption).toBeTruthy();
   });
+
+  test('estimateNutrition normalizes percentage confidence from model output', async () => {
+    global.fetch.mockResolvedValueOnce({
+      ok: true,
+      text: async () =>
+        JSON.stringify({
+          message: {
+            content: JSON.stringify({
+              detectedFoods: ['nasi padang', 'beef rendang'],
+              portion: '1 plate nasi padang',
+              portionGrams: '650',
+              nutritionSnapshot: {
+                energyKcal: '980',
+                proteinG: 35,
+                carbohydrateG: 95,
+                sugarG: 8,
+                fiberG: 10,
+                totalFatG: 52,
+                saturatedFatG: 20,
+                monounsaturatedFatG: null,
+                polyunsaturatedFatG: null,
+                cholesterolMg: 110,
+                calciumMg: 160,
+              },
+              confidence: 90,
+              assumptions: ['standard serving size'],
+            }),
+          },
+        }),
+    });
+
+    const result = await nutritionEstimationService.estimateNutrition({
+      actor: { userId: 'user-1', role: 'patient' },
+      userId: 'user-1',
+      payload: {
+        mealName: 'Nasi padang',
+        mealDescription: 'Nasi padang dengan rendang',
+      },
+    });
+
+    expect(result.confidence).toBe(0.9);
+    expect(result.portionGrams).toBe(650);
+    expect(result.nutritionSnapshot.energyKcal).toBe(980);
+  });
 });

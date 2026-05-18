@@ -8,24 +8,61 @@ const { ensureHeartDiaryByDate } = require('./diaryService');
 const { invalidateDiaryCache } = require('./cache');
 const { mapConsumption } = require('./mappers');
 
+function coerceNullableNumber(max) {
+  return z.preprocess((value) => {
+    if (value === null || value === undefined || value === '') {
+      return null;
+    }
+
+    if (typeof value === 'string') {
+      const normalized = Number(value.trim());
+      return Number.isFinite(normalized) ? normalized : value;
+    }
+
+    return value;
+  }, z.number().min(0).max(max).nullable().default(null));
+}
+
+function coerceConfidence() {
+  return z.preprocess((value) => {
+    if (value === null || value === undefined || value === '') {
+      return null;
+    }
+
+    let normalized = value;
+    if (typeof normalized === 'string') {
+      const parsed = Number(normalized.trim());
+      normalized = Number.isFinite(parsed) ? parsed : normalized;
+    }
+
+    if (typeof normalized === 'number' && Number.isFinite(normalized) && normalized > 1) {
+      if (normalized <= 100) {
+        return normalized / 100;
+      }
+    }
+
+    return normalized;
+  }, z.number().min(0).max(1).nullable().default(null));
+}
+
 const nutritionEstimateResultSchema = z.object({
   detectedFoods: z.array(z.string().trim().min(1)).default([]),
   portion: z.string().trim().min(1).max(255),
-  portionGrams: z.number().min(0).max(100000).nullable().default(null),
+  portionGrams: coerceNullableNumber(100000),
   nutritionSnapshot: z.object({
-    energyKcal: z.number().min(0).max(100000).nullable().default(null),
-    proteinG: z.number().min(0).max(100000).nullable().default(null),
-    carbohydrateG: z.number().min(0).max(100000).nullable().default(null),
-    sugarG: z.number().min(0).max(100000).nullable().default(null),
-    fiberG: z.number().min(0).max(100000).nullable().default(null),
-    totalFatG: z.number().min(0).max(100000).nullable().default(null),
-    saturatedFatG: z.number().min(0).max(100000).nullable().default(null),
-    monounsaturatedFatG: z.number().min(0).max(100000).nullable().default(null),
-    polyunsaturatedFatG: z.number().min(0).max(100000).nullable().default(null),
-    cholesterolMg: z.number().min(0).max(100000).nullable().default(null),
-    calciumMg: z.number().min(0).max(100000).nullable().default(null),
+    energyKcal: coerceNullableNumber(100000),
+    proteinG: coerceNullableNumber(100000),
+    carbohydrateG: coerceNullableNumber(100000),
+    sugarG: coerceNullableNumber(100000),
+    fiberG: coerceNullableNumber(100000),
+    totalFatG: coerceNullableNumber(100000),
+    saturatedFatG: coerceNullableNumber(100000),
+    monounsaturatedFatG: coerceNullableNumber(100000),
+    polyunsaturatedFatG: coerceNullableNumber(100000),
+    cholesterolMg: coerceNullableNumber(100000),
+    calciumMg: coerceNullableNumber(100000),
   }),
-  confidence: z.number().min(0).max(1).nullable().default(null),
+  confidence: coerceConfidence(),
   assumptions: z.array(z.string().trim().min(1)).default([]),
 });
 
@@ -94,6 +131,7 @@ function buildSystemPrompt() {
     'Do not include markdown fences or extra prose.',
     'The field "portion" must be concise and never exceed 255 characters.',
     'All nutrition values must be numeric or null and must never be negative.',
+    'Confidence must be a decimal between 0 and 1.',
   ].join(' ');
 }
 
