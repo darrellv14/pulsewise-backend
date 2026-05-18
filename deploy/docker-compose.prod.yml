@@ -43,8 +43,6 @@ services:
     restart: unless-stopped
     env_file:
       - ./pulsewise-backend.env
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
     depends_on:
       postgres:
         condition: service_healthy

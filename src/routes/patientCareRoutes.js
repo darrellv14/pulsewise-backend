@@ -19,8 +19,6 @@ const {
   activityCreateByDateSchema,
   consumptionCreateSchema,
   consumptionCreateByDateSchema,
-  nutritionEstimateSchema,
-  nutritionEstimateAndSaveSchema,
   sleepDiaryQuerySchema,
   sleepRecordUpsertSchema,
   emergencyContactListQuerySchema,
@@ -120,20 +118,6 @@ router.post(
   validateRequest(userIdParamSchema, 'params'),
   validateRequest(consumptionCreateByDateSchema),
   patientCareController.createDailyConsumptionByDate
-);
-router.post(
-  '/users/:userId/nutrition-estimates',
-  authenticate,
-  validateRequest(userIdParamSchema, 'params'),
-  validateRequest(nutritionEstimateSchema),
-  patientCareController.estimateNutrition
-);
-router.post(
-  '/users/:userId/diaries/by-date/consumptions/estimate',
-  authenticate,
-  validateRequest(userIdParamSchema, 'params'),
-  validateRequest(nutritionEstimateAndSaveSchema),
-  patientCareController.estimateNutritionAndSaveConsumptionByDate
 );
 router.post(
   '/users/:userId/diaries/:diaryId/body-metrics',

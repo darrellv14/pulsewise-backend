@@ -174,14 +174,6 @@ const env = {
       : '',
     androidChannelId: process.env.FCM_ANDROID_CHANNEL_ID || 'pulsewise_reminders',
   },
-  nutritionEstimation: {
-    enabled: process.env.NUTRITION_ESTIMATION_ENABLED === 'true',
-    ollamaBaseUrl: process.env.OLLAMA_BASE_URL || 'http://127.0.0.1:11434',
-    model: process.env.NUTRITION_ESTIMATION_MODEL || 'qwen2.5vl:3b',
-    timeoutMs: Math.max(1000, Number(process.env.NUTRITION_ESTIMATION_TIMEOUT_MS || 30000)),
-    keepAlive: process.env.NUTRITION_ESTIMATION_KEEP_ALIVE || '5m',
-    temperature: Number(process.env.NUTRITION_ESTIMATION_TEMPERATURE || 0),
-  },
   schedulers: {
     enabled: process.env.FCM_SCHEDULER_ENABLED === 'true',
     medicationReminderEnabled: process.env.MEDICATION_REMINDER_CRON_ENABLED === 'true',
