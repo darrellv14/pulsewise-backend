@@ -16,6 +16,7 @@ const { mapConsumption } = require('./mappers');
 const DEFAULT_IMAGE_MIME_TYPE = 'image/jpeg';
 const MAX_PORTION_ESTIMATE_LENGTH = 255;
 const DEFAULT_NUTRITION_SOURCE = 'gemini_food_macro_analysis';
+const MEAL_CATEGORY_VALUES = ['breakfast', 'lunch', 'dinner', 'snack', 'drink', 'other'];
 
 function coerceNumber(max) {
   return z.preprocess((value) => {
@@ -36,6 +37,7 @@ const foodMacroAnalysisSchema = z
   .object({
     is_food_image: z.boolean(),
     validation_message: z.string(),
+    meal_category: z.enum(MEAL_CATEGORY_VALUES),
     detected_foods: z.array(z.string().trim().min(1)).default([]),
     portion_estimate: z.string().trim().max(MAX_PORTION_ESTIMATE_LENGTH),
     portion_grams_estimate: coerceNumber(100000),
@@ -82,6 +84,10 @@ function buildResponseJsonSchema() {
     properties: {
       is_food_image: { type: 'boolean' },
       validation_message: { type: 'string' },
+      meal_category: {
+        type: 'string',
+        enum: MEAL_CATEGORY_VALUES,
+      },
       detected_foods: {
         type: 'array',
         items: { type: 'string' },
@@ -119,6 +125,7 @@ function buildResponseJsonSchema() {
     required: [
       'is_food_image',
       'validation_message',
+      'meal_category',
       'detected_foods',
       'portion_estimate',
       'portion_grams_estimate',
@@ -165,6 +172,7 @@ Rules:
 - If the input does not clearly show or describe food or drink, return:
   is_food_image = false
   validation_message = a short user-facing message explaining that the image does not look like food or drink and the user should retake the photo
+  meal_category = "other"
   detected_foods = []
   portion_estimate = ""
   portion_grams_estimate = 0
@@ -173,6 +181,11 @@ Rules:
   confidence = "low"
   notes = "Non-food image."
 - If the input does show or describe food or drink, return is_food_image = true and validation_message = "".
+- Always classify the meal into exactly one meal_category from: breakfast, lunch, dinner, snack, drink, other.
+- Use drink for beverages as the primary consumable item.
+- Use breakfast, lunch, or dinner when the portion and meal context clearly match a main meal.
+- Use snack only for lighter between-meal foods, desserts, pastries, bites, or small side-style consumption that would not usually be treated as a main meal.
+- Use other only when the food is valid but the meal timing/category is genuinely unclear.
 - Estimate total nutrition for the visible portion only.
 - If multiple foods are visible, combine the totals.
 - Use your best estimate for grams and nutrition even when portions are uncertain.
@@ -384,6 +397,10 @@ async function estimateNutrition({ actor, userId, payload }) {
 function buildNutritionNote({ estimate }) {
   const noteParts = [];
 
+  if (estimate.meal_category) {
+    noteParts.push(`Meal category: ${estimate.meal_category}`);
+  }
+
   if (estimate.detected_foods?.length) {
     noteParts.push(`Detected foods: ${estimate.detected_foods.join(', ')}`);
   }
@@ -434,7 +451,7 @@ async function estimateNutritionAndSaveConsumptionByDate({ actor, userId, payloa
 
   const created = await patientCareRepository.createDailyConsumption({
     diaryId: diary.diary_id,
-    type: normalizeNullableText(payload.type) || 'food',
+    type: normalizeNullableText(payload.type) || estimate.meal_category || 'other',
     name: normalizeNullableText(payload.name) || normalizeNullableText(payload.mealName),
     portion: estimate.portion_estimate,
     portionGrams:

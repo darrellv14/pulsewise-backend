@@ -49,6 +49,7 @@ describe('nutrition estimation service', () => {
                     text: JSON.stringify({
                       is_food_image: true,
                       validation_message: '',
+                      meal_category: 'lunch',
                       detected_foods: ['white rice', 'beef rendang'],
                       portion_estimate: '1 plate nasi padang with rice and beef rendang',
                       portion_grams_estimate: 650,
@@ -86,6 +87,7 @@ describe('nutrition estimation service', () => {
     });
 
     expect(result).toMatchObject({
+      meal_category: 'lunch',
       nutrition_source: 'gemini_food_macro_analysis',
       portion_estimate: '1 plate nasi padang with rice and beef rendang',
       detected_foods: ['white rice', 'beef rendang'],
@@ -107,6 +109,7 @@ describe('nutrition estimation service', () => {
                     text: JSON.stringify({
                       is_food_image: true,
                       validation_message: '',
+                      meal_category: 'lunch',
                       detected_foods: ['white rice', 'beef rendang'],
                       portion_estimate: '1 plate nasi padang with rice and beef rendang',
                       portion_grams_estimate: 650,
@@ -202,6 +205,7 @@ describe('nutrition estimation service', () => {
                     text: JSON.stringify({
                       is_food_image: true,
                       validation_message: '',
+                      meal_category: 'lunch',
                       detected_foods: ['nasi padang'],
                       portion_estimate: '1 plate nasi padang',
                       portion_grams_estimate: 650,
@@ -244,6 +248,89 @@ describe('nutrition estimation service', () => {
       expect.stringContaining('/models/gemini-3-flash-preview:generateContent?key=test-gemini-key'),
       expect.objectContaining({
         method: 'POST',
+      })
+    );
+  });
+
+  test('estimateNutritionAndSaveConsumptionByDate falls back to Gemini meal_category when payload.type is absent', async () => {
+    global.fetch.mockResolvedValueOnce({
+      ok: true,
+      text: async () =>
+        JSON.stringify({
+          candidates: [
+            {
+              content: {
+                parts: [
+                  {
+                    text: JSON.stringify({
+                      is_food_image: true,
+                      validation_message: '',
+                      meal_category: 'dinner',
+                      detected_foods: ['soto lamongan'],
+                      portion_estimate: '1 bowl soto lamongan with rice',
+                      portion_grams_estimate: 650,
+                      fdc_food_id: '',
+                      nutrition_source: 'gemini_food_macro_analysis',
+                      calories_kcal: 610,
+                      protein_g: 24,
+                      carbs_g: 95,
+                      sugar_g: 4,
+                      fiber_g: 3,
+                      fat_g: 15,
+                      saturated_fat_g: 4,
+                      monounsaturated_fat_g: 5,
+                      polyunsaturated_fat_g: 4,
+                      cholesterol_mg: 190,
+                      calcium_mg: 85,
+                      confidence: 'high',
+                      notes: 'main evening meal',
+                    }),
+                  },
+                ],
+              },
+            },
+          ],
+        }),
+    });
+    ensureHeartDiaryByDate.mockResolvedValueOnce({ diary_id: 'diary-1' });
+    patientCareRepository.createDailyConsumption.mockResolvedValueOnce({
+      consumptionId: 'cons-2',
+      diaryId: 'diary-1',
+      type: 'dinner',
+      name: 'Soto Lamongan',
+      portion: '1 bowl soto lamongan with rice',
+      portionGrams: 650,
+      fdcFoodId: null,
+      nutritionSource: 'gemini_food_macro_analysis',
+      energyKcal: 610,
+      proteinG: 24,
+      carbohydrateG: 95,
+      sugarG: 4,
+      fiberG: 3,
+      totalFatG: 15,
+      saturatedFatG: 4,
+      monounsaturatedFatG: 5,
+      polyunsaturatedFatG: 4,
+      cholesterolMg: 190,
+      calciumMg: 85,
+      note: 'Meal category: dinner',
+      timeStamp: new Date('2026-05-18T19:30:00.000Z'),
+    });
+
+    await nutritionEstimationService.estimateNutritionAndSaveConsumptionByDate({
+      actor: { userId: 'user-1', role: 'patient' },
+      userId: 'user-1',
+      payload: {
+        diaryDate: '2026-05-18',
+        mealName: 'Soto Lamongan',
+        mealDescription: 'Soto Lamongan with rice',
+        time: '19:30',
+      },
+    });
+
+    expect(patientCareRepository.createDailyConsumption).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'dinner',
       })
     );
   });
