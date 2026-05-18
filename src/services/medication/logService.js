@@ -1,5 +1,6 @@
 const prisma = require('../../config/prisma');
 const { buildPagination, normalizePaginationInput } = require('../../utils/pagination');
+const { syncMissedMedicationLogs } = require('./missedLogService');
 const {
   assertPatientScope,
   ensureMedicationOwnership,
@@ -30,6 +31,42 @@ async function listMedicationLogs({ actor, userId, medicationId, query }) {
 
   if (query?.endDate) {
     where.medicationDate.lte = toPrismaDate(query.endDate);
+  }
+
+  if (query?.startDate && query?.endDate) {
+    const medications = await prisma.medication.findMany({
+      where: {
+        medicationId,
+        userId,
+        reminders: {
+          some: {},
+        },
+        OR: [
+          {
+            startDate: null,
+          },
+          {
+            startDate: {
+              lte: toPrismaDate(query.endDate),
+            },
+          },
+        ],
+      },
+      include: {
+        reminders: {
+          orderBy: [{ dayOfWeek: 'asc' }, { scheduleTime: 'asc' }],
+        },
+      },
+      orderBy: [{ startDate: 'asc' }, { createdAt: 'asc' }],
+    });
+
+    await syncMissedMedicationLogs({
+      tx: prisma,
+      userId,
+      medications,
+      rangeStart: toPrismaDate(query.startDate),
+      rangeEnd: toPrismaDate(query.endDate),
+    });
   }
 
   const [logs, totalItems] = await Promise.all([

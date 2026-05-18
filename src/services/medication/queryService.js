@@ -3,12 +3,13 @@ const { buildPagination, normalizePaginationInput } = require('../../utils/pagin
 const { createHttpError } = require('../../utils/httpError');
 const { NOT_FOUND } = require('../../constants/httpStatus');
 const { buildMedicationCacheTags, withOptionalCacheStrategy } = require('./cache');
+const { syncMissedMedicationLogs } = require('./missedLogService');
 const {
   assertPatientScope,
   toMedicationDto,
   toPrismaDate,
-  buildMedicationLogLookup,
   buildMedicationCalendarEvents,
+  buildMedicationLogLookup,
 } = require('./shared');
 
 async function listMedications({ actor, userId, query }) {
@@ -98,19 +99,12 @@ async function listMedicationCalendar({ actor, userId, query }) {
     };
   }
 
-  const medicationIds = medications.map((item) => item.medicationId);
-  const logs = await prisma.medicationLog.findMany({
-    where: {
-      userId,
-      medicationId: {
-        in: medicationIds,
-      },
-      medicationDate: {
-        gte: rangeStart,
-        lte: rangeEnd,
-      },
-    },
-    orderBy: [{ medicationDate: 'desc' }, { createdAt: 'desc' }],
+  const logs = await syncMissedMedicationLogs({
+    tx: prisma,
+    userId,
+    medications,
+    rangeStart,
+    rangeEnd,
   });
 
   const logLookup = buildMedicationLogLookup(logs);
