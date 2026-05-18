@@ -80,6 +80,7 @@ function buildLatestVitalField(value, measuredAt) {
   };
 }
 
+
 function generateShareCode() {
   return `PW-${crypto.randomBytes(6).toString('hex').toUpperCase()}`;
 }
