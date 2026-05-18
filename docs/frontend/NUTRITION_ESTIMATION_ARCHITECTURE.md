@@ -25,6 +25,7 @@ Contoh kombinasi yang valid:
 
 1. FE mengirim request ke backend PulseWise.
 2. Backend menyusun prompt berbasis nama makanan dan deskripsi user.
+   Prompt juga menekankan bahwa model harus cukup peka terhadap makanan dan minuman Indonesia.
 3. Jika ada gambar, backend menyertakan `inline_data` image ke Gemini.
 4. Gemini diminta mengembalikan JSON-only dengan schema ketat.
 5. Backend memvalidasi JSON output.

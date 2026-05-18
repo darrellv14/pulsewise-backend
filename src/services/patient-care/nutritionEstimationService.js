@@ -152,6 +152,8 @@ function buildPrompt({ foodName, userDescription }) {
   return `
 Analyze this food image and estimate the total macros for all visible food and drink items.
 
+You are especially helpful for Indonesian foods and drinks, including regional dishes from across Indonesia, but you should still work for non-Indonesian foods when needed.
+
 ${foodNameLine}
 ${descriptionLine}
 
@@ -175,6 +177,7 @@ Rules:
 - If multiple foods are visible, combine the totals.
 - Use your best estimate for grams and nutrition even when portions are uncertain.
 - Treat the user-provided food name and description as helpful hints, but still verify against the image when an image exists.
+- When the food appears Indonesian, prefer Indonesian dish/component names that are commonly recognized by users in Indonesia.
 - Keep portion_estimate short, human-readable, and at most ${MAX_PORTION_ESTIMATE_LENGTH} characters.
 - Return all gram-based nutrients in grams and cholesterol_mg/calcium_mg in milligrams.
 - Keep sugar_g less than or equal to carbs_g when possible.
