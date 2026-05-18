@@ -27,6 +27,8 @@ const {
   bodyMetricCreateByDateSchema,
   symptomCreateByDateSchema,
   consumptionCreateByDateSchema,
+  nutritionEstimateSchema,
+  nutritionEstimateAndSaveSchema,
 } = require('../src/validators/patientCareValidator');
 
 describe('patient care by-date flow', () => {
@@ -135,6 +137,60 @@ describe('patient care by-date flow', () => {
       diaryDate: '2026-04-11',
       type: 'food',
       name: 'Nasi padang',
+    });
+  });
+
+  test('nutritionEstimateSchema accepts mealName combined with mealDescription', () => {
+    expect(
+      nutritionEstimateSchema.parse({
+        mealName: 'Nasi padang',
+        mealDescription:
+          '1 plate nasi padang with a mound of rice, one chicken piece, sambal, and cassava leaves',
+      })
+    ).toEqual({
+      mealName: 'Nasi padang',
+      mealDescription:
+        '1 plate nasi padang with a mound of rice, one chicken piece, sambal, and cassava leaves',
+    });
+  });
+
+  test('nutritionEstimateSchema accepts mealName combined with image payload', () => {
+    expect(
+      nutritionEstimateSchema.parse({
+        mealName: 'Nasi padang',
+        imageBase64: 'ZmFrZS1iYXNlNjQ=',
+        imageMimeType: 'image/jpeg',
+      })
+    ).toEqual({
+      mealName: 'Nasi padang',
+      imageBase64: 'ZmFrZS1iYXNlNjQ=',
+      imageMimeType: 'image/jpeg',
+    });
+  });
+
+  test('nutritionEstimateSchema rejects payload without mealDescription and imageBase64', () => {
+    expect(() =>
+      nutritionEstimateSchema.parse({
+        mealName: 'Nasi padang',
+      })
+    ).toThrow();
+  });
+
+  test('nutritionEstimateAndSaveSchema accepts estimate-and-save payload', () => {
+    expect(
+      nutritionEstimateAndSaveSchema.parse({
+        diaryDate: '2026-04-11',
+        mealName: 'Nasi padang',
+        mealDescription: 'Nasi padang dengan rendang dan sambal ijo',
+        type: 'food',
+        time: '12:30',
+      })
+    ).toEqual({
+      diaryDate: '2026-04-11',
+      mealName: 'Nasi padang',
+      mealDescription: 'Nasi padang dengan rendang dan sambal ijo',
+      type: 'food',
+      time: '12:30',
     });
   });
 

@@ -174,6 +174,19 @@ const env = {
       : '',
     androidChannelId: process.env.FCM_ANDROID_CHANNEL_ID || 'pulsewise_reminders',
   },
+  nutritionEstimation: {
+    enabled: process.env.NUTRITION_ESTIMATION_ENABLED === 'true',
+    geminiApiKey: process.env.GEMINI_API_KEY || '',
+    geminiBaseUrl:
+      process.env.GEMINI_BASE_URL || 'https://generativelanguage.googleapis.com/v1beta',
+    model: process.env.NUTRITION_ESTIMATION_MODEL || 'gemini-3-flash-preview',
+    timeoutMs: Math.max(1000, Number(process.env.NUTRITION_ESTIMATION_TIMEOUT_MS || 45000)),
+    maxOutputTokens: Math.max(
+      100,
+      Number(process.env.NUTRITION_ESTIMATION_MAX_OUTPUT_TOKENS || 1200)
+    ),
+    thinkingLevel: process.env.NUTRITION_ESTIMATION_THINKING_LEVEL || 'minimal',
+  },
   schedulers: {
     enabled: process.env.FCM_SCHEDULER_ENABLED === 'true',
     medicationReminderEnabled: process.env.MEDICATION_REMINDER_CRON_ENABLED === 'true',

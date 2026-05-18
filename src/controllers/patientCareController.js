@@ -251,6 +251,39 @@ async function createDailyConsumptionByDate(req, res, next) {
   }
 }
 
+async function estimateNutrition(req, res, next) {
+  try {
+    const data = await patientCareService.estimateNutrition({
+      actor: req.user,
+      userId: req.params.userId,
+      payload: req.body,
+    });
+
+    return success(res, 'Estimasi nutrisi berhasil dibuat', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function estimateNutritionAndSaveConsumptionByDate(req, res, next) {
+  try {
+    const data = await patientCareService.estimateNutritionAndSaveConsumptionByDate({
+      actor: req.user,
+      userId: req.params.userId,
+      payload: req.body,
+    });
+
+    return success(
+      res,
+      'Estimasi nutrisi berhasil dibuat dan disimpan ke consumption diary',
+      data,
+      CREATED
+    );
+  } catch (error) {
+    return next(error);
+  }
+}
+
 async function createAvatarUploadSignature(req, res, next) {
   try {
     const data = await patientCareService.createAvatarUploadSignature({
@@ -298,6 +331,8 @@ module.exports = {
   createDailyActivityByDate,
   createDailyConsumption,
   createDailyConsumptionByDate,
+  estimateNutrition,
+  estimateNutritionAndSaveConsumptionByDate,
   createAvatarUploadSignature,
   saveAvatarUploadResult,
 };
