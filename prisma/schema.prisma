@@ -161,7 +161,7 @@ model DailyConsumption {
   diaryId       String    @map("diary_id") @db.Uuid
   type          String?   @db.VarChar(50)
   name          String?   @db.VarChar(120)
-  portion       String?   @db.VarChar(80)
+  portion       String?   @db.VarChar(255)
   portionGrams  Decimal?  @map("portion_grams") @db.Decimal(10, 2)
   fdcFoodId     String?   @map("fdc_food_id") @db.VarChar(64)
   nutritionSource String? @map("nutrition_source") @db.VarChar(32)

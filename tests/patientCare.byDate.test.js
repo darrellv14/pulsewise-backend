@@ -122,6 +122,22 @@ describe('patient care by-date flow', () => {
     });
   });
 
+  test('consumptionCreateByDateSchema accepts long AI-generated portion descriptions within 255 chars', () => {
+    expect(
+      consumptionCreateByDateSchema.parse({
+        diaryDate: '2026-04-11',
+        type: 'food',
+        name: 'Nasi padang',
+        portion:
+          '1 plate nasi padang with a mound of rice, 1 egg portion, 1 perkedel, 1 serving beef rendang, small fried tempeh piece, small vegetable sides',
+      })
+    ).toMatchObject({
+      diaryDate: '2026-04-11',
+      type: 'food',
+      name: 'Nasi padang',
+    });
+  });
+
   test('getHeartDiaryByDate returns null when diary does not exist', async () => {
     patientCareRepository.getHeartDiaryByDate.mockResolvedValue(null);
 

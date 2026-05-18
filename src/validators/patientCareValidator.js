@@ -262,7 +262,7 @@ const activityCreateByDateSchema = activityCreateSchema.extend({
 const consumptionCreateSchema = z.object({
   type: optionalNullableString(50),
   name: optionalNullableString(120),
-  portion: optionalNullableString(80),
+  portion: optionalNullableString(255),
   portionGrams: z.coerce.number().min(0).max(100000).nullable().optional(),
   fdcFoodId: optionalNullableString(64),
   nutritionSource: optionalNullableString(32),
