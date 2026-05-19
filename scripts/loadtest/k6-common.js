@@ -1,6 +1,7 @@
 import http from 'k6/http';
 import exec from 'k6/execution';
 import { check } from 'k6';
+import { SharedArray } from 'k6/data';
 
 export const DEFAULT_STAGES = [
   { duration: '10s', target: 100 },
@@ -22,6 +23,13 @@ const PASSWORD = __ENV.K6_PASSWORD || 'dev12345';
 const COHORT_SIZE = Number(__ENV.K6_COHORT_SIZE || 200);
 const EMAIL_PREFIX = __ENV.K6_EMAIL_PREFIX || 'load.patient';
 const EMAIL_DOMAIN = __ENV.K6_EMAIL_DOMAIN || 'pulsewise.local';
+const COHORT_FIXTURE_PATH = __ENV.K6_COHORT_FIXTURE_PATH || '';
+
+const cohortFixture = COHORT_FIXTURE_PATH
+  ? new SharedArray('cohort-fixture', function loadCohortFixture() {
+      return JSON.parse(open(COHORT_FIXTURE_PATH));
+    })
+  : null;
 
 let authState = null;
 
@@ -48,6 +56,13 @@ export function getOrLoginUser() {
 
   const vuId = exec.vu.idInTest || 1;
   const cohortIndex = ((vuId - 1) % COHORT_SIZE) + 1;
+
+  if (cohortFixture?.length) {
+    const fixtureIndex = (cohortIndex - 1) % cohortFixture.length;
+    authState = cohortFixture[fixtureIndex];
+    return authState;
+  }
+
   const email = buildPatientEmail(cohortIndex);
 
   const response = http.post(
