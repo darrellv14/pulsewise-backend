@@ -165,14 +165,15 @@ async function ensureDoctorProfile(client, doctorId) {
 async function ensurePatientProfile(client, patientId, profile) {
   await client.query(
     `
-      INSERT INTO patient_profiles (patient_id, date_of_birth, sex)
-      VALUES ($1, $2, $3)
+      INSERT INTO patient_profiles (patient_id, date_of_birth, sex, body_height_cm)
+      VALUES ($1, $2, $3, $4)
       ON CONFLICT (patient_id)
       DO UPDATE SET
         date_of_birth = EXCLUDED.date_of_birth,
-        sex = EXCLUDED.sex
+        sex = EXCLUDED.sex,
+        body_height_cm = EXCLUDED.body_height_cm
     `,
-    [patientId, profile.dateOfBirth || null, profile.sex || null]
+    [patientId, profile.dateOfBirth || null, profile.sex || null, profile.heightCm || null]
   );
 }
 
@@ -717,4 +718,27 @@ async function run() {
   }
 }
 
-run();
+module.exports = {
+  DEFAULT_PASSWORD_HASH,
+  DATA_SOURCE,
+  DAYS_TO_SEED,
+  getPool,
+  ensureRoleId,
+  ensureUser,
+  ensureUserRole,
+  ensureDoctorProfile,
+  ensurePatientProfile,
+  ensureDoctorPatientLink,
+  ensurePatientMlProfile,
+  ensurePatientMlAssessment,
+  ensureMedicationSetup,
+  clearPatientHealthData,
+  computeSeedMetrics,
+  seedOneDay,
+  seedPatientTimeseries,
+  run,
+};
+
+if (require.main === module) {
+  run();
+}

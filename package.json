@@ -23,6 +23,7 @@
     "migrate": "npm run db:migrate",
     "seed:dev": "node scripts/seed/seed-dev-users.js",
     "seed:dashboard": "node scripts/seed/seed-dashboard-data.js",
+    "seed:load-test": "node scripts/seed/seed-load-test-cohort.js",
     "seed:patient-care": "node scripts/seed/seed-patient-care.js",
     "postman:sync-examples": "node scripts/postman/sync-openapi-postman-examples.js",
     "postman:refresh": "node scripts/postman/refresh-postman-collections.js",
