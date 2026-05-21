@@ -12,6 +12,7 @@ const { assertUserScope, normalizeNullableText, resolveDiaryEntryTimestamp } = r
 const { ensureHeartDiaryByDate } = require('./diaryService');
 const { invalidateDiaryCache } = require('./cache');
 const { mapConsumption } = require('./mappers');
+const { acquireModelQuota } = require('./geminiQuotaService');
 
 const DEFAULT_IMAGE_MIME_TYPE = 'image/jpeg';
 const MAX_PORTION_ESTIMATE_LENGTH = 255;
@@ -157,21 +158,23 @@ function buildPrompt({ foodName, userDescription }) {
     : 'No additional user description was provided.';
 
   return `
-Analyze this food image and estimate the total macros for all visible food and drink items.
+Analisis gambar makanan ini dan estimasikan total nutrisi untuk seluruh makanan atau minuman yang terlihat.
 
-You are especially helpful for Indonesian foods and drinks, including regional dishes from across Indonesia, but you should still work for non-Indonesian foods when needed.
+Kamu sangat memahami makanan dan minuman Indonesia, termasuk makanan daerah dari berbagai wilayah Indonesia, tetapi tetap harus bisa menangani makanan non-Indonesia bila diperlukan.
 
 ${foodNameLine}
 ${descriptionLine}
 
-Return only JSON that matches the schema.
+Kembalikan hanya JSON yang sesuai schema.
 
 Rules:
-- First decide whether the image primarily shows edible food or drink.
-- If no image is provided, decide whether the food name and description clearly describe edible food or drink.
-- If the input does not clearly show or describe food or drink, return:
+- Semua string yang bisa dibaca user harus dalam bahasa Indonesia.
+- Gunakan nama makanan/komponen dalam bahasa Indonesia bila wajar dan umum dipakai pengguna app di Indonesia.
+- Pertama, tentukan apakah gambar atau input ini memang menunjukkan makanan atau minuman yang bisa dikonsumsi.
+- Jika gambar tidak ada, tentukan apakah nama makanan dan deskripsinya cukup jelas menggambarkan makanan/minuman.
+- Jika input tidak jelas menunjukkan makanan atau minuman, kembalikan:
   is_food_image = false
-  validation_message = a short user-facing message explaining that the image does not look like food or drink and the user should retake the photo
+  validation_message = pesan singkat dalam bahasa Indonesia yang menjelaskan bahwa input tidak terlihat seperti makanan/minuman dan minta user ambil foto ulang
   meal_category = "other"
   detected_foods = []
   portion_estimate = ""
@@ -179,28 +182,29 @@ Rules:
   all nutrition numbers = 0
   fdc_food_id = ""
   confidence = "low"
-  notes = "Non-food image."
-- If the input does show or describe food or drink, return is_food_image = true and validation_message = "".
-- Always classify the meal into exactly one meal_category from: breakfast, lunch, dinner, snack, drink, other.
-- Use drink for beverages as the primary consumable item.
-- Use breakfast, lunch, or dinner when the portion and meal context clearly match a main meal.
-- Use snack only for lighter between-meal foods, desserts, pastries, bites, or small side-style consumption that would not usually be treated as a main meal.
-- Use other only when the food is valid but the meal timing/category is genuinely unclear.
-- Estimate total nutrition for the visible portion only.
-- If multiple foods are visible, combine the totals.
-- Use your best estimate for grams and nutrition even when portions are uncertain.
-- Treat the user-provided food name and description as helpful hints, but still verify against the image when an image exists.
-- When the food appears Indonesian, prefer Indonesian dish/component names that are commonly recognized by users in Indonesia.
-- Keep portion_estimate short, human-readable, and at most ${MAX_PORTION_ESTIMATE_LENGTH} characters.
-- Return all gram-based nutrients in grams and cholesterol_mg/calcium_mg in milligrams.
-- Keep sugar_g less than or equal to carbs_g when possible.
-- Keep saturated_fat_g + monounsaturated_fat_g + polyunsaturated_fat_g less than or equal to fat_g when possible.
-- If you cannot confidently map the food to a USDA FoodData Central item, return an empty string for fdc_food_id.
-- Always return nutrition_source as ${DEFAULT_NUTRITION_SOURCE}.
-- Use 0 only when a value is negligible or truly impossible to infer from the image and description.
-- Keep detected_foods short and specific.
-- Mention uncertainty honestly in notes.
-- Do not give medical advice.
+  notes = "Input bukan makanan atau minuman."
+- Jika input memang menunjukkan atau mendeskripsikan makanan/minuman, return is_food_image = true dan validation_message = "".
+- Selalu klasifikasikan meal_category ke salah satu saja dari: breakfast, lunch, dinner, snack, drink, other.
+- Gunakan drink untuk minuman sebagai item konsumsi utama.
+- Gunakan breakfast, lunch, atau dinner kalau porsi dan konteksnya jelas merupakan makanan utama.
+- Gunakan snack hanya untuk camilan, dessert, pastry, kudapan, atau porsi ringan yang biasanya bukan makanan utama.
+- Gunakan other hanya jika makanannya valid tetapi kategori waktunya benar-benar tidak jelas.
+- Estimasikan total nutrisi untuk porsi yang terlihat saja.
+- Jika ada beberapa komponen makanan, gabungkan total nutrisinya.
+- Gunakan estimasi terbaik untuk gram dan nutrisi walau porsinya tidak pasti.
+- Anggap nama makanan dan deskripsi dari user sebagai petunjuk, tetapi tetap verifikasi terhadap gambar jika gambar tersedia.
+- Jika makanannya tampak Indonesia, prioritaskan nama hidangan/komponen dalam bahasa Indonesia yang umum dipakai user di Indonesia.
+- portion_estimate harus pendek, mudah dibaca, dan maksimal ${MAX_PORTION_ESTIMATE_LENGTH} karakter.
+- detected_foods harus singkat, spesifik, dan berbahasa Indonesia.
+- notes harus berbahasa Indonesia.
+- Return semua nutrisi berbasis gram dalam satuan gram, dan cholesterol_mg/calcium_mg dalam miligram.
+- Jaga sugar_g <= carbs_g bila memungkinkan.
+- Jaga saturated_fat_g + monounsaturated_fat_g + polyunsaturated_fat_g <= fat_g bila memungkinkan.
+- Jika tidak yakin mapping ke USDA FoodData Central, return fdc_food_id = "".
+- Selalu return nutrition_source = ${DEFAULT_NUTRITION_SOURCE}.
+- Gunakan 0 hanya jika nilainya benar-benar sangat kecil atau mustahil diperkirakan dari gambar dan deskripsi.
+- Jelaskan ketidakpastian secara jujur di notes.
+- Jangan beri nasihat medis.
 `.trim();
 }
 
@@ -228,6 +232,17 @@ function ensureNutritionEnabled() {
   if (!env.nutritionEstimation.geminiApiKey) {
     throw createHttpError('GEMINI_API_KEY belum diatur', SERVICE_UNAVAILABLE);
   }
+}
+
+function buildGeminiQuotaErrorDetails(usage = []) {
+  return usage.map((entry) => ({
+    model: entry.model,
+    minuteCount: entry.minuteCount,
+    minuteLimit: entry.minuteLimit,
+    dayCount: entry.dayCount,
+    dayLimit: entry.dayLimit,
+    backend: entry.backend,
+  }));
 }
 
 function mapGeminiError({ status, body }) {
@@ -285,9 +300,6 @@ async function callGeminiNutritionModel({
   imageMimeType,
 }) {
   ensureNutritionEnabled();
-
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), env.nutritionEstimation.timeoutMs);
   const parts = [
     {
       text: buildPrompt({
@@ -307,80 +319,129 @@ async function callGeminiNutritionModel({
     });
   }
 
-  try {
-    const url =
-      `${env.nutritionEstimation.geminiBaseUrl}/models/` +
-      `${env.nutritionEstimation.model}:generateContent?key=${env.nutritionEstimation.geminiApiKey}`;
+  const attemptedModels = new Set();
+  let latestQuotaUsage = [];
+  let lastError = null;
+  const maxAttempts = Math.max(1, env.nutritionEstimation.models?.length || 1);
 
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      signal: controller.signal,
-      body: JSON.stringify({
-        contents: [
-          {
-            role: 'user',
-            parts,
-          },
-        ],
-        generationConfig: {
-          responseMimeType: 'application/json',
-          responseSchema: buildResponseJsonSchema(),
-          maxOutputTokens: env.nutritionEstimation.maxOutputTokens,
-          thinkingConfig: {
-            thinkingLevel: env.nutritionEstimation.thinkingLevel,
-          },
-        },
-      }),
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+    const quota = await acquireModelQuota({
+      excludedModels: Array.from(attemptedModels),
     });
+    latestQuotaUsage = quota.usage;
 
-    const responseText = await response.text();
-    if (!response.ok) {
-      throw mapGeminiError({
-        status: response.status,
-        body: responseText,
-      });
+    if (!quota.model) {
+      if (lastError?.statusCode) {
+        throw lastError;
+      }
+
+      throw createHttpError(
+        'Kuota internal Gemini untuk semua model cadangan sudah mencapai batas aman. Coba lagi sebentar atau besok.',
+        SERVICE_UNAVAILABLE,
+        {
+          usage: buildGeminiQuotaErrorDetails(latestQuotaUsage),
+        }
+      );
     }
 
-    let parsedTransport;
+    attemptedModels.add(quota.model);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), env.nutritionEstimation.timeoutMs);
+
     try {
-      parsedTransport = JSON.parse(responseText);
-    } catch (_error) {
-      throw createHttpError('Respons Gemini tidak valid JSON', BAD_GATEWAY);
-    }
+      const url =
+        `${env.nutritionEstimation.geminiBaseUrl}/models/` +
+        `${quota.model}:generateContent?key=${env.nutritionEstimation.geminiApiKey}`;
 
-    const outputText = extractCandidateText(parsedTransport);
-    if (!outputText) {
-      throw createHttpError('Respons Gemini tidak memiliki text output', BAD_GATEWAY, {
-        body: responseText,
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        signal: controller.signal,
+        body: JSON.stringify({
+          contents: [
+            {
+              role: 'user',
+              parts,
+            },
+          ],
+          generationConfig: {
+            responseMimeType: 'application/json',
+            responseSchema: buildResponseJsonSchema(),
+            maxOutputTokens: env.nutritionEstimation.maxOutputTokens,
+            thinkingConfig: {
+              thinkingLevel: env.nutritionEstimation.thinkingLevel,
+            },
+          },
+        }),
       });
-    }
 
-    let parsedContent;
-    try {
-      parsedContent = JSON.parse(outputText);
-    } catch (_error) {
-      throw createHttpError('Output Gemini bukan JSON valid', BAD_GATEWAY, {
-        body: outputText,
-      });
-    }
+      const responseText = await response.text();
+      if (!response.ok) {
+        const mappedError = mapGeminiError({
+          status: response.status,
+          body: responseText,
+        });
 
-    return foodMacroAnalysisSchema.parse(parsedContent);
-  } catch (error) {
-    if (error.name === 'AbortError') {
-      throw createHttpError('Permintaan ke Gemini timeout', GATEWAY_TIMEOUT);
-    }
+        if (response.status === 429) {
+          lastError = mappedError;
+          continue;
+        }
 
-    if (error.statusCode) {
-      throw error;
-    }
+        throw mappedError;
+      }
 
-    throw createHttpError('Gagal memanggil model nutrition estimation', BAD_GATEWAY);
-  } finally {
-    clearTimeout(timeout);
+      let parsedTransport;
+      try {
+        parsedTransport = JSON.parse(responseText);
+      } catch (_error) {
+        throw createHttpError('Respons Gemini tidak valid JSON', BAD_GATEWAY);
+      }
+
+      const outputText = extractCandidateText(parsedTransport);
+      if (!outputText) {
+        throw createHttpError('Respons Gemini tidak memiliki text output', BAD_GATEWAY, {
+          body: responseText,
+        });
+      }
+
+      let parsedContent;
+      try {
+        parsedContent = JSON.parse(outputText);
+      } catch (_error) {
+        throw createHttpError('Output Gemini bukan JSON valid', BAD_GATEWAY, {
+          body: outputText,
+        });
+      }
+
+      return foodMacroAnalysisSchema.parse(parsedContent);
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        throw createHttpError('Permintaan ke Gemini timeout', GATEWAY_TIMEOUT);
+      }
+
+      if (error.statusCode) {
+        throw error;
+      }
+
+      throw createHttpError('Gagal memanggil model nutrition estimation', BAD_GATEWAY);
+    } finally {
+      clearTimeout(timeout);
+    }
   }
+
+  if (lastError?.statusCode) {
+    throw lastError;
+  }
+
+  throw createHttpError(
+    'Semua model Gemini cadangan gagal dipakai untuk estimasi nutrisi.',
+    SERVICE_UNAVAILABLE,
+    {
+      usage: buildGeminiQuotaErrorDetails(latestQuotaUsage),
+    }
+  );
 }
 
 async function estimateNutrition({ actor, userId, payload }) {
@@ -398,11 +459,11 @@ function buildNutritionNote({ estimate }) {
   const noteParts = [];
 
   if (estimate.meal_category) {
-    noteParts.push(`Meal category: ${estimate.meal_category}`);
+    noteParts.push(`Kategori makan: ${estimate.meal_category}`);
   }
 
   if (estimate.detected_foods?.length) {
-    noteParts.push(`Detected foods: ${estimate.detected_foods.join(', ')}`);
+    noteParts.push(`Makanan terdeteksi: ${estimate.detected_foods.join(', ')}`);
   }
 
   if (estimate.fdc_food_id) {
@@ -410,11 +471,11 @@ function buildNutritionNote({ estimate }) {
   }
 
   if (estimate.confidence) {
-    noteParts.push(`Confidence: ${estimate.confidence}`);
+    noteParts.push(`Tingkat keyakinan: ${estimate.confidence}`);
   }
 
   if (estimate.notes) {
-    noteParts.push(`Notes: ${estimate.notes}`);
+    noteParts.push(`Catatan: ${estimate.notes}`);
   }
 
   return noteParts.join(' | ').slice(0, 2000);

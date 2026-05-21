@@ -4,10 +4,17 @@ jest.mock('../src/config/env', () => ({
     geminiApiKey: 'test-gemini-key',
     geminiBaseUrl: 'https://generativelanguage.googleapis.com/v1beta',
     model: 'gemini-3-flash-preview',
+    models: ['gemini-3.5-flash', 'gemini-3-flash-preview', 'gemini-2.5-flash'],
     timeoutMs: 45000,
     maxOutputTokens: 1200,
     thinkingLevel: 'minimal',
+    maxRequestsPerMinutePerModel: 4,
+    maxRequestsPerDayPerModel: 19,
   },
+}));
+
+jest.mock('../src/config/redis', () => ({
+  getRedisClient: jest.fn().mockResolvedValue(null),
 }));
 
 jest.mock('../src/repositories/patientCareRepository', () => ({
@@ -25,15 +32,18 @@ jest.mock('../src/services/patient-care/cache', () => ({
 const patientCareRepository = require('../src/repositories/patientCareRepository');
 const { ensureHeartDiaryByDate } = require('../src/services/patient-care/diaryService');
 const { invalidateDiaryCache } = require('../src/services/patient-care/cache');
+const { resetGeminiQuotaStateForTests } = require('../src/services/patient-care/geminiQuotaService');
 const nutritionEstimationService = require('../src/services/patient-care/nutritionEstimationService');
 
 describe('nutrition estimation service', () => {
   beforeEach(() => {
     global.fetch = jest.fn();
+    resetGeminiQuotaStateForTests();
   });
 
   afterEach(() => {
     jest.clearAllMocks();
+    resetGeminiQuotaStateForTests();
   });
 
   test('estimateNutrition returns validated structured output from Gemini', async () => {
@@ -245,7 +255,9 @@ describe('nutrition estimation service', () => {
     });
 
     expect(global.fetch).toHaveBeenCalledWith(
-      expect.stringContaining('/models/gemini-3-flash-preview:generateContent?key=test-gemini-key'),
+      expect.stringMatching(
+        /\/models\/(gemini-3\.5-flash|gemini-3-flash-preview|gemini-2\.5-flash):generateContent\?key=test-gemini-key/
+      ),
       expect.objectContaining({
         method: 'POST',
       })
@@ -333,5 +345,80 @@ describe('nutrition estimation service', () => {
         type: 'dinner',
       })
     );
+  });
+
+  test('estimateNutrition falls back to the next configured Gemini model after a 429', async () => {
+    global.fetch
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 429,
+        text: async () =>
+          JSON.stringify({
+            error: {
+              message: 'rate limit',
+            },
+          }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        text: async () =>
+          JSON.stringify({
+            candidates: [
+              {
+                content: {
+                  parts: [
+                    {
+                      text: JSON.stringify({
+                        is_food_image: true,
+                        validation_message: '',
+                        meal_category: 'lunch',
+                        detected_foods: ['nasi padang'],
+                        portion_estimate: '1 piring nasi padang',
+                        portion_grams_estimate: 650,
+                        fdc_food_id: '',
+                        nutrition_source: 'gemini_food_macro_analysis',
+                        calories_kcal: 980,
+                        protein_g: 35,
+                        carbs_g: 95,
+                        sugar_g: 8,
+                        fiber_g: 10,
+                        fat_g: 52,
+                        saturated_fat_g: 20,
+                        monounsaturated_fat_g: 18,
+                        polyunsaturated_fat_g: 6,
+                        cholesterol_mg: 110,
+                        calcium_mg: 160,
+                        confidence: 'high',
+                        notes: 'Estimasi porsi restoran Indonesia.',
+                      }),
+                    },
+                  ],
+                },
+              },
+            ],
+          }),
+      });
+
+    const result = await nutritionEstimationService.estimateNutrition({
+      actor: { userId: 'user-1', role: 'patient' },
+      userId: 'user-1',
+      payload: {
+        mealName: 'Nasi Padang',
+        mealDescription: 'Rendang, telur, sayur',
+      },
+    });
+
+    expect(global.fetch).toHaveBeenNthCalledWith(
+      1,
+      expect.stringContaining('/models/gemini-3.5-flash:generateContent?key=test-gemini-key'),
+      expect.any(Object)
+    );
+    expect(global.fetch).toHaveBeenNthCalledWith(
+      2,
+      expect.stringContaining('/models/gemini-3-flash-preview:generateContent?key=test-gemini-key'),
+      expect.any(Object)
+    );
+    expect(result.portion_estimate).toBe('1 piring nasi padang');
+    expect(result.notes).toBe('Estimasi porsi restoran Indonesia.');
   });
 });

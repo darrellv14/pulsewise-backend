@@ -181,12 +181,26 @@ const env = {
     geminiBaseUrl:
       process.env.GEMINI_BASE_URL || 'https://generativelanguage.googleapis.com/v1beta',
     model: process.env.NUTRITION_ESTIMATION_MODEL || 'gemini-3-flash-preview',
+    models: String(
+      process.env.NUTRITION_ESTIMATION_MODELS || process.env.NUTRITION_ESTIMATION_MODEL || ''
+    )
+      .split(',')
+      .map((value) => value.trim())
+      .filter(Boolean),
     timeoutMs: Math.max(1000, Number(process.env.NUTRITION_ESTIMATION_TIMEOUT_MS || 45000)),
     maxOutputTokens: Math.max(
       100,
       Number(process.env.NUTRITION_ESTIMATION_MAX_OUTPUT_TOKENS || 1200)
     ),
     thinkingLevel: process.env.NUTRITION_ESTIMATION_THINKING_LEVEL || 'minimal',
+    maxRequestsPerMinutePerModel: Math.max(
+      1,
+      Number(process.env.NUTRITION_ESTIMATION_MAX_REQUESTS_PER_MINUTE_PER_MODEL || 4)
+    ),
+    maxRequestsPerDayPerModel: Math.max(
+      1,
+      Number(process.env.NUTRITION_ESTIMATION_MAX_REQUESTS_PER_DAY_PER_MODEL || 19)
+    ),
   },
   schedulers: {
     enabled: process.env.FCM_SCHEDULER_ENABLED === 'true',
