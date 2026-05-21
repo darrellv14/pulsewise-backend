@@ -17,7 +17,7 @@ const { acquireModelQuota } = require('./geminiQuotaService');
 const DEFAULT_IMAGE_MIME_TYPE = 'image/jpeg';
 const MAX_PORTION_ESTIMATE_LENGTH = 255;
 const DEFAULT_NUTRITION_SOURCE = 'gemini_food_macro_analysis';
-const MEAL_CATEGORY_VALUES = ['breakfast', 'lunch', 'dinner', 'snack', 'drink', 'other'];
+const MEAL_CATEGORY_VALUES = ['Makanan Berat', 'Makanan Ringan', 'Minuman'];
 
 function coerceNumber(max) {
   return z.preprocess((value) => {
@@ -175,7 +175,7 @@ Rules:
 - Jika input tidak jelas menunjukkan makanan atau minuman, kembalikan:
   is_food_image = false
   validation_message = pesan singkat dalam bahasa Indonesia yang menjelaskan bahwa input tidak terlihat seperti makanan/minuman dan minta user ambil foto ulang
-  meal_category = "other"
+  meal_category = "Makanan Ringan"
   detected_foods = []
   portion_estimate = ""
   portion_grams_estimate = 0
@@ -184,11 +184,11 @@ Rules:
   confidence = "low"
   notes = "Input bukan makanan atau minuman."
 - Jika input memang menunjukkan atau mendeskripsikan makanan/minuman, return is_food_image = true dan validation_message = "".
-- Selalu klasifikasikan meal_category ke salah satu saja dari: breakfast, lunch, dinner, snack, drink, other.
-- Gunakan drink untuk minuman sebagai item konsumsi utama.
-- Gunakan breakfast, lunch, atau dinner kalau porsi dan konteksnya jelas merupakan makanan utama.
-- Gunakan snack hanya untuk camilan, dessert, pastry, kudapan, atau porsi ringan yang biasanya bukan makanan utama.
-- Gunakan other hanya jika makanannya valid tetapi kategori waktunya benar-benar tidak jelas.
+- Selalu klasifikasikan meal_category ke salah satu saja dari: Makanan Berat, Makanan Ringan, Minuman.
+- Gunakan Minuman untuk kopi, teh, jus, susu, soda, smoothie, dan minuman lain sebagai item konsumsi utama.
+- Gunakan Makanan Berat untuk nasi, mi, pasta, lauk utama, makanan berkuah, hidangan porsi utama, atau makanan yang umumnya dianggap makan besar.
+- Gunakan Makanan Ringan untuk camilan, dessert, pastry, roti ringan, gorengan kecil, kudapan, atau makanan porsi kecil yang biasanya bukan makan utama.
+- Jika makanannya valid tetapi ragu antara kategori besar atau ringan, pilih kategori yang paling masuk akal dari konteks porsi dan komponen makanannya. Jangan buat kategori lain di luar tiga ini.
 - Estimasikan total nutrisi untuk porsi yang terlihat saja.
 - Jika ada beberapa komponen makanan, gabungkan total nutrisinya.
 - Gunakan estimasi terbaik untuk gram dan nutrisi walau porsinya tidak pasti.
@@ -512,7 +512,7 @@ async function estimateNutritionAndSaveConsumptionByDate({ actor, userId, payloa
 
   const created = await patientCareRepository.createDailyConsumption({
     diaryId: diary.diary_id,
-    type: normalizeNullableText(payload.type) || estimate.meal_category || 'other',
+    type: normalizeNullableText(payload.type) || estimate.meal_category || 'Makanan Ringan',
     name: normalizeNullableText(payload.name) || normalizeNullableText(payload.mealName),
     portion: estimate.portion_estimate,
     portionGrams:

@@ -59,7 +59,7 @@ describe('nutrition estimation service', () => {
                     text: JSON.stringify({
                       is_food_image: true,
                       validation_message: '',
-                      meal_category: 'lunch',
+                      meal_category: 'Makanan Berat',
                       detected_foods: ['white rice', 'beef rendang'],
                       portion_estimate: '1 plate nasi padang with rice and beef rendang',
                       portion_grams_estimate: 650,
@@ -97,7 +97,7 @@ describe('nutrition estimation service', () => {
     });
 
     expect(result).toMatchObject({
-      meal_category: 'lunch',
+      meal_category: 'Makanan Berat',
       nutrition_source: 'gemini_food_macro_analysis',
       portion_estimate: '1 plate nasi padang with rice and beef rendang',
       detected_foods: ['white rice', 'beef rendang'],
@@ -119,7 +119,7 @@ describe('nutrition estimation service', () => {
                     text: JSON.stringify({
                       is_food_image: true,
                       validation_message: '',
-                      meal_category: 'lunch',
+                      meal_category: 'Makanan Berat',
                       detected_foods: ['white rice', 'beef rendang'],
                       portion_estimate: '1 plate nasi padang with rice and beef rendang',
                       portion_grams_estimate: 650,
@@ -215,7 +215,7 @@ describe('nutrition estimation service', () => {
                     text: JSON.stringify({
                       is_food_image: true,
                       validation_message: '',
-                      meal_category: 'lunch',
+                      meal_category: 'Makanan Berat',
                       detected_foods: ['nasi padang'],
                       portion_estimate: '1 plate nasi padang',
                       portion_grams_estimate: 650,
@@ -277,7 +277,7 @@ describe('nutrition estimation service', () => {
                     text: JSON.stringify({
                       is_food_image: true,
                       validation_message: '',
-                      meal_category: 'dinner',
+                      meal_category: 'Makanan Berat',
                       detected_foods: ['soto lamongan'],
                       portion_estimate: '1 bowl soto lamongan with rice',
                       portion_grams_estimate: 650,
@@ -308,7 +308,7 @@ describe('nutrition estimation service', () => {
     patientCareRepository.createDailyConsumption.mockResolvedValueOnce({
       consumptionId: 'cons-2',
       diaryId: 'diary-1',
-      type: 'dinner',
+      type: 'Makanan Berat',
       name: 'Soto Lamongan',
       portion: '1 bowl soto lamongan with rice',
       portionGrams: 650,
@@ -325,7 +325,7 @@ describe('nutrition estimation service', () => {
       polyunsaturatedFatG: 4,
       cholesterolMg: 190,
       calciumMg: 85,
-      note: 'Meal category: dinner',
+      note: 'Kategori makan: Makanan Berat',
       timeStamp: new Date('2026-05-18T19:30:00.000Z'),
     });
 
@@ -342,7 +342,7 @@ describe('nutrition estimation service', () => {
 
     expect(patientCareRepository.createDailyConsumption).toHaveBeenCalledWith(
       expect.objectContaining({
-        type: 'dinner',
+        type: 'Makanan Berat',
       })
     );
   });
@@ -371,7 +371,7 @@ describe('nutrition estimation service', () => {
                       text: JSON.stringify({
                         is_food_image: true,
                         validation_message: '',
-                        meal_category: 'lunch',
+                        meal_category: 'Makanan Berat',
                         detected_foods: ['nasi padang'],
                         portion_estimate: '1 piring nasi padang',
                         portion_grams_estimate: 650,
