@@ -11,10 +11,13 @@ RUN apt-get update \
 COPY package.json package-lock.json ./
 COPY prisma ./prisma
 
-RUN npm ci \
-  && npx prisma generate \
-  && npm prune --omit=dev \
-  && npm cache clean --force
+RUN npm ci
+
+RUN npx prisma generate
+
+RUN npm prune --omit=dev
+
+RUN npm cache clean --force
 
 COPY src ./src
 COPY scripts ./scripts
