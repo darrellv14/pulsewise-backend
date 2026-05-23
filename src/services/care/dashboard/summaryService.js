@@ -17,6 +17,18 @@ const {
 } = require('./shared');
 const { metricTypeToDashboardKey } = require('../../../utils/metricTypes');
 
+function shouldReplaceLatestField(currentMeasuredAt, nextMeasuredAt) {
+  if (!nextMeasuredAt) {
+    return false;
+  }
+
+  if (!currentMeasuredAt) {
+    return true;
+  }
+
+  return nextMeasuredAt >= currentMeasuredAt;
+}
+
 async function buildDashboardPatientSummary(patientId, identityLoader, notFoundMessage) {
   const identity = await identityLoader();
   if (!identity) {
@@ -35,8 +47,11 @@ async function buildDashboardPatientSummary(patientId, identityLoader, notFoundM
       toNumberOrNull(latestDaily?.diastolic_bp),
       dailyMeasuredAt
     ),
-    heartRate: buildLatestVitalField(null, null),
-    oxygenSaturation: buildLatestVitalField(null, null),
+    heartRate: buildLatestVitalField(toNumberOrNull(latestDaily?.heart_rate), dailyMeasuredAt),
+    oxygenSaturation: buildLatestVitalField(
+      toNumberOrNull(latestDaily?.oxygen_saturation),
+      dailyMeasuredAt
+    ),
     weight: buildLatestVitalField(toNumberOrNull(latestDaily?.weight), dailyMeasuredAt),
     height: buildLatestVitalField(toNumberOrNull(latestDaily?.height), dailyMeasuredAt),
     bmi: buildLatestVitalField(toNumberOrNull(latestDaily?.bmi), dailyMeasuredAt),
@@ -46,8 +61,8 @@ async function buildDashboardPatientSummary(patientId, identityLoader, notFoundM
     measuredAt: dailyMeasuredAt,
     systolicBp: latestVitalsByField.systolicBp.value,
     diastolicBp: latestVitalsByField.diastolicBp.value,
-    heartRate: null,
-    oxygenSaturation: null,
+    heartRate: latestVitalsByField.heartRate.value,
+    oxygenSaturation: latestVitalsByField.oxygenSaturation.value,
     weight: latestVitalsByField.weight.value,
     height: latestVitalsByField.height.value,
     bmi: latestVitalsByField.bmi.value,
@@ -61,6 +76,10 @@ async function buildDashboardPatientSummary(patientId, identityLoader, notFoundM
 
     const measuredAt = toIso(reading.measured_at);
     const value = toNumberOrNull(reading.value_numeric);
+
+    if (!shouldReplaceLatestField(latestVitalsByField[key]?.measuredAt, measuredAt)) {
+      continue;
+    }
 
     latestVitals[key] = value;
     latestVitalsByField[key] = buildLatestVitalField(value, measuredAt);

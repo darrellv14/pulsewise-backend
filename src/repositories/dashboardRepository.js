@@ -15,6 +15,10 @@ async function listDoctorDashboardPatients({ doctorId, q, limit, offset }) {
       latest_dm.measured_at AS latest_measured_at,
       latest_dm.systolic_bp AS latest_systolic_bp,
       latest_dm.diastolic_bp AS latest_diastolic_bp,
+      latest_dm.heart_rate AS latest_manual_heart_rate,
+      latest_dm.measured_at AS latest_manual_heart_rate_measured_at,
+      latest_dm.oxygen_saturation AS latest_manual_oxygen_saturation,
+      latest_dm.measured_at AS latest_manual_oxygen_saturation_measured_at,
       latest_hr.value_numeric AS latest_heart_rate,
       latest_hr.measured_at AS latest_heart_rate_measured_at,
       latest_spo2.value_numeric AS latest_oxygen_saturation,
@@ -30,6 +34,8 @@ async function listDoctorDashboardPatients({ doctorId, q, limit, offset }) {
         dm.time_stamp AS measured_at,
         dm.systolic_pressure AS systolic_bp,
         dm.diastolic_pressure AS diastolic_bp,
+        dm.heart_rate AS heart_rate,
+        dm.oxygen_saturation AS oxygen_saturation,
         dm.body_weight AS weight,
         dm.body_height AS height,
         dm.bmi AS bmi
@@ -145,6 +151,8 @@ async function getLatestDailyMetrics(patientId) {
       dm.time_stamp AS measured_at,
       dm.systolic_pressure AS systolic_bp,
       dm.diastolic_pressure AS diastolic_bp,
+      dm.heart_rate AS heart_rate,
+      dm.oxygen_saturation AS oxygen_saturation,
       dm.body_weight AS weight,
       dm.body_height AS height,
       dm.bmi AS bmi
@@ -164,6 +172,8 @@ async function listDailyMetricsSeries({ patientId, startAt, endAt }) {
       dm.time_stamp AS measured_at,
       dm.systolic_pressure AS systolic_bp,
       dm.diastolic_pressure AS diastolic_bp,
+      dm.heart_rate AS heart_rate,
+      dm.oxygen_saturation AS oxygen_saturation,
       dm.body_weight AS weight,
       dm.body_height AS height,
       dm.bmi AS bmi

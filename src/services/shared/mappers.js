@@ -103,7 +103,32 @@ function mapBodyMetric(row) {
     systolicPressure: row.systolic_pressure,
     diastolicPressure: row.diastolic_pressure,
     heartRate: row.heart_rate,
+    oxygenSaturation: row.oxygen_saturation,
     timeStamp: toIso(row.time_stamp),
+  };
+}
+
+function resolveLatestMeasurement({ manualValue, manualMeasuredAt, snapshotValue, snapshotMeasuredAt }) {
+  const normalizedManualMeasuredAt = toIso(manualMeasuredAt);
+  const normalizedSnapshotMeasuredAt = toIso(snapshotMeasuredAt);
+  const normalizedManualValue =
+    manualValue !== null && manualValue !== undefined ? Number(manualValue) : null;
+  const normalizedSnapshotValue =
+    snapshotValue !== null && snapshotValue !== undefined ? Number(snapshotValue) : null;
+
+  if (
+    normalizedManualMeasuredAt &&
+    (!normalizedSnapshotMeasuredAt || normalizedManualMeasuredAt >= normalizedSnapshotMeasuredAt)
+  ) {
+    return {
+      value: normalizedManualValue,
+      measuredAt: normalizedManualMeasuredAt,
+    };
+  }
+
+  return {
+    value: normalizedSnapshotValue,
+    measuredAt: normalizedSnapshotMeasuredAt,
   };
 }
 
@@ -125,9 +150,26 @@ function mapLatestVitalSnapshot(snapshot) {
 }
 
 function enrichBodyMetricWithLatestVitals(bodyMetric, snapshot) {
+  const latestHeartRate = resolveLatestMeasurement({
+    manualValue: bodyMetric?.heartRate,
+    manualMeasuredAt: bodyMetric?.timeStamp,
+    snapshotValue: snapshot?.heartRate?.value_numeric,
+    snapshotMeasuredAt: snapshot?.heartRate?.measured_at,
+  });
+  const latestOxygenSaturation = resolveLatestMeasurement({
+    manualValue: bodyMetric?.oxygenSaturation,
+    manualMeasuredAt: bodyMetric?.timeStamp,
+    snapshotValue: snapshot?.oxygenSaturation?.value_numeric,
+    snapshotMeasuredAt: snapshot?.oxygenSaturation?.measured_at,
+  });
+
   return {
     ...bodyMetric,
     ...mapLatestVitalSnapshot(snapshot),
+    latestHeartRate: latestHeartRate.value,
+    latestHeartRateMeasuredAt: latestHeartRate.measuredAt,
+    latestOxygenSaturation: latestOxygenSaturation.value,
+    latestOxygenSaturationMeasuredAt: latestOxygenSaturation.measuredAt,
   };
 }
 

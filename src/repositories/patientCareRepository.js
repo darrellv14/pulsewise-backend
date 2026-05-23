@@ -55,6 +55,7 @@ function mapDailyMetric(row) {
     systolic_pressure: row.systolicPressure,
     diastolic_pressure: row.diastolicPressure,
     heart_rate: row.heartRate,
+    oxygen_saturation: row.oxygenSaturation,
     time_stamp: row.timeStamp,
   };
 }
@@ -390,6 +391,7 @@ async function createDailyBodyMetric({
   systolicPressure,
   diastolicPressure,
   heartRate,
+  oxygenSaturation,
   timeStamp,
 }) {
   const row = await prisma.dailyBodyMetric.create({
@@ -402,6 +404,7 @@ async function createDailyBodyMetric({
       systolicPressure,
       diastolicPressure,
       heartRate,
+      oxygenSaturation,
       timeStamp: timeStamp ? toDateTime(timeStamp) : undefined,
     },
   });
@@ -418,6 +421,7 @@ async function updateDailyBodyMetric({
   systolicPressure,
   diastolicPressure,
   heartRate,
+  oxygenSaturation,
   timeStamp,
 }) {
   const data = {};
@@ -441,6 +445,9 @@ async function updateDailyBodyMetric({
   }
   if (heartRate !== undefined) {
     data.heartRate = heartRate;
+  }
+  if (oxygenSaturation !== undefined) {
+    data.oxygenSaturation = oxygenSaturation;
   }
   if (timeStamp !== undefined && timeStamp !== null) {
     data.timeStamp = toDateTime(timeStamp);

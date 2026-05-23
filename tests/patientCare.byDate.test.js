@@ -371,11 +371,13 @@ describe('patient care by-date flow', () => {
         diaryDate: '2026-04-11',
         bodyWeight: 73.2,
         heartRate: 78,
+        oxygenSaturation: 97,
       })
     ).toEqual({
       diaryDate: '2026-04-11',
       bodyWeight: 73.2,
       heartRate: 78,
+      oxygenSaturation: 97,
     });
   });
 
@@ -396,6 +398,7 @@ describe('patient care by-date flow', () => {
       systolic_pressure: 120,
       diastolic_pressure: 80,
       heart_rate: 76,
+      oxygen_saturation: 96,
       time_stamp: '2026-04-11T07:00:00.000Z',
     });
     patientCareRepository.updateDailyBodyMetric.mockResolvedValue({
@@ -408,6 +411,7 @@ describe('patient care by-date flow', () => {
       systolic_pressure: 120,
       diastolic_pressure: 80,
       heart_rate: 76,
+      oxygen_saturation: 96,
       time_stamp: '2026-04-11T07:00:00.000Z',
     });
     biometricRepository.getLatestVitalSnapshot.mockResolvedValue({
@@ -440,6 +444,7 @@ describe('patient care by-date flow', () => {
       systolicPressure: undefined,
       diastolicPressure: undefined,
       heartRate: undefined,
+      oxygenSaturation: undefined,
       timeStamp: undefined,
     });
     expect(patientCareRepository.createDailyBodyMetric).not.toHaveBeenCalled();
@@ -448,6 +453,7 @@ describe('patient care by-date flow', () => {
       diaryId: 'diary-1',
       bodyWeight: 73.2,
       heartRate: 76,
+      oxygenSaturation: 96,
       latestHeartRate: 81,
       latestOxygenSaturation: 98,
     });
@@ -471,6 +477,7 @@ describe('patient care by-date flow', () => {
       systolic_pressure: 121,
       diastolic_pressure: 79,
       heart_rate: 77,
+      oxygen_saturation: 97,
       time_stamp: '2026-04-11T07:10:00.000Z',
     });
     biometricRepository.getLatestVitalSnapshot.mockResolvedValue({
@@ -491,19 +498,80 @@ describe('patient care by-date flow', () => {
         diaryDate: '2026-04-11',
         bodyWeight: 73.2,
         heartRate: 77,
+        oxygenSaturation: 97,
         timeStamp: '2026-04-11T07:10:00.000Z',
       },
     });
 
+    expect(patientCareRepository.createDailyBodyMetric).toHaveBeenCalledWith({
+      diaryId: 'diary-1',
+      conditionTag: null,
+      bodyHeight: undefined,
+      bodyWeight: 73.2,
+      bmi: undefined,
+      systolicPressure: undefined,
+      diastolicPressure: undefined,
+      heartRate: 77,
+      oxygenSaturation: 97,
+      timeStamp: '2026-04-11T07:10:00.000Z',
+    });
     expect(result).toMatchObject({
       metricId: 'metric-2',
       diaryId: 'diary-1',
       bodyWeight: 73.2,
       heartRate: 77,
+      oxygenSaturation: 97,
       latestHeartRate: 81,
       latestHeartRateMeasuredAt: '2026-05-04T08:30:00.000Z',
       latestOxygenSaturation: 98,
       latestOxygenSaturationMeasuredAt: '2026-05-04T08:31:00.000Z',
+    });
+  });
+
+  test('createDailyBodyMetricByDate prefers newer manual oxygen saturation over older biometric snapshot', async () => {
+    patientCareRepository.upsertHeartDiary.mockResolvedValue({
+      diary_id: 'diary-1',
+      user_id: 'user-1',
+      diary_date: '2026-04-11',
+      created_at: '2026-04-11T01:00:00.000Z',
+    });
+    patientCareRepository.getLatestDailyBodyMetric.mockResolvedValue(null);
+    patientCareRepository.createDailyBodyMetric.mockResolvedValue({
+      metric_id: 'metric-3',
+      diary_id: 'diary-1',
+      condition_tag: null,
+      body_height: null,
+      body_weight: null,
+      bmi: null,
+      systolic_pressure: null,
+      diastolic_pressure: null,
+      heart_rate: null,
+      oxygen_saturation: 96,
+      time_stamp: '2026-05-04T08:40:00.000Z',
+    });
+    biometricRepository.getLatestVitalSnapshot.mockResolvedValue({
+      heartRate: null,
+      oxygenSaturation: {
+        value_numeric: 98,
+        measured_at: '2026-05-04T08:31:00.000Z',
+      },
+    });
+
+    const result = await patientCareService.createDailyBodyMetricByDate({
+      actor: { userId: 'user-1', role: 'patient' },
+      userId: 'user-1',
+      payload: {
+        diaryDate: '2026-04-11',
+        oxygenSaturation: 96,
+        timeStamp: '2026-05-04T08:40:00.000Z',
+      },
+    });
+
+    expect(result).toMatchObject({
+      metricId: 'metric-3',
+      oxygenSaturation: 96,
+      latestOxygenSaturation: 96,
+      latestOxygenSaturationMeasuredAt: '2026-05-04T08:40:00.000Z',
     });
   });
 });

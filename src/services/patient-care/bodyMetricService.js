@@ -28,6 +28,7 @@ async function createDailyBodyMetric({ actor, userId, diaryId, payload }) {
     systolicPressure: payload.systolicPressure,
     diastolicPressure: payload.diastolicPressure,
     heartRate: payload.heartRate,
+    oxygenSaturation: payload.oxygenSaturation,
     timeStamp: payload.timeStamp || null,
   });
 
@@ -58,6 +59,7 @@ async function createDailyBodyMetricByDate({ actor, userId, payload }) {
       systolicPressure: payload.systolicPressure,
       diastolicPressure: payload.diastolicPressure,
       heartRate: payload.heartRate,
+      oxygenSaturation: payload.oxygenSaturation,
       timeStamp: resolvedTimeStamp,
     });
 
@@ -77,6 +79,7 @@ async function createDailyBodyMetricByDate({ actor, userId, payload }) {
     systolicPressure: hasOwn(payload, 'systolicPressure') ? payload.systolicPressure : undefined,
     diastolicPressure: hasOwn(payload, 'diastolicPressure') ? payload.diastolicPressure : undefined,
     heartRate: hasOwn(payload, 'heartRate') ? payload.heartRate : undefined,
+    oxygenSaturation: hasOwn(payload, 'oxygenSaturation') ? payload.oxygenSaturation : undefined,
     timeStamp: hasOwn(payload, 'timeStamp') ? resolvedTimeStamp : undefined,
   });
 

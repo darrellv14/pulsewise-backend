@@ -47,6 +47,7 @@ describe('Patient care API contract', () => {
       systolicPressure: 122,
       diastolicPressure: 78,
       heartRate: 74,
+      oxygenSaturation: 97,
       latestHeartRate: 81,
       latestHeartRateMeasuredAt: '2026-05-04T08:30:00.000Z',
       latestOxygenSaturation: 98,
@@ -65,6 +66,7 @@ describe('Patient care API contract', () => {
         systolicPressure: 122,
         diastolicPressure: 78,
         heartRate: 74,
+        oxygenSaturation: 97,
         timeStamp: '2026-04-10T07:30:00.000Z',
       });
 
@@ -80,6 +82,7 @@ describe('Patient care API contract', () => {
       'systolicPressure',
       'diastolicPressure',
       'heartRate',
+      'oxygenSaturation',
       'latestHeartRate',
       'latestHeartRateMeasuredAt',
       'latestOxygenSaturation',
@@ -99,6 +102,7 @@ describe('Patient care API contract', () => {
       systolicPressure: 122,
       diastolicPressure: 78,
       heartRate: 74,
+      oxygenSaturation: 97,
       latestHeartRate: 81,
       latestHeartRateMeasuredAt: '2026-05-04T08:30:00.000Z',
       latestOxygenSaturation: 98,
@@ -117,6 +121,7 @@ describe('Patient care API contract', () => {
         systolicPressure: 122,
         diastolicPressure: 78,
         heartRate: 74,
+        oxygenSaturation: 97,
         timeStamp: '2026-04-10T07:30:00.000Z',
       });
 
@@ -132,6 +137,7 @@ describe('Patient care API contract', () => {
       'systolicPressure',
       'diastolicPressure',
       'heartRate',
+      'oxygenSaturation',
       'latestHeartRate',
       'latestHeartRateMeasuredAt',
       'latestOxygenSaturation',
@@ -157,6 +163,7 @@ describe('Patient care API contract', () => {
           systolicPressure: 122,
           diastolicPressure: 78,
           heartRate: 74,
+          oxygenSaturation: 97,
           latestHeartRate: 81,
           latestHeartRateMeasuredAt: '2026-05-04T08:30:00.000Z',
           latestOxygenSaturation: 98,
@@ -197,6 +204,7 @@ describe('Patient care API contract', () => {
       'systolicPressure',
       'diastolicPressure',
       'heartRate',
+      'oxygenSaturation',
       'latestHeartRate',
       'latestHeartRateMeasuredAt',
       'latestOxygenSaturation',

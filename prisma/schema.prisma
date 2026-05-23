@@ -112,6 +112,7 @@ model DailyBodyMetric {
   systolicPressure   Int?      @map("systolic_pressure")
   diastolicPressure  Int?      @map("diastolic_pressure")
   heartRate          Int?      @map("heart_rate")
+  oxygenSaturation   Int?      @map("oxygen_saturation")
   timeStamp          DateTime  @default(now()) @map("time_stamp") @db.Timestamptz(6)
   heartDiary         HeartDiary @relation(fields: [diaryId], references: [diaryId], onDelete: Cascade)
 

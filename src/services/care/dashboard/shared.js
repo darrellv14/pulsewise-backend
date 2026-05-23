@@ -90,6 +90,8 @@ function mergeSeries({ dailyRows, vitalRows }) {
     const point = byTimestamp.get(timestamp);
     point.systolicBp = toNumberOrNull(row.systolic_bp);
     point.diastolicBp = toNumberOrNull(row.diastolic_bp);
+    point.heartRate = toNumberOrNull(row.heart_rate);
+    point.oxygenSaturation = toNumberOrNull(row.oxygen_saturation);
     point.weight = toNumberOrNull(row.weight);
     point.height = toNumberOrNull(row.height);
     point.bmi = toNumberOrNull(row.bmi);
