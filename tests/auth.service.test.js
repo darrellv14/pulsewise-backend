@@ -253,6 +253,86 @@ describe('authService.confirmEmailVerification', () => {
     expect(result.accountStatus).toBe('active');
     expect(result.user.email).toBe('patient@example.com');
   });
+
+  test('returns waiting-admin step for doctor after email verification succeeds', async () => {
+    userRepository.findLatestValidEmailVerification.mockResolvedValue({
+      verification_id: '33333333-3333-4333-8333-333333333333',
+      otp_code_hash: crypto.createHash('sha256').update('123456').digest('hex'),
+    });
+
+    userRepository.activateUserByEmail.mockResolvedValue({
+      user_id: '11111111-1111-4111-8111-111111111111',
+      username: 'doctorcandidate',
+      email: 'doctor@example.com',
+      first_name: 'Doc',
+      last_name: 'Tor',
+      role: 'doctor',
+      roles: ['doctor'],
+      account_status: 'pending_admin_verification',
+      email_verified_at: '2026-04-10T10:43:08.257Z',
+      doctor_verification: {
+        isVerified: false,
+        verifiedAt: null,
+        verifiedBy: null,
+        verificationNote: null,
+        rejectionReason: null,
+      },
+    });
+
+    const result = await authService.confirmEmailVerification('doctor@example.com', '123456');
+
+    expect(result).toMatchObject({
+      nextStep: 'WAIT_ADMIN_VERIFICATION',
+      accountStatus: 'pending_admin_verification',
+      user: {
+        email: 'doctor@example.com',
+        role: 'doctor',
+        accountStatus: 'pending_admin_verification',
+      },
+    });
+  });
+});
+
+describe('authService.login', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test('blocks doctor login while waiting for admin verification and exposes FE details', async () => {
+    userRepository.findUserByEmail.mockResolvedValue({
+      user_id: 'aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa',
+      username: 'doctorcandidate',
+      email: 'doctor@example.com',
+      password_hash: '$2b$10$QmRzecCBEih5sWBrnYtLYevTkqgUQJzaqnO.f32e1sfU87Xd8Ha7q',
+      first_name: 'Doc',
+      last_name: 'Tor',
+      role: 'doctor',
+      roles: ['doctor'],
+      account_status: 'pending_admin_verification',
+      onboarding_completed: true,
+      doctor_verification: {
+        isVerified: false,
+        verifiedAt: null,
+        verifiedBy: null,
+        verificationNote: null,
+        rejectionReason: null,
+      },
+    });
+
+    await expect(authService.login('doctor@example.com', 'dev12345')).rejects.toMatchObject({
+      statusCode: 403,
+      message: 'Akun dokter sedang menunggu verifikasi admin',
+      exposeDetails: true,
+      details: {
+        nextStep: 'WAIT_ADMIN_VERIFICATION',
+        accountStatus: 'pending_admin_verification',
+        user: {
+          email: 'doctor@example.com',
+          role: 'doctor',
+        },
+      },
+    });
+  });
 });
 
 describe('authService.beginGoogleAuth', () => {

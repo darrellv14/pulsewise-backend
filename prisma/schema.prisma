@@ -57,6 +57,7 @@ model User {
   dashboardPairingSessionsAsDoctor DashboardPairingSession[] @relation("DashboardPairingSessionDoctor")
   dashboardPairingSessionsAsPatient DashboardPairingSession[] @relation("DashboardPairingSessionPatient")
   requestedMlInferenceResults      PatientMlInferenceResult[] @relation("RequestedMlInferenceResults")
+  verifiedDoctorProfiles           DoctorProfile[]            @relation("DoctorVerifiedByUser")
 
   @@map("users")
 }
@@ -238,12 +239,18 @@ model MedicationLog {
 }
 
 model DoctorProfile {
-  doctorId        String  @id @map("doctor_id") @db.Uuid
-  specialization  String? @db.VarChar(120)
-  licenseNo       String? @map("license_no") @db.VarChar(120)
-  hospitalName    String? @map("hospital_name") @db.VarChar(150)
-  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  user            User    @relation(fields: [doctorId], references: [userId], onDelete: Cascade)
+  doctorId         String    @id @map("doctor_id") @db.Uuid
+  specialization   String?   @db.VarChar(120)
+  licenseNo        String?   @map("license_no") @db.VarChar(120)
+  hospitalName     String?   @map("hospital_name") @db.VarChar(150)
+  isVerified       Boolean   @default(false) @map("is_verified")
+  verifiedAt       DateTime? @map("verified_at") @db.Timestamptz(6)
+  verifiedBy       String?   @map("verified_by") @db.Uuid
+  verificationNote String?   @map("verification_note")
+  rejectionReason  String?   @map("rejection_reason")
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  user             User      @relation(fields: [doctorId], references: [userId], onDelete: Cascade)
+  verifiedByUser   User?     @relation("DoctorVerifiedByUser", fields: [verifiedBy], references: [userId], onDelete: SetNull)
 
   @@map("doctor_profiles")
 }

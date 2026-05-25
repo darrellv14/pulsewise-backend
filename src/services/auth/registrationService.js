@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 const userRepository = require('../../repositories/userRepository');
 const { createHttpError } = require('../../utils/httpError');
 const { ACCOUNT_STATUSES } = require('../../constants/enums');
-const { ALLOWED_ROLES, buildUserProfile } = require('./shared');
+const { PUBLIC_REGISTRATION_ROLES, buildUserProfile } = require('./shared');
 const { issueEmailVerification } = require('./verificationService');
 
 async function register(payload) {
@@ -15,7 +15,7 @@ async function register(payload) {
   const lastName = payload.lastName ? String(payload.lastName).trim() : null;
   const role = payload.role ? String(payload.role).trim().toLowerCase() : 'patient';
 
-  if (!ALLOWED_ROLES.has(role)) {
+  if (!PUBLIC_REGISTRATION_ROLES.has(role)) {
     throw createHttpError('Role tidak valid', 400);
   }
 

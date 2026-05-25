@@ -1,10 +1,61 @@
 const prisma = require('../config/prisma');
 const { ACCOUNT_STATUSES } = require('../constants/enums');
 
+const ROLE_PRIORITY = {
+  admin: 3,
+  doctor: 2,
+  patient: 1,
+};
+
+function resolveRoles(userRoles) {
+  const roles = (userRoles || [])
+    .map((item) => item?.role?.code)
+    .filter(Boolean)
+    .sort((left, right) => (ROLE_PRIORITY[right] || 0) - (ROLE_PRIORITY[left] || 0));
+
+  return Array.from(new Set(roles));
+}
+
+function mapDoctorVerification(doctorProfile) {
+  if (!doctorProfile) {
+    return null;
+  }
+
+  return {
+    isVerified: Boolean(doctorProfile.isVerified),
+    verifiedAt: doctorProfile.verifiedAt || null,
+    verifiedBy: doctorProfile.verifiedBy || null,
+    verificationNote: doctorProfile.verificationNote || null,
+    rejectionReason: doctorProfile.rejectionReason || null,
+  };
+}
+
+function buildUserInclude() {
+  return {
+    userRoles: {
+      include: {
+        role: true,
+      },
+    },
+    doctorProfile: {
+      select: {
+        isVerified: true,
+        verifiedAt: true,
+        verifiedBy: true,
+        verificationNote: true,
+        rejectionReason: true,
+      },
+    },
+  };
+}
+
 function mapUserWithRole(user) {
   if (!user) {
     return null;
   }
+
+  const roles = resolveRoles(user.userRoles);
+  const primaryRole = roles[0] || null;
 
   return {
     user_id: user.userId,
@@ -18,7 +69,9 @@ function mapUserWithRole(user) {
     email_verified_at: user.emailVerifiedAt,
     first_name: user.firstName,
     last_name: user.lastName,
-    role: user.userRoles?.[0]?.role?.code || null,
+    role: primaryRole,
+    roles,
+    doctor_verification: mapDoctorVerification(user.doctorProfile),
   };
 }
 
@@ -48,17 +101,7 @@ async function findUserByEmail(email) {
       email,
       isActive: true,
     },
-    include: {
-      userRoles: {
-        include: {
-          role: true,
-        },
-        orderBy: {
-          assignedAt: 'asc',
-        },
-        take: 1,
-      },
-    },
+    include: buildUserInclude(),
   });
 
   return mapUserWithRole(user);
@@ -74,17 +117,7 @@ async function findUserByGoogleSub(googleSub) {
       googleSub,
       isActive: true,
     },
-    include: {
-      userRoles: {
-        include: {
-          role: true,
-        },
-        orderBy: {
-          assignedAt: 'asc',
-        },
-        take: 1,
-      },
-    },
+    include: buildUserInclude(),
   });
 
   return mapUserWithRole(user);
@@ -109,17 +142,7 @@ async function findUserById(userId) {
       userId,
       isActive: true,
     },
-    include: {
-      userRoles: {
-        include: {
-          role: true,
-        },
-        orderBy: {
-          assignedAt: 'asc',
-        },
-        take: 1,
-      },
-    },
+    include: buildUserInclude(),
   });
 
   return mapUserWithRole(user);
@@ -172,18 +195,24 @@ async function createUserWithRole({
         },
       });
 
+      if (role === 'doctor') {
+        await tx.doctorProfile.upsert({
+          where: {
+            doctorId: user.userId,
+          },
+          create: {
+            doctorId: user.userId,
+            isVerified: false,
+          },
+          update: {},
+        });
+      }
+
       return tx.user.findUnique({
         where: {
           userId: user.userId,
         },
-        include: {
-          userRoles: {
-            include: {
-              role: true,
-            },
-            take: 1,
-          },
-        },
+        include: buildUserInclude(),
       });
     });
 
@@ -262,25 +291,66 @@ async function deleteEmailVerification(verificationId) {
 }
 
 async function activateUserByEmail(email) {
-  const user = await prisma.user.update({
-    where: {
-      email,
-    },
-    data: {
-      accountStatus: ACCOUNT_STATUSES.ACTIVE,
-      emailVerifiedAt: {
-        set: new Date(),
+  const user = await prisma.$transaction(async (tx) => {
+    const existing = await tx.user.findUnique({
+      where: {
+        email,
       },
-      updatedAt: new Date(),
-    },
-    include: {
-      userRoles: {
-        include: {
-          role: true,
+      include: {
+        userRoles: {
+          include: {
+            role: true,
+          },
         },
-        take: 1,
       },
-    },
+    });
+
+    if (!existing) {
+      return null;
+    }
+
+    const roles = resolveRoles(existing.userRoles);
+    const isDoctor = roles.includes('doctor');
+
+    const updatedUser = await tx.user.update({
+      where: {
+        email,
+      },
+      data: {
+        accountStatus: isDoctor
+          ? ACCOUNT_STATUSES.PENDING_ADMIN_VERIFICATION
+          : ACCOUNT_STATUSES.ACTIVE,
+        emailVerifiedAt: {
+          set: new Date(),
+        },
+        updatedAt: new Date(),
+      },
+    });
+
+    if (isDoctor) {
+      await tx.doctorProfile.upsert({
+        where: {
+          doctorId: updatedUser.userId,
+        },
+        create: {
+          doctorId: updatedUser.userId,
+          isVerified: false,
+        },
+        update: {
+          isVerified: false,
+          verifiedAt: null,
+          verifiedBy: null,
+          rejectionReason: null,
+        },
+      });
+    }
+
+    return tx.user.findUnique({
+      where: {
+        userId: updatedUser.userId,
+      },
+      include: buildUserInclude(),
+    });
   });
 
   return mapUserWithRole(user);
@@ -305,14 +375,7 @@ async function updatePendingUserRegistration({
         lastName,
         updatedAt: new Date(),
       },
-      include: {
-        userRoles: {
-          include: {
-            role: true,
-          },
-          take: 1,
-        },
-      },
+      include: buildUserInclude(),
     });
 
     return mapUserWithRole(user);
@@ -341,14 +404,7 @@ async function linkGoogleIdentity(userId, googleSub) {
         googleSub,
         updatedAt: new Date(),
       },
-      include: {
-        userRoles: {
-          include: {
-            role: true,
-          },
-          take: 1,
-        },
-      },
+      include: buildUserInclude(),
     });
 
     return mapUserWithRole(user);
@@ -372,14 +428,7 @@ async function updateUserPasswordHash(userId, passwordHash) {
       passwordHash,
       updatedAt: new Date(),
     },
-    include: {
-      userRoles: {
-        include: {
-          role: true,
-        },
-        take: 1,
-      },
-    },
+    include: buildUserInclude(),
   });
 
   return mapUserWithRole(user);

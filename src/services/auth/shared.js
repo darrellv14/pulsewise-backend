@@ -4,6 +4,7 @@ const { createHttpError } = require('../../utils/httpError');
 const { ACCOUNT_STATUSES } = require('../../constants/enums');
 
 const ALLOWED_ROLES = new Set(['patient', 'doctor', 'admin']);
+const PUBLIC_REGISTRATION_ROLES = new Set(['patient', 'doctor']);
 const GOOGLE_MOBILE_ROLES = new Set(['patient', 'doctor']);
 const GOOGLE_REGISTRATION_TOKEN_PURPOSE = 'google_registration';
 const GOOGLE_REGISTRATION_TOKEN_EXPIRES_IN = '15m';
@@ -28,6 +29,7 @@ function buildAuthPayload(user) {
     userId: user.user_id,
     email: user.email,
     role: user.role || 'patient',
+    roles: user.roles || [user.role || 'patient'],
   };
 }
 
@@ -46,6 +48,9 @@ function buildAuthResponse(token, user) {
       lastName: user.last_name,
       avatarPhoto: user.avatar_photo || null,
       role: user.role || 'patient',
+      roles: user.roles || [user.role || 'patient'],
+      accountStatus: user.account_status || ACCOUNT_STATUSES.PENDING_VERIFICATION,
+      doctorVerification: user.doctor_verification || null,
       onboardingCompleted: user.onboarding_completed !== false,
     },
   };
@@ -60,8 +65,10 @@ function buildUserProfile(user) {
     lastName: user.last_name,
     avatarPhoto: user.avatar_photo || null,
     role: user.role || 'patient',
+    roles: user.roles || [user.role || 'patient'],
     accountStatus: user.account_status || ACCOUNT_STATUSES.PENDING_VERIFICATION,
     emailVerifiedAt: user.email_verified_at || null,
+    doctorVerification: user.doctor_verification || null,
     onboardingCompleted: user.onboarding_completed !== false,
   };
 }
@@ -86,6 +93,7 @@ function hashOtpCode(otp) {
 
 module.exports = {
   ALLOWED_ROLES,
+  PUBLIC_REGISTRATION_ROLES,
   GOOGLE_MOBILE_ROLES,
   GOOGLE_REGISTRATION_TOKEN_PURPOSE,
   GOOGLE_REGISTRATION_TOKEN_EXPIRES_IN,

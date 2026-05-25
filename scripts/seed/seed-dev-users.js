@@ -57,6 +57,33 @@ async function seedUser(client, { username, email, role, firstName, lastName, pa
     `,
     [userResult.rows[0].user_id, roleResult.rows[0].role_id]
   );
+
+  if (role === 'doctor') {
+    await client.query(
+      `
+        INSERT INTO doctor_profiles (
+          doctor_id,
+          specialization,
+          license_no,
+          hospital_name,
+          is_verified,
+          verified_at
+        )
+        VALUES ($1, $2, $3, $4, TRUE, NOW())
+        ON CONFLICT (doctor_id)
+        DO UPDATE SET
+          specialization = EXCLUDED.specialization,
+          license_no = EXCLUDED.license_no,
+          hospital_name = EXCLUDED.hospital_name,
+          is_verified = TRUE,
+          verified_at = COALESCE(doctor_profiles.verified_at, NOW()),
+          verified_by = NULL,
+          verification_note = NULL,
+          rejection_reason = NULL
+      `,
+      [userResult.rows[0].user_id, 'General Practice', 'DEV-DOCTOR-001', 'RS PulseWise Dev']
+    );
+  }
 }
 
 async function run() {

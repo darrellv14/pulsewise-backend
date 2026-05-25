@@ -16,6 +16,7 @@ const {
   buildGoogleProfile,
   buildUserProfile,
 } = require('./shared');
+const { buildInactiveAccountError } = require('./sessionService');
 
 const googleClient = new OAuth2Client();
 
@@ -113,6 +114,10 @@ async function beginGoogleAuth(idToken, role = 'patient') {
       },
       user: buildUserProfile(user),
     };
+  }
+
+  if (user.account_status !== ACCOUNT_STATUSES.PENDING_VERIFICATION) {
+    throw buildInactiveAccountError(user);
   }
 
   return {

@@ -4,7 +4,9 @@ const METRIC_TYPES = Object.freeze(Object.keys(METRIC_REGISTRY));
 
 const ACCOUNT_STATUSES = Object.freeze({
   PENDING_VERIFICATION: 'pending_verification',
+  PENDING_ADMIN_VERIFICATION: 'pending_admin_verification',
   ACTIVE: 'active',
+  REJECTED: 'rejected',
   SUSPENDED: 'suspended',
 });
 

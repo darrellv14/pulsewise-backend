@@ -16,7 +16,7 @@ async function authenticate(req, res, next) {
 
     const decoded = jwt.verify(token, env.jwtSecret);
 
-    if (env.auth.recheckUserOnProtectedRoutes) {
+    if (env.auth.recheckUserOnProtectedRoutes || decoded.role === 'doctor' || decoded.role === 'admin') {
       const user = await userRepository.findUserById(decoded.userId);
 
       if (!user || user.account_status !== ACCOUNT_STATUSES.ACTIVE) {

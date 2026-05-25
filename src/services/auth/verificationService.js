@@ -83,8 +83,13 @@ async function confirmEmailVerification(email, otp) {
   }
 
   return {
+    nextStep:
+      user.role === 'doctor' &&
+      user.account_status === ACCOUNT_STATUSES.PENDING_ADMIN_VERIFICATION
+        ? 'WAIT_ADMIN_VERIFICATION'
+        : 'HOME',
     user: buildUserProfile(user),
-    accountStatus: ACCOUNT_STATUSES.ACTIVE,
+    accountStatus: user.account_status,
   };
 }
 

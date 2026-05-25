@@ -25,7 +25,7 @@ const registerSchema = z.object({
   password: z.string().min(8).max(128),
   firstName: optionalNullableString(100),
   lastName: optionalNullableString(100),
-  role: z.enum(['patient', 'doctor', 'admin']).default('patient'),
+  role: z.enum(['patient', 'doctor']).default('patient'),
 });
 
 const loginSchema = z.object({

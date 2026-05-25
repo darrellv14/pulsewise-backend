@@ -150,13 +150,25 @@ async function ensureUserRole(client, userId, roleId) {
 async function ensureDoctorProfile(client, doctorId) {
   await client.query(
     `
-      INSERT INTO doctor_profiles (doctor_id, specialization, license_no, hospital_name)
-      VALUES ($1, $2, $3, $4)
+      INSERT INTO doctor_profiles (
+        doctor_id,
+        specialization,
+        license_no,
+        hospital_name,
+        is_verified,
+        verified_at
+      )
+      VALUES ($1, $2, $3, $4, TRUE, NOW())
       ON CONFLICT (doctor_id)
       DO UPDATE SET
         specialization = EXCLUDED.specialization,
         license_no = EXCLUDED.license_no,
-        hospital_name = EXCLUDED.hospital_name
+        hospital_name = EXCLUDED.hospital_name,
+        is_verified = TRUE,
+        verified_at = COALESCE(doctor_profiles.verified_at, NOW()),
+        verified_by = NULL,
+        verification_note = NULL,
+        rejection_reason = NULL
     `,
     [doctorId, 'Cardiology', 'DOC-SEED-001', 'RS PulseWise']
   );

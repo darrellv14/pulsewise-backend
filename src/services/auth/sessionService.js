@@ -12,6 +12,38 @@ const {
 } = require('./shared');
 const { verifyForgotPasswordResetToken } = require('./tokenService');
 
+function buildInactiveAccountError(user) {
+  if (user.role === 'doctor' && user.account_status === ACCOUNT_STATUSES.PENDING_ADMIN_VERIFICATION) {
+    return createHttpError('Akun dokter sedang menunggu verifikasi admin', 403, {
+      nextStep: 'WAIT_ADMIN_VERIFICATION',
+      accountStatus: user.account_status,
+      user: buildUserProfile(user),
+    }, { exposeDetails: true });
+  }
+
+  if (user.account_status === ACCOUNT_STATUSES.REJECTED) {
+    return createHttpError('Akun ditolak oleh admin', 403, {
+      nextStep: 'CONTACT_ADMIN',
+      accountStatus: user.account_status,
+      user: buildUserProfile(user),
+    }, { exposeDetails: true });
+  }
+
+  if (user.account_status === ACCOUNT_STATUSES.SUSPENDED) {
+    return createHttpError('Akun dinonaktifkan oleh admin', 403, {
+      nextStep: 'CONTACT_ADMIN',
+      accountStatus: user.account_status,
+      user: buildUserProfile(user),
+    }, { exposeDetails: true });
+  }
+
+  return createHttpError('Akun belum aktif, silakan verifikasi email terlebih dahulu', 403, {
+    nextStep: 'VERIFY_OTP',
+    accountStatus: user.account_status,
+    user: buildUserProfile(user),
+  }, { exposeDetails: true });
+}
+
 async function login(email, password) {
   const normalizedEmail = String(email || '')
     .trim()
@@ -22,7 +54,7 @@ async function login(email, password) {
   }
 
   if (user.account_status !== ACCOUNT_STATUSES.ACTIVE) {
-    throw createHttpError('Akun belum aktif, silakan verifikasi email terlebih dahulu', 403);
+    throw buildInactiveAccountError(user);
   }
 
   const isValidPassword = await bcrypt.compare(password, user.password_hash);
@@ -117,4 +149,5 @@ module.exports = {
   changePassword,
   resetForgotPassword,
   getCurrentUser,
+  buildInactiveAccountError,
 };
