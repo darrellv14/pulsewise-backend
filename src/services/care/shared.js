@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const { NOT_FOUND } = require('../../constants/httpStatus');
 const {
   assertDoctorScope,
+  assertDoctorProfileScope,
   assertPatientScope,
   assertPatientResourceAccess,
 } = require('../shared/guards');
@@ -193,6 +194,7 @@ module.exports = {
   latestIso,
   buildLatestVitalField,
   assertDoctorScope,
+  assertDoctorProfileScope,
   assertPatientScope,
   assertPatientResourceAccess,
   generateShareCode,

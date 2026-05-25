@@ -298,7 +298,7 @@ describe('authService.login', () => {
     jest.clearAllMocks();
   });
 
-  test('blocks doctor login while waiting for admin verification and exposes FE details', async () => {
+  test('allows doctor login with restricted access while waiting for admin verification', async () => {
     userRepository.findUserByEmail.mockResolvedValue({
       user_id: 'aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa',
       username: 'doctorcandidate',
@@ -319,16 +319,18 @@ describe('authService.login', () => {
       },
     });
 
-    await expect(authService.login('doctor@example.com', 'dev12345')).rejects.toMatchObject({
-      statusCode: 403,
-      message: 'Akun dokter sedang menunggu verifikasi admin',
-      exposeDetails: true,
-      details: {
-        nextStep: 'WAIT_ADMIN_VERIFICATION',
+    const result = await authService.login('doctor@example.com', 'dev12345');
+
+    expect(result).toMatchObject({
+      nextStep: 'WAIT_ADMIN_VERIFICATION',
+      restrictedAccess: true,
+      token: expect.any(String),
+      user: {
+        email: 'doctor@example.com',
+        role: 'doctor',
         accountStatus: 'pending_admin_verification',
-        user: {
-          email: 'doctor@example.com',
-          role: 'doctor',
+        doctorVerification: {
+          isVerified: false,
         },
       },
     });

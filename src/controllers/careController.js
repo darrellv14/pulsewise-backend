@@ -116,7 +116,10 @@ async function updatePatientMlAssessment(req, res, next) {
 
 async function getDoctorProfile(req, res, next) {
   try {
-    const data = await careService.getDoctorProfile(req.params.doctorId);
+    const data = await careService.getDoctorProfile({
+      actor: req.user,
+      doctorId: req.params.doctorId,
+    });
     return success(res, 'Profil dokter berhasil diambil', data);
   } catch (error) {
     return next(error);
@@ -125,7 +128,11 @@ async function getDoctorProfile(req, res, next) {
 
 async function updateDoctorProfile(req, res, next) {
   try {
-    const data = await careService.updateDoctorProfile(req.params.doctorId, req.body);
+    const data = await careService.updateDoctorProfile({
+      actor: req.user,
+      doctorId: req.params.doctorId,
+      payload: req.body,
+    });
     return success(res, 'Profil dokter berhasil diperbarui', data);
   } catch (error) {
     return next(error);

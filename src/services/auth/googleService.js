@@ -16,7 +16,7 @@ const {
   buildGoogleProfile,
   buildUserProfile,
 } = require('./shared');
-const { buildInactiveAccountError } = require('./sessionService');
+const { buildInactiveAccountError, buildPendingDoctorLoginResponse } = require('./sessionService');
 
 const googleClient = new OAuth2Client();
 
@@ -80,6 +80,18 @@ async function beginGoogleAuth(idToken, role = 'patient') {
 
   if (!user.google_sub) {
     throw buildGoogleEmailAlreadyRegisteredError();
+  }
+
+  if (
+    user.role === 'doctor' &&
+    user.account_status === ACCOUNT_STATUSES.PENDING_ADMIN_VERIFICATION &&
+    user.onboarding_completed !== false
+  ) {
+    const token = jwt.sign(buildAuthPayload(user), env.jwtSecret, {
+      expiresIn: env.jwtExpiresIn,
+    });
+
+    return buildPendingDoctorLoginResponse(token, user);
   }
 
   if (user.account_status === ACCOUNT_STATUSES.ACTIVE && user.onboarding_completed !== false) {

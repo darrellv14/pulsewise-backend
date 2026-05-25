@@ -33,12 +33,13 @@ function buildAuthPayload(user) {
   };
 }
 
-function buildAuthResponse(token, user) {
+function buildAuthResponse(token, user, overrides = {}) {
   return {
     nextStep: 'HOME',
     accountExists: true,
     registrationCompleted: user.onboarding_completed !== false,
     otpRequired: false,
+    restrictedAccess: false,
     token,
     user: {
       userId: user.user_id,
@@ -53,6 +54,7 @@ function buildAuthResponse(token, user) {
       doctorVerification: user.doctor_verification || null,
       onboardingCompleted: user.onboarding_completed !== false,
     },
+    ...overrides,
   };
 }
 

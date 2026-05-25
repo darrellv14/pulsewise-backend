@@ -5,6 +5,22 @@ const userRepository = require('../repositories/userRepository');
 const { ACCOUNT_STATUSES } = require('../constants/enums');
 const { fail } = require('../utils/response');
 
+function canAuthenticateProtectedRoute(user, decoded) {
+  if (!user) {
+    return false;
+  }
+
+  if (user.account_status === ACCOUNT_STATUSES.ACTIVE) {
+    return true;
+  }
+
+  return (
+    decoded.role === 'doctor' &&
+    user.role === 'doctor' &&
+    user.account_status === ACCOUNT_STATUSES.PENDING_ADMIN_VERIFICATION
+  );
+}
+
 async function authenticate(req, res, next) {
   try {
     const authHeader = req.headers.authorization || '';
@@ -19,9 +35,19 @@ async function authenticate(req, res, next) {
     if (env.auth.recheckUserOnProtectedRoutes || decoded.role === 'doctor' || decoded.role === 'admin') {
       const user = await userRepository.findUserById(decoded.userId);
 
-      if (!user || user.account_status !== ACCOUNT_STATUSES.ACTIVE) {
+      if (!canAuthenticateProtectedRoute(user, decoded)) {
         return fail(res, 'Token tidak valid', UNAUTHORIZED);
       }
+
+      req.user = {
+        ...decoded,
+        role: user.role || decoded.role,
+        roles: user.roles || decoded.roles || [user.role || decoded.role],
+        accountStatus: user.account_status,
+        doctorVerification: user.doctor_verification || null,
+      };
+
+      return next();
     }
 
     req.user = decoded;

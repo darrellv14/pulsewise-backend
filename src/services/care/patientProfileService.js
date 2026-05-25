@@ -7,6 +7,7 @@ const {
   NOT_FOUND,
   buildPagination,
   assertPatientResourceAccess,
+  assertDoctorProfileScope,
 } = require('./shared');
 
 async function listPatients({ page, limit, sortBy, order }) {
@@ -60,7 +61,9 @@ async function updatePatientProfile(patientId, payload) {
   return updated;
 }
 
-async function getDoctorProfile(doctorId) {
+async function getDoctorProfile({ actor, doctorId }) {
+  assertDoctorProfileScope({ actor, doctorId });
+
   const profile = await profileRepository.getDoctorProfileById(doctorId);
   if (!profile) {
     throw createHttpError('Profil dokter tidak ditemukan', NOT_FOUND);
@@ -69,7 +72,9 @@ async function getDoctorProfile(doctorId) {
   return profile;
 }
 
-async function updateDoctorProfile(doctorId, payload) {
+async function updateDoctorProfile({ actor, doctorId, payload }) {
+  assertDoctorProfileScope({ actor, doctorId });
+
   return profileRepository.upsertDoctorProfile({
     doctorId,
     specialization: payload.specialization || null,

@@ -1,6 +1,7 @@
 const { FORBIDDEN } = require('../../constants/httpStatus');
 const doctorPatientRepository = require('../../repositories/doctorPatientRepository');
 const { createHttpError } = require('../../utils/httpError');
+const { ACCOUNT_STATUSES } = require('../../constants/enums');
 
 const DEFAULT_DOCTOR_SCOPE_MESSAGES = {
   invalidActor: 'Aktor tidak valid',
@@ -22,6 +23,12 @@ const DEFAULT_USER_SCOPE_MESSAGES = {
 const DEFAULT_ADMIN_SCOPE_MESSAGES = {
   invalidActor: 'Aktor tidak valid',
   roleDenied: 'Role tidak memiliki akses admin',
+};
+
+const DEFAULT_DOCTOR_PROFILE_SCOPE_MESSAGES = {
+  invalidActor: 'Aktor tidak valid',
+  roleDenied: 'Role tidak memiliki akses profil dokter',
+  scopeDenied: 'Akses profil dokter ditolak',
 };
 
 const DEFAULT_PATIENT_RESOURCE_MESSAGES = {
@@ -53,7 +60,46 @@ function assertDoctorScope({ actor, doctorId, messages }) {
     throw createHttpError(resolved.roleDenied, FORBIDDEN);
   }
 
+  if (actor.accountStatus !== ACCOUNT_STATUSES.ACTIVE) {
+    throw createHttpError(
+      'Akun dokter sedang menunggu verifikasi admin',
+      FORBIDDEN,
+      {
+        nextStep: 'WAIT_ADMIN_VERIFICATION',
+        accountStatus: actor.accountStatus,
+      },
+      { exposeDetails: true }
+    );
+  }
+
   if (actor.userId !== doctorId) {
+    throw createHttpError(resolved.scopeDenied, FORBIDDEN);
+  }
+}
+
+function assertDoctorProfileScope({ actor, doctorId, messages }) {
+  const resolved = resolveMessages(DEFAULT_DOCTOR_PROFILE_SCOPE_MESSAGES, messages);
+
+  if (!actor) {
+    throw createHttpError(resolved.invalidActor, FORBIDDEN);
+  }
+
+  if (actor.role === 'admin') {
+    return;
+  }
+
+  if (actor.role !== 'doctor') {
+    throw createHttpError(resolved.roleDenied, FORBIDDEN);
+  }
+
+  if (actor.userId !== doctorId) {
+    throw createHttpError(resolved.scopeDenied, FORBIDDEN);
+  }
+
+  if (
+    actor.accountStatus !== ACCOUNT_STATUSES.ACTIVE &&
+    actor.accountStatus !== ACCOUNT_STATUSES.PENDING_ADMIN_VERIFICATION
+  ) {
     throw createHttpError(resolved.scopeDenied, FORBIDDEN);
   }
 }
@@ -154,6 +200,7 @@ async function assertPatientResourceAccess({ actor, patientId, messages }) {
 module.exports = {
   assertAdminScope,
   assertDoctorScope,
+  assertDoctorProfileScope,
   assertPatientScope,
   assertUserScope,
   assertDoctorPatientLinkedAccess,

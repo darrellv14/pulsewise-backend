@@ -12,6 +12,13 @@ const {
 } = require('./shared');
 const { verifyForgotPasswordResetToken } = require('./tokenService');
 
+function buildPendingDoctorLoginResponse(token, user) {
+  return buildAuthResponse(token, user, {
+    nextStep: 'WAIT_ADMIN_VERIFICATION',
+    restrictedAccess: true,
+  });
+}
+
 function buildInactiveAccountError(user) {
   if (user.role === 'doctor' && user.account_status === ACCOUNT_STATUSES.PENDING_ADMIN_VERIFICATION) {
     return createHttpError('Akun dokter sedang menunggu verifikasi admin', 403, {
@@ -53,10 +60,6 @@ async function login(email, password) {
     throw createHttpError('Email atau password salah', 401);
   }
 
-  if (user.account_status !== ACCOUNT_STATUSES.ACTIVE) {
-    throw buildInactiveAccountError(user);
-  }
-
   const isValidPassword = await bcrypt.compare(password, user.password_hash);
   if (!isValidPassword) {
     throw createHttpError('Email atau password salah', 401);
@@ -65,6 +68,17 @@ async function login(email, password) {
   const token = jwt.sign(buildAuthPayload(user), env.jwtSecret, {
     expiresIn: env.jwtExpiresIn,
   });
+
+  if (
+    user.role === 'doctor' &&
+    user.account_status === ACCOUNT_STATUSES.PENDING_ADMIN_VERIFICATION
+  ) {
+    return buildPendingDoctorLoginResponse(token, user);
+  }
+
+  if (user.account_status !== ACCOUNT_STATUSES.ACTIVE) {
+    throw buildInactiveAccountError(user);
+  }
 
   return buildAuthResponse(token, user);
 }
@@ -150,4 +164,5 @@ module.exports = {
   resetForgotPassword,
   getCurrentUser,
   buildInactiveAccountError,
+  buildPendingDoctorLoginResponse,
 };
