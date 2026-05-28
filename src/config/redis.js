@@ -100,8 +100,17 @@ async function getRedisClient() {
   return clientPromise;
 }
 
+async function warmRedisConnection() {
+  if (!redisEnv.enabled) {
+    return null;
+  }
+
+  return getRedisClient();
+}
+
 module.exports = {
   getRedisClient,
+  warmRedisConnection,
   getRedisRuntimeStatus: () => ({
     ...redisStatus,
   }),
