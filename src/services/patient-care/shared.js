@@ -1,5 +1,6 @@
 const { FORBIDDEN } = require('../../constants/httpStatus');
 const { createHttpError } = require('../../utils/httpError');
+const { assertPatientResourceAccess } = require('../shared/guards');
 
 function assertUserScope({ actor, userId }) {
   if (!actor) {
@@ -13,6 +14,18 @@ function assertUserScope({ actor, userId }) {
   if (actor.userId !== userId) {
     throw createHttpError('Akses user scope ditolak', FORBIDDEN);
   }
+}
+
+async function assertDiaryReadAccess({ actor, userId }) {
+  await assertPatientResourceAccess({
+    actor,
+    patientId: userId,
+    messages: {
+      roleDenied: 'Role tidak memiliki akses diary pasien',
+      scopeDenied: 'Akses diary pasien ditolak',
+      linkDenied: 'Dokter tidak memiliki akses ke diary pasien ini',
+    },
+  });
 }
 
 function toIso(value) {
@@ -71,6 +84,7 @@ function resolveDiaryEntryTimestamp({ diaryDate, time, timeStamp }) {
 
 module.exports = {
   assertUserScope,
+  assertDiaryReadAccess,
   toIso,
   toDateOnly,
   toTimeOnly,

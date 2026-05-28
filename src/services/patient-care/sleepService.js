@@ -1,12 +1,12 @@
 const env = require('../../config/env');
 const patientCareRepository = require('../../repositories/patientCareRepository');
-const { assertUserScope, hasOwn, normalizeNullableText } = require('./shared');
+const { assertDiaryReadAccess, assertUserScope, hasOwn, normalizeNullableText } = require('./shared');
 const { getOrSetJson, invalidateDiaryCache, sleepByDateKey } = require('./cache');
 const { ensureHeartDiaryByDate } = require('./diaryService');
 const { mapSleepRecord } = require('./mappers');
 
 async function getDailySleepRecordByDate({ actor, userId, diaryDate }) {
-  assertUserScope({ actor, userId });
+  await assertDiaryReadAccess({ actor, userId });
 
   return getOrSetJson(
     sleepByDateKey({ userId, diaryDate }),

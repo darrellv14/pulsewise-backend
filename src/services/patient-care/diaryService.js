@@ -1,7 +1,7 @@
 const env = require('../../config/env');
 const patientCareRepository = require('../../repositories/patientCareRepository');
 const { buildPagination, normalizePaginationInput } = require('../../utils/pagination');
-const { assertUserScope } = require('./shared');
+const { assertDiaryReadAccess, assertUserScope } = require('./shared');
 const { getOrSetJson, diaryByDateKey, invalidateDiaryCache } = require('./cache');
 const { mapDiary, mapHeartDiaryDetail } = require('./mappers');
 
@@ -19,7 +19,7 @@ async function upsertHeartDiary({ actor, userId, payload }) {
 }
 
 async function listHeartDiaries({ actor, userId, query }) {
-  assertUserScope({ actor, userId });
+  await assertDiaryReadAccess({ actor, userId });
   const { page, limit } = normalizePaginationInput(query);
   const offset = (page - 1) * limit;
 
@@ -38,7 +38,7 @@ async function listHeartDiaries({ actor, userId, query }) {
 }
 
 async function getHeartDiaryByDate({ actor, userId, diaryDate }) {
-  assertUserScope({ actor, userId });
+  await assertDiaryReadAccess({ actor, userId });
 
   return getOrSetJson(
     diaryByDateKey({ userId, diaryDate }),
