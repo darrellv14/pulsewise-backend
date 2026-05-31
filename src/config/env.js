@@ -95,7 +95,7 @@ const env = {
   jwtSecret: ensureEnv('JWT_SECRET', 'replace_with_strong_secret', {
     disallowLiteralInProduction: ['replace_with_strong_secret'],
   }),
-  jwtExpiresIn: process.env.JWT_EXPIRES_IN || '1d',
+  jwtExpiresIn: process.env.JWT_EXPIRES_IN || '30d',
   otpExpiresMinutes: Number(process.env.OTP_EXPIRES_MINUTES || 10),
   otpDebugExpose: process.env.OTP_DEBUG_EXPOSE === 'true',
   canExposeOtpDebugData:
