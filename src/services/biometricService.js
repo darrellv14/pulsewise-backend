@@ -28,8 +28,9 @@ function toNumberOrNull(value) {
 
 function buildPagination({ page, limit, totalItems }) {
   const totalPages = Math.max(1, Math.ceil(totalItems / limit));
+  const currentPage = Math.min(Math.max(1, Number(page) || 1), totalPages);
   return {
-    page,
+    page: currentPage,
     limit,
     totalItems,
     totalPages,

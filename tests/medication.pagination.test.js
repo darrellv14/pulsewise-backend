@@ -268,6 +268,37 @@ describe('medication pagination', () => {
     expect(result.items[0].medicationTime).toBe('08:15');
   });
 
+  test('listMedicationLogs clamps pagination metadata when requested page exceeds total pages', async () => {
+    jest.useFakeTimers().setSystemTime(new Date('2026-04-11T02:00:00.000Z'));
+
+    prisma.medication.findFirst.mockResolvedValue({
+      medicationId: 'med-1',
+      userId: 'user-1',
+    });
+    prisma.medication.findMany.mockResolvedValue([]);
+    prisma.medicationLog.findMany.mockResolvedValue([]);
+    prisma.medicationLog.count.mockResolvedValue(0);
+
+    const result = await medicationService.listMedicationLogs({
+      actor: { userId: 'user-1', role: 'patient' },
+      userId: 'user-1',
+      medicationId: 'med-1',
+      query: {
+        page: 2,
+        limit: 20,
+        startDate: '2026-04-01',
+        endDate: '2026-04-10',
+      },
+    });
+
+    expect(result.pagination).toEqual({
+      page: 1,
+      limit: 20,
+      totalItems: 0,
+      totalPages: 1,
+    });
+  });
+
   test('listMedications coerces string pagination input before Prisma call', async () => {
     prisma.medication.findMany.mockResolvedValue([]);
     prisma.medication.count.mockResolvedValue(0);
