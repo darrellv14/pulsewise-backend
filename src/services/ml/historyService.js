@@ -9,6 +9,7 @@ async function saveInferenceResult({
   actor,
   patientId,
   inferenceType,
+  modelKey = 'hfms',
   requestContext,
   payloadResult,
   upstream,
@@ -18,6 +19,7 @@ async function saveInferenceResult({
     patientId,
     requestedByUserId: actor?.userId || null,
     payload: {
+      modelKey: payloadResult.modelKey || modelKey,
       inferenceType,
       requestContext,
       mlVersion: payloadResult.mlVersion,
@@ -40,28 +42,43 @@ async function saveInferenceResult({
   return saved;
 }
 
-async function getLatestPatientInferenceResult({ actor, patientId, inferenceType }) {
+async function getLatestPatientInferenceResult({ actor, patientId, inferenceType, modelKey = 'hfms' }) {
   await assertPatientResourceAccess({ actor, patientId });
   const result = await patientMlInferenceRepository.getLatestInferenceResult({
     patientId,
+    modelKey,
     inferenceType,
   });
   return ensureLatestResult(result, inferenceType);
 }
 
-async function listPatientInferenceResults({ actor, patientId, inferenceType, query }) {
+async function listPatientInferenceResults({
+  actor,
+  patientId,
+  inferenceType,
+  modelKey = 'hfms',
+  query,
+}) {
   await assertPatientResourceAccess({ actor, patientId });
   return patientMlInferenceRepository.listInferenceResults({
     patientId,
+    modelKey,
     inferenceType,
     query,
   });
 }
 
-async function getPatientInferenceResultDetail({ actor, patientId, inferenceType, resultId }) {
+async function getPatientInferenceResultDetail({
+  actor,
+  patientId,
+  inferenceType,
+  resultId,
+  modelKey = 'hfms',
+}) {
   await assertPatientResourceAccess({ actor, patientId });
   const result = await patientMlInferenceRepository.getInferenceResultById({
     patientId,
+    modelKey,
     inferenceType,
     resultId,
   });

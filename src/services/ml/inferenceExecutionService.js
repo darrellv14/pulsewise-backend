@@ -7,6 +7,7 @@ async function runInference({
   patientId,
   query = {},
   inferenceType,
+  modelKey = 'hfms',
   requestContext,
   payloadResult,
 }) {
@@ -20,6 +21,7 @@ async function runInference({
     actor,
     patientId,
     inferenceType,
+    modelKey: payloadResult.modelKey || modelKey,
     requestContext,
     payloadResult,
     upstream,
@@ -29,6 +31,7 @@ async function runInference({
   const responseData = {
     resultId: saved.resultId,
     generatedAt: saved.generatedAt,
+    modelKey: payloadResult.modelKey || modelKey,
     mlVersion: payloadResult.mlVersion,
     window: payloadResult.window,
     payloadHash: payloadResult.payloadHash,

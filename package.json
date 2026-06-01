@@ -32,6 +32,7 @@
     "postman:smoke:prod": "npx newman run postman/PulseWise-Dashboard-Smoke.postman_collection.json -e postman/environments/PulseWise-Production.postman_environment.json --folder \"Dashboard Smoke E2E\" --folder \"Dashboard ML Smoke\" --reporters cli",
     "postman:capture-live:prod": "node scripts/postman/capture-live-postman-examples.js --collection postman/PulseWise-Dashboard-Smoke.postman_collection.json --environment postman/environments/PulseWise-Production.postman_environment.json --folder \"Dashboard Smoke E2E\" --folder \"Dashboard ML Smoke\"",
     "smoke:hfms:e2e": "node scripts/smoke/smoke-hfms-e2e.js",
+    "smoke:heart-risk:local": "node scripts/smoke/smoke-heart-risk-local.js",
     "smoke:fcm:scheduler": "node scripts/smoke/smoke-fcm-scheduler-stage3.js",
     "smoke:prod": "node scripts/smoke/smoke-live.js",
     "demo:pairing": "node scripts/pairing-demo/server.js",

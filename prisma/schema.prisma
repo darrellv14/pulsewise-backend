@@ -41,6 +41,7 @@ model User {
   heartDiaries                     HeartDiary[]
   patientMlProfile                 PatientMlProfile?
   patientMlAssessments             PatientMlAssessment[]
+  patientHeartRiskAssessments      PatientHeartRiskAssessment[]
   patientMlInferenceResults        PatientMlInferenceResult[] @relation("PatientMlInferenceResults")
   medications                      Medication[]
   reminders                        Reminder[]
@@ -336,6 +337,7 @@ model PatientMlInferenceResult {
   resultId         String   @id @default(dbgenerated("gen_random_uuid()")) @map("result_id") @db.Uuid
   patientId        String   @map("patient_id") @db.Uuid
   requestedByUserId String? @map("requested_by_user_id") @db.Uuid
+  modelKey         String   @default("hfms") @map("model_key") @db.VarChar(64)
   inferenceType    String   @map("inference_type") @db.VarChar(32)
   requestContext   String?  @map("request_context") @db.VarChar(32)
   mlVersion        String   @map("ml_version") @db.VarChar(64)
@@ -352,9 +354,33 @@ model PatientMlInferenceResult {
   patient          User     @relation("PatientMlInferenceResults", fields: [patientId], references: [userId], onDelete: Cascade)
   requestedByUser  User?    @relation("RequestedMlInferenceResults", fields: [requestedByUserId], references: [userId], onDelete: SetNull)
 
-  @@index([patientId, inferenceType, generatedAt(sort: Desc)], map: "idx_patient_ml_inference_results_patient_type_generated")
+  @@index([patientId, modelKey, inferenceType, generatedAt(sort: Desc)], map: "idx_patient_ml_inference_results_patient_model_type_generated")
   @@index([requestedByUserId, generatedAt(sort: Desc)], map: "idx_patient_ml_inference_results_requested_by")
   @@map("patient_ml_inference_results")
+}
+
+model PatientHeartRiskAssessment {
+  assessmentId        String   @id @default(dbgenerated("gen_random_uuid()")) @map("assessment_id") @db.Uuid
+  patientId           String   @map("patient_id") @db.Uuid
+  assessmentDate      DateTime @map("assessment_date") @db.Date
+  age                 Int?     @db.SmallInt
+  sex                 Int?     @db.SmallInt
+  chestPainType       Int?     @map("chest_pain_type") @db.SmallInt
+  restingBpS          Int?     @map("resting_bp_s")
+  cholesterol         Int?
+  fastingBloodSugar   Int?     @map("fasting_blood_sugar") @db.SmallInt
+  restingEcg          Int?     @map("resting_ecg") @db.SmallInt
+  maxHeartRate        Int?     @map("max_heart_rate")
+  exerciseAngina      Int?     @map("exercise_angina") @db.SmallInt
+  oldPeak             Decimal? @map("old_peak") @db.Decimal(5, 2)
+  stSlope             Int?     @map("st_slope") @db.SmallInt
+  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  patient             User     @relation(fields: [patientId], references: [userId], onDelete: Cascade)
+
+  @@unique([patientId, assessmentDate], map: "patient_heart_risk_assessments_patient_id_assessment_date_key")
+  @@index([patientId, assessmentDate(sort: Desc)], map: "idx_patient_heart_risk_assessments_patient_date")
+  @@map("patient_heart_risk_assessments")
 }
 
 model DoctorPatient {

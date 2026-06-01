@@ -165,6 +165,11 @@ const env = {
     timeoutMs: Number(process.env.ML_SERVICE_TIMEOUT_MS || 20000),
     version: Number(process.env.ML_SERVICE_VERSION || 3),
   },
+  heartRiskMlService: {
+    baseUrl: process.env.HEART_RISK_ML_SERVICE_BASE_URL || 'http://localhost:8090',
+    timeoutMs: Number(process.env.HEART_RISK_ML_SERVICE_TIMEOUT_MS || 20000),
+    version: Number(process.env.HEART_RISK_ML_SERVICE_VERSION || 1),
+  },
   firebase: {
     projectId: process.env.FIREBASE_PROJECT_ID || '',
     serviceAccountPath: process.env.FIREBASE_SERVICE_ACCOUNT_PATH || '',

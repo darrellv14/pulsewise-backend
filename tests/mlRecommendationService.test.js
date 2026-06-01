@@ -141,7 +141,7 @@ describe('mlRecommendationService', () => {
     });
 
     const result = await getDoctorDashboardPatientMlReadiness({
-      actor: { userId: 'doctor-1', role: 'doctor' },
+      actor: { userId: 'doctor-1', role: 'doctor', accountStatus: 'active' },
       doctorId: 'doctor-1',
       patientId: 'patient-1',
       query: {},
@@ -216,6 +216,7 @@ describe('mlRecommendationService', () => {
 
     expect(patientMlInferenceRepository.getLatestInferenceResult).toHaveBeenCalledWith({
       patientId: 'user-1',
+      modelKey: 'hfms',
       inferenceType: 'prediction',
     });
     expect(result).toEqual({

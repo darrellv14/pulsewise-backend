@@ -7,6 +7,10 @@ Ini adalah peta dokumen canonical yang masih aktif dipakai tim.
 - API contract:
   - [OpenAPI spec](./api/openapi.yaml)
   - [API style guide](./api/API_STYLE_GUIDE.md)
+- Architecture:
+  - [Architecture docs index](./architecture/README.md)
+  - [ML HFMS v3 blueprint](./architecture/ML_HFMS_V3_BLUEPRINT.md)
+  - [Second ML integration guide](./architecture/SECOND_ML_INTEGRATION_GUIDE.md)
 - Frontend handoff:
   - [Frontend integration guide](./frontend/FRONTEND_INTEGRATION_GUIDE.md)
   - [Frontend live integration guide](./frontend/FRONTEND_LIVE_INTEGRATION_GUIDE.md)

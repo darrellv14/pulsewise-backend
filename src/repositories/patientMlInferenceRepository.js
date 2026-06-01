@@ -34,6 +34,7 @@ function mapInferenceResult(row) {
     resultId: row.resultId,
     patientId: row.patientId,
     requestedByUserId: row.requestedByUserId,
+    modelKey: row.modelKey,
     inferenceType: row.inferenceType,
     requestContext: row.requestContext,
     mlVersion: row.mlVersion,
@@ -63,6 +64,7 @@ function mapInferenceResultSummary(row) {
     resultId: row.resultId,
     patientId: row.patientId,
     requestedByUserId: row.requestedByUserId,
+    modelKey: row.modelKey,
     inferenceType: row.inferenceType,
     requestContext: row.requestContext,
     mlVersion: row.mlVersion,
@@ -78,8 +80,21 @@ function mapInferenceResultSummary(row) {
 async function createInferenceResult({ patientId, requestedByUserId, payload }) {
   const row = await prisma.patientMlInferenceResult.create({
     data: {
-      patientId,
-      requestedByUserId: requestedByUserId || null,
+      patient: {
+        connect: {
+          userId: patientId,
+        },
+      },
+      ...(requestedByUserId
+        ? {
+            requestedByUser: {
+              connect: {
+                userId: requestedByUserId,
+              },
+            },
+          }
+        : {}),
+      modelKey: payload.modelKey || 'hfms',
       inferenceType: payload.inferenceType,
       requestContext: payload.requestContext || null,
       mlVersion: payload.mlVersion,
@@ -98,10 +113,11 @@ async function createInferenceResult({ patientId, requestedByUserId, payload }) 
   return mapInferenceResult(row);
 }
 
-async function getLatestInferenceResult({ patientId, inferenceType }) {
+async function getLatestInferenceResult({ patientId, inferenceType, modelKey = 'hfms' }) {
   const row = await prisma.patientMlInferenceResult.findFirst({
     where: {
       patientId,
+      modelKey,
       inferenceType,
     },
     orderBy: [{ generatedAt: 'desc' }, { createdAt: 'desc' }],
@@ -110,11 +126,12 @@ async function getLatestInferenceResult({ patientId, inferenceType }) {
   return mapInferenceResult(row);
 }
 
-async function getInferenceResultById({ patientId, inferenceType, resultId }) {
+async function getInferenceResultById({ patientId, inferenceType, resultId, modelKey = 'hfms' }) {
   const row = await prisma.patientMlInferenceResult.findFirst({
     where: {
       resultId,
       patientId,
+      modelKey,
       inferenceType,
     },
   });
@@ -122,11 +139,12 @@ async function getInferenceResultById({ patientId, inferenceType, resultId }) {
   return mapInferenceResult(row);
 }
 
-async function listInferenceResults({ patientId, inferenceType, query = {} }) {
+async function listInferenceResults({ patientId, inferenceType, modelKey = 'hfms', query = {} }) {
   const { page, limit } = normalizePaginationInput(query);
   const skip = (page - 1) * limit;
   const where = {
     patientId,
+    modelKey,
     inferenceType,
   };
 
