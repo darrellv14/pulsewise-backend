@@ -72,6 +72,22 @@ Jangan:
 - `POST /doctors/{doctorId}/dashboard/patients/{patientId}/ml-predictions`
 - `POST /doctors/{doctorId}/dashboard/patients/{patientId}/ml-recommendations`
 
+### Second ML flow
+
+- `GET /users/{userId}/heart-risk-model/readiness`
+- `GET /users/{userId}/heart-risk-model/assessment/latest`
+- `GET /users/{userId}/heart-risk-model/assessments`
+- `POST /users/{userId}/heart-risk-model/assessments`
+- `PUT /users/{userId}/heart-risk-model/assessments/{assessmentId}`
+- `POST /users/{userId}/heart-risk-model/predictions`
+- `GET /users/{userId}/heart-risk-model/predictions/latest`
+- `GET /users/{userId}/heart-risk-model/predictions/history`
+- `GET /doctors/{doctorId}/dashboard/patients/{patientId}/heart-risk-model/readiness`
+- `GET /doctors/{doctorId}/dashboard/patients/{patientId}/heart-risk-model/assessment/latest`
+- `POST /doctors/{doctorId}/dashboard/patients/{patientId}/heart-risk-model/predictions`
+- `GET /doctors/{doctorId}/dashboard/patients/{patientId}/heart-risk-model/predictions/latest`
+- `GET /doctors/{doctorId}/dashboard/patients/{patientId}/heart-risk-model/predictions/history`
+
 ### ML data preparation endpoints
 
 - `GET /patients/{patientId}/ml-profile`

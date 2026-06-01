@@ -1873,6 +1873,268 @@ components:
           type: integer
           nullable: true
 
+    HeartRiskAssessment:
+      type: object
+      properties:
+        assessmentId:
+          type: string
+          format: uuid
+        patientId:
+          type: string
+          format: uuid
+        assessmentDate:
+          type: string
+          format: date
+        age:
+          type: integer
+          nullable: true
+        sex:
+          type: integer
+          nullable: true
+        chest_pain_type:
+          type: integer
+          nullable: true
+        resting_bp_s:
+          type: integer
+          nullable: true
+        fasting_blood_sugar:
+          type: integer
+          nullable: true
+        max_heart_rate:
+          type: integer
+          nullable: true
+        exercise_angina:
+          type: integer
+          nullable: true
+        old_peak:
+          type: number
+          nullable: true
+        st_slope:
+          type: integer
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    HeartRiskAssessmentUpsertRequest:
+      type: object
+      properties:
+        assessmentDate:
+          type: string
+          format: date
+        age:
+          type: integer
+          nullable: true
+        sex:
+          type: integer
+          nullable: true
+        chest_pain_type:
+          type: integer
+          nullable: true
+        resting_bp_s:
+          type: integer
+          nullable: true
+        fasting_blood_sugar:
+          type: integer
+          nullable: true
+        max_heart_rate:
+          type: integer
+          nullable: true
+        exercise_angina:
+          type: integer
+          nullable: true
+        old_peak:
+          type: number
+          nullable: true
+        st_slope:
+          type: integer
+          nullable: true
+
+    HeartRiskAssessmentListData:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/HeartRiskAssessment'
+
+    HeartRiskReadinessData:
+      type: object
+      properties:
+        ready:
+          type: boolean
+        modelKey:
+          type: string
+          enum: [heart_disease_v1]
+        missingFields:
+          type: array
+          items:
+            type: string
+        resolvedFields:
+          type: array
+          items:
+            type: string
+        sourceSummary:
+          type: object
+          additionalProperties: true
+
+    HeartRiskPredictionRunData:
+      type: object
+      properties:
+        resultId:
+          type: string
+          format: uuid
+        generatedAt:
+          type: string
+          format: date-time
+        modelKey:
+          type: string
+          enum: [heart_disease_v1]
+        mlVersion:
+          type: string
+        payloadHash:
+          type: string
+        sourceSummary:
+          type: object
+          additionalProperties: true
+        upstream:
+          type: object
+          properties:
+            endpoint:
+              type: string
+              nullable: true
+            status:
+              type: integer
+              nullable: true
+            body:
+              type: object
+              nullable: true
+              additionalProperties: true
+        payload:
+          type: object
+          nullable: true
+          additionalProperties: true
+
+    HeartRiskInferenceResult:
+      type: object
+      properties:
+        resultId:
+          type: string
+          format: uuid
+        patientId:
+          type: string
+          format: uuid
+        requestedByUserId:
+          type: string
+          format: uuid
+          nullable: true
+        modelKey:
+          type: string
+          enum: [heart_disease_v1]
+        inferenceType:
+          type: string
+          enum: [prediction]
+        requestContext:
+          type: string
+          nullable: true
+        mlVersion:
+          type: string
+        payloadHash:
+          type: string
+        payload:
+          type: object
+          nullable: true
+          additionalProperties: true
+        sourceSummary:
+          type: object
+          nullable: true
+          additionalProperties: true
+        window:
+          type: object
+          properties:
+            startDate:
+              type: string
+              format: date
+              nullable: true
+            endDate:
+              type: string
+              format: date
+              nullable: true
+        upstream:
+          type: object
+          properties:
+            endpoint:
+              type: string
+              nullable: true
+            status:
+              type: integer
+              nullable: true
+            body:
+              type: object
+              nullable: true
+              additionalProperties: true
+        generatedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+    HeartRiskInferenceHistoryItem:
+      type: object
+      properties:
+        resultId:
+          type: string
+          format: uuid
+        patientId:
+          type: string
+          format: uuid
+        requestedByUserId:
+          type: string
+          format: uuid
+          nullable: true
+        modelKey:
+          type: string
+          enum: [heart_disease_v1]
+        inferenceType:
+          type: string
+          enum: [prediction]
+        requestContext:
+          type: string
+          nullable: true
+        mlVersion:
+          type: string
+        window:
+          type: object
+          properties:
+            startDate:
+              type: string
+              format: date
+              nullable: true
+            endDate:
+              type: string
+              format: date
+              nullable: true
+        generatedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+    HeartRiskInferenceHistoryData:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/HeartRiskInferenceHistoryItem'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
     MlReadinessData:
       type: object
       properties:
@@ -6236,6 +6498,550 @@ paths:
                     properties:
                       data:
                         $ref: '#/components/schemas/MlInferenceResult'
+
+  /users/{userId}/heart-risk-model/readiness:
+    get:
+      tags: [ML]
+      summary: Get patient second-ML readiness
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Patient second-ML readiness
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/HeartRiskReadinessData'
+
+  /users/{userId}/heart-risk-model/assessment/latest:
+    get:
+      tags: [ML]
+      summary: Get latest patient second-ML assessment
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Latest patient second-ML assessment
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/HeartRiskAssessment'
+
+  /users/{userId}/heart-risk-model/assessments:
+    get:
+      tags: [ML]
+      summary: List patient second-ML assessments
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: startDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Patient second-ML assessment list
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/HeartRiskAssessmentListData'
+    post:
+      tags: [ML]
+      summary: Save patient second-ML assessment
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HeartRiskAssessmentUpsertRequest'
+      responses:
+        '200':
+          description: Patient second-ML assessment saved
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/HeartRiskAssessment'
+
+  /users/{userId}/heart-risk-model/assessments/{assessmentId}:
+    put:
+      tags: [ML]
+      summary: Update patient second-ML assessment
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: assessmentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HeartRiskAssessmentUpsertRequest'
+      responses:
+        '200':
+          description: Patient second-ML assessment updated
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/HeartRiskAssessment'
+
+  /users/{userId}/heart-risk-model/predictions:
+    post:
+      tags: [ML]
+      summary: Get patient second-ML prediction
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: includePayload
+          in: query
+          required: false
+          schema:
+            type: boolean
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+      responses:
+        '200':
+          description: Patient second-ML prediction
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/HeartRiskPredictionRunData'
+
+  /users/{userId}/heart-risk-model/predictions/latest:
+    get:
+      tags: [ML]
+      summary: Get latest persisted patient second-ML prediction
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Latest patient second-ML prediction
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/HeartRiskInferenceResult'
+
+  /users/{userId}/heart-risk-model/predictions/history:
+    get:
+      tags: [ML]
+      summary: Get patient second-ML prediction history
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+        - name: startDate
+          in: query
+          required: false
+          description: Filter history by generated date, inclusive. Format YYYY-MM-DD.
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          required: false
+          description: Filter history by generated date, inclusive. Format YYYY-MM-DD.
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Patient second-ML prediction history
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/HeartRiskInferenceHistoryData'
+
+  /users/{userId}/heart-risk-model/predictions/history/{resultId}:
+    get:
+      tags: [ML]
+      summary: Get patient second-ML prediction history detail
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: resultId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Patient second-ML prediction history detail
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/HeartRiskInferenceResult'
+
+  /doctors/{doctorId}/dashboard/patients/{patientId}/heart-risk-model/readiness:
+    get:
+      tags: [ML, Care Management]
+      summary: Get doctor dashboard patient second-ML readiness
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: doctorId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Doctor dashboard patient second-ML readiness
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/HeartRiskReadinessData'
+
+  /doctors/{doctorId}/dashboard/patients/{patientId}/heart-risk-model/assessment/latest:
+    get:
+      tags: [ML, Care Management]
+      summary: Get latest doctor dashboard patient second-ML assessment
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: doctorId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Latest doctor dashboard patient second-ML assessment
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/HeartRiskAssessment'
+
+  /doctors/{doctorId}/dashboard/patients/{patientId}/heart-risk-model/predictions:
+    post:
+      tags: [ML, Care Management]
+      summary: Get doctor dashboard patient second-ML prediction
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: doctorId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: includePayload
+          in: query
+          required: false
+          schema:
+            type: boolean
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+      responses:
+        '200':
+          description: Doctor dashboard patient second-ML prediction
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/HeartRiskPredictionRunData'
+
+  /doctors/{doctorId}/dashboard/patients/{patientId}/heart-risk-model/predictions/latest:
+    get:
+      tags: [ML, Care Management]
+      summary: Get latest persisted doctor dashboard patient second-ML prediction
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: doctorId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Latest doctor dashboard patient second-ML prediction
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/HeartRiskInferenceResult'
+
+  /doctors/{doctorId}/dashboard/patients/{patientId}/heart-risk-model/predictions/history:
+    get:
+      tags: [ML, Care Management]
+      summary: Get doctor dashboard patient second-ML prediction history
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: doctorId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+        - name: startDate
+          in: query
+          required: false
+          description: Filter history by generated date, inclusive. Format YYYY-MM-DD.
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          required: false
+          description: Filter history by generated date, inclusive. Format YYYY-MM-DD.
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Doctor dashboard patient second-ML prediction history
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/HeartRiskInferenceHistoryData'
+
+  /doctors/{doctorId}/dashboard/patients/{patientId}/heart-risk-model/predictions/history/{resultId}:
+    get:
+      tags: [ML, Care Management]
+      summary: Get doctor dashboard patient second-ML prediction history detail
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: doctorId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: resultId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Doctor dashboard patient second-ML prediction history detail
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/HeartRiskInferenceResult'
 
   /users/{userId}/diaries/{diaryId}/body-metrics:
     post:

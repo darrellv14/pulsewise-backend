@@ -15,6 +15,7 @@ Ini adalah peta dokumen canonical yang masih aktif dipakai tim.
   - [Frontend integration guide](./frontend/FRONTEND_INTEGRATION_GUIDE.md)
   - [Frontend live integration guide](./frontend/FRONTEND_LIVE_INTEGRATION_GUIDE.md)
   - [Frontend production handoff](./frontend/FRONTEND_PRODUCTION_HANDOFF.md)
+  - [Second ML FE handoff](./frontend/SECOND_ML_FE_HANDOFF.md)
 - Operations:
   - [Refactor implementation TODO](./operations/REFACTOR_IMPLEMENTATION_TODO.md)
   - [API base-path migration note](./operations/API_BASE_PATH_MIGRATION_2026-05-06.md)

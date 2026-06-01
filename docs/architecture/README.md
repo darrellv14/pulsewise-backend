@@ -2,6 +2,7 @@
 
 - [ML HFMS v3 Blueprint](./ML_HFMS_V3_BLUEPRINT.md)
 - [Second ML Integration Guide](./SECOND_ML_INTEGRATION_GUIDE.md)
+- [Second ML official service README](../../services/heart-risk-ml-service/README.md)
 - [ERD v1](./ERD_V1.md)
 - [ERD directory](./erd/README.md)
 - [UML directory](./uml/README.md)

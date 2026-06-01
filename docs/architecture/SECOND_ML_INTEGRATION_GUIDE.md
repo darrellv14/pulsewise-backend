@@ -120,7 +120,17 @@ Second ML tidak boleh dipaksa membaca otomatis dari data PulseWise yang ada seka
 - PulseWise backend menjadi orchestration layer yang memanggil dua model berbeda
 - history inference tetap masuk ke backend utama
 
-### Layout yang direkomendasikan
+### Layout implementasi saat ini
+
+Second ML service sekarang sudah bisa diletakkan sebagai folder deployable di dalam repo ini:
+
+```text
+pulsewise-backend/
+  services/
+    heart-risk-ml-service/
+```
+
+### Layout target jangka menengah yang tetap direkomendasikan
 
 ```text
 Downloads/
