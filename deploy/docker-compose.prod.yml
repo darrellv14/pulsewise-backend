@@ -22,7 +22,7 @@ services:
     container_name: pulsewise-redis
     restart: unless-stopped
     env_file:
-      - ./pulsewise-backend.env
+      - ./deploy/pulsewise-backend.env
     command:
       - sh
       - -c
@@ -37,12 +37,12 @@ services:
 
   pulsewise-backend:
     build:
-      context: ../pulsewise-backend
+      context: ./pulsewise-backend
       dockerfile: Dockerfile
     container_name: pulsewise-backend
     restart: unless-stopped
     env_file:
-      - ./pulsewise-backend.env
+      - ./deploy/pulsewise-backend.env
     depends_on:
       postgres:
         condition: service_healthy
@@ -57,23 +57,23 @@ services:
 
   hfms-backend:
     build:
-      context: ../hfms-backend
+      context: ./hfms-backend
       dockerfile: Dockerfile
     container_name: pulsewise-hfms-backend
     restart: unless-stopped
     env_file:
-      - ./hfms-backend.env
+      - ./deploy/hfms-backend.env
     ports:
       - '127.0.0.1:8080:8080'
 
   heart-risk-ml-service:
     build:
-      context: ../pulsewise-backend/services/heart-risk-ml-service
+      context: ./pulsewise-backend/services/heart-risk-ml-service
       dockerfile: Dockerfile
     container_name: pulsewise-heart-risk-ml-service
     restart: unless-stopped
     env_file:
-      - ./pulsewise-backend.env
+      - ./deploy/pulsewise-backend.env
     environment:
       HEART_RISK_THRESHOLD: ${HEART_RISK_THRESHOLD:-0.43}
       MODEL_ARTIFACT_PATH: /app/model/model.pkl
