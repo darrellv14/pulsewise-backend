@@ -78,8 +78,6 @@ async function run() {
       exercise_angina: 0,
       old_peak: 0,
       st_slope: 2,
-      cholesterol: 219,
-      resting_ecg: 1,
     };
 
     const saveAssessment = await requestJson(

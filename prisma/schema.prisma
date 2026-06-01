@@ -367,9 +367,7 @@ model PatientHeartRiskAssessment {
   sex                 Int?     @db.SmallInt
   chestPainType       Int?     @map("chest_pain_type") @db.SmallInt
   restingBpS          Int?     @map("resting_bp_s")
-  cholesterol         Int?
   fastingBloodSugar   Int?     @map("fasting_blood_sugar") @db.SmallInt
-  restingEcg          Int?     @map("resting_ecg") @db.SmallInt
   maxHeartRate        Int?     @map("max_heart_rate")
   exerciseAngina      Int?     @map("exercise_angina") @db.SmallInt
   oldPeak             Decimal? @map("old_peak") @db.Decimal(5, 2)

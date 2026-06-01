@@ -50,8 +50,8 @@ Repo yang diberikan bukan microservice inference yang siap dipasang langsung ke 
 - repo masih berupa Flask web app dengan template HTML
 - model prediction tercampur dengan expert system berbasis Prolog
 - route prediction di `app.py` saat ini memakai 9 fitur input
-- sample input yang beredar memakai 11 fitur
-- ada mismatch kontrak fitur antara sample dan implementasi
+- sample input lama pernah beredar memakai 11 fitur
+- ada mismatch kontrak antara sample lama dan implementasi runtime
 - pemanggilan model memakai `joblib.load('model.pkl')`
 - route prediction memakai `predict(...)`, bukan kontrak probabilitas yang eksplisit
 
@@ -67,7 +67,7 @@ Hasil verifikasi artefak `model.pkl` menunjukkan bahwa model yang benar-benar di
 - `old_peak`
 - `st_slope`
 
-Field `cholesterol` dan `resting_ecg` muncul di sample input, tetapi tidak termasuk ke feature order di artefak model yang berhasil diinspeksi.
+Field `cholesterol` dan `resting_ecg` muncul di sample input lama, tetapi tidak termasuk ke feature order di artefak model yang berhasil diinspeksi. Karena itu, kedua field tersebut tidak dipakai di kontrak final PulseWise.
 
 Maka keputusan implementasi yang disarankan:
 
@@ -84,7 +84,7 @@ Sebelum coding integrasi, tim harus memastikan kontrak model kedua yang sebenarn
 2. urutan fitur final persis seperti apa
 3. apakah output model adalah probability atau class
 4. apakah threshold `0.43` memang keputusan final
-5. `cholesterol` dan `resting_ecg` saat ini diperlakukan sebagai field assessment tambahan, bukan feature wajib inference, sampai ada artefak model lain yang membuktikan sebaliknya
+5. `cholesterol` dan `resting_ecg` tidak masuk kontrak final second ML di PulseWise kecuali nanti ada artefak model baru yang membuktikan sebaliknya
 
 Sampai kontrak ini pasti, backend PulseWise tidak boleh mengklaim input final sebagai canon.
 
@@ -99,12 +99,10 @@ Dari sisi PulseWise sekarang, beberapa field bisa diturunkan, tetapi sebagian be
 - `resting_bp_s`
 - `max_heart_rate`
 
-### Perlu verifikasi kuat atau belum siap
+### Perlu diinput manual atau belum siap penuh
 
-- `cholesterol`
 - `chest_pain_type`
 - `fasting_blood_sugar`
-- `resting_ecg`
 - `exercise_angina`
 - `old_peak`
 - `st_slope`
@@ -165,9 +163,7 @@ Field minimum yang direkomendasikan:
 - `sex`
 - `chestPainType`
 - `restingBpS`
-- `cholesterol`
 - `fastingBloodSugar`
-- `restingEcg`
 - `maxHeartRate`
 - `exerciseAngina`
 - `oldPeak`
@@ -244,7 +240,6 @@ Jangan menumpangkan second ML ke route HFMS yang sekarang. Lebih aman diberi fam
   "missingFields": [
     "chest_pain_type",
     "fasting_blood_sugar",
-    "resting_ecg",
     "exercise_angina",
     "old_peak",
     "st_slope"

@@ -44,10 +44,6 @@ function buildHeartRiskPayload(snapshot) {
     sourceSummary: {
       assessmentId: assessment.assessmentId || null,
       assessmentDate: assessment.assessmentDate || null,
-      ignoredAssessmentFields: {
-        cholesterol: toNullableNumber(assessment.cholesterol),
-        resting_ecg: toNullableNumber(assessment.resting_ecg),
-      },
       derived: {
         ageFromProfile: assessment.age === null || assessment.age === undefined,
         sexFromProfile: assessment.sex === null || assessment.sex === undefined,
