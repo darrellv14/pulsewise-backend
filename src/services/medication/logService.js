@@ -69,7 +69,7 @@ async function listMedicationLogs({ actor, userId, medicationId, query }) {
     });
   }
 
-  const [logs, totalItems] = await Promise.all([
+  const [logs, totalItems, takenCount, skippedCount, missedCount] = await Promise.all([
     prisma.medicationLog.findMany({
       where,
       orderBy: [{ medicationDate: 'desc' }, { createdAt: 'desc' }],
@@ -79,11 +79,34 @@ async function listMedicationLogs({ actor, userId, medicationId, query }) {
     prisma.medicationLog.count({
       where,
     }),
+    prisma.medicationLog.count({
+      where: {
+        ...where,
+        status: 'taken',
+      },
+    }),
+    prisma.medicationLog.count({
+      where: {
+        ...where,
+        status: 'skipped',
+      },
+    }),
+    prisma.medicationLog.count({
+      where: {
+        ...where,
+        status: 'missed',
+      },
+    }),
   ]);
 
   return {
     items: logs.map(toMedicationLogDto),
     pagination: buildPagination({ page, limit, totalItems }),
+    summary: {
+      taken: takenCount,
+      skipped: skippedCount,
+      missed: missedCount,
+    },
   };
 }
 

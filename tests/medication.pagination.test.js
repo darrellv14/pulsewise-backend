@@ -163,7 +163,11 @@ describe('medication pagination', () => {
         createdAt: new Date('2026-04-10T08:15:00.000Z'),
       },
     ]);
-    prisma.medicationLog.count.mockResolvedValue(5);
+    prisma.medicationLog.count
+      .mockResolvedValueOnce(5)
+      .mockResolvedValueOnce(2)
+      .mockResolvedValueOnce(1)
+      .mockResolvedValueOnce(2);
 
     const result = await medicationService.listMedicationLogs({
       actor: { userId: 'user-1', role: 'patient' },
@@ -264,6 +268,11 @@ describe('medication pagination', () => {
       totalItems: 5,
       totalPages: 3,
     });
+    expect(result.summary).toEqual({
+      taken: 2,
+      skipped: 1,
+      missed: 2,
+    });
     expect(result.items[0].status).toBe('skipped');
     expect(result.items[0].medicationTime).toBe('08:15');
   });
@@ -277,7 +286,11 @@ describe('medication pagination', () => {
     });
     prisma.medication.findMany.mockResolvedValue([]);
     prisma.medicationLog.findMany.mockResolvedValue([]);
-    prisma.medicationLog.count.mockResolvedValue(0);
+    prisma.medicationLog.count
+      .mockResolvedValueOnce(0)
+      .mockResolvedValueOnce(0)
+      .mockResolvedValueOnce(0)
+      .mockResolvedValueOnce(0);
 
     const result = await medicationService.listMedicationLogs({
       actor: { userId: 'user-1', role: 'patient' },
@@ -296,6 +309,11 @@ describe('medication pagination', () => {
       limit: 20,
       totalItems: 0,
       totalPages: 1,
+    });
+    expect(result.summary).toEqual({
+      taken: 0,
+      skipped: 0,
+      missed: 0,
     });
   });
 
