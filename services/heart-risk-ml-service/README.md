@@ -5,7 +5,7 @@ Service ini adalah microservice resmi untuk second machine learning PulseWise.
 ## Ringkasan
 
 - model key: `heart_disease_v1`
-- ml version: `heart-risk-v1`
+- ml version default: `heart-risk-v1` (`HEART_RISK_ML_VERSION`)
 - port default: `8090`
 - framework: Flask + Gunicorn
 - artefak model: `model/model.pkl`

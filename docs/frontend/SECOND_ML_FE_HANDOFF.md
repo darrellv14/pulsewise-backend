@@ -5,7 +5,7 @@ Dokumen ini adalah acuan frontend untuk integrasi **second ML** PulseWise (`hear
 ## Ringkasan
 
 - Model key: `heart_disease_v1`
-- ML version saat ini: `heart-risk-v1`
+- ML version default saat ini: `heart-risk-v1` (dapat dikonfigurasi via env)
 - Bentuk model: **second opinion** untuk prediksi risiko heart disease
 - Frontend **tetap hanya memanggil backend Express**, bukan service ML Python langsung
 

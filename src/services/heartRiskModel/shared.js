@@ -1,4 +1,5 @@
 const { CONFLICT, NOT_FOUND } = require('../../constants/httpStatus');
+const env = require('../../config/env');
 const { createHttpError } = require('../../utils/httpError');
 const {
   assertPatientScope,
@@ -7,7 +8,7 @@ const {
 const { assertDoctorDashboardRouteAccess } = require('../ml/shared');
 
 const HEART_RISK_MODEL_KEY = 'heart_disease_v1';
-const HEART_RISK_ML_VERSION = 'heart-risk-v1';
+const HEART_RISK_ML_VERSION = env.heartRiskMlService.mlVersion;
 
 function createPayloadHash(payload) {
   const crypto = require('crypto');

@@ -53,6 +53,7 @@ services:
     restart: unless-stopped
     environment:
       HEART_RISK_THRESHOLD: ${HEART_RISK_THRESHOLD:-0.43}
+      HEART_RISK_ML_VERSION: ${HEART_RISK_ML_VERSION:-heart-risk-v1}
       MODEL_ARTIFACT_PATH: /app/model/model.pkl
     ports:
       - '${HEART_RISK_ML_SERVICE_PORT:-8090}:8090'

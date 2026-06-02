@@ -7,6 +7,7 @@ from flask import Flask, jsonify, request
 
 MODEL_PATH = os.environ.get("MODEL_ARTIFACT_PATH", "/app/model/model.pkl")
 THRESHOLD = float(os.environ.get("HEART_RISK_THRESHOLD", "0.43"))
+ML_VERSION = os.environ.get("HEART_RISK_ML_VERSION", "heart-risk-v1")
 FEATURE_ORDER = [
     "age",
     "sex",
@@ -86,9 +87,6 @@ def health():
         {
             "status": "ok" if model is not None else "degraded",
             "modelLoaded": model is not None,
-            "modelPath": MODEL_PATH,
-            "threshold": THRESHOLD,
-            "featureOrder": FEATURE_ORDER,
             "modelLoadError": model_load_error,
         }
     )
@@ -100,7 +98,7 @@ def metadata():
     return jsonify(
         {
             "modelKey": "heart_disease_v1",
-            "mlVersion": "heart-risk-v1",
+            "mlVersion": ML_VERSION,
             "threshold": THRESHOLD,
             "featureOrder": FEATURE_ORDER,
             "modelLoaded": model is not None,
@@ -124,7 +122,7 @@ def predictions():
     return jsonify(
         {
             "modelKey": "heart_disease_v1",
-            "mlVersion": "heart-risk-v1",
+            "mlVersion": ML_VERSION,
             "predictedClass": predicted_class,
             "probability": probability,
             "riskLevel": risk_level(probability),
