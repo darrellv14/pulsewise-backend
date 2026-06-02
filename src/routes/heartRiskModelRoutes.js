@@ -7,6 +7,7 @@ const {
   patientHeartRiskAssessmentParamsSchema,
   patientHeartRiskHistoryDetailParamsSchema,
   doctorDashboardHeartRiskParamsSchema,
+  doctorDashboardHeartRiskAssessmentParamsSchema,
   doctorDashboardHeartRiskHistoryDetailParamsSchema,
   heartRiskAssessmentQuerySchema,
   heartRiskPredictionQuerySchema,
@@ -90,6 +91,20 @@ router.get(
   authenticate,
   validateRequest(doctorDashboardHeartRiskParamsSchema, 'params'),
   heartRiskModelController.getDoctorDashboardPatientLatestHeartRiskAssessment
+);
+router.post(
+  '/doctors/:doctorId/dashboard/patients/:patientId/heart-risk-model/assessments',
+  authenticate,
+  validateRequest(doctorDashboardHeartRiskParamsSchema, 'params'),
+  validateRequest(heartRiskAssessmentCreateSchema),
+  heartRiskModelController.createDoctorDashboardPatientHeartRiskAssessment
+);
+router.put(
+  '/doctors/:doctorId/dashboard/patients/:patientId/heart-risk-model/assessments/:assessmentId',
+  authenticate,
+  validateRequest(doctorDashboardHeartRiskAssessmentParamsSchema, 'params'),
+  validateRequest(heartRiskAssessmentUpdateSchema),
+  heartRiskModelController.updateDoctorDashboardPatientHeartRiskAssessment
 );
 router.post(
   '/doctors/:doctorId/dashboard/patients/:patientId/heart-risk-model/predictions',

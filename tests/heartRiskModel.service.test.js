@@ -28,6 +28,8 @@ const {
   getPatientHeartRiskReadiness,
   getPatientHeartRiskPredictions,
   getDoctorDashboardPatientHeartRiskReadiness,
+  createDoctorDashboardPatientHeartRiskAssessment,
+  updatePatientHeartRiskAssessment,
 } = require('../src/services/heartRiskModelService');
 const doctorPatientRepository = require('../src/repositories/doctorPatientRepository');
 
@@ -165,5 +167,75 @@ describe('heartRiskModelService', () => {
       doctorId: 'doctor-1',
       patientId: 'patient-1',
     });
+  });
+
+  test('doctor can create second-ml assessment for linked patient with audit actor', async () => {
+    doctorPatientRepository.findDoctorPatientLink.mockResolvedValue({
+      doctorId: 'doctor-1',
+      patientId: 'patient-1',
+      isActive: true,
+    });
+    patientHeartRiskRepository.createPatientHeartRiskAssessment.mockResolvedValue({
+      assessmentId: 'assessment-2',
+      patientId: 'patient-1',
+      createdByUserId: 'doctor-1',
+      updatedByUserId: 'doctor-1',
+      assessmentDate: '2026-06-03',
+      age: 58,
+    });
+
+    const result = await createDoctorDashboardPatientHeartRiskAssessment({
+      actor: { userId: 'doctor-1', role: 'doctor', accountStatus: 'active' },
+      doctorId: 'doctor-1',
+      patientId: 'patient-1',
+      payload: {
+        assessmentDate: '2026-06-03',
+        age: 58,
+        sex: 0,
+        chest_pain_type: 3,
+        resting_bp_s: 151,
+        fasting_blood_sugar: 0,
+        max_heart_rate: 118,
+        exercise_angina: 0,
+        old_peak: 0,
+        st_slope: 2,
+      },
+    });
+
+    expect(patientHeartRiskRepository.createPatientHeartRiskAssessment).toHaveBeenCalledWith(
+      expect.objectContaining({
+        patientId: 'patient-1',
+        actorUserId: 'doctor-1',
+      })
+    );
+    expect(result.createdByUserId).toBe('doctor-1');
+    expect(result.updatedByUserId).toBe('doctor-1');
+  });
+
+  test('patient assessment update passes actor for audit trail', async () => {
+    patientHeartRiskRepository.updatePatientHeartRiskAssessment.mockResolvedValue({
+      assessmentId: 'assessment-3',
+      patientId: 'user-1',
+      createdByUserId: 'user-1',
+      updatedByUserId: 'user-1',
+      assessmentDate: '2026-06-03',
+    });
+
+    await updatePatientHeartRiskAssessment({
+      actor: { userId: 'user-1', role: 'patient' },
+      userId: 'user-1',
+      assessmentId: 'assessment-3',
+      payload: {
+        exercise_angina: 0,
+      },
+    });
+
+    expect(patientHeartRiskRepository.updatePatientHeartRiskAssessment).toHaveBeenCalledWith(
+      expect.objectContaining({
+        patientId: 'user-1',
+        assessmentId: 'assessment-3',
+        actorUserId: 'user-1',
+      })
+    );
   });
 });

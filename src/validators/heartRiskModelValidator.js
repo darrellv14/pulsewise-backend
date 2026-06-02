@@ -30,6 +30,12 @@ const doctorDashboardHeartRiskParamsSchema = z.object({
   patientId: uuidV4Schema,
 });
 
+const doctorDashboardHeartRiskAssessmentParamsSchema = z.object({
+  doctorId: uuidV4Schema,
+  patientId: uuidV4Schema,
+  assessmentId: uuidV4Schema,
+});
+
 const doctorDashboardHeartRiskHistoryDetailParamsSchema = z.object({
   doctorId: uuidV4Schema,
   patientId: uuidV4Schema,
@@ -104,6 +110,7 @@ module.exports = {
   patientHeartRiskAssessmentParamsSchema,
   patientHeartRiskHistoryDetailParamsSchema,
   doctorDashboardHeartRiskParamsSchema,
+  doctorDashboardHeartRiskAssessmentParamsSchema,
   doctorDashboardHeartRiskHistoryDetailParamsSchema,
   heartRiskAssessmentQuerySchema,
   heartRiskPredictionQuerySchema,

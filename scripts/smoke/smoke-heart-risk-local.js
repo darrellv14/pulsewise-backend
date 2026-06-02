@@ -67,7 +67,7 @@ async function run() {
     const doctorToken = doctorLogin.data?.data?.token || null;
     const doctorId = doctorLogin.data?.data?.user?.userId || null;
 
-    const assessmentBody = {
+    const patientAssessmentBody = {
       assessmentDate: todayDateOnly(),
       age: 58,
       sex: 0,
@@ -85,7 +85,7 @@ async function run() {
       'POST',
       `/users/${patientId}/heart-risk-model/assessments`,
       patientToken,
-      assessmentBody
+      patientAssessmentBody
     );
 
     const readiness = await requestJson(
@@ -95,7 +95,22 @@ async function run() {
       patientToken
     );
 
+    const doctorAssessmentBody = {
+      assessmentDate: todayDateOnly(),
+      age: 59,
+      sex: 0,
+      chest_pain_type: 2,
+      resting_bp_s: 149,
+      fasting_blood_sugar: 0,
+      max_heart_rate: 120,
+      exercise_angina: 0,
+      old_peak: 0.5,
+      st_slope: 2,
+    };
+
     let linkDoctor = null;
+    let doctorSaveAssessment = null;
+    let doctorPrediction = null;
     if (doctorToken && doctorId) {
       linkDoctor = await requestJson(
         BASE_URL,
@@ -105,6 +120,14 @@ async function run() {
         {
           patientId,
         }
+      );
+
+      doctorSaveAssessment = await requestJson(
+        BASE_URL,
+        'POST',
+        `/doctors/${doctorId}/dashboard/patients/${patientId}/heart-risk-model/assessments`,
+        doctorToken,
+        doctorAssessmentBody
       );
     }
 
@@ -138,6 +161,14 @@ async function run() {
         `/doctors/${doctorId}/dashboard/patients/${patientId}/heart-risk-model/readiness`,
         doctorToken
       );
+
+      doctorPrediction = await requestJson(
+        BASE_URL,
+        'POST',
+        `/doctors/${doctorId}/dashboard/patients/${patientId}/heart-risk-model/predictions`,
+        doctorToken,
+        {}
+      );
     }
 
     const summary = {
@@ -145,9 +176,12 @@ async function run() {
       heartRiskBaseUrl: process.env.HEART_RISK_ML_SERVICE_BASE_URL,
       patientLoginStatus: patientLogin.status,
       saveAssessmentStatus: saveAssessment.status,
+      saveAssessmentActor: saveAssessment.data?.data?.createdByUserId ?? null,
       readinessStatus: readiness.status,
       readinessReady: readiness.data?.data?.ready ?? null,
       doctorLinkStatus: linkDoctor?.status ?? null,
+      doctorSaveAssessmentStatus: doctorSaveAssessment?.status ?? null,
+      doctorSaveAssessmentActor: doctorSaveAssessment?.data?.data?.updatedByUserId ?? null,
       predictionStatus: prediction.status,
       predictionBody: prediction.data?.data?.upstream?.body ?? prediction.data?.data ?? null,
       latestStatus: latest.status,
@@ -155,6 +189,9 @@ async function run() {
       historyItems: history.data?.data?.items?.length ?? 0,
       doctorReadinessStatus: doctorReadiness?.status ?? null,
       doctorReadinessBody: doctorReadiness?.data?.data ?? null,
+      doctorPredictionStatus: doctorPrediction?.status ?? null,
+      doctorPredictionBody:
+        doctorPrediction?.data?.data?.upstream?.body ?? doctorPrediction?.data?.data ?? null,
     };
 
     console.log(JSON.stringify(summary, null, 2));
@@ -165,7 +202,9 @@ async function run() {
       readiness.data?.data?.ready !== true ||
       prediction.status !== 200 ||
       latest.status !== 200 ||
-      history.status !== 200;
+      history.status !== 200 ||
+      (doctorToken && doctorId && doctorSaveAssessment?.status !== 200) ||
+      (doctorToken && doctorId && doctorPrediction?.status !== 200);
 
     if (failed) {
       process.exitCode = 1;

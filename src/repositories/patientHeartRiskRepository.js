@@ -26,6 +26,8 @@ function mapAssessment(row) {
   return {
     assessmentId: row.assessmentId,
     patientId: row.patientId,
+    createdByUserId: row.createdByUserId,
+    updatedByUserId: row.updatedByUserId,
     assessmentDate: row.assessmentDate?.toISOString().slice(0, 10) || null,
     age: row.age,
     sex: row.sex,
@@ -71,7 +73,7 @@ async function listPatientHeartRiskAssessments({ patientId, startDate, endDate }
   return rows.map(mapAssessment);
 }
 
-async function createPatientHeartRiskAssessment({ patientId, payload }) {
+async function createPatientHeartRiskAssessment({ patientId, actorUserId, payload }) {
   const parsedDate = toDateOnly(payload.assessmentDate);
   const { assessmentDate: _ignored, ...dataToSave } = payload;
 
@@ -84,10 +86,13 @@ async function createPatientHeartRiskAssessment({ patientId, payload }) {
     },
     update: {
       ...dataToSave,
+      updatedByUserId: actorUserId,
       updatedAt: new Date(),
     },
     create: {
       patientId,
+      createdByUserId: actorUserId,
+      updatedByUserId: actorUserId,
       assessmentDate: parsedDate,
       ...dataToSave,
     },
@@ -96,7 +101,7 @@ async function createPatientHeartRiskAssessment({ patientId, payload }) {
   return mapAssessment(row);
 }
 
-async function updatePatientHeartRiskAssessment({ patientId, assessmentId, payload }) {
+async function updatePatientHeartRiskAssessment({ patientId, assessmentId, actorUserId, payload }) {
   const existing = await prisma.patientHeartRiskAssessment.findFirst({
     where: {
       patientId,
@@ -116,6 +121,7 @@ async function updatePatientHeartRiskAssessment({ patientId, assessmentId, paylo
   }
 
   data.updatedAt = new Date();
+  data.updatedByUserId = actorUserId;
 
   const row = await prisma.patientHeartRiskAssessment.update({
     where: { assessmentId },

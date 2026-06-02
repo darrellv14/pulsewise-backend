@@ -42,6 +42,8 @@ model User {
   patientMlProfile                 PatientMlProfile?
   patientMlAssessments             PatientMlAssessment[]
   patientHeartRiskAssessments      PatientHeartRiskAssessment[]
+  patientHeartRiskAssessmentsCreated PatientHeartRiskAssessment[] @relation("PatientHeartRiskAssessmentCreatedBy")
+  patientHeartRiskAssessmentsUpdated PatientHeartRiskAssessment[] @relation("PatientHeartRiskAssessmentUpdatedBy")
   patientMlInferenceResults        PatientMlInferenceResult[] @relation("PatientMlInferenceResults")
   medications                      Medication[]
   reminders                        Reminder[]
@@ -362,6 +364,8 @@ model PatientMlInferenceResult {
 model PatientHeartRiskAssessment {
   assessmentId        String   @id @default(dbgenerated("gen_random_uuid()")) @map("assessment_id") @db.Uuid
   patientId           String   @map("patient_id") @db.Uuid
+  createdByUserId     String?  @map("created_by_user_id") @db.Uuid
+  updatedByUserId     String?  @map("updated_by_user_id") @db.Uuid
   assessmentDate      DateTime @map("assessment_date") @db.Date
   age                 Int?     @db.SmallInt
   sex                 Int?     @db.SmallInt
@@ -375,9 +379,13 @@ model PatientHeartRiskAssessment {
   createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt           DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
   patient             User     @relation(fields: [patientId], references: [userId], onDelete: Cascade)
+  createdByUser       User?    @relation("PatientHeartRiskAssessmentCreatedBy", fields: [createdByUserId], references: [userId], onDelete: SetNull)
+  updatedByUser       User?    @relation("PatientHeartRiskAssessmentUpdatedBy", fields: [updatedByUserId], references: [userId], onDelete: SetNull)
 
   @@unique([patientId, assessmentDate], map: "patient_heart_risk_assessments_patient_id_assessment_date_key")
   @@index([patientId, assessmentDate(sort: Desc)], map: "idx_patient_heart_risk_assessments_patient_date")
+  @@index([createdByUserId], map: "idx_patient_heart_risk_assessments_created_by")
+  @@index([updatedByUserId], map: "idx_patient_heart_risk_assessments_updated_by")
   @@map("patient_heart_risk_assessments")
 }
 

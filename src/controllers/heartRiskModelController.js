@@ -142,6 +142,35 @@ async function getDoctorDashboardPatientLatestHeartRiskAssessment(req, res, next
   }
 }
 
+async function createDoctorDashboardPatientHeartRiskAssessment(req, res, next) {
+  try {
+    const data = await heartRiskModelService.createDoctorDashboardPatientHeartRiskAssessment({
+      actor: req.user,
+      doctorId: req.params.doctorId,
+      patientId: req.params.patientId,
+      payload: req.body,
+    });
+    return success(res, 'Assessment second ML pasien dashboard berhasil disimpan', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function updateDoctorDashboardPatientHeartRiskAssessment(req, res, next) {
+  try {
+    const data = await heartRiskModelService.updateDoctorDashboardPatientHeartRiskAssessment({
+      actor: req.user,
+      doctorId: req.params.doctorId,
+      patientId: req.params.patientId,
+      assessmentId: req.params.assessmentId,
+      payload: req.body,
+    });
+    return success(res, 'Assessment second ML pasien dashboard berhasil diperbarui', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
 async function getDoctorDashboardPatientHeartRiskPredictions(req, res, next) {
   try {
     const data = await heartRiskModelService.getDoctorDashboardPatientHeartRiskPredictions({
@@ -215,6 +244,8 @@ module.exports = {
   getPatientHeartRiskPredictionHistoryDetail,
   getDoctorDashboardPatientHeartRiskReadiness,
   getDoctorDashboardPatientLatestHeartRiskAssessment,
+  createDoctorDashboardPatientHeartRiskAssessment,
+  updateDoctorDashboardPatientHeartRiskAssessment,
   getDoctorDashboardPatientHeartRiskPredictions,
   getDoctorDashboardPatientLatestHeartRiskPrediction,
   listDoctorDashboardPatientHeartRiskPredictionHistory,

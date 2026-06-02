@@ -40,6 +40,7 @@ async function createPatientHeartRiskAssessment({ actor, userId, payload }) {
   await assertPatientScope({ actor, patientId: userId });
   return patientHeartRiskRepository.createPatientHeartRiskAssessment({
     patientId: userId,
+    actorUserId: actor.userId,
     payload: toRepositoryPayload(payload),
   });
 }
@@ -49,6 +50,39 @@ async function updatePatientHeartRiskAssessment({ actor, userId, assessmentId, p
   const assessment = await patientHeartRiskRepository.updatePatientHeartRiskAssessment({
     patientId: userId,
     assessmentId,
+    actorUserId: actor.userId,
+    payload: toRepositoryPayload(payload),
+  });
+
+  return ensureAssessmentExists(assessment);
+}
+
+async function createDoctorDashboardPatientHeartRiskAssessment({
+  actor,
+  doctorId,
+  patientId,
+  payload,
+}) {
+  await assertDoctorDashboardRouteAccess({ actor, doctorId, patientId });
+  return patientHeartRiskRepository.createPatientHeartRiskAssessment({
+    patientId,
+    actorUserId: actor.userId,
+    payload: toRepositoryPayload(payload),
+  });
+}
+
+async function updateDoctorDashboardPatientHeartRiskAssessment({
+  actor,
+  doctorId,
+  patientId,
+  assessmentId,
+  payload,
+}) {
+  await assertDoctorDashboardRouteAccess({ actor, doctorId, patientId });
+  const assessment = await patientHeartRiskRepository.updatePatientHeartRiskAssessment({
+    patientId,
+    assessmentId,
+    actorUserId: actor.userId,
     payload: toRepositoryPayload(payload),
   });
 
@@ -66,5 +100,7 @@ module.exports = {
   listPatientHeartRiskAssessments,
   createPatientHeartRiskAssessment,
   updatePatientHeartRiskAssessment,
+  createDoctorDashboardPatientHeartRiskAssessment,
+  updateDoctorDashboardPatientHeartRiskAssessment,
   getDoctorDashboardPatientLatestHeartRiskAssessment,
 };
