@@ -17,6 +17,35 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7-alpine
+    container_name: pulsewise-redis
+    restart: unless-stopped
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+    command:
+      - sh
+      - -c
+      - |
+        if [ -n "$REDIS_PASSWORD" ]; then
+          exec redis-server --appendonly yes --requirepass "$REDIS_PASSWORD"
+        else
+          exec redis-server --appendonly yes
+        fi
+    ports:
+      - '${REDIS_PORT:-6379}:6379'
+    volumes:
+      - pulsewise_redis_data:/data
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'if [ -n "$REDIS_PASSWORD" ]; then redis-cli -a "$REDIS_PASSWORD" ping; else redis-cli ping; fi | grep PONG',
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   pgadmin:
     image: dpage/pgadmin4:8
     container_name: pulsewise-pgadmin
@@ -60,3 +89,4 @@ services:
 
 volumes:
   pulsewise_pgdata:
+  pulsewise_redis_data:
