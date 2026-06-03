@@ -1,4 +1,11 @@
 const { z } = require('zod');
+const {
+  HEART_RISK_SEX,
+  HEART_RISK_CHEST_PAIN_TYPE,
+  HEART_RISK_FASTING_BLOOD_SUGAR,
+  HEART_RISK_EXERCISE_ANGINA,
+  HEART_RISK_ST_SLOPE,
+} = require('../constants/heartRiskModelEnums');
 
 const uuidV4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const uuidV4Schema = z.string().uuid().regex(uuidV4Regex, 'Harus UUID v4 yang valid');
@@ -7,9 +14,35 @@ const dateSchema = z
   .trim()
   .regex(/^\d{4}-\d{2}-\d{2}$/, 'Format tanggal harus YYYY-MM-DD');
 
-const smallIntNullableSchema = z.coerce.number().int().min(0).max(999).nullable().optional();
 const intNullableSchema = z.coerce.number().int().min(0).max(999999).nullable().optional();
 const decimalNullableSchema = z.coerce.number().finite().min(0).max(999999).nullable().optional();
+
+function createNullableEnumCodeSchema(enumMap, fieldLabel) {
+  const allowedValues = Object.values(enumMap);
+
+  return z.preprocess((value) => {
+    if (value === '' || value === null || value === undefined) {
+      return value;
+    }
+
+    if (typeof value === 'string') {
+      const normalized = value.trim().toLowerCase();
+      if (Object.prototype.hasOwnProperty.call(enumMap, normalized)) {
+        return enumMap[normalized];
+      }
+    }
+
+    return value;
+  }, z
+    .coerce
+    .number()
+    .int()
+    .refine((value) => allowedValues.includes(value), {
+      message: `${fieldLabel} harus memakai enum resmi atau kode numerik yang valid`,
+    })
+    .nullable()
+    .optional());
+}
 
 const patientHeartRiskParamsSchema = z.object({
   userId: uuidV4Schema,
@@ -87,14 +120,23 @@ const heartRiskHistoryQuerySchema = z
 const heartRiskAssessmentCreateSchema = z.object({
   assessmentDate: dateSchema,
   age: intNullableSchema,
-  sex: smallIntNullableSchema,
-  chest_pain_type: smallIntNullableSchema,
+  sex: createNullableEnumCodeSchema(HEART_RISK_SEX, 'sex'),
+  chest_pain_type: createNullableEnumCodeSchema(
+    HEART_RISK_CHEST_PAIN_TYPE,
+    'chest_pain_type'
+  ),
   resting_bp_s: intNullableSchema,
-  fasting_blood_sugar: smallIntNullableSchema,
+  fasting_blood_sugar: createNullableEnumCodeSchema(
+    HEART_RISK_FASTING_BLOOD_SUGAR,
+    'fasting_blood_sugar'
+  ),
   max_heart_rate: intNullableSchema,
-  exercise_angina: smallIntNullableSchema,
+  exercise_angina: createNullableEnumCodeSchema(
+    HEART_RISK_EXERCISE_ANGINA,
+    'exercise_angina'
+  ),
   old_peak: decimalNullableSchema,
-  st_slope: smallIntNullableSchema,
+  st_slope: createNullableEnumCodeSchema(HEART_RISK_ST_SLOPE, 'st_slope'),
 });
 
 const heartRiskAssessmentUpdateSchema = heartRiskAssessmentCreateSchema
