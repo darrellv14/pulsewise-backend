@@ -26,6 +26,15 @@ async function getLatestPatientHeartRiskAssessment({ actor, userId }) {
   return ensureAssessmentExists(assessment);
 }
 
+async function getPatientHeartRiskAssessmentDetail({ actor, userId, assessmentId }) {
+  await assertPatientScope({ actor, patientId: userId });
+  const assessment = await patientHeartRiskRepository.getPatientHeartRiskAssessmentById({
+    patientId: userId,
+    assessmentId,
+  });
+  return ensureAssessmentExists(assessment);
+}
+
 async function listPatientHeartRiskAssessments({ actor, userId, query }) {
   await assertPatientScope({ actor, patientId: userId });
   const items = await patientHeartRiskRepository.listPatientHeartRiskAssessments({
@@ -95,12 +104,28 @@ async function getDoctorDashboardPatientLatestHeartRiskAssessment({ actor, docto
   return ensureAssessmentExists(assessment);
 }
 
+async function getDoctorDashboardPatientHeartRiskAssessmentDetail({
+  actor,
+  doctorId,
+  patientId,
+  assessmentId,
+}) {
+  await assertDoctorDashboardRouteAccess({ actor, doctorId, patientId });
+  const assessment = await patientHeartRiskRepository.getPatientHeartRiskAssessmentById({
+    patientId,
+    assessmentId,
+  });
+  return ensureAssessmentExists(assessment);
+}
+
 module.exports = {
   getLatestPatientHeartRiskAssessment,
+  getPatientHeartRiskAssessmentDetail,
   listPatientHeartRiskAssessments,
   createPatientHeartRiskAssessment,
   updatePatientHeartRiskAssessment,
   createDoctorDashboardPatientHeartRiskAssessment,
   updateDoctorDashboardPatientHeartRiskAssessment,
   getDoctorDashboardPatientLatestHeartRiskAssessment,
+  getDoctorDashboardPatientHeartRiskAssessmentDetail,
 };

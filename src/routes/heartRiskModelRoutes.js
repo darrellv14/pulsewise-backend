@@ -32,6 +32,12 @@ router.get(
   heartRiskModelController.getPatientLatestHeartRiskAssessment
 );
 router.get(
+  '/users/:userId/heart-risk-model/assessments/:assessmentId',
+  authenticate,
+  validateRequest(patientHeartRiskAssessmentParamsSchema, 'params'),
+  heartRiskModelController.getPatientHeartRiskAssessmentDetail
+);
+router.get(
   '/users/:userId/heart-risk-model/assessments',
   authenticate,
   validateRequest(patientHeartRiskParamsSchema, 'params'),
@@ -91,6 +97,12 @@ router.get(
   authenticate,
   validateRequest(doctorDashboardHeartRiskParamsSchema, 'params'),
   heartRiskModelController.getDoctorDashboardPatientLatestHeartRiskAssessment
+);
+router.get(
+  '/doctors/:doctorId/dashboard/patients/:patientId/heart-risk-model/assessments/:assessmentId',
+  authenticate,
+  validateRequest(doctorDashboardHeartRiskAssessmentParamsSchema, 'params'),
+  heartRiskModelController.getDoctorDashboardPatientHeartRiskAssessmentDetail
 );
 router.post(
   '/doctors/:doctorId/dashboard/patients/:patientId/heart-risk-model/assessments',

@@ -25,6 +25,19 @@ async function getPatientLatestHeartRiskAssessment(req, res, next) {
   }
 }
 
+async function getPatientHeartRiskAssessmentDetail(req, res, next) {
+  try {
+    const data = await heartRiskModelService.getPatientHeartRiskAssessmentDetail({
+      actor: req.user,
+      userId: req.params.userId,
+      assessmentId: req.params.assessmentId,
+    });
+    return success(res, 'Detail assessment second ML pasien berhasil diambil', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
 async function listPatientHeartRiskAssessments(req, res, next) {
   try {
     const data = await heartRiskModelService.listPatientHeartRiskAssessments({
@@ -142,6 +155,20 @@ async function getDoctorDashboardPatientLatestHeartRiskAssessment(req, res, next
   }
 }
 
+async function getDoctorDashboardPatientHeartRiskAssessmentDetail(req, res, next) {
+  try {
+    const data = await heartRiskModelService.getDoctorDashboardPatientHeartRiskAssessmentDetail({
+      actor: req.user,
+      doctorId: req.params.doctorId,
+      patientId: req.params.patientId,
+      assessmentId: req.params.assessmentId,
+    });
+    return success(res, 'Detail assessment second ML pasien dashboard berhasil diambil', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
 async function createDoctorDashboardPatientHeartRiskAssessment(req, res, next) {
   try {
     const data = await heartRiskModelService.createDoctorDashboardPatientHeartRiskAssessment({
@@ -235,6 +262,7 @@ async function getDoctorDashboardPatientHeartRiskPredictionHistoryDetail(req, re
 module.exports = {
   getPatientHeartRiskReadiness,
   getPatientLatestHeartRiskAssessment,
+  getPatientHeartRiskAssessmentDetail,
   listPatientHeartRiskAssessments,
   createPatientHeartRiskAssessment,
   updatePatientHeartRiskAssessment,
@@ -244,6 +272,7 @@ module.exports = {
   getPatientHeartRiskPredictionHistoryDetail,
   getDoctorDashboardPatientHeartRiskReadiness,
   getDoctorDashboardPatientLatestHeartRiskAssessment,
+  getDoctorDashboardPatientHeartRiskAssessmentDetail,
   createDoctorDashboardPatientHeartRiskAssessment,
   updateDoctorDashboardPatientHeartRiskAssessment,
   getDoctorDashboardPatientHeartRiskPredictions,

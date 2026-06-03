@@ -1,6 +1,7 @@
 jest.mock('../src/repositories/patientHeartRiskRepository', () => ({
   getPatientHeartRiskSnapshot: jest.fn(),
   getLatestPatientHeartRiskAssessment: jest.fn(),
+  getPatientHeartRiskAssessmentById: jest.fn(),
   listPatientHeartRiskAssessments: jest.fn(),
   createPatientHeartRiskAssessment: jest.fn(),
   updatePatientHeartRiskAssessment: jest.fn(),
@@ -28,8 +29,10 @@ const {
   getPatientHeartRiskReadiness,
   getPatientHeartRiskPredictions,
   getDoctorDashboardPatientHeartRiskReadiness,
+  getPatientHeartRiskAssessmentDetail,
   createDoctorDashboardPatientHeartRiskAssessment,
   updatePatientHeartRiskAssessment,
+  getPatientHeartRiskPredictionHistoryDetail,
 } = require('../src/services/heartRiskModelService');
 const doctorPatientRepository = require('../src/repositories/doctorPatientRepository');
 
@@ -237,5 +240,71 @@ describe('heartRiskModelService', () => {
         actorUserId: 'user-1',
       })
     );
+  });
+
+  test('patient can fetch second-ml assessment detail by assessment id', async () => {
+    patientHeartRiskRepository.getPatientHeartRiskAssessmentById.mockResolvedValue({
+      assessmentId: 'assessment-4',
+      patientId: 'user-1',
+      assessmentDate: '2026-06-03',
+      age: 58,
+    });
+
+    const result = await getPatientHeartRiskAssessmentDetail({
+      actor: { userId: 'user-1', role: 'patient' },
+      userId: 'user-1',
+      assessmentId: 'assessment-4',
+    });
+
+    expect(patientHeartRiskRepository.getPatientHeartRiskAssessmentById).toHaveBeenCalledWith({
+      patientId: 'user-1',
+      assessmentId: 'assessment-4',
+    });
+    expect(result.assessmentId).toBe('assessment-4');
+  });
+
+  test('history detail includes embedded assessment snapshot when assessmentId exists', async () => {
+    patientMlInferenceRepository.getInferenceResultById.mockResolvedValue({
+      resultId: 'result-2',
+      patientId: 'user-1',
+      modelKey: 'heart_disease_v1',
+      inferenceType: 'prediction',
+      requestContext: 'patient',
+      mlVersion: 'heart-risk-v1',
+      sourceSummary: {
+        assessmentId: 'assessment-5',
+        assessmentDate: '2026-06-03',
+      },
+      upstream: {
+        status: 200,
+        body: {
+          predictedClass: 0,
+          probability: 0.31,
+        },
+      },
+    });
+    patientHeartRiskRepository.getPatientHeartRiskAssessmentById.mockResolvedValue({
+      assessmentId: 'assessment-5',
+      patientId: 'user-1',
+      assessmentDate: '2026-06-03',
+      age: 58,
+      sex: 0,
+    });
+
+    const result = await getPatientHeartRiskPredictionHistoryDetail({
+      actor: { userId: 'user-1', role: 'patient' },
+      userId: 'user-1',
+      resultId: 'result-2',
+    });
+
+    expect(patientHeartRiskRepository.getPatientHeartRiskAssessmentById).toHaveBeenCalledWith({
+      patientId: 'user-1',
+      assessmentId: 'assessment-5',
+    });
+    expect(result.assessment).toMatchObject({
+      assessmentId: 'assessment-5',
+      age: 58,
+      sex: 0,
+    });
   });
 });

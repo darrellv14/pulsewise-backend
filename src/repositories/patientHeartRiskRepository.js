@@ -52,6 +52,17 @@ async function getLatestPatientHeartRiskAssessment(patientId) {
   return mapAssessment(row);
 }
 
+async function getPatientHeartRiskAssessmentById({ patientId, assessmentId }) {
+  const row = await prisma.patientHeartRiskAssessment.findFirst({
+    where: {
+      patientId,
+      assessmentId,
+    },
+  });
+
+  return mapAssessment(row);
+}
+
 async function listPatientHeartRiskAssessments({ patientId, startDate, endDate }) {
   const where = { patientId };
 
@@ -173,6 +184,7 @@ async function getPatientHeartRiskSnapshot({ userId }) {
 
 module.exports = {
   getLatestPatientHeartRiskAssessment,
+  getPatientHeartRiskAssessmentById,
   listPatientHeartRiskAssessments,
   createPatientHeartRiskAssessment,
   updatePatientHeartRiskAssessment,

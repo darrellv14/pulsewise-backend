@@ -12,6 +12,24 @@ const {
   assertDoctorDashboardRouteAccess,
 } = require('./shared');
 const { getHeartRiskPayload, toReadiness, ensureHeartRiskReady } = require('./payloadService');
+const patientHeartRiskRepository = require('../../repositories/patientHeartRiskRepository');
+
+async function attachAssessmentDetail(result) {
+  const assessmentId = result?.sourceSummary?.assessmentId;
+  if (!assessmentId || !result?.patientId) {
+    return result;
+  }
+
+  const assessment = await patientHeartRiskRepository.getPatientHeartRiskAssessmentById({
+    patientId: result.patientId,
+    assessmentId,
+  });
+
+  return {
+    ...result,
+    assessment: assessment || null,
+  };
+}
 
 async function getPatientHeartRiskReadiness({ actor, userId }) {
   await assertPatientScope({ actor, patientId: userId });
@@ -111,13 +129,14 @@ async function listPatientHeartRiskPredictionHistory({ actor, userId, query = {}
 
 async function getPatientHeartRiskPredictionHistoryDetail({ actor, userId, resultId }) {
   await assertPatientScope({ actor, patientId: userId });
-  return getPatientInferenceResultDetail({
+  const result = await getPatientInferenceResultDetail({
     actor,
     patientId: userId,
     inferenceType: 'prediction',
     modelKey: HEART_RISK_MODEL_KEY,
     resultId,
   });
+  return attachAssessmentDetail(result);
 }
 
 async function getDoctorDashboardPatientLatestHeartRiskPrediction({ actor, doctorId, patientId }) {
@@ -153,13 +172,14 @@ async function getDoctorDashboardPatientHeartRiskPredictionHistoryDetail({
   resultId,
 }) {
   await assertDoctorDashboardRouteAccess({ actor, doctorId, patientId });
-  return getPatientInferenceResultDetail({
+  const result = await getPatientInferenceResultDetail({
     actor,
     patientId,
     inferenceType: 'prediction',
     modelKey: HEART_RISK_MODEL_KEY,
     resultId,
   });
+  return attachAssessmentDetail(result);
 }
 
 module.exports = {
