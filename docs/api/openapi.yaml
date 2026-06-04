@@ -23,6 +23,7 @@ tags:
   - name: Patient Care
   - name: Profile Management
   - name: Biometrics
+  - name: Education
 
 components:
   securitySchemes:
@@ -263,6 +264,395 @@ components:
           type: string
           minLength: 8
           maxLength: 128
+
+    EducationCategory:
+      type: object
+      properties:
+        categoryId:
+          type: string
+          format: uuid
+        slug:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        sortOrder:
+          type: integer
+        isActive:
+          type: boolean
+
+    EducationTag:
+      type: object
+      properties:
+        tagId:
+          type: string
+          format: uuid
+        slug:
+          type: string
+        name:
+          type: string
+
+    EducationAuthorSummary:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        username:
+          type: string
+        role:
+          type: string
+          enum: [patient, doctor, admin]
+        displayName:
+          type: string
+        badge:
+          type: string
+          nullable: true
+        avatarPhoto:
+          type: string
+          nullable: true
+
+    EducationRevisionSummary:
+      type: object
+      properties:
+        revisionId:
+          type: string
+          format: uuid
+        articleId:
+          type: string
+          format: uuid
+        authorUserId:
+          type: string
+          format: uuid
+        category:
+          $ref: '#/components/schemas/EducationCategory'
+        slug:
+          type: string
+        title:
+          type: string
+        excerpt:
+          type: string
+          nullable: true
+        contentMarkdown:
+          type: string
+          description: Snapshot utuh markdown/MDX source yang dikirim editor.
+        coverImageUrl:
+          type: string
+          nullable: true
+        coverImagePublicId:
+          type: string
+          nullable: true
+        tagSlugs:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          enum: [draft, pending_review, approved, rejected]
+        submittedAt:
+          type: string
+          format: date-time
+          nullable: true
+        reviewedBy:
+          type: string
+          format: uuid
+          nullable: true
+        reviewedAt:
+          type: string
+          format: date-time
+          nullable: true
+        rejectionReason:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        author:
+          $ref: '#/components/schemas/EducationAuthorSummary'
+
+    EducationArticleSummary:
+      type: object
+      properties:
+        articleId:
+          type: string
+          format: uuid
+        authorUserId:
+          type: string
+          format: uuid
+        slug:
+          type: string
+        title:
+          type: string
+        excerpt:
+          type: string
+          nullable: true
+        coverImageUrl:
+          type: string
+          nullable: true
+        coverImagePublicId:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [draft, pending_review, published, rejected, archived, unpublished]
+        visibility:
+          type: string
+          enum: [logged_in]
+        category:
+          $ref: '#/components/schemas/EducationCategory'
+        author:
+          $ref: '#/components/schemas/EducationAuthorSummary'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/EducationTag'
+        likeCount:
+          type: integer
+        commentCount:
+          type: integer
+        viewCount:
+          type: integer
+        likedByMe:
+          type: boolean
+        isFeatured:
+          type: boolean
+        featuredOrder:
+          type: integer
+          nullable: true
+        approvedBy:
+          type: string
+          format: uuid
+          nullable: true
+        approvedAt:
+          type: string
+          format: date-time
+          nullable: true
+        lastReviewedBy:
+          type: string
+          format: uuid
+          nullable: true
+        lastReviewedAt:
+          type: string
+          format: date-time
+          nullable: true
+        rejectionReason:
+          type: string
+          nullable: true
+        publishedAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        latestRevision:
+          $ref: '#/components/schemas/EducationRevisionSummary'
+        pendingRevision:
+          $ref: '#/components/schemas/EducationRevisionSummary'
+
+    EducationArticleDetail:
+      allOf:
+        - $ref: '#/components/schemas/EducationArticleSummary'
+        - type: object
+          properties:
+            contentMarkdown:
+              type: string
+              description: Raw markdown/MDX source. Simpan dan kirim apa adanya dari editor.
+
+    EducationCursorPagination:
+      type: object
+      properties:
+        limit:
+          type: integer
+        hasMore:
+          type: boolean
+        nextCursor:
+          type: string
+          nullable: true
+
+    EducationArticleListData:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/EducationArticleSummary'
+        pagination:
+          $ref: '#/components/schemas/EducationCursorPagination'
+
+    EducationPagedArticlesData:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/EducationArticleSummary'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    EducationPendingRevisionsData:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/EducationRevisionSummary'
+              - type: object
+                properties:
+                  article:
+                    $ref: '#/components/schemas/EducationArticleSummary'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    EducationArticleUpsertRequest:
+      type: object
+      required: [title, contentMarkdown]
+      properties:
+        categoryId:
+          type: string
+          format: uuid
+        categorySlug:
+          type: string
+        title:
+          type: string
+          minLength: 3
+          maxLength: 200
+        excerpt:
+          type: string
+          nullable: true
+          maxLength: 500
+        contentMarkdown:
+          type: string
+          description: Raw markdown/MDX string dari editor berbasis web seperti MDXEditor.
+        coverImageUrl:
+          type: string
+          format: uri
+          nullable: true
+        coverImagePublicId:
+          type: string
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+
+    EducationUploadSignatureResponse:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum: [cover, inline]
+        cloudName:
+          type: string
+        apiKey:
+          type: string
+        timestamp:
+          type: integer
+        folder:
+          type: string
+        signature:
+          type: string
+        transformation:
+          type: string
+        allowedFormats:
+          type: array
+          items:
+            type: string
+        maxBytes:
+          type: integer
+        uploadUrl:
+          type: string
+          format: uri
+
+    EducationComment:
+      type: object
+      properties:
+        commentId:
+          type: string
+          format: uuid
+        articleId:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        parentCommentId:
+          type: string
+          format: uuid
+          nullable: true
+        content:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [visible, hidden, deleted]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        hiddenAt:
+          type: string
+          format: date-time
+          nullable: true
+        author:
+          $ref: '#/components/schemas/EducationAuthorSummary'
+        canEdit:
+          type: boolean
+        canDelete:
+          type: boolean
+        replies:
+          type: array
+          items:
+            $ref: '#/components/schemas/EducationComment'
+
+    EducationCommentListData:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/EducationComment'
+        pagination:
+          $ref: '#/components/schemas/EducationCursorPagination'
+
+    EducationCommentRequest:
+      type: object
+      required: [content]
+      properties:
+        content:
+          type: string
+          minLength: 1
+          maxLength: 2000
+
+    EducationRejectRequest:
+      type: object
+      required: [rejectionReason]
+      properties:
+        rejectionReason:
+          type: string
+          minLength: 3
+          maxLength: 1000
+
+    EducationFeatureRequest:
+      type: object
+      properties:
+        isFeatured:
+          type: boolean
+          default: true
+        featuredOrder:
+          type: integer
+          nullable: true
 
     EmailVerificationConfirmRequest:
       type: object
@@ -7194,6 +7584,762 @@ paths:
                     properties:
                       data:
                         $ref: '#/components/schemas/DailyConsumption'
+
+  /education/categories:
+    get:
+      tags: [Education]
+      summary: Ambil daftar kategori edukasi aktif
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Daftar kategori edukasi
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/EducationCategory'
+
+  /education/tags:
+    get:
+      tags: [Education]
+      summary: Ambil daftar tag edukasi
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Daftar tag edukasi
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/EducationTag'
+
+  /education/upload-signature:
+    get:
+      tags: [Education]
+      summary: Generate secure upload signature untuk cover atau inline image edukasi
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: kind
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [cover, inline]
+            default: cover
+      responses:
+        '200':
+          description: Signature upload edukasi berhasil dibuat
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/EducationUploadSignatureResponse'
+
+  /education/articles:
+    get:
+      tags: [Education]
+      summary: Ambil feed artikel edukasi published
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: tag
+          in: query
+          schema:
+            type: string
+        - name: q
+          in: query
+          schema:
+            type: string
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [latest, popular]
+            default: latest
+        - name: cursor
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 10
+      responses:
+        '200':
+          description: Feed artikel edukasi berhasil diambil
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/EducationArticleListData'
+    post:
+      tags: [Education]
+      summary: Buat draft artikel edukasi baru
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EducationArticleUpsertRequest'
+      responses:
+        '201':
+          description: Draft artikel edukasi berhasil dibuat
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/EducationArticleDetail'
+
+  /education/articles/{slug}:
+    get:
+      tags: [Education]
+      summary: Ambil detail artikel edukasi published
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Detail artikel edukasi berhasil diambil
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/EducationArticleDetail'
+
+  /education/me/articles:
+    get:
+      tags: [Education]
+      summary: Ambil daftar artikel milik user login
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [draft, pending_review, published, rejected, archived, unpublished]
+      responses:
+        '200':
+          description: Daftar artikel milik user berhasil diambil
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/EducationPagedArticlesData'
+
+  /education/me/articles/{articleId}:
+    get:
+      tags: [Education]
+      summary: Ambil detail artikel milik user login
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: articleId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Detail artikel saya berhasil diambil
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/EducationArticleDetail'
+
+  /education/articles/{articleId}:
+    put:
+      tags: [Education]
+      summary: Update artikel edukasi milik sendiri
+      description: |
+        Untuk artikel berstatus `published`, update ini tidak langsung mengubah versi live.
+        Backend akan membuat atau memperbarui pending revision yang menunggu review admin.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: articleId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EducationArticleUpsertRequest'
+      responses:
+        '200':
+          description: Artikel edukasi berhasil diperbarui
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/EducationArticleDetail'
+
+  /education/articles/{articleId}/submit-review:
+    post:
+      tags: [Education]
+      summary: Ajukan draft artikel edukasi untuk review admin
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: articleId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Artikel edukasi berhasil diajukan untuk review
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/EducationArticleDetail'
+
+  /education/articles/{articleId}/likes:
+    post:
+      tags: [Education]
+      summary: Like artikel edukasi
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: articleId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Artikel edukasi berhasil disukai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+    delete:
+      tags: [Education]
+      summary: Batalkan like artikel edukasi
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: articleId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Like artikel edukasi berhasil dibatalkan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+
+  /education/articles/{articleId}/comments:
+    get:
+      tags: [Education]
+      summary: Ambil komentar artikel edukasi
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: articleId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: cursor
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 20
+      responses:
+        '200':
+          description: Daftar komentar artikel edukasi berhasil diambil
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/EducationCommentListData'
+    post:
+      tags: [Education]
+      summary: Tambah komentar baru pada artikel edukasi
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: articleId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EducationCommentRequest'
+      responses:
+        '201':
+          description: Komentar berhasil dibuat
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/EducationComment'
+
+  /education/comments/{commentId}/replies:
+    post:
+      tags: [Education]
+      summary: Tambah balasan komentar satu tingkat
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: commentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EducationCommentRequest'
+      responses:
+        '201':
+          description: Balasan komentar berhasil dibuat
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/EducationComment'
+
+  /education/comments/{commentId}:
+    put:
+      tags: [Education]
+      summary: Update komentar milik sendiri
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: commentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EducationCommentRequest'
+      responses:
+        '200':
+          description: Komentar berhasil diperbarui
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/EducationComment'
+    delete:
+      tags: [Education]
+      summary: Hapus komentar milik sendiri atau oleh admin
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: commentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Komentar berhasil dihapus
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+
+  /admin/education/articles/pending:
+    get:
+      tags: [Education]
+      summary: Ambil daftar draft artikel edukasi yang menunggu review admin
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Daftar artikel pending review berhasil diambil
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/EducationPagedArticlesData'
+
+  /admin/education/articles/revisions/pending:
+    get:
+      tags: [Education]
+      summary: Ambil daftar revisi artikel published yang menunggu review admin
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Daftar revisi pending review berhasil diambil
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/EducationPendingRevisionsData'
+
+  /admin/education/articles/{articleId}:
+    get:
+      tags: [Education]
+      summary: Ambil detail artikel edukasi untuk admin
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: articleId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Detail artikel edukasi admin berhasil diambil
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/EducationArticleDetail'
+
+  /admin/education/articles/{articleId}/approve:
+    post:
+      tags: [Education]
+      summary: Approve draft artikel edukasi baru
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: articleId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Artikel edukasi berhasil di-approve
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/EducationArticleDetail'
+
+  /admin/education/articles/{articleId}/reject:
+    post:
+      tags: [Education]
+      summary: Reject draft artikel edukasi baru
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: articleId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EducationRejectRequest'
+      responses:
+        '200':
+          description: Artikel edukasi berhasil ditolak
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/EducationArticleDetail'
+
+  /admin/education/revisions/{revisionId}/approve:
+    post:
+      tags: [Education]
+      summary: Approve revisi artikel published
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: revisionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Revisi artikel edukasi berhasil di-approve
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/EducationArticleDetail'
+
+  /admin/education/revisions/{revisionId}/reject:
+    post:
+      tags: [Education]
+      summary: Reject revisi artikel published
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: revisionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EducationRejectRequest'
+      responses:
+        '200':
+          description: Revisi artikel edukasi berhasil ditolak
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+
+  /admin/education/articles/{articleId}/feature:
+    post:
+      tags: [Education]
+      summary: Atur artikel edukasi sebagai featured
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: articleId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EducationFeatureRequest'
+      responses:
+        '200':
+          description: Pengaturan featured berhasil diperbarui
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/EducationArticleDetail'
+
+  /admin/education/articles/{articleId}/archive:
+    post:
+      tags: [Education]
+      summary: Arsipkan artikel edukasi
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: articleId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Artikel edukasi berhasil diarsipkan
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/EducationArticleDetail'
+
+  /admin/education/articles/{articleId}/unpublish:
+    post:
+      tags: [Education]
+      summary: Unpublish artikel edukasi
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: articleId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Artikel edukasi berhasil di-unpublish
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/EducationArticleDetail'
+
+  /admin/education/comments/{commentId}/hide:
+    post:
+      tags: [Education]
+      summary: Sembunyikan komentar artikel edukasi
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: commentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Komentar edukasi berhasil disembunyikan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
 
   /users/{userId}/avatar/upload-signature:
     get:

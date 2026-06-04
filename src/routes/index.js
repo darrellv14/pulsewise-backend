@@ -9,6 +9,7 @@ const mlRecommendationRoutes = require('./mlRecommendationRoutes');
 const heartRiskModelRoutes = require('./heartRiskModelRoutes');
 const notificationRoutes = require('./notificationRoutes');
 const adminRoutes = require('./adminRoutes');
+const educationRoutes = require('./educationRoutes');
 
 const router = express.Router();
 
@@ -22,5 +23,6 @@ router.use('/', mlRecommendationRoutes);
 router.use('/', heartRiskModelRoutes);
 router.use('/', notificationRoutes);
 router.use('/', adminRoutes);
+router.use('/', educationRoutes);
 
 module.exports = router;

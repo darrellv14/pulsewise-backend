@@ -117,6 +117,18 @@ const env = {
     avatarMaxHeight: Number(process.env.CLOUDINARY_AVATAR_MAX_HEIGHT || 512),
     avatarAllowedFormats: process.env.CLOUDINARY_AVATAR_ALLOWED_FORMATS || 'jpg,jpeg,png,webp',
     avatarQuality: process.env.CLOUDINARY_AVATAR_QUALITY || 'auto:good',
+    educationCoverFolder:
+      process.env.CLOUDINARY_EDUCATION_COVER_FOLDER || 'pulsewise/education/covers',
+    educationInlineFolder:
+      process.env.CLOUDINARY_EDUCATION_INLINE_FOLDER || 'pulsewise/education/inline',
+    educationImageMaxBytes: Number(
+      process.env.CLOUDINARY_EDUCATION_IMAGE_MAX_BYTES || 5 * 1024 * 1024
+    ),
+    educationCoverMaxWidth: Number(process.env.CLOUDINARY_EDUCATION_COVER_MAX_WIDTH || 1280),
+    educationInlineMaxWidth: Number(process.env.CLOUDINARY_EDUCATION_INLINE_MAX_WIDTH || 1600),
+    educationAllowedFormats:
+      process.env.CLOUDINARY_EDUCATION_ALLOWED_FORMATS || 'jpg,jpeg,png,webp',
+    educationQuality: process.env.CLOUDINARY_EDUCATION_QUALITY || 'auto:good',
   },
   rateLimit: {
     authWindowMs: Number(process.env.RATE_LIMIT_AUTH_WINDOW_MS || 15 * 60 * 1000),

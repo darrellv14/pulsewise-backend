@@ -61,6 +61,15 @@ model User {
   dashboardPairingSessionsAsPatient DashboardPairingSession[] @relation("DashboardPairingSessionPatient")
   requestedMlInferenceResults      PatientMlInferenceResult[] @relation("RequestedMlInferenceResults")
   verifiedDoctorProfiles           DoctorProfile[]            @relation("DoctorVerifiedByUser")
+  educationArticlesAuthored        EducationArticle[]         @relation("EducationArticleAuthor")
+  educationArticlesApproved        EducationArticle[]         @relation("EducationArticleApprovedBy")
+  educationArticlesReviewed        EducationArticle[]         @relation("EducationArticleLastReviewedBy")
+  educationArticleRevisionsAuthored EducationArticleRevision[] @relation("EducationArticleRevisionAuthor")
+  educationArticleRevisionsReviewed EducationArticleRevision[] @relation("EducationArticleRevisionReviewedBy")
+  educationArticleImagesUploaded   EducationArticleImage[]    @relation("EducationArticleImageUploadedBy")
+  educationArticleLikes            EducationArticleLike[]
+  educationArticleComments         EducationArticleComment[]  @relation("EducationArticleCommentAuthor")
+  hiddenEducationArticleComments   EducationArticleComment[]  @relation("EducationArticleCommentHiddenBy")
 
   @@map("users")
 }
@@ -537,4 +546,164 @@ model DashboardPairingSession {
   @@index([doctorId, status, createdAt(sort: Desc)], map: "idx_dashboard_pairing_sessions_doctor_status")
   @@index([expiresAt], map: "idx_dashboard_pairing_sessions_expires_at")
   @@map("dashboard_pairing_sessions")
+}
+
+model EducationCategory {
+  categoryId   String             @id @default(dbgenerated("gen_random_uuid()")) @map("category_id") @db.Uuid
+  slug         String             @unique @db.VarChar(120)
+  name         String             @db.VarChar(120)
+  description  String?
+  sortOrder    Int                @default(0) @map("sort_order")
+  isActive     Boolean            @default(true) @map("is_active")
+  createdAt    DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime           @default(now()) @map("updated_at") @db.Timestamptz(6)
+  articles     EducationArticle[]
+  revisions    EducationArticleRevision[]
+
+  @@index([isActive, sortOrder], map: "idx_education_categories_active_sort")
+  @@map("education_categories")
+}
+
+model EducationArticle {
+  articleId           String                     @id @default(dbgenerated("gen_random_uuid()")) @map("article_id") @db.Uuid
+  authorUserId        String                     @map("author_user_id") @db.Uuid
+  categoryId          String?                    @map("category_id") @db.Uuid
+  slug                String                     @unique @db.VarChar(200)
+  title               String                     @db.VarChar(200)
+  excerpt             String?                    @db.VarChar(500)
+  contentMarkdown     String                     @map("content_markdown")
+  coverImageUrl       String?                    @map("cover_image_url")
+  coverImagePublicId  String?                    @map("cover_image_public_id") @db.VarChar(255)
+  status              String                     @default("draft") @db.VarChar(32)
+  visibility          String                     @default("logged_in") @db.VarChar(32)
+  approvedBy          String?                    @map("approved_by") @db.Uuid
+  approvedAt          DateTime?                  @map("approved_at") @db.Timestamptz(6)
+  lastReviewedBy      String?                    @map("last_reviewed_by") @db.Uuid
+  lastReviewedAt      DateTime?                  @map("last_reviewed_at") @db.Timestamptz(6)
+  rejectionReason     String?                    @map("rejection_reason")
+  publishedAt         DateTime?                  @map("published_at") @db.Timestamptz(6)
+  isFeatured          Boolean                    @default(false) @map("is_featured")
+  featuredOrder       Int?                       @map("featured_order")
+  likeCount           Int                        @default(0) @map("like_count")
+  commentCount        Int                        @default(0) @map("comment_count")
+  viewCount           Int                        @default(0) @map("view_count")
+  createdAt           DateTime                   @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime                   @default(now()) @map("updated_at") @db.Timestamptz(6)
+  authorUser          User                       @relation("EducationArticleAuthor", fields: [authorUserId], references: [userId], onDelete: Cascade)
+  category            EducationCategory?         @relation(fields: [categoryId], references: [categoryId], onDelete: SetNull)
+  approvedByUser      User?                      @relation("EducationArticleApprovedBy", fields: [approvedBy], references: [userId], onDelete: SetNull)
+  lastReviewedByUser  User?                      @relation("EducationArticleLastReviewedBy", fields: [lastReviewedBy], references: [userId], onDelete: SetNull)
+  revisions           EducationArticleRevision[]
+  images              EducationArticleImage[]
+  tags                EducationArticleTag[]
+  likes               EducationArticleLike[]
+  comments            EducationArticleComment[]
+
+  @@index([authorUserId, createdAt(sort: Desc)], map: "idx_education_articles_author_created")
+  @@index([status, publishedAt(sort: Desc), articleId(sort: Desc)], map: "idx_education_articles_status_published")
+  @@index([categoryId, publishedAt(sort: Desc), articleId(sort: Desc)], map: "idx_education_articles_category_published")
+  @@index([isFeatured, featuredOrder], map: "idx_education_articles_featured")
+  @@map("education_articles")
+}
+
+model EducationArticleRevision {
+  revisionId          String             @id @default(dbgenerated("gen_random_uuid()")) @map("revision_id") @db.Uuid
+  articleId           String             @map("article_id") @db.Uuid
+  authorUserId        String             @map("author_user_id") @db.Uuid
+  categoryId          String?            @map("category_id") @db.Uuid
+  slug                String             @db.VarChar(200)
+  title               String             @db.VarChar(200)
+  excerpt             String?            @db.VarChar(500)
+  contentMarkdown     String             @map("content_markdown")
+  coverImageUrl       String?            @map("cover_image_url")
+  coverImagePublicId  String?            @map("cover_image_public_id") @db.VarChar(255)
+  tagSlugs            Json?              @map("tag_slugs")
+  status              String             @default("draft") @db.VarChar(32)
+  submittedAt         DateTime?          @map("submitted_at") @db.Timestamptz(6)
+  reviewedBy          String?            @map("reviewed_by") @db.Uuid
+  reviewedAt          DateTime?          @map("reviewed_at") @db.Timestamptz(6)
+  rejectionReason     String?            @map("rejection_reason")
+  createdAt           DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime           @default(now()) @map("updated_at") @db.Timestamptz(6)
+  article             EducationArticle   @relation(fields: [articleId], references: [articleId], onDelete: Cascade)
+  authorUser          User               @relation("EducationArticleRevisionAuthor", fields: [authorUserId], references: [userId], onDelete: Cascade)
+  category            EducationCategory? @relation(fields: [categoryId], references: [categoryId], onDelete: SetNull)
+  reviewedByUser      User?              @relation("EducationArticleRevisionReviewedBy", fields: [reviewedBy], references: [userId], onDelete: SetNull)
+
+  @@index([articleId, createdAt(sort: Desc)], map: "idx_education_article_revisions_article_created")
+  @@index([status, submittedAt(sort: Desc)], map: "idx_education_article_revisions_status_submitted")
+  @@map("education_article_revisions")
+}
+
+model EducationArticleImage {
+  imageId           String            @id @default(dbgenerated("gen_random_uuid()")) @map("image_id") @db.Uuid
+  articleId         String?           @map("article_id") @db.Uuid
+  uploadedByUserId  String?           @map("uploaded_by_user_id") @db.Uuid
+  imageUrl          String            @map("image_url")
+  publicId          String            @map("public_id") @db.VarChar(255)
+  kind              String            @db.VarChar(16)
+  createdAt         DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  article           EducationArticle? @relation(fields: [articleId], references: [articleId], onDelete: Cascade)
+  uploadedByUser    User?             @relation("EducationArticleImageUploadedBy", fields: [uploadedByUserId], references: [userId], onDelete: SetNull)
+
+  @@index([articleId, kind], map: "idx_education_article_images_article_kind")
+  @@index([uploadedByUserId, createdAt(sort: Desc)], map: "idx_education_article_images_uploaded_by")
+  @@map("education_article_images")
+}
+
+model EducationTag {
+  tagId        String               @id @default(dbgenerated("gen_random_uuid()")) @map("tag_id") @db.Uuid
+  slug         String               @unique @db.VarChar(120)
+  name         String               @db.VarChar(120)
+  createdAt    DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime             @default(now()) @map("updated_at") @db.Timestamptz(6)
+  articleTags  EducationArticleTag[]
+
+  @@map("education_tags")
+}
+
+model EducationArticleTag {
+  articleId    String           @map("article_id") @db.Uuid
+  tagId        String           @map("tag_id") @db.Uuid
+  article      EducationArticle @relation(fields: [articleId], references: [articleId], onDelete: Cascade)
+  tag          EducationTag     @relation(fields: [tagId], references: [tagId], onDelete: Cascade)
+
+  @@id([articleId, tagId])
+  @@index([tagId], map: "idx_education_article_tags_tag")
+  @@map("education_article_tags")
+}
+
+model EducationArticleLike {
+  articleId    String           @map("article_id") @db.Uuid
+  userId       String           @map("user_id") @db.Uuid
+  createdAt    DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  article      EducationArticle @relation(fields: [articleId], references: [articleId], onDelete: Cascade)
+  user         User             @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@id([articleId, userId])
+  @@index([userId, createdAt(sort: Desc)], map: "idx_education_article_likes_user_created")
+  @@map("education_article_likes")
+}
+
+model EducationArticleComment {
+  commentId          String                     @id @default(dbgenerated("gen_random_uuid()")) @map("comment_id") @db.Uuid
+  articleId          String                     @map("article_id") @db.Uuid
+  userId             String                     @map("user_id") @db.Uuid
+  parentCommentId    String?                    @map("parent_comment_id") @db.Uuid
+  content            String
+  status             String                     @default("visible") @db.VarChar(32)
+  hiddenBy           String?                    @map("hidden_by") @db.Uuid
+  hiddenAt           DateTime?                  @map("hidden_at") @db.Timestamptz(6)
+  createdAt          DateTime                   @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime                   @default(now()) @map("updated_at") @db.Timestamptz(6)
+  article            EducationArticle           @relation(fields: [articleId], references: [articleId], onDelete: Cascade)
+  user               User                       @relation("EducationArticleCommentAuthor", fields: [userId], references: [userId], onDelete: Cascade)
+  parentComment      EducationArticleComment?   @relation("EducationArticleCommentReplies", fields: [parentCommentId], references: [commentId], onDelete: Cascade)
+  replies            EducationArticleComment[]  @relation("EducationArticleCommentReplies")
+  hiddenByUser       User?                      @relation("EducationArticleCommentHiddenBy", fields: [hiddenBy], references: [userId], onDelete: SetNull)
+
+  @@index([articleId, createdAt(sort: Desc), commentId(sort: Desc)], map: "idx_education_article_comments_article_created")
+  @@index([parentCommentId, createdAt(sort: Asc)], map: "idx_education_article_comments_parent_created")
+  @@index([userId, createdAt(sort: Desc)], map: "idx_education_article_comments_user_created")
+  @@map("education_article_comments")
 }
