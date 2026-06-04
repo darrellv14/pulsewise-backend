@@ -2,7 +2,7 @@ const env = require('../../config/env');
 const userRepository = require('../../repositories/userRepository');
 const { sendOtpEmail, sendForgotPasswordOtpEmail } = require('../emailService');
 const { createHttpError } = require('../../utils/httpError');
-const { ACCOUNT_STATUSES } = require('../../constants/enums');
+const { ACCOUNT_STATUSES, EMAIL_VERIFICATION_PURPOSES } = require('../../constants/enums');
 const { createForgotPasswordResetToken } = require('./tokenService');
 const { buildUserProfile, generateOtpCode, hashOtpCode } = require('./shared');
 
@@ -13,6 +13,7 @@ async function issueEmailVerification(user) {
   const verification = await userRepository.createEmailVerification({
     userId: user.user_id,
     email: user.email,
+    purpose: EMAIL_VERIFICATION_PURPOSES.EMAIL_VERIFICATION,
     otpCodeHash: hashOtpCode(otp),
     expiresAt,
   });
@@ -115,6 +116,7 @@ async function sendForgotPasswordOtp(email) {
   const verification = await userRepository.createEmailVerification({
     userId: user.user_id,
     email: user.email,
+    purpose: EMAIL_VERIFICATION_PURPOSES.FORGOT_PASSWORD,
     otpCodeHash: hashOtpCode(otp),
     expiresAt,
   });
@@ -159,7 +161,10 @@ async function verifyForgotPasswordOtp(email, otp) {
     });
   }
 
-  const verification = await userRepository.findLatestValidEmailVerification(normalizedEmail);
+  const verification = await userRepository.findLatestValidEmailVerification(
+    normalizedEmail,
+    EMAIL_VERIFICATION_PURPOSES.FORGOT_PASSWORD
+  );
   if (!verification || verification.otp_code_hash !== hashOtpCode(otp)) {
     throw createHttpError('OTP tidak valid atau sudah kadaluarsa', 400);
   }

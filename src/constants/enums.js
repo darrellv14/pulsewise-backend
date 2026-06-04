@@ -10,6 +10,12 @@ const ACCOUNT_STATUSES = Object.freeze({
   SUSPENDED: 'suspended',
 });
 
+const EMAIL_VERIFICATION_PURPOSES = Object.freeze({
+  EMAIL_VERIFICATION: 'email_verification',
+  FORGOT_PASSWORD: 'forgot_password',
+  ACCOUNT_DELETION: 'account_deletion',
+});
+
 const PAIRING_STATUSES = Object.freeze({
   PENDING: 'pending',
   CONFIRMED: 'confirmed',
@@ -79,6 +85,7 @@ module.exports = {
   METRIC_TYPES,
   METRIC_REGISTRY,
   ACCOUNT_STATUSES,
+  EMAIL_VERIFICATION_PURPOSES,
   PAIRING_STATUSES,
   PAIRING_TERMINAL_STATUSES,
   BIOMETRIC_SOURCES,

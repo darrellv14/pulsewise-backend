@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const userRepository = require('../../repositories/userRepository');
 const { createHttpError } = require('../../utils/httpError');
-const { ACCOUNT_STATUSES } = require('../../constants/enums');
+const { ACCOUNT_STATUSES, EMAIL_VERIFICATION_PURPOSES } = require('../../constants/enums');
 const { PUBLIC_REGISTRATION_ROLES, buildUserProfile } = require('./shared');
 const { issueEmailVerification } = require('./verificationService');
 
@@ -39,7 +39,10 @@ async function register(payload) {
       lastName,
     });
 
-    await userRepository.deleteEmailVerificationsByEmail(email);
+    await userRepository.deleteEmailVerificationsByEmail(
+      email,
+      EMAIL_VERIFICATION_PURPOSES.EMAIL_VERIFICATION
+    );
     await issueEmailVerification(updatedPendingUser);
 
     return {

@@ -16,6 +16,8 @@ jest.mock('../src/services/authService', () => ({
   login: jest.fn(),
   getCurrentUser: jest.fn(),
   changePassword: jest.fn(),
+  requestAccountDeletion: jest.fn(),
+  confirmAccountDeletion: jest.fn(),
 }));
 
 const authService = require('../src/services/authService');
@@ -138,5 +140,77 @@ describe('Auth API contract', () => {
     });
 
     expectFailureEnvelope(response, 401, 'Token tidak ditemukan');
+  });
+
+  test('POST /auth/account-deletion/request returns standard success envelope', async () => {
+    authService.requestAccountDeletion.mockResolvedValue({
+      nextStep: 'CONFIRM_ACCOUNT_DELETION',
+      requiresReauth: true,
+      reauthMethod: 'otp',
+      availableReauthMethods: ['password', 'otp'],
+      deletionToken: 'delete-token',
+      delivery: 'email',
+      expiresInMinutes: 10,
+      warning: {
+        permanent: true,
+        recoverable: false,
+        confirmationText: 'HAPUS AKUN',
+      },
+    });
+
+    const response = await request(app)
+      .post('/auth/account-deletion/request')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        confirmationText: 'HAPUS AKUN',
+        reauthMethod: 'otp',
+      });
+
+    expect(response.status).toBe(200);
+    expectSuccessEnvelope(response, 'Permintaan penghapusan akun berhasil dibuat');
+    expectObjectKeys(response.body.data, [
+      'nextStep',
+      'requiresReauth',
+      'reauthMethod',
+      'availableReauthMethods',
+      'deletionToken',
+      'delivery',
+      'expiresInMinutes',
+      'warning',
+    ]);
+  });
+
+  test('POST /auth/account-deletion/confirm returns stable success envelope', async () => {
+    authService.confirmAccountDeletion.mockResolvedValue({
+      nextStep: 'LOGOUT',
+      deleted: true,
+      deletedAt: '2026-06-04T10:00:00.000Z',
+      reauthMethod: 'password',
+      sessionRevoked: true,
+      user: {
+        userId,
+        email: 'patient@pulsewise.local',
+        role: 'patient',
+      },
+    });
+
+    const response = await request(app)
+      .post('/auth/account-deletion/confirm')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        deletionToken: 'delete-token',
+        password: 'dev12345',
+      });
+
+    expect(response.status).toBe(200);
+    expectSuccessEnvelope(response, 'Akun berhasil dihapus permanen');
+    expectObjectKeys(response.body.data, [
+      'nextStep',
+      'deleted',
+      'deletedAt',
+      'reauthMethod',
+      'sessionRevoked',
+      'user',
+    ]);
   });
 });

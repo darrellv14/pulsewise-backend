@@ -7,6 +7,8 @@ const {
   GOOGLE_REGISTRATION_TOKEN_EXPIRES_IN,
   FORGOT_PASSWORD_TOKEN_PURPOSE,
   FORGOT_PASSWORD_TOKEN_EXPIRES_IN,
+  ACCOUNT_DELETION_TOKEN_PURPOSE,
+  ACCOUNT_DELETION_TOKEN_EXPIRES_IN,
 } = require('./shared');
 
 function createGoogleRegistrationToken(googleProfile, role) {
@@ -84,9 +86,39 @@ function verifyForgotPasswordResetToken(resetToken) {
   return decoded;
 }
 
+function createAccountDeletionToken({ user, reauthMethod }) {
+  return jwt.sign(
+    {
+      purpose: ACCOUNT_DELETION_TOKEN_PURPOSE,
+      userId: user.user_id,
+      email: user.email,
+      reauthMethod,
+    },
+    env.jwtSecret,
+    { expiresIn: ACCOUNT_DELETION_TOKEN_EXPIRES_IN }
+  );
+}
+
+function verifyAccountDeletionToken(deletionToken) {
+  let decoded;
+  try {
+    decoded = jwt.verify(deletionToken, env.jwtSecret);
+  } catch (_error) {
+    throw createHttpError('Token penghapusan akun tidak valid atau sudah kedaluwarsa', 401);
+  }
+
+  if (decoded?.purpose !== ACCOUNT_DELETION_TOKEN_PURPOSE) {
+    throw createHttpError('Token penghapusan akun tidak valid', 401);
+  }
+
+  return decoded;
+}
+
 module.exports = {
   createGoogleRegistrationToken,
   verifyGoogleRegistrationToken,
   createForgotPasswordResetToken,
   verifyForgotPasswordResetToken,
+  createAccountDeletionToken,
+  verifyAccountDeletionToken,
 };

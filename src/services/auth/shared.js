@@ -10,6 +10,14 @@ const GOOGLE_REGISTRATION_TOKEN_PURPOSE = 'google_registration';
 const GOOGLE_REGISTRATION_TOKEN_EXPIRES_IN = '15m';
 const FORGOT_PASSWORD_TOKEN_PURPOSE = 'forgot_password_reset';
 const FORGOT_PASSWORD_TOKEN_EXPIRES_IN = '15m';
+const ACCOUNT_DELETION_TOKEN_PURPOSE = 'account_deletion';
+const ACCOUNT_DELETION_TOKEN_EXPIRES_IN = '15m';
+const ACCOUNT_DELETION_CONFIRMATION_TEXT = 'HAPUS AKUN';
+const ACCOUNT_DELETION_REAUTH_METHODS = Object.freeze({
+  PASSWORD: 'password',
+  OTP: 'otp',
+  GOOGLE: 'google',
+});
 
 function buildGoogleEmailAlreadyRegisteredError() {
   return createHttpError(
@@ -101,6 +109,10 @@ module.exports = {
   GOOGLE_REGISTRATION_TOKEN_EXPIRES_IN,
   FORGOT_PASSWORD_TOKEN_PURPOSE,
   FORGOT_PASSWORD_TOKEN_EXPIRES_IN,
+  ACCOUNT_DELETION_TOKEN_PURPOSE,
+  ACCOUNT_DELETION_TOKEN_EXPIRES_IN,
+  ACCOUNT_DELETION_CONFIRMATION_TEXT,
+  ACCOUNT_DELETION_REAUTH_METHODS,
   buildGoogleEmailAlreadyRegisteredError,
   buildGooglePasswordChangeDisabledError,
   buildAuthPayload,

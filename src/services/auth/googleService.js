@@ -225,4 +225,5 @@ module.exports = {
   beginGoogleAuth,
   completeGoogleRegistration,
   loginWithGoogle,
+  verifyGoogleIdToken,
 };

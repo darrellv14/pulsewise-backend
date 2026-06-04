@@ -15,6 +15,8 @@ const {
   forgotPasswordSchema,
   verifyForgotPasswordOtpSchema,
   resetForgotPasswordSchema,
+  accountDeletionRequestSchema,
+  accountDeletionConfirmSchema,
 } = require('../validators/authValidator');
 
 const router = express.Router();
@@ -77,6 +79,20 @@ router.post(
   authRateLimiter,
   validateRequest(resetForgotPasswordSchema),
   authController.resetForgotPassword
+);
+router.post(
+  '/account-deletion/request',
+  authenticate,
+  authRateLimiter,
+  validateRequest(accountDeletionRequestSchema),
+  authController.requestAccountDeletion
+);
+router.post(
+  '/account-deletion/confirm',
+  authenticate,
+  authRateLimiter,
+  validateRequest(accountDeletionConfirmSchema),
+  authController.confirmAccountDeletion
 );
 
 module.exports = router;

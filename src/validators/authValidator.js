@@ -86,6 +86,23 @@ const resetForgotPasswordSchema = z
     path: ['confirmNewPassword'],
   });
 
+const accountDeletionRequestSchema = z.object({
+  confirmationText: z
+    .string()
+    .trim()
+    .refine((value) => value === 'HAPUS AKUN', {
+      message: 'Confirmation text harus persis HAPUS AKUN',
+    }),
+  reauthMethod: z.enum(['password', 'otp', 'google']),
+});
+
+const accountDeletionConfirmSchema = z.object({
+  deletionToken: z.string().min(1, 'Deletion token wajib diisi'),
+  password: z.string().min(1).max(128).optional(),
+  otp: otpRule.optional(),
+  googleIdToken: z.string().min(1).optional(),
+});
+
 module.exports = {
   registerSchema,
   loginSchema,
@@ -97,4 +114,6 @@ module.exports = {
   forgotPasswordSchema,
   verifyForgotPasswordOtpSchema,
   resetForgotPasswordSchema,
+  accountDeletionRequestSchema,
+  accountDeletionConfirmSchema,
 };

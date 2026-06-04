@@ -1,5 +1,5 @@
 const prisma = require('../config/prisma');
-const { ACCOUNT_STATUSES } = require('../constants/enums');
+const { ACCOUNT_STATUSES, EMAIL_VERIFICATION_PURPOSES } = require('../constants/enums');
 
 const ROLE_PRIORITY = {
   admin: 3,
@@ -84,6 +84,7 @@ function mapEmailVerification(verification) {
     verification_id: verification.verificationId,
     user_id: verification.userId,
     email: verification.email,
+    purpose: verification.purpose,
     otp_code_hash: verification.otpCodeHash,
     expires_at: verification.expiresAt,
     consumed_at: verification.consumedAt,
@@ -228,11 +229,18 @@ async function createUserWithRole({
   }
 }
 
-async function createEmailVerification({ userId, email, otpCodeHash, expiresAt }) {
+async function createEmailVerification({
+  userId,
+  email,
+  purpose = EMAIL_VERIFICATION_PURPOSES.EMAIL_VERIFICATION,
+  otpCodeHash,
+  expiresAt,
+}) {
   const verification = await prisma.emailVerification.create({
     data: {
       userId,
       email,
+      purpose,
       otpCodeHash,
       expiresAt: new Date(expiresAt),
     },
@@ -241,10 +249,11 @@ async function createEmailVerification({ userId, email, otpCodeHash, expiresAt }
   return mapEmailVerification(verification);
 }
 
-async function deleteEmailVerificationsByEmail(email) {
+async function deleteEmailVerificationsByEmail(email, purpose = null) {
   const result = await prisma.emailVerification.deleteMany({
     where: {
       email,
+      ...(purpose ? { purpose } : {}),
       consumedAt: null,
     },
   });
@@ -252,10 +261,14 @@ async function deleteEmailVerificationsByEmail(email) {
   return result.count;
 }
 
-async function findLatestValidEmailVerification(email) {
+async function findLatestValidEmailVerification(
+  email,
+  purpose = EMAIL_VERIFICATION_PURPOSES.EMAIL_VERIFICATION
+) {
   const verification = await prisma.emailVerification.findFirst({
     where: {
       email,
+      purpose,
       consumedAt: null,
       expiresAt: {
         gt: new Date(),
@@ -434,6 +447,17 @@ async function updateUserPasswordHash(userId, passwordHash) {
   return mapUserWithRole(user);
 }
 
+async function deleteUserPermanently(userId) {
+  const deletedUser = await prisma.user.delete({
+    where: {
+      userId,
+    },
+    include: buildUserInclude(),
+  });
+
+  return mapUserWithRole(deletedUser);
+}
+
 module.exports = {
   findUserByEmail,
   findUserByGoogleSub,
@@ -449,4 +473,5 @@ module.exports = {
   updatePendingUserRegistration,
   linkGoogleIdentity,
   updateUserPasswordHash,
+  deleteUserPermanently,
 };

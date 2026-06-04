@@ -30,14 +30,20 @@ jest.mock('../src/repositories/userRepository', () => ({
   linkGoogleIdentity: jest.fn(),
   updatePendingUserRegistration: jest.fn(),
   updateUserPasswordHash: jest.fn(),
+  deleteUserPermanently: jest.fn(),
 }));
 
 jest.mock('../src/services/emailService', () => ({
   sendOtpEmail: jest.fn(),
+  sendForgotPasswordOtpEmail: jest.fn(),
+  sendAccountDeletionOtpEmail: jest.fn(),
 }));
 
 const userRepository = require('../src/repositories/userRepository');
-const { sendOtpEmail } = require('../src/services/emailService');
+const {
+  sendOtpEmail,
+  sendAccountDeletionOtpEmail,
+} = require('../src/services/emailService');
 const authService = require('../src/services/authService');
 
 describe('authService.register', () => {
@@ -141,7 +147,8 @@ describe('authService.register', () => {
       })
     );
     expect(userRepository.deleteEmailVerificationsByEmail).toHaveBeenCalledWith(
-      'patient@example.com'
+      'patient@example.com',
+      'email_verification'
     );
     expect(userRepository.createEmailVerification).toHaveBeenCalledTimes(1);
     expect(sendOtpEmail).toHaveBeenCalledTimes(1);
@@ -624,5 +631,222 @@ describe('authService.changePassword', () => {
     });
 
     expect(userRepository.updateUserPasswordHash).not.toHaveBeenCalled();
+  });
+});
+
+describe('authService.requestAccountDeletion', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test('issues deletion token and OTP for email-based reauth', async () => {
+    userRepository.findUserById.mockResolvedValue({
+      user_id: '11111111-1111-4111-8111-111111111111',
+      email: 'patient@example.com',
+      password_hash: await require('bcrypt').hash('dev12345', 10),
+      google_sub: null,
+      role: 'patient',
+    });
+    userRepository.deleteEmailVerificationsByEmail.mockResolvedValue(1);
+    userRepository.createEmailVerification.mockResolvedValue({
+      verification_id: 'delete-otp-1',
+    });
+    sendAccountDeletionOtpEmail.mockResolvedValue(undefined);
+
+    const result = await authService.requestAccountDeletion(
+      '11111111-1111-4111-8111-111111111111',
+      {
+        confirmationText: 'HAPUS AKUN',
+        reauthMethod: 'otp',
+      }
+    );
+
+    expect(userRepository.deleteEmailVerificationsByEmail).toHaveBeenCalledWith(
+      'patient@example.com',
+      'account_deletion'
+    );
+    expect(userRepository.createEmailVerification).toHaveBeenCalledWith(
+      expect.objectContaining({
+        purpose: 'account_deletion',
+        email: 'patient@example.com',
+      })
+    );
+    expect(sendAccountDeletionOtpEmail).toHaveBeenCalledTimes(1);
+    expect(result).toMatchObject({
+      nextStep: 'CONFIRM_ACCOUNT_DELETION',
+      requiresReauth: true,
+      reauthMethod: 'otp',
+      availableReauthMethods: ['password', 'otp'],
+      delivery: 'email',
+      expiresInMinutes: 10,
+    });
+    expect(result.deletionToken).toEqual(expect.any(String));
+  });
+
+  test('rejects unsupported google reauth for password account', async () => {
+    userRepository.findUserById.mockResolvedValue({
+      user_id: '11111111-1111-4111-8111-111111111111',
+      email: 'patient@example.com',
+      password_hash: await require('bcrypt').hash('dev12345', 10),
+      google_sub: null,
+      role: 'patient',
+    });
+
+    await expect(
+      authService.requestAccountDeletion('11111111-1111-4111-8111-111111111111', {
+        confirmationText: 'HAPUS AKUN',
+        reauthMethod: 'google',
+      })
+    ).rejects.toMatchObject({
+      statusCode: 400,
+      message: 'Metode re-autentikasi tidak tersedia untuk akun ini',
+      details: {
+        availableReauthMethods: ['password', 'otp'],
+      },
+    });
+  });
+});
+
+describe('authService.confirmAccountDeletion', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test('hard-deletes email/password account after password reauth', async () => {
+    const passwordHash = await require('bcrypt').hash('dev12345', 10);
+    userRepository.findUserById
+      .mockResolvedValueOnce({
+        user_id: '11111111-1111-4111-8111-111111111111',
+        email: 'patient@example.com',
+        password_hash: passwordHash,
+        google_sub: null,
+        role: 'patient',
+      })
+      .mockResolvedValueOnce({
+        user_id: '11111111-1111-4111-8111-111111111111',
+        email: 'patient@example.com',
+        password_hash: passwordHash,
+        google_sub: null,
+        role: 'patient',
+      });
+    userRepository.deleteUserPermanently.mockResolvedValue({
+      user_id: '11111111-1111-4111-8111-111111111111',
+      email: 'patient@example.com',
+      role: 'patient',
+    });
+
+    const deletionRequest = await authService.requestAccountDeletion(
+      '11111111-1111-4111-8111-111111111111',
+      {
+        confirmationText: 'HAPUS AKUN',
+        reauthMethod: 'password',
+      }
+    );
+
+    const result = await authService.confirmAccountDeletion(
+      '11111111-1111-4111-8111-111111111111',
+      {
+        deletionToken: deletionRequest.deletionToken,
+        password: 'dev12345',
+      }
+    );
+
+    expect(userRepository.deleteUserPermanently).toHaveBeenCalledWith(
+      '11111111-1111-4111-8111-111111111111'
+    );
+    expect(result).toMatchObject({
+      nextStep: 'LOGOUT',
+      deleted: true,
+      reauthMethod: 'password',
+      sessionRevoked: true,
+      user: {
+        userId: '11111111-1111-4111-8111-111111111111',
+        email: 'patient@example.com',
+        role: 'patient',
+      },
+    });
+  });
+
+  test('verifies account deletion with OTP before delete', async () => {
+    userRepository.findUserById
+      .mockResolvedValueOnce({
+        user_id: '11111111-1111-4111-8111-111111111111',
+        email: 'patient@example.com',
+        password_hash: await require('bcrypt').hash('dev12345', 10),
+        google_sub: null,
+        role: 'patient',
+      })
+      .mockResolvedValueOnce({
+        user_id: '11111111-1111-4111-8111-111111111111',
+        email: 'patient@example.com',
+        password_hash: await require('bcrypt').hash('dev12345', 10),
+        google_sub: null,
+        role: 'patient',
+      });
+    userRepository.deleteEmailVerificationsByEmail.mockResolvedValue(0);
+    userRepository.createEmailVerification.mockResolvedValue({
+      verification_id: 'delete-otp-2',
+    });
+    userRepository.findLatestValidEmailVerification.mockResolvedValue({
+      verification_id: 'delete-otp-2',
+      otp_code_hash: crypto.createHash('sha256').update('123456').digest('hex'),
+    });
+    userRepository.deleteUserPermanently.mockResolvedValue({
+      user_id: '11111111-1111-4111-8111-111111111111',
+      email: 'patient@example.com',
+      role: 'patient',
+    });
+    sendAccountDeletionOtpEmail.mockResolvedValue(undefined);
+
+    const deletionRequest = await authService.requestAccountDeletion(
+      '11111111-1111-4111-8111-111111111111',
+      {
+        confirmationText: 'HAPUS AKUN',
+        reauthMethod: 'otp',
+      }
+    );
+
+    const result = await authService.confirmAccountDeletion(
+      '11111111-1111-4111-8111-111111111111',
+      {
+        deletionToken: deletionRequest.deletionToken,
+        otp: '123456',
+      }
+    );
+
+    expect(userRepository.findLatestValidEmailVerification).toHaveBeenCalledWith(
+      'patient@example.com',
+      'account_deletion'
+    );
+    expect(userRepository.consumeEmailVerification).toHaveBeenCalledWith('delete-otp-2');
+    expect(result.deleted).toBe(true);
+  });
+
+  test('rejects confirmation when deletion token belongs to another user', async () => {
+    userRepository.findUserById.mockResolvedValue({
+      user_id: '11111111-1111-4111-8111-111111111111',
+      email: 'patient@example.com',
+      password_hash: await require('bcrypt').hash('dev12345', 10),
+      google_sub: null,
+      role: 'patient',
+    });
+
+    const deletionRequest = await authService.requestAccountDeletion(
+      '11111111-1111-4111-8111-111111111111',
+      {
+        confirmationText: 'HAPUS AKUN',
+        reauthMethod: 'password',
+      }
+    );
+
+    await expect(
+      authService.confirmAccountDeletion('22222222-2222-4222-8222-222222222222', {
+        deletionToken: deletionRequest.deletionToken,
+        password: 'dev12345',
+      })
+    ).rejects.toMatchObject({
+      statusCode: 403,
+      message: 'Token penghapusan akun tidak cocok dengan user saat ini',
+    });
   });
 });

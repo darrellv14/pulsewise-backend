@@ -105,6 +105,24 @@ async function resetForgotPassword(req, res, next) {
   }
 }
 
+async function requestAccountDeletion(req, res, next) {
+  try {
+    const result = await authService.requestAccountDeletion(req.user.userId, req.body);
+    return success(res, 'Permintaan penghapusan akun berhasil dibuat', result);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function confirmAccountDeletion(req, res, next) {
+  try {
+    const result = await authService.confirmAccountDeletion(req.user.userId, req.body);
+    return success(res, 'Akun berhasil dihapus permanen', result);
+  } catch (error) {
+    return next(error);
+  }
+}
+
 module.exports = {
   register,
   sendEmailVerification,
@@ -117,4 +135,6 @@ module.exports = {
   sendForgotPasswordOtp,
   verifyForgotPasswordOtp,
   resetForgotPassword,
+  requestAccountDeletion,
+  confirmAccountDeletion,
 };

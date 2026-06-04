@@ -406,12 +406,14 @@ model EmailVerification {
   verificationId String    @id @default(dbgenerated("gen_random_uuid()")) @map("verification_id") @db.Uuid
   userId         String    @map("user_id") @db.Uuid
   email          String    @db.VarChar(255)
+  purpose        String    @default("email_verification") @db.VarChar(32)
   otpCodeHash    String    @map("otp_code_hash")
   expiresAt      DateTime  @map("expires_at") @db.Timestamptz(6)
   consumedAt     DateTime? @map("consumed_at") @db.Timestamptz(6)
   createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   user           User      @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
+  @@index([email, purpose, createdAt(sort: Desc)], map: "idx_email_verifications_email_purpose_time")
   @@index([email, createdAt(sort: Desc)], map: "idx_email_verifications_email_time")
   @@index([userId, createdAt(sort: Desc)], map: "idx_email_verifications_user")
   @@map("email_verifications")

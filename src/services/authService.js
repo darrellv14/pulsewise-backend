@@ -16,6 +16,10 @@ const {
   beginGoogleAuth,
   completeGoogleRegistration,
 } = require('./auth/googleService');
+const {
+  requestAccountDeletion,
+  confirmAccountDeletion,
+} = require('./auth/accountDeletionService');
 
 module.exports = {
   register,
@@ -30,4 +34,6 @@ module.exports = {
   beginGoogleAuth,
   completeGoogleRegistration,
   getCurrentUser,
+  requestAccountDeletion,
+  confirmAccountDeletion,
 };
