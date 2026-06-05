@@ -24,6 +24,7 @@
     "seed:dev": "node scripts/seed/seed-dev-users.js",
     "seed:admins": "node scripts/seed/seed-admin-users.js",
     "seed:dashboard": "node scripts/seed/seed-dashboard-data.js",
+    "maintenance:education:reset": "node scripts/maintenance/reset-education-cms-and-normalize-admin.js",
     "seed:load-test": "node scripts/seed/seed-load-test-cohort.js",
     "seed:patient-care": "node scripts/seed/seed-patient-care.js",
     "postman:sync-examples": "node scripts/postman/sync-openapi-postman-examples.js",
