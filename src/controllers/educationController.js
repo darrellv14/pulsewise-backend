@@ -116,6 +116,18 @@ async function listMyArticles(req, res, next) {
   }
 }
 
+async function listAdminArticles(req, res, next) {
+  try {
+    const data = await educationService.listAdminArticles({
+      actor: req.user,
+      query: req.query,
+    });
+    return success(res, 'Daftar semua artikel edukasi admin berhasil diambil', data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
 async function likeArticle(req, res, next) {
   try {
     const data = await educationService.likeArticle({
@@ -350,6 +362,7 @@ module.exports = {
   updateArticle,
   submitArticleReview,
   listMyArticles,
+  listAdminArticles,
   likeArticle,
   unlikeArticle,
   listComments,

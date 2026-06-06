@@ -233,6 +233,26 @@ async function listMyArticles({ actor, query }) {
   };
 }
 
+async function listAdminArticles({ actor, query }) {
+  assertAdminScope({ actor });
+  const pagination = normalizePaginationInput(query, { page: 1, limit: 20 });
+  const result = await educationRepository.listAdminArticles({
+    page: pagination.page,
+    limit: pagination.limit,
+    status: query.status || null,
+    q: query.q || null,
+  });
+
+  return {
+    items: result.items,
+    pagination: buildPagination({
+      page: pagination.page,
+      limit: pagination.limit,
+      totalItems: result.totalItems,
+    }),
+  };
+}
+
 async function listPublishedArticles({ actor, query }) {
   assertAuthenticatedActor(actor);
   const sort =
@@ -576,6 +596,7 @@ module.exports = {
   updateArticle,
   submitArticleReview,
   listMyArticles,
+  listAdminArticles,
   listPublishedArticles,
   getPublishedArticleDetail,
   likeArticle,

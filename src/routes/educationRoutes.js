@@ -15,6 +15,7 @@ const {
   rejectBodySchema,
   featureBodySchema,
   myArticlesQuerySchema,
+  adminArticlesQuerySchema,
   commentCursorQuerySchema,
   commentCreateBodySchema,
   commentUpdateBodySchema,
@@ -130,6 +131,12 @@ router.delete(
   educationController.deleteComment
 );
 
+router.get(
+  '/admin/education/articles',
+  authenticate,
+  validateRequest(adminArticlesQuerySchema, 'query'),
+  educationController.listAdminArticles
+);
 router.get(
   '/admin/education/articles/pending',
   authenticate,

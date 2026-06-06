@@ -106,6 +106,11 @@ const myArticlesQuerySchema = paginationQuerySchema.extend({
   status: articleStatusFilterSchema,
 });
 
+const adminArticlesQuerySchema = paginationQuerySchema.extend({
+  status: articleStatusFilterSchema,
+  q: z.string().trim().min(1).max(120).optional(),
+});
+
 module.exports = {
   articleIdParamSchema,
   revisionIdParamSchema,
@@ -119,6 +124,7 @@ module.exports = {
   rejectBodySchema,
   featureBodySchema,
   myArticlesQuerySchema,
+  adminArticlesQuerySchema,
   commentCursorQuerySchema,
   commentCreateBodySchema,
   commentUpdateBodySchema,

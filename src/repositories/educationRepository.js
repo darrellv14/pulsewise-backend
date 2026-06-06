@@ -808,6 +808,76 @@ async function listMyArticles({ authorUserId, page, limit, status }) {
   };
 }
 
+async function listAdminArticles({ page, limit, status, q }) {
+  const where = {
+    ...(status ? { status } : {}),
+    ...(q
+      ? {
+          OR: [
+            {
+              title: {
+                contains: q,
+                mode: 'insensitive',
+              },
+            },
+            {
+              excerpt: {
+                contains: q,
+                mode: 'insensitive',
+              },
+            },
+            {
+              authorUser: {
+                OR: [
+                  {
+                    firstName: {
+                      contains: q,
+                      mode: 'insensitive',
+                    },
+                  },
+                  {
+                    lastName: {
+                      contains: q,
+                      mode: 'insensitive',
+                    },
+                  },
+                  {
+                    username: {
+                      contains: q,
+                      mode: 'insensitive',
+                    },
+                  },
+                  {
+                    email: {
+                      contains: q,
+                      mode: 'insensitive',
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+        }
+      : {}),
+  };
+
+  const [items, totalItems] = await prisma.$transaction([
+    prisma.educationArticle.findMany({
+      where,
+      orderBy: [{ updatedAt: 'desc' }, { articleId: 'desc' }],
+      skip: (page - 1) * limit,
+      take: limit,
+      include: buildArticleInclude(null, { revisionTake: 5 }),
+    }),
+    prisma.educationArticle.count({ where }),
+  ]);
+
+  return {
+    items: items.map((item) => mapArticle(item)),
+    totalItems,
+  };
+}
+
 async function listPendingArticles({ page, limit }) {
   const where = {
     status: EDUCATION_ARTICLE_STATUSES.PENDING_REVIEW,
@@ -1649,6 +1719,7 @@ module.exports = {
   createOrReplacePendingRevision,
   submitArticleForReview,
   listMyArticles,
+  listAdminArticles,
   listPendingArticles,
   listPendingRevisions,
   findRevisionById,
