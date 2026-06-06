@@ -106,6 +106,40 @@ describe('educationService', () => {
     expect(result.pendingRevision).toMatchObject({ revisionId: 'revision-1' });
   });
 
+  test('admin can update published article authored by another user', async () => {
+    educationRepository.findArticleById.mockResolvedValueOnce({
+      articleId: 'article-3',
+      authorUserId: 'user-author',
+      status: 'published',
+    });
+    educationRepository.findCategoryBySlug.mockResolvedValue({
+      categoryId: '33333333-3333-4333-8333-333333333333',
+      isActive: true,
+    });
+    educationRepository.createOrReplacePendingRevision.mockResolvedValue({
+      articleId: 'article-3',
+      pendingRevision: { revisionId: 'revision-admin-1' },
+    });
+
+    await educationService.updateArticle({
+      actor: { userId: 'admin-1', role: 'admin' },
+      articleId: 'article-3',
+      payload: {
+        categorySlug: 'gaya-hidup-aktivitas',
+        title: 'Judul admin',
+        excerpt: 'Ringkas',
+        contentMarkdown: 'Konten markdown yang cukup panjang untuk lolos validasi service.',
+      },
+    });
+
+    expect(educationRepository.createOrReplacePendingRevision).toHaveBeenCalledWith(
+      expect.objectContaining({
+        articleId: 'article-3',
+        authorUserId: 'user-author',
+      })
+    );
+  });
+
   test('listPublishedArticles rejects malformed cursor', async () => {
     await expect(
       educationService.listPublishedArticles({

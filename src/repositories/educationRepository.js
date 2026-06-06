@@ -532,6 +532,14 @@ async function updateOwnArticleDraft({
       title && title !== existing.title
         ? await ensureUniqueArticleSlug(title, tx, articleId)
         : existing.slug;
+    const isPendingArticle = existing.status === EDUCATION_ARTICLE_STATUSES.PENDING_REVIEW;
+    const nextArticleStatus = isPendingArticle
+      ? EDUCATION_ARTICLE_STATUSES.PENDING_REVIEW
+      : EDUCATION_ARTICLE_STATUSES.DRAFT;
+    const nextRevisionStatus = isPendingArticle
+      ? EDUCATION_REVISION_STATUSES.PENDING_REVIEW
+      : EDUCATION_REVISION_STATUSES.DRAFT;
+    const now = new Date();
 
     await tx.educationArticle.update({
       where: {
@@ -545,29 +553,55 @@ async function updateOwnArticleDraft({
         contentMarkdown,
         coverImageUrl,
         coverImagePublicId,
-        status: EDUCATION_ARTICLE_STATUSES.DRAFT,
+        status: nextArticleStatus,
         rejectionReason: null,
         lastReviewedBy: null,
         lastReviewedAt: null,
-        updatedAt: new Date(),
+        updatedAt: now,
       },
     });
 
-    await tx.educationArticleRevision.create({
-      data: {
+    const revisionPayload = {
+      articleId,
+      authorUserId,
+      categoryId,
+      slug,
+      title,
+      excerpt,
+      contentMarkdown,
+      coverImageUrl,
+      coverImagePublicId,
+      tagSlugs: normalizeTagInput(tagLabels).map((item) => item.slug),
+      status: nextRevisionStatus,
+      submittedAt: isPendingArticle ? now : null,
+      rejectionReason: null,
+      reviewedBy: null,
+      reviewedAt: null,
+      updatedAt: now,
+    };
+
+    const existingRevision = await tx.educationArticleRevision.findFirst({
+      where: {
         articleId,
-        authorUserId,
-        categoryId,
-        slug,
-        title,
-        excerpt,
-        contentMarkdown,
-        coverImageUrl,
-        coverImagePublicId,
-        tagSlugs: normalizeTagInput(tagLabels).map((item) => item.slug),
-        status: EDUCATION_REVISION_STATUSES.DRAFT,
+        status: nextRevisionStatus,
+      },
+      orderBy: {
+        updatedAt: 'desc',
       },
     });
+
+    if (existingRevision) {
+      await tx.educationArticleRevision.update({
+        where: {
+          revisionId: existingRevision.revisionId,
+        },
+        data: revisionPayload,
+      });
+    } else {
+      await tx.educationArticleRevision.create({
+        data: revisionPayload,
+      });
+    }
 
     await syncArticleTags(tx, articleId, tagLabels);
     await syncArticleCoverImage(tx, articleId, coverImageUrl, coverImagePublicId);
@@ -1285,17 +1319,32 @@ async function setArticleFeatured({ articleId, isFeatured, featuredOrder = null 
 }
 
 async function archiveArticle(articleId) {
-  const article = await prisma.educationArticle.update({
-    where: {
-      articleId,
-    },
-    data: {
-      status: EDUCATION_ARTICLE_STATUSES.ARCHIVED,
-      isFeatured: false,
-      featuredOrder: null,
-      updatedAt: new Date(),
-    },
-    include: buildArticleInclude(),
+  const article = await prisma.$transaction(async (tx) => {
+    await tx.educationArticleRevision.updateMany({
+      where: {
+        articleId,
+        status: EDUCATION_REVISION_STATUSES.PENDING_REVIEW,
+      },
+      data: {
+        status: EDUCATION_REVISION_STATUSES.REJECTED,
+        rejectionReason: 'Artikel diarsipkan oleh admin',
+        reviewedAt: new Date(),
+        updatedAt: new Date(),
+      },
+    });
+
+    return tx.educationArticle.update({
+      where: {
+        articleId,
+      },
+      data: {
+        status: EDUCATION_ARTICLE_STATUSES.ARCHIVED,
+        isFeatured: false,
+        featuredOrder: null,
+        updatedAt: new Date(),
+      },
+      include: buildArticleInclude(),
+    });
   });
 
   return mapArticle(article);

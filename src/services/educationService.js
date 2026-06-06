@@ -77,6 +77,22 @@ function ensureOwnArticleAccess(article, actor) {
   }
 }
 
+function canAdminManageArticle(actor) {
+  return actor?.role === 'admin';
+}
+
+function ensureManageArticleAccess(article, actor) {
+  if (!article) {
+    throw createHttpError('Artikel tidak ditemukan', 404);
+  }
+
+  if (canAdminManageArticle(actor)) {
+    return;
+  }
+
+  ensureOwnArticleAccess(article, actor);
+}
+
 function ensurePublishedArticle(article) {
   if (!article || article.status !== EDUCATION_ARTICLE_STATUSES.PUBLISHED) {
     throw createHttpError('Artikel tidak ditemukan', 404);
@@ -148,13 +164,14 @@ async function getMyArticleDetail({ actor, articleId }) {
 async function updateArticle({ actor, articleId, payload }) {
   assertAuthenticatedActor(actor);
   const article = await educationRepository.findArticleById(articleId, actor.userId);
-  ensureOwnArticleAccess(article, actor);
+  ensureManageArticleAccess(article, actor);
   const categoryId = await resolveCategoryId(payload);
+  const authorUserId = article.authorUserId;
 
   if (article.status === EDUCATION_ARTICLE_STATUSES.PUBLISHED) {
     return educationRepository.createOrReplacePendingRevision({
       articleId,
-      authorUserId: actor.userId,
+      authorUserId,
       categoryId,
       title: payload.title,
       excerpt: payload.excerpt || null,
@@ -167,7 +184,7 @@ async function updateArticle({ actor, articleId, payload }) {
 
   return educationRepository.updateOwnArticleDraft({
     articleId,
-    authorUserId: actor.userId,
+    authorUserId,
     categoryId,
     title: payload.title,
     excerpt: payload.excerpt || null,
