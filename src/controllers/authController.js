@@ -32,7 +32,7 @@ async function confirmEmailVerification(req, res, next) {
 
 async function oauthGoogle(req, res, next) {
   try {
-    const result = await authService.beginGoogleAuth(req.body.idToken, req.body.role);
+    const result = await authService.beginGoogleAuth(req.body, req.body.role);
     return success(res, 'Autentikasi Google berhasil diproses', result);
   } catch (error) {
     return next(error);
@@ -95,10 +95,7 @@ async function verifyForgotPasswordOtp(req, res, next) {
 
 async function resetForgotPassword(req, res, next) {
   try {
-    const result = await authService.resetForgotPassword(
-      req.body.resetToken,
-      req.body.newPassword
-    );
+    const result = await authService.resetForgotPassword(req.body.resetToken, req.body.newPassword);
     return success(res, 'Password berhasil direset', result);
   } catch (error) {
     return next(error);

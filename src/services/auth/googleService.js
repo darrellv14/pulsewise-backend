@@ -45,9 +45,73 @@ async function verifyGoogleIdToken(idToken) {
   return googleProfile;
 }
 
-async function beginGoogleAuth(idToken, role = 'patient') {
+async function verifyGoogleAccessToken(accessToken) {
+  if (!env.googleClientId) {
+    throw createHttpError('Google OAuth belum dikonfigurasi di backend', 501);
+  }
+
+  let tokenInfo;
+  try {
+    tokenInfo = await googleClient.getTokenInfo(accessToken);
+  } catch (_verifyError) {
+    throw createHttpError('Google token tidak valid', 401);
+  }
+
+  const tokenAudience = tokenInfo?.aud || tokenInfo?.audience;
+  const audienceMatches = Array.isArray(tokenAudience)
+    ? tokenAudience.includes(env.googleClientId)
+    : tokenAudience === env.googleClientId;
+
+  if (!audienceMatches) {
+    throw createHttpError('Google token tidak valid untuk aplikasi ini', 401);
+  }
+
+  let userInfoResponse;
+  try {
+    userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+  } catch (_requestError) {
+    throw createHttpError('Profil Google gagal diambil', 502);
+  }
+
+  if (!userInfoResponse.ok) {
+    throw createHttpError('Profil Google gagal diverifikasi', 401);
+  }
+
+  const payload = await userInfoResponse.json();
+  const googleProfile = buildGoogleProfile(payload);
+  const emailVerified =
+    payload?.email_verified === true || String(payload?.email_verified) === 'true';
+
+  if (!googleProfile.email || !emailVerified || !googleProfile.googleSub) {
+    throw createHttpError('Google token tidak memiliki email terverifikasi', 401);
+  }
+
+  return googleProfile;
+}
+
+async function resolveGoogleProfile(tokenPayload) {
+  if (typeof tokenPayload === 'string') {
+    return verifyGoogleIdToken(tokenPayload);
+  }
+
+  if (tokenPayload?.idToken) {
+    return verifyGoogleIdToken(tokenPayload.idToken);
+  }
+
+  if (tokenPayload?.accessToken) {
+    return verifyGoogleAccessToken(tokenPayload.accessToken);
+  }
+
+  throw createHttpError('Google token wajib diisi', 400);
+}
+
+async function beginGoogleAuth(tokenPayload, role = 'patient') {
   const requestedRole = GOOGLE_MOBILE_ROLES.has(role) ? role : 'patient';
-  const googleProfile = await verifyGoogleIdToken(idToken);
+  const googleProfile = await resolveGoogleProfile(tokenPayload);
   const user = await userRepository.findUserByGoogleIdentity({
     googleSub: googleProfile.googleSub,
     email: googleProfile.email,
@@ -217,13 +281,14 @@ async function completeGoogleRegistration(payload) {
   };
 }
 
-async function loginWithGoogle(idToken, role = 'patient') {
-  return beginGoogleAuth(idToken, role);
+async function loginWithGoogle(tokenPayload, role = 'patient') {
+  return beginGoogleAuth(tokenPayload, role);
 }
 
 module.exports = {
   beginGoogleAuth,
   completeGoogleRegistration,
   loginWithGoogle,
+  verifyGoogleAccessToken,
   verifyGoogleIdToken,
 };

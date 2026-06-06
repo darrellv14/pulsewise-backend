@@ -42,10 +42,16 @@ const confirmEmailVerificationSchema = z.object({
   otp: otpRule,
 });
 
-const googleOauthSchema = z.object({
-  idToken: z.string(),
-  role: z.enum(['patient', 'doctor']).default('patient'),
-});
+const googleOauthSchema = z
+  .object({
+    idToken: z.string().min(1).optional(),
+    accessToken: z.string().min(1).optional(),
+    role: z.enum(['patient', 'doctor']).default('patient'),
+  })
+  .refine((value) => Boolean(value.idToken || value.accessToken), {
+    message: 'idToken atau accessToken wajib diisi',
+    path: ['idToken'],
+  });
 
 const googleOauthRegisterSchema = z.object({
   registrationToken: z.string(),
