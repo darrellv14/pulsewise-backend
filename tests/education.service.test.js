@@ -27,8 +27,7 @@ jest.mock('../src/repositories/educationRepository', () => ({
   approveRevision: jest.fn(),
   rejectRevision: jest.fn(),
   setArticleFeatured: jest.fn(),
-  archiveArticle: jest.fn(),
-  unpublishArticle: jest.fn(),
+  deleteArticleHard: jest.fn(),
   hideComment: jest.fn(),
 }));
 
@@ -187,5 +186,28 @@ describe('educationService', () => {
 
     expect(createEducationUploadSignature).toHaveBeenCalledWith('cover');
     expect(result.uploadUrl).toBe('https://example.com');
+  });
+
+  test('admin can hard delete any article', async () => {
+    educationRepository.findArticleById.mockResolvedValue({
+      articleId: 'article-delete-1',
+      authorUserId: 'user-author',
+      status: 'published',
+    });
+    educationRepository.deleteArticleHard.mockResolvedValue({
+      articleId: 'article-delete-1',
+      deleted: true,
+    });
+
+    const result = await educationService.deleteArticle({
+      actor: { userId: 'admin-1', role: 'admin' },
+      articleId: 'article-delete-1',
+    });
+
+    expect(educationRepository.deleteArticleHard).toHaveBeenCalledWith('article-delete-1');
+    expect(result).toMatchObject({
+      articleId: 'article-delete-1',
+      deleted: true,
+    });
   });
 });

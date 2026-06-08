@@ -546,27 +546,14 @@ async function featureArticle({ actor, articleId, payload }) {
   });
 }
 
-async function archiveArticle({ actor, articleId }) {
+async function deleteArticle({ actor, articleId }) {
   assertAdminScope({ actor });
   const article = await educationRepository.findArticleById(articleId, actor.userId);
   if (!article) {
     throw createHttpError('Artikel tidak ditemukan', 404);
   }
 
-  return educationRepository.archiveArticle(articleId);
-}
-
-async function unpublishArticle({ actor, articleId }) {
-  assertAdminScope({ actor });
-  const article = await educationRepository.findArticleById(articleId, actor.userId);
-  if (!article) {
-    throw createHttpError('Artikel tidak ditemukan', 404);
-  }
-  if (article.status !== EDUCATION_ARTICLE_STATUSES.PUBLISHED) {
-    throw createHttpError('Hanya artikel published yang bisa di-unpublish', 409);
-  }
-
-  return educationRepository.unpublishArticle(articleId);
+  return educationRepository.deleteArticleHard(articleId);
 }
 
 async function hideComment({ actor, commentId }) {
@@ -614,7 +601,6 @@ module.exports = {
   approveRevision,
   rejectRevision,
   featureArticle,
-  archiveArticle,
-  unpublishArticle,
+  deleteArticle,
   hideComment,
 };

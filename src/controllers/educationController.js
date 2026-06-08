@@ -315,25 +315,13 @@ async function featureArticle(req, res, next) {
   }
 }
 
-async function archiveArticle(req, res, next) {
+async function deleteArticle(req, res, next) {
   try {
-    const data = await educationService.archiveArticle({
+    const data = await educationService.deleteArticle({
       actor: req.user,
       articleId: req.params.articleId,
     });
-    return success(res, 'Artikel edukasi berhasil diarsipkan', data);
-  } catch (error) {
-    return next(error);
-  }
-}
-
-async function unpublishArticle(req, res, next) {
-  try {
-    const data = await educationService.unpublishArticle({
-      actor: req.user,
-      articleId: req.params.articleId,
-    });
-    return success(res, 'Artikel edukasi berhasil di-unpublish', data);
+    return success(res, 'Artikel edukasi berhasil dihapus permanen', data);
   } catch (error) {
     return next(error);
   }
@@ -378,7 +366,6 @@ module.exports = {
   approveRevision,
   rejectRevision,
   featureArticle,
-  archiveArticle,
-  unpublishArticle,
+  deleteArticle,
   hideComment,
 };

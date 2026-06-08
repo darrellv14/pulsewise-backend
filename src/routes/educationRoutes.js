@@ -190,19 +190,11 @@ router.post(
   validateRequest(featureBodySchema),
   educationController.featureArticle
 );
-router.post(
-  '/admin/education/articles/:articleId/archive',
+router.delete(
+  '/admin/education/articles/:articleId',
   authenticate,
   validateRequest(articleIdParamSchema, 'params'),
-  validateRequest(emptyBodySchema),
-  educationController.archiveArticle
-);
-router.post(
-  '/admin/education/articles/:articleId/unpublish',
-  authenticate,
-  validateRequest(articleIdParamSchema, 'params'),
-  validateRequest(emptyBodySchema),
-  educationController.unpublishArticle
+  educationController.deleteArticle
 );
 router.post(
   '/admin/education/comments/:commentId/hide',

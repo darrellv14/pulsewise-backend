@@ -1388,53 +1388,61 @@ async function setArticleFeatured({ articleId, isFeatured, featuredOrder = null 
   return mapArticle(article);
 }
 
-async function archiveArticle(articleId) {
-  const article = await prisma.$transaction(async (tx) => {
-    await tx.educationArticleRevision.updateMany({
+async function deleteArticleHard(articleId) {
+  return prisma.$transaction(async (tx) => {
+    const article = await tx.educationArticle.findUnique({
       where: {
         articleId,
-        status: EDUCATION_REVISION_STATUSES.PENDING_REVIEW,
-      },
-      data: {
-        status: EDUCATION_REVISION_STATUSES.REJECTED,
-        rejectionReason: 'Artikel diarsipkan oleh admin',
-        reviewedAt: new Date(),
-        updatedAt: new Date(),
-      },
-    });
-
-    return tx.educationArticle.update({
-      where: {
-        articleId,
-      },
-      data: {
-        status: EDUCATION_ARTICLE_STATUSES.ARCHIVED,
-        isFeatured: false,
-        featuredOrder: null,
-        updatedAt: new Date(),
       },
       include: buildArticleInclude(),
     });
+
+    if (!article) {
+      return null;
+    }
+
+    await tx.educationArticleLike.deleteMany({
+      where: {
+        articleId,
+      },
+    });
+
+    await tx.educationArticleComment.deleteMany({
+      where: {
+        articleId,
+      },
+    });
+
+    await tx.educationArticleTag.deleteMany({
+      where: {
+        articleId,
+      },
+    });
+
+    await tx.educationArticleImage.deleteMany({
+      where: {
+        articleId,
+      },
+    });
+
+    await tx.educationArticleRevision.deleteMany({
+      where: {
+        articleId,
+      },
+    });
+
+    await tx.educationArticle.delete({
+      where: {
+        articleId,
+      },
+    });
+
+    return {
+      articleId: article.articleId,
+      title: article.title,
+      deleted: true,
+    };
   });
-
-  return mapArticle(article);
-}
-
-async function unpublishArticle(articleId) {
-  const article = await prisma.educationArticle.update({
-    where: {
-      articleId,
-    },
-    data: {
-      status: EDUCATION_ARTICLE_STATUSES.UNPUBLISHED,
-      isFeatured: false,
-      featuredOrder: null,
-      updatedAt: new Date(),
-    },
-    include: buildArticleInclude(),
-  });
-
-  return mapArticle(article);
 }
 
 async function likeArticle({ articleId, userId }) {
@@ -1731,8 +1739,7 @@ module.exports = {
   approveRevision,
   rejectRevision,
   setArticleFeatured,
-  archiveArticle,
-  unpublishArticle,
+  deleteArticleHard,
   likeArticle,
   unlikeArticle,
   createComment,
