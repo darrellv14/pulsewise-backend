@@ -26,7 +26,6 @@ jest.mock('../src/repositories/educationRepository', () => ({
   rejectArticle: jest.fn(),
   approveRevision: jest.fn(),
   rejectRevision: jest.fn(),
-  setArticleFeatured: jest.fn(),
   deleteArticleHard: jest.fn(),
   hideComment: jest.fn(),
 }));

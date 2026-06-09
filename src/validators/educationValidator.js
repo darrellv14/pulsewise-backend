@@ -89,11 +89,6 @@ const rejectBodySchema = z.object({
   rejectionReason: z.string().trim().min(3).max(1000),
 });
 
-const featureBodySchema = z.object({
-  isFeatured: z.coerce.boolean().optional().default(true),
-  featuredOrder: z.coerce.number().int().min(0).max(9999).nullable().optional(),
-});
-
 const commentCreateBodySchema = z.object({
   content: z.string().trim().min(1).max(2000),
 });
@@ -122,7 +117,6 @@ module.exports = {
   articleUpsertBodySchema,
   emptyBodySchema,
   rejectBodySchema,
-  featureBodySchema,
   myArticlesQuerySchema,
   adminArticlesQuerySchema,
   commentCursorQuerySchema,

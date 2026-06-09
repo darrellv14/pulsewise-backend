@@ -302,19 +302,6 @@ async function rejectRevision(req, res, next) {
   }
 }
 
-async function featureArticle(req, res, next) {
-  try {
-    const data = await educationService.featureArticle({
-      actor: req.user,
-      articleId: req.params.articleId,
-      payload: req.body,
-    });
-    return success(res, 'Pengaturan featured artikel edukasi berhasil diperbarui', data);
-  } catch (error) {
-    return next(error);
-  }
-}
-
 async function deleteArticle(req, res, next) {
   try {
     const data = await educationService.deleteArticle({
@@ -365,7 +352,6 @@ module.exports = {
   listPendingRevisions,
   approveRevision,
   rejectRevision,
-  featureArticle,
   deleteArticle,
   hideComment,
 };

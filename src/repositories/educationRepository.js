@@ -180,8 +180,6 @@ function mapArticle(article, actorUserId = null, options = {}) {
     commentCount: Number(article.commentCount || 0),
     viewCount: Number(article.viewCount || 0),
     likedByMe: Array.isArray(article.likes) ? article.likes.length > 0 : false,
-    isFeatured: Boolean(article.isFeatured),
-    featuredOrder: article.featuredOrder ?? null,
     approvedBy: article.approvedBy || null,
     approvedAt: article.approvedAt || null,
     lastReviewedBy: article.lastReviewedBy || null,
@@ -1372,22 +1370,6 @@ async function rejectRevision({ revisionId, adminId, rejectionReason }) {
     : null;
 }
 
-async function setArticleFeatured({ articleId, isFeatured, featuredOrder = null }) {
-  const article = await prisma.educationArticle.update({
-    where: {
-      articleId,
-    },
-    data: {
-      isFeatured,
-      featuredOrder: isFeatured ? featuredOrder : null,
-      updatedAt: new Date(),
-    },
-    include: buildArticleInclude(),
-  });
-
-  return mapArticle(article);
-}
-
 async function deleteArticleHard(articleId) {
   return prisma.$transaction(async (tx) => {
     const article = await tx.educationArticle.findUnique({
@@ -1738,7 +1720,6 @@ module.exports = {
   rejectArticle,
   approveRevision,
   rejectRevision,
-  setArticleFeatured,
   deleteArticleHard,
   likeArticle,
   unlikeArticle,

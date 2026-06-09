@@ -529,23 +529,6 @@ async function rejectRevision({ actor, revisionId, rejectionReason }) {
   });
 }
 
-async function featureArticle({ actor, articleId, payload }) {
-  assertAdminScope({ actor });
-  const article = await educationRepository.findArticleById(articleId, actor.userId);
-  if (!article) {
-    throw createHttpError('Artikel tidak ditemukan', 404);
-  }
-  if (article.status !== EDUCATION_ARTICLE_STATUSES.PUBLISHED) {
-    throw createHttpError('Hanya artikel published yang bisa difeature', 409);
-  }
-
-  return educationRepository.setArticleFeatured({
-    articleId,
-    isFeatured: payload.isFeatured !== false,
-    featuredOrder: payload.featuredOrder ?? null,
-  });
-}
-
 async function deleteArticle({ actor, articleId }) {
   assertAdminScope({ actor });
   const article = await educationRepository.findArticleById(articleId, actor.userId);
@@ -600,7 +583,6 @@ module.exports = {
   listPendingRevisions,
   approveRevision,
   rejectRevision,
-  featureArticle,
   deleteArticle,
   hideComment,
 };

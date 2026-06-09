@@ -13,7 +13,6 @@ const {
   articleUpsertBodySchema,
   emptyBodySchema,
   rejectBodySchema,
-  featureBodySchema,
   myArticlesQuerySchema,
   adminArticlesQuerySchema,
   commentCursorQuerySchema,
@@ -182,13 +181,6 @@ router.post(
   validateRequest(revisionIdParamSchema, 'params'),
   validateRequest(rejectBodySchema),
   educationController.rejectRevision
-);
-router.post(
-  '/admin/education/articles/:articleId/feature',
-  authenticate,
-  validateRequest(articleIdParamSchema, 'params'),
-  validateRequest(featureBodySchema),
-  educationController.featureArticle
 );
 router.delete(
   '/admin/education/articles/:articleId',
