@@ -131,6 +131,9 @@ const env = {
     educationQuality: process.env.CLOUDINARY_EDUCATION_QUALITY || 'auto:good',
   },
   rateLimit: {
+    enabled: process.env.RATE_LIMIT_ENABLED
+      ? process.env.RATE_LIMIT_ENABLED === 'true'
+      : true,
     authWindowMs: Number(process.env.RATE_LIMIT_AUTH_WINDOW_MS || 15 * 60 * 1000),
     authMax: Number(process.env.RATE_LIMIT_AUTH_MAX || 20),
   },

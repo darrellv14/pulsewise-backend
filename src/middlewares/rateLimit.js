@@ -1,5 +1,6 @@
 const buckets = new Map();
 const { getRedisClient } = require('../config/redis');
+const env = require('../config/env');
 
 function pruneExpired(now) {
   for (const [key, value] of buckets.entries()) {
@@ -27,6 +28,10 @@ function createRateLimiter({ name, windowMs, max, message }) {
   const limitMax = Number(max) > 0 ? Number(max) : 60;
 
   return async function rateLimitMiddleware(req, res, next) {
+    if (!env.rateLimit.enabled) {
+      return next();
+    }
+
     const now = Date.now();
     const key = getClientKey(req, scopeName);
     const redisKey = `ratelimit:${key}`;
