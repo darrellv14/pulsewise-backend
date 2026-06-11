@@ -190,6 +190,42 @@ function calculateBmi(weightKg, heightCm) {
   return Number.isFinite(bmi) ? Number(bmi.toFixed(2)) : null;
 }
 
+function averageNumbers(values = []) {
+  const numericValues = values.map(toFiniteNumber).filter((value) => value !== null);
+  if (!numericValues.length) {
+    return null;
+  }
+
+  return numericValues.reduce((sum, value) => sum + value, 0) / numericValues.length;
+}
+
+function averageClockMinutes(values = []) {
+  const numericValues = values.map(toFiniteNumber).filter((value) => value !== null);
+  if (!numericValues.length) {
+    return null;
+  }
+
+  const radians = numericValues.map((value) => (value / 1440) * Math.PI * 2);
+  const vector = radians.reduce(
+    (accumulator, value) => ({
+      sin: accumulator.sin + Math.sin(value),
+      cos: accumulator.cos + Math.cos(value),
+    }),
+    { sin: 0, cos: 0 }
+  );
+
+  if (vector.sin === 0 && vector.cos === 0) {
+    return numericValues[0];
+  }
+
+  let angle = Math.atan2(vector.sin / numericValues.length, vector.cos / numericValues.length);
+  if (angle < 0) {
+    angle += Math.PI * 2;
+  }
+
+  return (angle / (Math.PI * 2)) * 1440;
+}
+
 function flattenDiaries(diaries = []) {
   const bodyMetrics = [];
   const symptoms = [];
@@ -352,14 +388,13 @@ function buildDietAverage(consumptions = []) {
 
 function summarizeActivities(activities = []) {
   const summary = {
-    workVigorousMinutes: 0,
+    workVigorousMinutesByDay: new Map(),
     workVigorousDays: new Set(),
-    transportMinutes: 0,
+    transportMinutesByDay: new Map(),
     transportDays: new Set(),
-    recreationVigorousMinutes: 0,
+    recreationVigorousMinutesByDay: new Map(),
     recreationVigorousDays: new Set(),
-    outdoorMinutes: 0,
-    outdoorMinutesKnown: false,
+    outdoorMinutesByDay: new Map(),
   };
 
   for (const activity of activities) {
@@ -376,34 +411,87 @@ function summarizeActivities(activities = []) {
       .trim()
       .toLowerCase();
 
-    if (outdoorMinutes !== null) {
-      summary.outdoorMinutes += outdoorMinutes;
-      summary.outdoorMinutesKnown = true;
+    if (outdoorMinutes !== null && diaryDate) {
+      summary.outdoorMinutesByDay.set(
+        diaryDate,
+        (summary.outdoorMinutesByDay.get(diaryDate) || 0) + outdoorMinutes
+      );
     }
 
     if (category === 'work' && intensity === 'vigorous') {
-      summary.workVigorousMinutes += duration;
       if (diaryDate) {
         summary.workVigorousDays.add(diaryDate);
+        summary.workVigorousMinutesByDay.set(
+          diaryDate,
+          (summary.workVigorousMinutesByDay.get(diaryDate) || 0) + duration
+        );
       }
     }
 
     if (category === 'transport' && ['walk', 'bicycle'].includes(transportMode)) {
-      summary.transportMinutes += duration;
       if (diaryDate) {
         summary.transportDays.add(diaryDate);
+        summary.transportMinutesByDay.set(
+          diaryDate,
+          (summary.transportMinutesByDay.get(diaryDate) || 0) + duration
+        );
       }
     }
 
     if (category === 'recreation' && intensity === 'vigorous') {
-      summary.recreationVigorousMinutes += duration;
       if (diaryDate) {
         summary.recreationVigorousDays.add(diaryDate);
+        summary.recreationVigorousMinutesByDay.set(
+          diaryDate,
+          (summary.recreationVigorousMinutesByDay.get(diaryDate) || 0) + duration
+        );
       }
     }
   }
 
-  return summary;
+  return {
+    workVigorousMinutesAverage: averageNumbers([...summary.workVigorousMinutesByDay.values()]) || 0,
+    workVigorousDays: summary.workVigorousDays,
+    transportMinutesAverage: averageNumbers([...summary.transportMinutesByDay.values()]) || 0,
+    transportDays: summary.transportDays,
+    recreationVigorousMinutesAverage:
+      averageNumbers([...summary.recreationVigorousMinutesByDay.values()]) || 0,
+    recreationVigorousDays: summary.recreationVigorousDays,
+    outdoorMinutesAverage: averageNumbers([...summary.outdoorMinutesByDay.values()]),
+    outdoorMinutesKnown: summary.outdoorMinutesByDay.size > 0,
+  };
+}
+
+function buildSleepAverage(sleepRecords = []) {
+  const durationValues = [];
+  const sleepTimeValues = [];
+
+  for (const record of sleepRecords) {
+    const duration =
+      toFiniteNumber(record.sleepDurationHours) ??
+      calculateSleepDurationHours(record.sleepTime, record.wakeTime);
+    if (duration !== null) {
+      durationValues.push(duration);
+    }
+
+    const sleepTimeMinutes = parseTimeToMinutes(record.sleepTime);
+    if (sleepTimeMinutes !== null) {
+      sleepTimeValues.push(sleepTimeMinutes);
+    }
+  }
+
+  const averageDurationHours = averageNumbers(durationValues);
+  const averageSleepTimeMinutes = averageClockMinutes(sleepTimeValues);
+
+  if (averageDurationHours === null && averageSleepTimeMinutes === null) {
+    return null;
+  }
+
+  return {
+    averageDurationHours,
+    averageSleepTimeMinutes,
+    daysWithSleepRecord: sleepRecords.length,
+  };
 }
 
 function hasStructuredChestPain(symptoms = []) {
@@ -451,6 +539,7 @@ function buildMlV3Payload(snapshot = {}) {
   const latestAssessment = snapshot.latestAssessment || {};
   const latestBodyMetric = pickLatestByTimestamp(flattened.bodyMetrics, 'bodyHeight', 'bodyWeight');
   const latestSleepRecord = pickLatestByTimestamp(flattened.sleepRecords, 'sleepDurationHours');
+  const sleepAverage = buildSleepAverage(flattened.sleepRecords);
   const dietAverage = buildDietAverage(flattened.consumptions);
   const activitySummary = summarizeActivities(flattened.activities);
   const diaryDays = (snapshot.diaries || []).length;
@@ -533,14 +622,18 @@ function buildMlV3Payload(snapshot = {}) {
     }
   }
 
-  if (latestSleepRecord) {
-    setResolved(state, 'Quest21_SLQ3032', parseTimeToMinutes(latestSleepRecord.sleepTime), 'daily_sleep_record');
+  if (sleepAverage) {
+    setResolved(
+      state,
+      'Quest21_SLQ3032',
+      sleepAverage.averageSleepTimeMinutes,
+      'daily_sleep_record_average'
+    );
     setResolved(
       state,
       'Quest21_SLD123',
-      latestSleepRecord.sleepDurationHours ??
-        calculateSleepDurationHours(latestSleepRecord.sleepTime, latestSleepRecord.wakeTime),
-      'daily_sleep_record'
+      sleepAverage.averageDurationHours,
+      'daily_sleep_record_average'
     );
   }
 
@@ -551,9 +644,19 @@ function buildMlV3Payload(snapshot = {}) {
   }
 
   if (flattened.activities.length) {
-    setResolved(state, 'Quest19_PAD615', activitySummary.workVigorousMinutes, 'daily_activity');
+    setResolved(
+      state,
+      'Quest19_PAD615',
+      activitySummary.workVigorousMinutesAverage,
+      'daily_activity_average'
+    );
     setResolved(state, 'Quest19_PAQ610', activitySummary.workVigorousDays.size, 'daily_activity');
-    setResolved(state, 'Quest19_PAD645', activitySummary.transportMinutes, 'daily_activity');
+    setResolved(
+      state,
+      'Quest19_PAD645',
+      activitySummary.transportMinutesAverage,
+      'daily_activity_average'
+    );
     setResolved(
       state,
       'Quest19_PAQ635',
@@ -564,8 +667,8 @@ function buildMlV3Payload(snapshot = {}) {
     setResolved(
       state,
       'Quest19_PAD660',
-      activitySummary.recreationVigorousMinutes,
-      'daily_activity'
+      activitySummary.recreationVigorousMinutesAverage,
+      'daily_activity_average'
     );
     setResolved(
       state,
@@ -575,7 +678,12 @@ function buildMlV3Payload(snapshot = {}) {
     );
 
     if (activitySummary.outdoorMinutesKnown) {
-      setResolved(state, 'Quest6_DED1225', activitySummary.outdoorMinutes, 'daily_activity');
+      setResolved(
+        state,
+        'Quest6_DED1225',
+        activitySummary.outdoorMinutesAverage,
+        'daily_activity_average'
+      );
     }
   }
 
