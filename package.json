@@ -35,6 +35,8 @@
     "smoke:hfms:e2e": "node scripts/smoke/smoke-hfms-e2e.js",
     "smoke:heart-risk:local": "node scripts/smoke/smoke-heart-risk-local.js",
     "smoke:education:local": "node scripts/smoke/smoke-education-local.js",
+    "smoke:education:prod:safe": "node scripts/smoke/smoke-production-education-delete-account.js",
+    "smoke:education:prod:workflow": "node scripts/smoke/smoke-production-education-workflow.js",
     "smoke:fcm:scheduler": "node scripts/smoke/smoke-fcm-scheduler-stage3.js",
     "fcm:test": "node scripts/send_fcm_test.js",
     "smoke:prod": "node scripts/smoke/smoke-live.js",
