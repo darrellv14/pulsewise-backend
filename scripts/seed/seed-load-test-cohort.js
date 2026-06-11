@@ -1,4 +1,6 @@
 require('dotenv').config({ override: true });
+const prisma = require('../../src/config/prisma');
+const { getStrictMlPayload } = require('../../src/services/ml/payloadService');
 
 const {
   DEFAULT_PASSWORD_HASH,
@@ -19,6 +21,8 @@ const LOAD_TEST_DOCTOR_EMAIL = process.env.LOAD_TEST_DOCTOR_EMAIL || 'load.docto
 const LOAD_TEST_DOCTOR_USERNAME = process.env.LOAD_TEST_DOCTOR_USERNAME || 'loadtestdoctor';
 const LOAD_TEST_EMAIL_PREFIX = process.env.LOAD_TEST_EMAIL_PREFIX || 'load.patient';
 const LOAD_TEST_EMAIL_DOMAIN = process.env.LOAD_TEST_EMAIL_DOMAIN || 'pulsewise.local';
+const LOAD_TEST_VERIFY_READINESS = process.env.LOAD_TEST_VERIFY_READINESS !== 'false';
+const LOAD_TEST_VERIFY_SAMPLE_SIZE = Number(process.env.LOAD_TEST_VERIFY_SAMPLE_SIZE || 0);
 
 const FIRST_NAMES = [
   'Ari',
@@ -95,9 +99,48 @@ function buildPatientConfig(index) {
   };
 }
 
+function resolvePatientsForVerification(seededPatients) {
+  if (!LOAD_TEST_VERIFY_SAMPLE_SIZE || LOAD_TEST_VERIFY_SAMPLE_SIZE >= seededPatients.length) {
+    return seededPatients;
+  }
+
+  return seededPatients.slice(0, LOAD_TEST_VERIFY_SAMPLE_SIZE);
+}
+
+async function verifyReadiness(seededPatients) {
+  if (!LOAD_TEST_VERIFY_READINESS) {
+    return {
+      checked: 0,
+      failures: [],
+      skipped: true,
+    };
+  }
+
+  const patientsToVerify = resolvePatientsForVerification(seededPatients);
+  const failures = [];
+
+  for (const patient of patientsToVerify) {
+    const payloadResult = await getStrictMlPayload({ userId: patient.userId });
+
+    if (payloadResult.missingFields.length > 0) {
+      failures.push({
+        ...patient,
+        missingFields: payloadResult.missingFields,
+      });
+    }
+  }
+
+  return {
+    checked: patientsToVerify.length,
+    failures,
+    skipped: false,
+  };
+}
+
 async function run() {
   const pool = getPool();
   const client = await pool.connect();
+  let seededPatients = [];
 
   try {
     await client.query('BEGIN');
@@ -116,8 +159,6 @@ async function run() {
 
     await ensureUserRole(client, doctorUserId, doctorRoleId);
     await ensureDoctorProfile(client, doctorUserId);
-
-    const seededPatients = [];
 
     for (let index = 0; index < LOAD_TEST_PATIENT_COUNT; index += 1) {
       const patientConfig = buildPatientConfig(index);
@@ -142,6 +183,8 @@ async function run() {
 
     await client.query('COMMIT');
 
+    const verification = await verifyReadiness(seededPatients);
+
     console.log('[seed:load-test] done');
     console.log(`[seed:load-test] doctor login: ${LOAD_TEST_DOCTOR_EMAIL} / dev12345`);
     console.log(
@@ -154,6 +197,28 @@ async function run() {
     for (const patient of seededPatients.slice(0, 5)) {
       console.log(`  - ${patient.fullName} (${patient.email}) userId=${patient.userId}`);
     }
+
+    if (verification.skipped) {
+      console.log('[seed:load-test] readiness verification skipped');
+      return;
+    }
+
+    console.log(`[seed:load-test] readiness verified for ${verification.checked} patients`);
+
+    if (verification.failures.length > 0) {
+      console.error(
+        `[seed:load-test] readiness verification failed for ${verification.failures.length} patients`
+      );
+      for (const failure of verification.failures.slice(0, 10)) {
+        console.error(
+          `  - ${failure.email} missing=${failure.missingFields.join(', ')}`
+        );
+      }
+      process.exitCode = 1;
+      return;
+    }
+
+    console.log('[seed:load-test] all verified patients are ML-ready');
   } catch (error) {
     await client.query('ROLLBACK');
     console.error('[seed:load-test] failed', error.message);
@@ -161,6 +226,7 @@ async function run() {
   } finally {
     client.release();
     await pool.end();
+    await prisma.$disconnect();
   }
 }
 
