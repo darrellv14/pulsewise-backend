@@ -291,6 +291,14 @@ function addUtcDays(dateValue, days) {
   );
 }
 
+function diffUtcDays(startDate, endDate) {
+  const utcStart = toUtcDateOnly(startDate);
+  const utcEnd = toUtcDateOnly(endDate);
+  const millisecondsPerDay = 24 * 60 * 60 * 1000;
+
+  return Math.floor((utcEnd.getTime() - utcStart.getTime()) / millisecondsPerDay);
+}
+
 function maxUtcDate(left, right) {
   return left.getTime() >= right.getTime() ? left : right;
 }
@@ -336,6 +344,29 @@ function buildCalendarEvent({ medication, reminder, scheduledDate, matchedLog })
   };
 }
 
+function isDailyMedicationScheduledOnDate({ medication, scheduledDate }) {
+  if (!medication || medication.frequency !== 'daily') {
+    return false;
+  }
+
+  if (!medication.startDate) {
+    return true;
+  }
+
+  const anchorDate = toUtcDateOnly(new Date(medication.startDate));
+  const targetDate =
+    scheduledDate instanceof Date ? toUtcDateOnly(scheduledDate) : toPrismaDate(scheduledDate);
+  const intervalDays =
+    Number.isInteger(medication.numOfDays) && medication.numOfDays > 0 ? medication.numOfDays : 1;
+  const elapsedDays = diffUtcDays(anchorDate, targetDate);
+
+  if (elapsedDays < 0) {
+    return false;
+  }
+
+  return elapsedDays % intervalDays === 0;
+}
+
 function buildDailyCalendarEvents({ medication, reminder, rangeStart, rangeEnd, logLookup }) {
   const medicationStart = medication.startDate
     ? toUtcDateOnly(new Date(medication.startDate))
@@ -352,6 +383,10 @@ function buildDailyCalendarEvents({ medication, reminder, rangeStart, rangeEnd, 
     currentDate.getTime() <= rangeEnd.getTime();
     currentDate = addUtcDays(currentDate, 1)
   ) {
+    if (!isDailyMedicationScheduledOnDate({ medication, scheduledDate: currentDate })) {
+      continue;
+    }
+
     const scheduledDate = toDateOnlyValue(currentDate);
     const scheduledTime = formatTimeValue(reminder.scheduleTime);
     const matchedLog = logLookup.get(
@@ -507,6 +542,7 @@ module.exports = {
   getCurrentDateOnlyInTimeZone,
   buildMedicationLogLookup,
   buildMedicationCalendarEvents,
+  isDailyMedicationScheduledOnDate,
   getMondayBasedDayOfWeek,
   assertPatientScope,
   ensureMedicationOwnership,
