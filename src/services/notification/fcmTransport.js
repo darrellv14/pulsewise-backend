@@ -6,6 +6,7 @@ const { createHttpError } = require('../../utils/httpError');
 
 const FCM_SCOPE = 'https://www.googleapis.com/auth/firebase.messaging';
 const FCM_ENDPOINT_TEMPLATE = 'https://fcm.googleapis.com/v1/projects/%s/messages:send';
+const HIGH_PRIORITY_TTL_SECONDS = 30;
 const TERMINAL_PROVIDER_ERROR_CODES = new Set([
   'UNREGISTERED',
   'INVALID_ARGUMENT',
@@ -79,6 +80,7 @@ function buildFcmMessagePayload({ token, title, body, data }) {
   const normalizedData = Object.fromEntries(
     Object.entries(data || {}).map(([key, value]) => [key, value == null ? '' : String(value)])
   );
+  const ttlSeconds = String(HIGH_PRIORITY_TTL_SECONDS);
 
   return {
     message: {
@@ -90,8 +92,29 @@ function buildFcmMessagePayload({ token, title, body, data }) {
       data: normalizedData,
       android: {
         priority: 'high',
+        ttl: `${ttlSeconds}s`,
         notification: {
           channel_id: env.firebase.androidChannelId || 'pulsewise_reminders',
+          sound: 'default',
+          default_sound: true,
+          notification_priority: 'PRIORITY_HIGH',
+        },
+      },
+      apns: {
+        headers: {
+          'apns-priority': '10',
+        },
+        payload: {
+          aps: {
+            sound: 'default',
+            'content-available': 1,
+          },
+        },
+      },
+      webpush: {
+        headers: {
+          Urgency: 'high',
+          TTL: ttlSeconds,
         },
       },
     },
@@ -156,6 +179,7 @@ async function sendFcmMessage({ token, title, body, data }) {
 }
 
 module.exports = {
+  buildFcmMessagePayload,
   sendFcmMessage,
   TERMINAL_PROVIDER_ERROR_CODES,
 };
