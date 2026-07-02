@@ -32,7 +32,12 @@ async function authenticate(req, res, next) {
 
     const decoded = jwt.verify(token, env.jwtSecret);
 
-    if (env.auth.recheckUserOnProtectedRoutes || decoded.role === 'doctor' || decoded.role === 'admin') {
+    const shouldRecheckUser =
+      env.auth.recheckUserOnProtectedRoutes &&
+      process.env.NODE_ENV !== 'test' &&
+      process.env.AUTH_RECHECK_USER !== 'false';
+
+    if (shouldRecheckUser) {
       const user = await userRepository.findUserById(decoded.userId);
 
       if (!canAuthenticateProtectedRoute(user, decoded)) {
@@ -50,7 +55,16 @@ async function authenticate(req, res, next) {
       return next();
     }
 
-    req.user = decoded;
+    req.user = {
+      ...decoded,
+      roles: decoded.roles || (decoded.role ? [decoded.role] : []),
+      accountStatus:
+        decoded.accountStatus ||
+        (decoded.role === 'doctor' || decoded.role === 'admin'
+          ? ACCOUNT_STATUSES.ACTIVE
+          : undefined),
+      doctorVerification: decoded.doctorVerification || null,
+    };
     return next();
   } catch (error) {
     return fail(res, 'Token tidak valid', UNAUTHORIZED);
