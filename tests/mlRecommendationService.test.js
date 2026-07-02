@@ -56,11 +56,11 @@ describe('mlRecommendationService', () => {
       {
         endpointPath: '/recommendations/',
         payload: { Demog1_RIDAGEYR: 24 },
-      },
-      {
-        baseUrl: 'http://localhost:8080',
-        version: 3,
-        timeoutMs: 2000,
+        serviceConfig: {
+          baseUrl: 'http://localhost:8080',
+          version: 3,
+          timeoutMs: 2000,
+        },
       }
     );
 
@@ -81,11 +81,11 @@ describe('mlRecommendationService', () => {
         {
           endpointPath: '/recommendations/',
           payload: { Demog1_RIDAGEYR: 24 },
-        },
-        {
-          baseUrl: 'http://localhost:8080',
-          version: 3,
-          timeoutMs: 2000,
+          serviceConfig: {
+            baseUrl: 'http://localhost:8080',
+            version: 3,
+            timeoutMs: 2000,
+          },
         }
       )
     ).rejects.toMatchObject({

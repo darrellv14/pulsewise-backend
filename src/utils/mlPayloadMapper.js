@@ -223,7 +223,7 @@ function averageClockMinutes(values = []) {
     angle += Math.PI * 2;
   }
 
-  return (angle / (Math.PI * 2)) * 1440;
+  return Math.round((angle / (Math.PI * 2)) * 1440);
 }
 
 function flattenDiaries(diaries = []) {

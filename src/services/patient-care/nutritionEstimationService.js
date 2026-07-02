@@ -283,6 +283,26 @@ function mapGeminiError({ status, body }) {
   });
 }
 
+function isRetryableGeminiError(error) {
+  const status = error?.details?.status;
+  const body = error?.details?.body;
+  const providerMessage = typeof error?.message === 'string' ? error.message : '';
+  const bodyText = typeof body === 'string' ? body : '';
+  const combinedText = `${providerMessage} ${bodyText}`.toLocaleLowerCase('en-US');
+
+  if ([429, 500, 502, 503, 504].includes(status)) {
+    return true;
+  }
+
+  return (
+    combinedText.includes('high demand') ||
+    combinedText.includes('temporar') ||
+    combinedText.includes('overload') ||
+    combinedText.includes('unavailable') ||
+    combinedText.includes('try again later')
+  );
+}
+
 function extractCandidateText(parsedResponse) {
   const candidate = Array.isArray(parsedResponse?.candidates) ? parsedResponse.candidates[0] : null;
   const parts = Array.isArray(candidate?.content?.parts) ? candidate.content.parts : [];
@@ -291,6 +311,104 @@ function extractCandidateText(parsedResponse) {
     .filter(Boolean);
 
   return textParts.join('\n').trim();
+}
+
+function stripJsonCodeFence(text) {
+  if (!text) {
+    return text;
+  }
+
+  const trimmed = String(text).trim();
+  const fenced = trimmed.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i);
+  if (fenced) {
+    return fenced[1].trim();
+  }
+
+  return trimmed;
+}
+
+function normalizeEnumValue(value, allowedValues, fallback) {
+  const normalized = normalizeNullableText(value);
+  if (!normalized) {
+    return fallback;
+  }
+
+  const directMatch = allowedValues.find((item) => item === normalized);
+  if (directMatch) {
+    return directMatch;
+  }
+
+  const lowercaseMatch = allowedValues.find(
+    (item) => item.toLocaleLowerCase('id-ID') === normalized.toLocaleLowerCase('id-ID')
+  );
+  if (lowercaseMatch) {
+    return lowercaseMatch;
+  }
+
+  return fallback;
+}
+
+function toSafeNumber(value, fallback = 0) {
+  if (value === null || value === undefined || value === '') {
+    return fallback;
+  }
+
+  const normalized = typeof value === 'string' ? Number(value.trim()) : Number(value);
+  return Number.isFinite(normalized) && normalized >= 0 ? normalized : fallback;
+}
+
+function sanitizeDetectedFoods(value) {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .map((item) => normalizeNullableText(item))
+    .filter(Boolean);
+}
+
+function sanitizeGeminiNutritionPayload(payload) {
+  const safePayload = payload && typeof payload === 'object' ? payload : {};
+  const sugarG = toSafeNumber(safePayload.sugar_g);
+  const carbsG = Math.max(toSafeNumber(safePayload.carbs_g), sugarG);
+  const saturatedFatG = toSafeNumber(safePayload.saturated_fat_g);
+  const monounsaturatedFatG = toSafeNumber(safePayload.monounsaturated_fat_g);
+  const polyunsaturatedFatG = toSafeNumber(safePayload.polyunsaturated_fat_g);
+  const minimumFatG = saturatedFatG + monounsaturatedFatG + polyunsaturatedFatG;
+  const fatG = Math.max(toSafeNumber(safePayload.fat_g), minimumFatG);
+
+  return {
+    is_food_image: Boolean(safePayload.is_food_image),
+    validation_message: normalizeNullableText(safePayload.validation_message) || '',
+    meal_category: normalizeEnumValue(
+      safePayload.meal_category,
+      MEAL_CATEGORY_VALUES,
+      'Makanan Ringan'
+    ),
+    detected_foods: sanitizeDetectedFoods(safePayload.detected_foods),
+    portion_estimate: normalizeNullableText(safePayload.portion_estimate)?.slice(
+      0,
+      MAX_PORTION_ESTIMATE_LENGTH
+    ) || '',
+    portion_grams_estimate: toSafeNumber(safePayload.portion_grams_estimate),
+    fdc_food_id: normalizeNullableText(safePayload.fdc_food_id) || '',
+    nutrition_source: DEFAULT_NUTRITION_SOURCE,
+    calories_kcal: toSafeNumber(safePayload.calories_kcal),
+    protein_g: toSafeNumber(safePayload.protein_g),
+    carbs_g: carbsG,
+    sugar_g: sugarG,
+    fiber_g: toSafeNumber(safePayload.fiber_g),
+    fat_g: fatG,
+    saturated_fat_g: saturatedFatG,
+    monounsaturated_fat_g: monounsaturatedFatG,
+    polyunsaturated_fat_g: polyunsaturatedFatG,
+    cholesterol_mg: toSafeNumber(safePayload.cholesterol_mg),
+    calcium_mg: toSafeNumber(safePayload.calcium_mg),
+    confidence: normalizeEnumValue(safePayload.confidence, ['low', 'medium', 'high'], 'medium'),
+    notes:
+      normalizeNullableText(safePayload.notes) ||
+      'Estimasi nutrisi dihasilkan dari analisis gambar dan deskripsi makanan.',
+  };
 }
 
 async function callGeminiNutritionModel({
@@ -384,7 +502,7 @@ async function callGeminiNutritionModel({
           body: responseText,
         });
 
-        if (response.status === 429) {
+        if (isRetryableGeminiError(mappedError)) {
           lastError = mappedError;
           continue;
         }
@@ -408,14 +526,29 @@ async function callGeminiNutritionModel({
 
       let parsedContent;
       try {
-        parsedContent = JSON.parse(outputText);
+        parsedContent = JSON.parse(stripJsonCodeFence(outputText));
       } catch (_error) {
         throw createHttpError('Output Gemini bukan JSON valid', BAD_GATEWAY, {
           body: outputText,
         });
       }
 
-      return foodMacroAnalysisSchema.parse(parsedContent);
+      try {
+        return foodMacroAnalysisSchema.parse(sanitizeGeminiNutritionPayload(parsedContent));
+      } catch (validationError) {
+        if (validationError instanceof z.ZodError) {
+          throw createHttpError(
+            'Output Gemini tidak sesuai format estimasi nutrisi yang diharapkan',
+            BAD_GATEWAY,
+            {
+              issues: validationError.issues,
+              body: parsedContent,
+            }
+          );
+        }
+
+        throw validationError;
+      }
     } catch (error) {
       if (error.name === 'AbortError') {
         throw createHttpError('Permintaan ke Gemini timeout', GATEWAY_TIMEOUT);

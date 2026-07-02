@@ -288,4 +288,111 @@ describe('mlPayloadMapper.buildMlV3Payload', () => {
     expect(result.missingFields).not.toContain('Exami2_BMXHT');
     expect(result.missingFields).not.toContain('Exami2_BMXBMI');
   });
+
+  test('rounds derived average sleep time minutes to an integer payload value', () => {
+    const result = buildMlV3Payload({
+      patientProfile: {
+        dateOfBirth: '2000-04-10',
+      },
+      patientMlProfile: {
+        demog1_riagendr: 1,
+        demog1_ridreth3: 6,
+        demog1_dmdeduc: 4,
+        demog1_dmdfmsiz: 3,
+        demog1_dmdhhsiz: 4,
+        demog1_dmdhhsza: 2,
+        demog1_dmdhhszb: 1,
+        demog1_dmdhhsze: 0,
+        demog1_dmdmartl: 1,
+        quest22_smq020: 1,
+        quest22_smq890: 1,
+        quest22_smq900: 0,
+        quest23_smd470: 5,
+        quest1_alq111: 1,
+      },
+      latestAssessment: {
+        exami1_bpxpls: 1,
+        labor1_lbdtcsi: 190,
+        labor2_urdflow1: 12,
+        labor2_urdtime1: 30,
+        labor2_urxvol1: 250,
+        quest11_hiq011: 1,
+        quest12_heq010: 2,
+        quest12_heq030: 2,
+        quest15_kiq022: 2,
+        quest15_kiq026: 2,
+        quest16_mcq010: 1,
+        quest16_mcq160b: 2,
+        quest16_mcq220: 2,
+        quest16_mcq300a: 2,
+        quest16_mcq300c: 2,
+        quest17_dpq020: 0,
+        quest17_dpq030: 1,
+        quest17_dpq040: 0,
+        quest20_pfq061b: 2,
+        quest20_pfq061c: 2,
+        quest20_pfq061h: 2,
+        quest3_cdq009: 1,
+        quest3_cdq010: 2,
+        quest7_diq010: 2,
+        quest9_dlq050: 1,
+      },
+      diaries: [
+        {
+          diaryDate: '2026-04-24',
+          sleepRecord: {
+            sleepTime: '1970-01-01T22:00:00.000Z',
+            wakeTime: '1970-01-02T06:00:00.000Z',
+            sleepDurationHours: 8,
+          },
+          consumptions: [
+            {
+              energyKcal: 1800,
+              proteinG: 90,
+              carbohydrateG: 220,
+              sugarG: 40,
+              fiberG: 25,
+              totalFatG: 60,
+              saturatedFatG: 18,
+              monounsaturatedFatG: 14,
+              polyunsaturatedFatG: 9,
+              cholesterolMg: 180,
+              calciumMg: 900,
+            },
+          ],
+        },
+        {
+          diaryDate: '2026-04-23',
+          sleepRecord: {
+            sleepTime: '1970-01-01T23:01:00.000Z',
+            wakeTime: '1970-01-02T07:01:00.000Z',
+            sleepDurationHours: 8,
+          },
+          consumptions: [
+            {
+              energyKcal: 1800,
+              proteinG: 90,
+              carbohydrateG: 220,
+              sugarG: 40,
+              fiberG: 25,
+              totalFatG: 60,
+              saturatedFatG: 18,
+              monounsaturatedFatG: 14,
+              polyunsaturatedFatG: 9,
+              cholesterolMg: 180,
+              calciumMg: 900,
+            },
+          ],
+        },
+      ],
+      vitalSignReadings: [],
+      window: {
+        startDate: '2026-04-18',
+        endDate: '2026-04-24',
+      },
+    });
+
+    expect(Number.isInteger(result.payload.Quest21_SLQ3032)).toBe(true);
+    expect(result.payload.Quest21_SLQ3032).toBe(1351);
+  });
 });

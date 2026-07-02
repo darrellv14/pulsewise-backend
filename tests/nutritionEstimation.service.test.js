@@ -421,4 +421,200 @@ describe('nutrition estimation service', () => {
     expect(result.portion_estimate).toBe('1 piring nasi padang');
     expect(result.notes).toBe('Estimasi porsi restoran Indonesia.');
   });
+
+  test('estimateNutrition falls back to the next configured Gemini model after high-demand provider error', async () => {
+    global.fetch
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 503,
+        text: async () =>
+          JSON.stringify({
+            error: {
+              message:
+                'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.',
+            },
+          }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        text: async () =>
+          JSON.stringify({
+            candidates: [
+              {
+                content: {
+                  parts: [
+                    {
+                      text: JSON.stringify({
+                        is_food_image: true,
+                        validation_message: '',
+                        meal_category: 'Makanan Ringan',
+                        detected_foods: ['kewpie mayonaise'],
+                        portion_estimate: '1 sachet kecil mayones',
+                        portion_grams_estimate: 15,
+                        fdc_food_id: '',
+                        nutrition_source: 'gemini_food_macro_analysis',
+                        calories_kcal: 100,
+                        protein_g: 0,
+                        carbs_g: 1,
+                        sugar_g: 1,
+                        fiber_g: 0,
+                        fat_g: 11,
+                        saturated_fat_g: 2,
+                        monounsaturated_fat_g: 3,
+                        polyunsaturated_fat_g: 1,
+                        cholesterol_mg: 10,
+                        calcium_mg: 0,
+                        confidence: 'medium',
+                        notes: 'Estimasi berbasis kemasan kecil.',
+                      }),
+                    },
+                  ],
+                },
+              },
+            ],
+          }),
+      });
+
+    const result = await nutritionEstimationService.estimateNutrition({
+      actor: { userId: 'user-1', role: 'patient' },
+      userId: 'user-1',
+      payload: {
+        mealName: 'Kewpie Mayonaise',
+        imageBase64: 'ZmFrZUJhc2U2NA==',
+        imageMimeType: 'image/jpeg',
+      },
+    });
+
+    expect(global.fetch).toHaveBeenNthCalledWith(
+      1,
+      expect.stringContaining('/models/gemini-3.5-flash:generateContent?key=test-gemini-key'),
+      expect.any(Object)
+    );
+    expect(global.fetch).toHaveBeenNthCalledWith(
+      2,
+      expect.stringContaining('/models/gemini-3-flash-preview:generateContent?key=test-gemini-key'),
+      expect.any(Object)
+    );
+    expect(result.portion_estimate).toBe('1 sachet kecil mayones');
+  });
+
+  test('estimateNutrition normalizes fenced JSON and enum casing from Gemini output', async () => {
+    global.fetch.mockResolvedValueOnce({
+      ok: true,
+      text: async () =>
+        JSON.stringify({
+          candidates: [
+            {
+              content: {
+                parts: [
+                  {
+                    text: [
+                      '```json',
+                      JSON.stringify({
+                        is_food_image: true,
+                        validation_message: '',
+                        meal_category: 'makanan ringan',
+                        detected_foods: ['kewpie mayonaise'],
+                        portion_estimate: '1 sachet mayo',
+                        portion_grams_estimate: '15',
+                        fdc_food_id: null,
+                        nutrition_source: 'some_other_source',
+                        calories_kcal: '100',
+                        protein_g: '0',
+                        carbs_g: '1',
+                        sugar_g: '1',
+                        fiber_g: '0',
+                        fat_g: '11',
+                        saturated_fat_g: '2',
+                        monounsaturated_fat_g: '3',
+                        polyunsaturated_fat_g: '1',
+                        cholesterol_mg: '10',
+                        calcium_mg: '0',
+                        confidence: 'HIGH',
+                        notes: 'Estimasi berbasis kemasan.',
+                      }),
+                      '```',
+                    ].join('\n'),
+                  },
+                ],
+              },
+            },
+          ],
+        }),
+    });
+
+    const result = await nutritionEstimationService.estimateNutrition({
+      actor: { userId: 'user-1', role: 'patient' },
+      userId: 'user-1',
+      payload: {
+        mealName: 'Kewpie Mayonaise',
+      },
+    });
+
+    expect(result).toMatchObject({
+      meal_category: 'Makanan Ringan',
+      portion_grams_estimate: 15,
+      nutrition_source: 'gemini_food_macro_analysis',
+      confidence: 'high',
+    });
+  });
+
+  test('estimateNutrition normalizes inconsistent carb and fat totals from Gemini output', async () => {
+    global.fetch.mockResolvedValueOnce({
+      ok: true,
+      text: async () =>
+        JSON.stringify({
+          candidates: [
+            {
+              content: {
+                parts: [
+                  {
+                    text: JSON.stringify({
+                      is_food_image: true,
+                      validation_message: '',
+                      meal_category: 'Minuman',
+                      detected_foods: ['susu cokelat'],
+                      portion_estimate: '1 botol kecil',
+                      portion_grams_estimate: 180,
+                      fdc_food_id: '',
+                      nutrition_source: 'gemini_food_macro_analysis',
+                      calories_kcal: 140,
+                      protein_g: 4,
+                      carbs_g: 10,
+                      sugar_g: 18,
+                      fiber_g: 0,
+                      fat_g: 3,
+                      saturated_fat_g: 2,
+                      monounsaturated_fat_g: 2,
+                      polyunsaturated_fat_g: 1,
+                      cholesterol_mg: 8,
+                      calcium_mg: 120,
+                      confidence: 'medium',
+                      notes: 'Estimasi minuman kemasan.',
+                    }),
+                  },
+                ],
+              },
+            },
+          ],
+        }),
+    });
+
+    const result = await nutritionEstimationService.estimateNutrition({
+      actor: { userId: 'user-1', role: 'patient' },
+      userId: 'user-1',
+      payload: {
+        mealName: 'Susu cokelat',
+      },
+    });
+
+    expect(result).toMatchObject({
+      carbs_g: 18,
+      sugar_g: 18,
+      fat_g: 5,
+      saturated_fat_g: 2,
+      monounsaturated_fat_g: 2,
+      polyunsaturated_fat_g: 1,
+    });
+  });
 });
