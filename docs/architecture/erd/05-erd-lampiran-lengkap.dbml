@@ -1,0 +1,584 @@
+Project pulsewise_erd_lampiran_lengkap {
+  database_type: 'PostgreSQL'
+  Note: '''
+  ERD fisik lebih lengkap untuk lampiran.
+  Disusun dari schema.prisma dan migration SQL terbaru yang mencakup delete account flow dan Education CMS.
+  Admin direpresentasikan sebagai role pada roles/user_roles, bukan tabel terpisah.
+  Hasil inferensi ML dibedakan melalui model_key, misalnya hfms dan heart_disease_v1.
+  '''
+}
+
+Table roles {
+  role_id smallint [pk]
+  code varchar(32) [not null, unique]
+  label varchar(64) [not null]
+}
+
+Table users {
+  user_id uuid [pk]
+  username varchar(100) [not null, unique]
+  email varchar(255) [not null, unique]
+  password_hash text [not null]
+  first_name varchar(100)
+  last_name varchar(100)
+  avatar_photo text
+  google_sub varchar(255) [unique]
+  address text
+  tel_no varchar(40)
+  is_active boolean [not null]
+  onboarding_completed boolean [not null]
+  account_status varchar(32) [not null]
+  email_verified_at timestamptz
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+}
+
+Table user_roles {
+  user_id uuid [pk]
+  role_id smallint [pk]
+  assigned_at timestamptz [not null]
+}
+
+Table email_verifications {
+  verification_id uuid [pk]
+  user_id uuid [not null]
+  email varchar(255) [not null]
+  purpose varchar(32) [not null, default: 'email_verification']
+  otp_code_hash text [not null]
+  expires_at timestamptz [not null]
+  consumed_at timestamptz
+  created_at timestamptz [not null]
+}
+
+Table emergency_contacts {
+  emergency_contact_id uuid [pk]
+  user_id uuid [not null]
+  contact_label varchar(100) [not null]
+  contact_number varchar(50) [not null]
+  is_priority boolean [not null]
+  created_at timestamptz [not null]
+}
+
+Table patient_profiles {
+  patient_id uuid [pk]
+  date_of_birth date
+  sex varchar(16)
+  body_height_cm decimal(5,2)
+  health_connect_preference varchar(32)
+  health_connect_status varchar(32)
+  is_smoking boolean
+  is_electric_smoking boolean
+  blood_type varchar(3)
+  created_at timestamptz [not null]
+}
+
+Table doctor_profiles {
+  doctor_id uuid [pk]
+  specialization varchar(120)
+  license_no varchar(120)
+  hospital_name varchar(150)
+  is_verified boolean [not null]
+  verified_at timestamptz
+  verified_by uuid
+  verification_note text
+  rejection_reason text
+  created_at timestamptz [not null]
+}
+
+Table doctor_patients {
+  doctor_id uuid [pk]
+  patient_id uuid [pk]
+  source varchar(50) [not null]
+  linked_at timestamptz [not null]
+  is_active boolean [not null]
+}
+
+Table patient_shares {
+  share_id uuid [pk]
+  patient_id uuid [not null]
+  share_code varchar(100) [not null, unique]
+  expires_at timestamptz
+  created_by uuid
+  created_at timestamptz [not null]
+  revoked_at timestamptz
+}
+
+Table dashboard_pairing_sessions {
+  pairing_session_id uuid [pk]
+  doctor_id uuid [not null]
+  pairing_token_hash varchar [not null, unique]
+  status varchar(32) [not null]
+  expires_at timestamptz [not null]
+  confirmed_at timestamptz
+  confirmed_by_patient_id uuid
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+}
+
+Table heart_diaries {
+  diary_id uuid [pk]
+  user_id uuid [not null]
+  diary_date date [not null]
+  created_at timestamptz [not null]
+}
+
+Table daily_metrics {
+  metric_id uuid [pk]
+  diary_id uuid [not null]
+  condition_tag varchar(64)
+  body_height decimal(5,2)
+  body_weight decimal(5,2)
+  bmi decimal(5,2)
+  systolic_pressure int
+  diastolic_pressure int
+  heart_rate int
+  oxygen_saturation int
+  time_stamp timestamptz [not null]
+}
+
+Table daily_symptoms {
+  symptom_id uuid [pk]
+  diary_id uuid [not null]
+  symptom_name varchar(120) [not null]
+  symptom_code varchar(80)
+  body_area varchar(80)
+  is_chest_pain boolean
+  pain_frequency_code smallint
+  pain_location_code smallint
+  intensity smallint
+  note text
+  time_stamp timestamptz [not null]
+}
+
+Table daily_activities {
+  activity_id uuid [pk]
+  diary_id uuid [not null]
+  name varchar(120) [not null]
+  duration int
+  heart_rate int
+  activity_category varchar(32)
+  intensity_level varchar(32)
+  transport_mode varchar(32)
+  outdoor_minutes int
+  user_feeling varchar(80)
+  note text
+  time_stamp timestamptz [not null]
+}
+
+Table daily_consumptions {
+  consumption_id uuid [pk]
+  diary_id uuid [not null]
+  type varchar(50)
+  name varchar(120)
+  portion varchar(255)
+  portion_grams decimal(10,2)
+  fdc_food_id varchar(64)
+  nutrition_source varchar(32)
+  energy_kcal decimal(10,2)
+  protein_g decimal(10,2)
+  carbohydrate_g decimal(10,2)
+  sugar_g decimal(10,2)
+  fiber_g decimal(10,2)
+  total_fat_g decimal(10,2)
+  saturated_fat_g decimal(10,2)
+  monounsaturated_fat_g decimal(10,2)
+  polyunsaturated_fat_g decimal(10,2)
+  cholesterol_mg decimal(10,2)
+  calcium_mg decimal(10,2)
+  note text
+  time_stamp timestamptz [not null]
+}
+
+Table daily_sleep_records {
+  sleep_record_id uuid [pk]
+  diary_id uuid [not null, unique]
+  sleep_time time
+  wake_time time
+  sleep_duration_hours decimal(5,2)
+  source varchar(64)
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+}
+
+Table vital_sign_readings {
+  reading_id bigint [pk, increment]
+  user_id uuid [not null]
+  source varchar(64) [not null]
+  metric_type varchar(64) [not null]
+  value_numeric decimal(10,3)
+  unit varchar(32)
+  payload jsonb
+  measured_at timestamptz [not null]
+  received_at timestamptz [not null]
+}
+
+Table patient_ml_profiles {
+  patient_id uuid [pk]
+  demog1_riagendr smallint
+  demog1_ridreth3 smallint
+  demog1_dmdeduc smallint
+  demog1_dmdfmsiz smallint
+  demog1_dmdhhsiz smallint
+  demog1_dmdhhsza smallint
+  demog1_dmdhhszb smallint
+  demog1_dmdhhsze smallint
+  demog1_dmdmartl smallint
+  quest22_smq020 smallint
+  quest22_smq890 smallint
+  quest22_smq900 smallint
+  quest23_smd470 smallint
+  quest1_alq111 smallint
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+}
+
+Table patient_ml_assessments {
+  assessment_id uuid [pk]
+  patient_id uuid [not null]
+  assessment_date date [not null]
+  exami1_bpxpls smallint
+  labor1_lbdtcsi decimal(10,2)
+  labor2_urdflow1 decimal(10,2)
+  labor2_urdtime1 decimal(10,2)
+  labor2_urxvol1 decimal(10,2)
+  quest11_hiq011 smallint
+  quest12_heq010 smallint
+  quest12_heq030 smallint
+  quest15_kiq022 smallint
+  quest15_kiq026 smallint
+  quest16_mcq010 smallint
+  quest16_mcq160b smallint
+  quest16_mcq220 smallint
+  quest16_mcq300a smallint
+  quest16_mcq300c smallint
+  quest17_dpq020 smallint
+  quest17_dpq030 smallint
+  quest17_dpq040 smallint
+  quest20_pfq061b smallint
+  quest20_pfq061c smallint
+  quest20_pfq061h smallint
+  quest3_cdq009 smallint
+  quest3_cdq010 smallint
+  quest7_diq010 smallint
+  quest9_dlq050 smallint
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+}
+
+Table patient_ml_inference_results {
+  result_id uuid [pk]
+  patient_id uuid [not null]
+  requested_by_user_id uuid
+  model_key varchar(64) [not null]
+  inference_type varchar(32) [not null]
+  request_context varchar(32)
+  ml_version varchar(64) [not null]
+  payload_hash varchar(128) [not null]
+  payload jsonb
+  source_summary jsonb
+  window_start_date date [not null]
+  window_end_date date [not null]
+  upstream_endpoint text
+  upstream_status int
+  upstream_body jsonb
+  generated_at timestamptz [not null]
+  created_at timestamptz [not null]
+}
+
+Table patient_heart_risk_assessments {
+  assessment_id uuid [pk]
+  patient_id uuid [not null]
+  assessment_date date [not null]
+  age smallint
+  sex smallint
+  chest_pain_type smallint
+  resting_bp_s int
+  fasting_blood_sugar smallint
+  max_heart_rate int
+  exercise_angina smallint
+  old_peak decimal(5,2)
+  st_slope smallint
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+}
+
+Table medications {
+  medication_id uuid [pk]
+  user_id uuid [not null]
+  name varchar(120) [not null]
+  description text
+  condition_tag varchar(64)
+  form varchar(50)
+  color varchar(50)
+  single_dose decimal(10,2)
+  single_dose_unit varchar(32)
+  start_date date
+  frequency varchar(16) [not null]
+  num_of_days smallint
+  note text
+  created_at timestamptz [not null]
+}
+
+Table medication_schedules {
+  schedule_id uuid [pk]
+  user_id uuid [not null]
+  medication_id uuid [not null]
+  schedule_time time [not null]
+  day_of_week smallint
+  created_at timestamptz [not null]
+}
+
+Table medication_logs {
+  medication_log_id uuid [pk]
+  user_id uuid [not null]
+  medication_id uuid [not null]
+  status varchar(16) [not null]
+  medication_time time
+  medication_date date [not null]
+  created_at timestamptz [not null]
+}
+
+Table fcm_device_tokens {
+  fcm_token_id uuid [pk]
+  user_id uuid [not null]
+  fcm_token varchar [not null, unique]
+  platform varchar(16) [not null]
+  device_id varchar(255)
+  device_name varchar(255)
+  app_version varchar(64)
+  app_build varchar(32)
+  locale varchar(16)
+  timezone varchar(64)
+  is_active boolean [not null]
+  last_seen_at timestamptz [not null]
+  revoked_at timestamptz
+  failure_count int [not null]
+  last_failure_code varchar(128)
+  last_sent_at timestamptz
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+}
+
+Table push_notification_logs {
+  notification_log_id uuid [pk]
+  user_id uuid [not null]
+  fcm_token_id uuid
+  requested_by_user_id uuid
+  dedupe_key varchar(255)
+  notification_type varchar(64) [not null]
+  title varchar(255) [not null]
+  body text [not null]
+  data_payload jsonb
+  delivery_status varchar(32) [not null]
+  provider_message_id varchar(255)
+  provider_error_code varchar(128)
+  provider_response jsonb
+  sent_at timestamptz
+  delivered_at timestamptz
+  failed_at timestamptz
+  created_at timestamptz [not null]
+}
+
+Table education_categories {
+  category_id uuid [pk]
+  slug varchar(120) [not null, unique]
+  name varchar(120) [not null]
+  description text
+  sort_order int [not null]
+  is_active boolean [not null]
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+}
+
+Table education_articles {
+  article_id uuid [pk]
+  author_user_id uuid [not null]
+  category_id uuid
+  slug varchar(200) [not null, unique]
+  title varchar(200) [not null]
+  excerpt varchar(500)
+  content_markdown text [not null]
+  cover_image_url text
+  cover_image_public_id varchar(255)
+  status varchar(32) [not null]
+  visibility varchar(32) [not null]
+  approved_by uuid
+  approved_at timestamptz
+  last_reviewed_by uuid
+  last_reviewed_at timestamptz
+  rejection_reason text
+  published_at timestamptz
+  like_count int [not null]
+  comment_count int [not null]
+  view_count int [not null]
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+}
+
+Table education_article_revisions {
+  revision_id uuid [pk]
+  article_id uuid [not null]
+  author_user_id uuid [not null]
+  category_id uuid
+  slug varchar(200) [not null]
+  title varchar(200) [not null]
+  excerpt varchar(500)
+  content_markdown text [not null, note: 'snapshot utuh Markdown/MDX untuk review admin']
+  cover_image_url text
+  cover_image_public_id varchar(255)
+  tag_slugs jsonb
+  status varchar(32) [not null]
+  submitted_at timestamptz
+  reviewed_by uuid
+  reviewed_at timestamptz
+  rejection_reason text
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+}
+
+Table education_article_images {
+  image_id uuid [pk]
+  article_id uuid
+  uploaded_by_user_id uuid
+  image_url text [not null]
+  public_id varchar(255) [not null]
+  kind varchar(16) [not null]
+  created_at timestamptz [not null]
+}
+
+Table education_tags {
+  tag_id uuid [pk]
+  slug varchar(120) [not null, unique]
+  name varchar(120) [not null]
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+}
+
+Table education_article_tags {
+  article_id uuid [pk]
+  tag_id uuid [pk]
+}
+
+Table education_article_likes {
+  article_id uuid [pk]
+  user_id uuid [pk]
+  created_at timestamptz [not null]
+}
+
+Table education_article_comments {
+  comment_id uuid [pk]
+  article_id uuid [not null]
+  user_id uuid [not null]
+  parent_comment_id uuid
+  content text [not null]
+  status varchar(32) [not null]
+  hidden_by uuid
+  hidden_at timestamptz
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+}
+
+TableGroup auth_user {
+  roles
+  users
+  user_roles
+  email_verifications
+}
+
+TableGroup patient_doctor_relation {
+  patient_profiles
+  doctor_profiles
+  emergency_contacts
+  doctor_patients
+  patient_shares
+  dashboard_pairing_sessions
+}
+
+TableGroup diary_and_vitals {
+  heart_diaries
+  daily_metrics
+  daily_symptoms
+  daily_activities
+  daily_consumptions
+  daily_sleep_records
+  vital_sign_readings
+}
+
+TableGroup ml_analytics {
+  patient_ml_profiles
+  patient_ml_assessments
+  patient_heart_risk_assessments
+  patient_ml_inference_results
+}
+
+TableGroup medication_notification {
+  medications
+  medication_schedules
+  medication_logs
+  fcm_device_tokens
+  push_notification_logs
+}
+
+TableGroup education_cms {
+  education_categories
+  education_articles
+  education_article_revisions
+  education_article_images
+  education_tags
+  education_article_tags
+  education_article_likes
+  education_article_comments
+}
+
+Ref: user_roles.user_id > users.user_id
+Ref: user_roles.role_id > roles.role_id
+Ref: email_verifications.user_id > users.user_id
+Ref: emergency_contacts.user_id > users.user_id
+Ref: patient_profiles.patient_id - users.user_id
+Ref: doctor_profiles.doctor_id - users.user_id
+Ref: doctor_profiles.verified_by > users.user_id
+Ref: doctor_patients.doctor_id > users.user_id
+Ref: doctor_patients.patient_id > users.user_id
+Ref: patient_shares.patient_id > users.user_id
+Ref: patient_shares.created_by > users.user_id
+Ref: dashboard_pairing_sessions.doctor_id > users.user_id
+Ref: dashboard_pairing_sessions.confirmed_by_patient_id > users.user_id
+Ref: heart_diaries.user_id > users.user_id
+Ref: daily_metrics.diary_id > heart_diaries.diary_id
+Ref: daily_symptoms.diary_id > heart_diaries.diary_id
+Ref: daily_activities.diary_id > heart_diaries.diary_id
+Ref: daily_consumptions.diary_id > heart_diaries.diary_id
+Ref: daily_sleep_records.diary_id - heart_diaries.diary_id
+Ref: vital_sign_readings.user_id > users.user_id
+Ref: patient_ml_profiles.patient_id - users.user_id
+Ref: patient_ml_assessments.patient_id > users.user_id
+Ref: patient_heart_risk_assessments.patient_id > users.user_id
+Ref: patient_ml_inference_results.patient_id > users.user_id
+Ref: patient_ml_inference_results.requested_by_user_id > users.user_id
+Ref: medications.user_id > users.user_id
+Ref: medication_schedules.user_id > users.user_id
+Ref: medication_schedules.medication_id > medications.medication_id
+Ref: medication_logs.user_id > users.user_id
+Ref: medication_logs.medication_id > medications.medication_id
+Ref: fcm_device_tokens.user_id > users.user_id
+Ref: push_notification_logs.user_id > users.user_id
+Ref: push_notification_logs.fcm_token_id > fcm_device_tokens.fcm_token_id
+Ref: push_notification_logs.requested_by_user_id > users.user_id
+Ref: education_articles.author_user_id > users.user_id
+Ref: education_articles.category_id > education_categories.category_id
+Ref: education_articles.approved_by > users.user_id
+Ref: education_articles.last_reviewed_by > users.user_id
+Ref: education_article_revisions.article_id > education_articles.article_id
+Ref: education_article_revisions.author_user_id > users.user_id
+Ref: education_article_revisions.category_id > education_categories.category_id
+Ref: education_article_revisions.reviewed_by > users.user_id
+Ref: education_article_images.article_id > education_articles.article_id
+Ref: education_article_images.uploaded_by_user_id > users.user_id
+Ref: education_article_tags.article_id > education_articles.article_id
+Ref: education_article_tags.tag_id > education_tags.tag_id
+Ref: education_article_likes.article_id > education_articles.article_id
+Ref: education_article_likes.user_id > users.user_id
+Ref: education_article_comments.article_id > education_articles.article_id
+Ref: education_article_comments.user_id > users.user_id
+Ref: education_article_comments.parent_comment_id > education_article_comments.comment_id
+Ref: education_article_comments.hidden_by > users.user_id

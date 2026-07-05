@@ -1,0 +1,160 @@
+Project pulsewise_erd_ringkasan_backend {
+  database_type: 'PostgreSQL'
+  Note: '''
+  ERD ringkas untuk subbab inti naskah.
+  Diagram ini merangkum relasi utama lintas modul backend PulseWise
+  tanpa menampilkan seluruh tabel detail yang sudah dipisahkan pada lampiran.
+  Admin direpresentasikan sebagai role pada roles dan user_roles.
+  '''
+}
+
+Table roles {
+  role_id smallint [pk]
+  code varchar(32) [not null, unique]
+  label varchar(64) [not null]
+}
+
+Table users {
+  user_id uuid [pk]
+  username varchar(100) [not null, unique]
+  email varchar(255) [not null, unique]
+  account_status varchar(32) [not null]
+  onboarding_completed boolean [not null]
+  email_verified_at timestamptz
+  created_at timestamptz [not null]
+}
+
+Table user_roles {
+  user_id uuid [pk]
+  role_id smallint [pk]
+  assigned_at timestamptz [not null]
+}
+
+Table patient_profiles {
+  patient_id uuid [pk]
+  date_of_birth date
+  sex varchar(16)
+  body_height_cm decimal(5,2)
+  blood_type varchar(3)
+}
+
+Table doctor_profiles {
+  doctor_id uuid [pk]
+  specialization varchar(120)
+  hospital_name varchar(150)
+  is_verified boolean [not null]
+  verified_by uuid
+  verified_at timestamptz
+}
+
+Table doctor_patients {
+  doctor_id uuid [pk]
+  patient_id uuid [pk]
+  source varchar(50) [not null]
+  linked_at timestamptz [not null]
+  is_active boolean [not null]
+}
+
+Table heart_diaries {
+  diary_id uuid [pk]
+  user_id uuid [not null]
+  diary_date date [not null]
+  created_at timestamptz [not null]
+}
+
+Table daily_metrics {
+  metric_id uuid [pk]
+  diary_id uuid [not null]
+  body_weight decimal(5,2)
+  bmi decimal(5,2)
+  systolic_pressure int
+  diastolic_pressure int
+  heart_rate int
+  oxygen_saturation int
+  time_stamp timestamptz [not null]
+}
+
+Table patient_ml_profiles {
+  patient_id uuid [pk]
+  updated_at timestamptz [not null]
+}
+
+Table patient_ml_inference_results {
+  result_id uuid [pk]
+  patient_id uuid [not null]
+  requested_by_user_id uuid [not null]
+  model_key varchar(64) [not null]
+  result_type varchar(32) [not null]
+  risk_label varchar(64)
+  created_at timestamptz [not null]
+}
+
+Table medications {
+  medication_id uuid [pk]
+  user_id uuid [not null]
+  name varchar(120) [not null]
+  status varchar(32) [not null]
+  created_at timestamptz [not null]
+}
+
+Table medication_schedules {
+  schedule_id uuid [pk]
+  medication_id uuid [not null]
+  user_id uuid [not null]
+  frequency varchar(32) [not null]
+  created_at timestamptz [not null]
+}
+
+Table education_categories {
+  category_id uuid [pk]
+  name varchar(120) [not null]
+  slug varchar(120) [not null, unique]
+}
+
+Table education_articles {
+  article_id uuid [pk]
+  author_user_id uuid [not null]
+  category_id uuid
+  title varchar(200) [not null]
+  status varchar(32) [not null]
+  approved_by uuid
+  published_at timestamptz
+  created_at timestamptz [not null]
+}
+
+Table education_article_comments {
+  comment_id uuid [pk]
+  article_id uuid [not null]
+  user_id uuid [not null]
+  parent_comment_id uuid
+  status varchar(32) [not null]
+  created_at timestamptz [not null]
+}
+
+Ref: user_roles.user_id > users.user_id
+Ref: user_roles.role_id > roles.role_id
+
+Ref: patient_profiles.patient_id - users.user_id
+Ref: doctor_profiles.doctor_id - users.user_id
+Ref: doctor_profiles.verified_by > users.user_id
+
+Ref: doctor_patients.doctor_id > users.user_id
+Ref: doctor_patients.patient_id > users.user_id
+
+Ref: heart_diaries.user_id > users.user_id
+Ref: daily_metrics.diary_id > heart_diaries.diary_id
+
+Ref: patient_ml_profiles.patient_id - users.user_id
+Ref: patient_ml_inference_results.patient_id > users.user_id
+Ref: patient_ml_inference_results.requested_by_user_id > users.user_id
+
+Ref: medications.user_id > users.user_id
+Ref: medication_schedules.medication_id > medications.medication_id
+Ref: medication_schedules.user_id > users.user_id
+
+Ref: education_articles.author_user_id > users.user_id
+Ref: education_articles.category_id > education_categories.category_id
+Ref: education_articles.approved_by > users.user_id
+Ref: education_article_comments.article_id > education_articles.article_id
+Ref: education_article_comments.user_id > users.user_id
+Ref: education_article_comments.parent_comment_id > education_article_comments.comment_id

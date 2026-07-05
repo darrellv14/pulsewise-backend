@@ -1,0 +1,133 @@
+@startuml
+title Use Case Diagram - Integrasi Sistem Eksternal PulseWise Backend
+
+top to bottom direction
+
+' =========================
+' Global Style
+' =========================
+skinparam handwritten false
+skinparam linetype ortho
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontColor #222222
+skinparam ArrowColor #555555
+skinparam ArrowThickness 1
+skinparam nodesep 24
+skinparam ranksep 28
+
+skinparam package {
+  BackgroundColor #F2F2F2
+  BorderColor #7A7A7A
+  FontColor #222222
+  BorderThickness 1
+}
+
+skinparam rectangle {
+  BackgroundColor #EDEDED
+  BorderColor #666666
+  FontColor #222222
+  BorderThickness 1
+}
+
+skinparam actor {
+  BackgroundColor #FAFAFA
+  BorderColor #555555
+  FontColor #222222
+  BorderThickness 1
+}
+
+skinparam usecase {
+  BackgroundColor #F7F7F7
+  BorderColor #666666
+  FontColor #222222
+  BorderThickness 1
+}
+
+' =========================
+' External Actors
+' =========================
+actor "Google OAuth" as Google
+actor "Email Service" as Email
+actor "Health Connect /\nSmartwatch" as Wearable
+actor "HFMS ML\n(Milik Kating)" as HFMS
+actor "Second ML Service\n(Heart Risk)" as HeartRiskML
+actor "Gemini AI" as Gemini
+actor "FCM /\nPush Service" as FCM
+actor "Cloudinary" as Cloudinary
+
+' =========================
+' System Boundary
+' =========================
+rectangle "PulseWise Backend - Integrasi Sistem Eksternal" as System {
+
+  package "Autentikasi dan Biometrik" {
+    usecase "Autentikasi melalui\nGoogle" as X_GoogleAuth
+    usecase "Pengiriman OTP\nEmail" as X_EmailOtp
+    usecase "Pengiriman OTP Hapus\nAkun Permanen" as X_DeleteOtp
+    usecase "Penerimaan dan\nPenyimpanan Data\nBiometrik" as X_Biometric
+
+    X_GoogleAuth -[hidden]right-> X_EmailOtp
+    X_EmailOtp -[hidden]down-> X_DeleteOtp
+    X_DeleteOtp -[hidden]down-> X_Biometric
+  }
+
+  package "ML dan Nutrisi" {
+    usecase "Pembangunan Payload\nHFMS" as X_MLBuildPayload
+    usecase "Pertukaran Data\nML HFMS" as X_MLService
+    usecase "Penyimpanan Riwayat\nHasil ML" as X_MLHistory
+    usecase "Pertukaran Data\nSecond ML" as X_SecondMLService
+    usecase "Penyimpanan Riwayat\nHasil Second ML" as X_SecondMLHistory
+    usecase "Analisis Nutrisi\nBerbasis AI" as X_NutritionRequest
+
+    X_MLBuildPayload -[hidden]right-> X_MLService
+    X_MLBuildPayload -[hidden]down-> X_MLHistory
+    X_MLService -[hidden]right-> X_SecondMLService
+    X_MLHistory -[hidden]right-> X_SecondMLHistory
+    X_SecondMLHistory -[hidden]right-> X_NutritionRequest
+  }
+
+  package "Notifikasi" {
+    usecase "Pengiriman Push\nNotification" as X_FcmPush
+  }
+
+  package "Edukasi dan Media" {
+    usecase "Pembuatan Signature Upload\nGambar Artikel" as X_EduSignature
+    usecase "Unggah Cover / Inline Image\nke Cloudinary" as X_EduMediaUpload
+
+    X_EduSignature -[hidden]right-> X_EduMediaUpload
+  }
+}
+
+' =========================
+' Layout Helper Antar Package
+' =========================
+X_Biometric -[hidden]down-> X_MLBuildPayload
+X_NutritionRequest -[hidden]down-> X_FcmPush
+X_FcmPush -[hidden]down-> X_EduSignature
+
+' =========================
+' External System Relations
+' =========================
+Google --> X_GoogleAuth
+Email --> X_EmailOtp
+Email --> X_DeleteOtp
+Wearable --> X_Biometric
+
+HFMS --> X_MLService
+HeartRiskML --> X_SecondMLService
+Gemini --> X_NutritionRequest
+FCM --> X_FcmPush
+Cloudinary --> X_EduMediaUpload
+
+' =========================
+' Use Case Dependencies
+' =========================
+X_MLBuildPayload .> X_MLService : <<include>>
+X_MLService .> X_MLHistory : <<include>>
+X_SecondMLService .> X_SecondMLHistory : <<include>>
+X_EduSignature .> X_EduMediaUpload : <<include>>
+
+@enduml

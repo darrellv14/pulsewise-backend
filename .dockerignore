@@ -11,6 +11,10 @@ npm-debug.log
 coverage
 .postman
 postman
+scripts/postman
+scripts/testing
+scripts/pairing-demo
+scripts/loadtest
 tests
 IMPLEMENTATION_PLAN.md
 .codex-pulsewise-server.out.log

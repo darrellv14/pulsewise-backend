@@ -1,0 +1,179 @@
+Project pulsewise_erd_ml_hfms {
+  database_type: 'PostgreSQL'
+  Note: '''
+  ERD domain analitik ML, mencakup HFMS sebagai ML utama dan second ML heart risk.
+  requested_by_user_id dapat merepresentasikan pasien, dokter, maupun admin
+  karena requester tetap berasal dari tabel users.
+  model_key pada hasil inferensi membedakan hasil HFMS dan second ML.
+  '''
+}
+
+Table users {
+  user_id uuid [pk]
+  username varchar(100) [not null]
+  email varchar(255) [not null]
+  first_name varchar(100)
+  last_name varchar(100)
+}
+
+Table patient_profiles {
+  patient_id uuid [pk]
+  date_of_birth date
+  sex varchar(16)
+  body_height_cm decimal(5,2)
+  health_connect_status varchar(32)
+}
+
+Table patient_ml_profiles {
+  patient_id uuid [pk]
+  demog1_riagendr smallint
+  demog1_ridreth3 smallint
+  demog1_dmdeduc smallint
+  demog1_dmdmartl smallint
+  quest22_smq020 smallint
+  quest23_smd470 smallint
+  quest1_alq111 smallint
+  updated_at timestamptz [not null]
+}
+
+Table patient_ml_assessments {
+  assessment_id uuid [pk]
+  patient_id uuid [not null]
+  assessment_date date [not null]
+  exami1_bpxpls smallint
+  labor1_lbdtcsi decimal(10,2)
+  labor2_urdflow1 decimal(10,2)
+  labor2_urdtime1 decimal(10,2)
+  labor2_urxvol1 decimal(10,2)
+  quest11_hiq011 smallint
+  quest16_mcq010 smallint
+  quest17_dpq020 smallint
+  quest7_diq010 smallint
+  updated_at timestamptz [not null]
+}
+
+Table patient_ml_inference_results {
+  result_id uuid [pk]
+  patient_id uuid [not null]
+  requested_by_user_id uuid
+  model_key varchar(64) [not null]
+  inference_type varchar(32) [not null]
+  request_context varchar(32)
+  ml_version varchar(64) [not null]
+  payload_hash varchar(128) [not null]
+  window_start_date date [not null]
+  window_end_date date [not null]
+  upstream_endpoint varchar
+  upstream_status int
+  generated_at timestamptz [not null]
+}
+
+Table patient_heart_risk_assessments {
+  assessment_id uuid [pk]
+  patient_id uuid [not null]
+  assessment_date date [not null]
+  age smallint
+  sex smallint
+  chest_pain_type smallint
+  resting_bp_s int
+  fasting_blood_sugar smallint
+  max_heart_rate int
+  exercise_angina smallint
+  old_peak decimal(5,2)
+  st_slope smallint
+  updated_at timestamptz [not null]
+}
+
+Table heart_diaries {
+  diary_id uuid [pk]
+  user_id uuid [not null]
+  diary_date date [not null]
+}
+
+Table daily_metrics {
+  metric_id uuid [pk]
+  diary_id uuid [not null]
+  body_height decimal(5,2)
+  body_weight decimal(5,2)
+  bmi decimal(5,2)
+  systolic_pressure int
+  diastolic_pressure int
+  heart_rate int
+  oxygen_saturation int
+  time_stamp timestamptz [not null]
+}
+
+Table daily_activities {
+  activity_id uuid [pk]
+  diary_id uuid [not null]
+  activity_category varchar(32)
+  intensity_level varchar(32)
+  transport_mode varchar(32)
+  outdoor_minutes int
+  time_stamp timestamptz [not null]
+}
+
+Table daily_consumptions {
+  consumption_id uuid [pk]
+  diary_id uuid [not null]
+  nutrition_source varchar(32)
+  energy_kcal decimal(10,2)
+  protein_g decimal(10,2)
+  carbohydrate_g decimal(10,2)
+  sugar_g decimal(10,2)
+  fiber_g decimal(10,2)
+  total_fat_g decimal(10,2)
+  cholesterol_mg decimal(10,2)
+  calcium_mg decimal(10,2)
+  time_stamp timestamptz [not null]
+}
+
+Table daily_sleep_records {
+  sleep_record_id uuid [pk]
+  diary_id uuid [not null, unique]
+  sleep_time time
+  wake_time time
+  sleep_duration_hours decimal(5,2)
+}
+
+Table daily_symptoms {
+  symptom_id uuid [pk]
+  diary_id uuid [not null]
+  symptom_code varchar(80)
+  body_area varchar(80)
+  is_chest_pain boolean
+  pain_frequency_code smallint
+  pain_location_code smallint
+  time_stamp timestamptz [not null]
+}
+
+TableGroup subjek_ml {
+  users
+  patient_profiles
+  patient_ml_profiles
+  patient_ml_assessments
+  patient_heart_risk_assessments
+  patient_ml_inference_results
+}
+
+TableGroup sumber_fitur_ml {
+  heart_diaries
+  daily_metrics
+  daily_activities
+  daily_consumptions
+  daily_sleep_records
+  daily_symptoms
+}
+
+Ref: patient_profiles.patient_id - users.user_id
+Ref: patient_ml_profiles.patient_id - users.user_id
+Ref: patient_ml_assessments.patient_id > users.user_id
+Ref: heart_diaries.user_id > users.user_id
+Ref: daily_metrics.diary_id > heart_diaries.diary_id
+Ref: daily_activities.diary_id > heart_diaries.diary_id
+Ref: daily_consumptions.diary_id > heart_diaries.diary_id
+Ref: daily_sleep_records.diary_id - heart_diaries.diary_id
+Ref: daily_symptoms.diary_id > heart_diaries.diary_id
+Ref: patient_ml_inference_results.patient_id > users.user_id
+Ref: patient_ml_inference_results.requested_by_user_id > users.user_id
+Ref: patient_heart_risk_assessments.patient_id > users.user_id

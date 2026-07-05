@@ -1,0 +1,105 @@
+Project pulsewise_erd_relasi_dokter_pairing {
+  database_type: 'PostgreSQL'
+  Note: '''
+  ERD untuk relasi dokter-pasien, share code, pairing dashboard,
+  dan verifikasi akun dokter oleh admin.
+  '''
+}
+
+Table roles {
+  role_id smallint [pk]
+  code varchar(32) [not null, unique]
+  label varchar(64) [not null]
+}
+
+Table users {
+  user_id uuid [pk]
+  username varchar(100) [not null]
+  email varchar(255) [not null]
+  first_name varchar(100)
+  last_name varchar(100)
+  account_status varchar(32) [not null]
+  email_verified_at timestamptz
+  is_active boolean [not null]
+}
+
+Table user_roles {
+  user_id uuid [pk]
+  role_id smallint [pk]
+  assigned_at timestamptz [not null]
+}
+
+Table doctor_profiles {
+  doctor_id uuid [pk]
+  specialization varchar(120)
+  license_no varchar(120)
+  hospital_name varchar(150)
+  is_verified boolean [not null]
+  verified_at timestamptz
+  verified_by uuid
+  verification_note text
+  rejection_reason text
+}
+
+Table patient_profiles {
+  patient_id uuid [pk]
+  date_of_birth date
+  sex varchar(16)
+  body_height_cm decimal(5,2)
+}
+
+Table doctor_patients {
+  doctor_id uuid [pk]
+  patient_id uuid [pk]
+  source varchar(50) [not null]
+  linked_at timestamptz [not null]
+  is_active boolean [not null]
+}
+
+Table patient_shares {
+  share_id uuid [pk]
+  patient_id uuid [not null]
+  share_code varchar(100) [not null, unique]
+  expires_at timestamptz
+  created_by uuid
+  created_at timestamptz [not null]
+  revoked_at timestamptz
+}
+
+Table dashboard_pairing_sessions {
+  pairing_session_id uuid [pk]
+  doctor_id uuid [not null]
+  pairing_token_hash varchar [not null, unique]
+  status varchar(32) [not null]
+  expires_at timestamptz [not null]
+  confirmed_at timestamptz
+  confirmed_by_patient_id uuid
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+}
+
+TableGroup identitas_aktor {
+  roles
+  users
+  user_roles
+  doctor_profiles
+  patient_profiles
+}
+
+TableGroup relasi_dan_pairing {
+  doctor_patients
+  patient_shares
+  dashboard_pairing_sessions
+}
+
+Ref: user_roles.user_id > users.user_id
+Ref: user_roles.role_id > roles.role_id
+Ref: doctor_profiles.doctor_id - users.user_id
+Ref: doctor_profiles.verified_by > users.user_id
+Ref: patient_profiles.patient_id - users.user_id
+Ref: doctor_patients.doctor_id > users.user_id
+Ref: doctor_patients.patient_id > users.user_id
+Ref: patient_shares.patient_id > users.user_id
+Ref: patient_shares.created_by > users.user_id
+Ref: dashboard_pairing_sessions.doctor_id > users.user_id
+Ref: dashboard_pairing_sessions.confirmed_by_patient_id > users.user_id

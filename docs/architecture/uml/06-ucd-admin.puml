@@ -1,0 +1,122 @@
+@startuml
+title Use Case Diagram - Admin PulseWise Backend
+
+top to bottom direction
+
+' =========================
+' Global Style
+' =========================
+skinparam handwritten false
+skinparam linetype ortho
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontColor #222222
+skinparam ArrowColor #555555
+skinparam ArrowThickness 1
+skinparam nodesep 24
+skinparam ranksep 28
+
+skinparam package {
+  BackgroundColor #F2F2F2
+  BorderColor #7A7A7A
+  FontColor #222222
+  BorderThickness 1
+}
+
+skinparam rectangle {
+  BackgroundColor #EDEDED
+  BorderColor #666666
+  FontColor #222222
+  BorderThickness 1
+}
+
+skinparam actor {
+  BackgroundColor #FAFAFA
+  BorderColor #555555
+  FontColor #222222
+  BorderThickness 1
+}
+
+skinparam usecase {
+  BackgroundColor #F7F7F7
+  BorderColor #666666
+  FontColor #222222
+  BorderThickness 1
+}
+
+' =========================
+' Actor
+' =========================
+actor "Admin" as Admin
+
+' =========================
+' System Boundary
+' =========================
+rectangle "PulseWise Backend - Use Case Admin" as System {
+
+  package "Manajemen Pengguna" {
+    usecase "Login dan Akses\nRingkasan Admin" as A_Login
+    usecase "Pengelolaan Data dan\nStatus Pengguna" as A_UserList
+    usecase "Akses Detail\nPengguna" as A_UserDetail
+
+    A_Login -[hidden]right-> A_UserList
+    A_UserList -[hidden]down-> A_UserDetail
+  }
+
+  package "Verifikasi Dokter" {
+    usecase "Pemeriksaan Daftar\nDokter Pending" as A_PendingDoctors
+    usecase "Keputusan Verifikasi\nAkun Dokter" as A_DoctorDecision
+    usecase "Penangguhan / Aktivasi\nAkun Dokter" as A_DoctorLifecycle
+
+    A_PendingDoctors -[hidden]right-> A_DoctorDecision
+    A_DoctorDecision -[hidden]down-> A_DoctorLifecycle
+  }
+
+  package "Moderasi Edukasi CMS" {
+    usecase "Pemeriksaan Artikel Baru\nPending Review" as A_PendingArticles
+    usecase "Pemeriksaan Revisi\nArtikel Pending" as A_PendingRevisions
+    usecase "Review Detail dan Diff\nKonten Artikel" as A_ReviewArticle
+    usecase "Approve / Reject\nArtikel atau Revisi" as A_ReviewDecision
+    usecase "Edit dan Hard Delete\nArtikel Mana Pun" as A_ManageArticles
+    usecase "Moderasi Komentar\nArtikel" as A_CommentModeration
+
+    A_PendingArticles -[hidden]right-> A_PendingRevisions
+    A_PendingArticles -[hidden]down-> A_ReviewArticle
+    A_ReviewArticle -[hidden]right-> A_ReviewDecision
+    A_ReviewDecision -[hidden]down-> A_ManageArticles
+    A_ManageArticles -[hidden]right-> A_CommentModeration
+  }
+}
+
+' =========================
+' Layout Helper Antar Package
+' =========================
+A_UserDetail -[hidden]down-> A_PendingDoctors
+A_DoctorLifecycle -[hidden]down-> A_PendingArticles
+
+' =========================
+' Actor Relations
+' =========================
+Admin --> A_Login
+Admin --> A_UserList
+Admin --> A_PendingDoctors
+Admin --> A_PendingArticles
+Admin --> A_PendingRevisions
+Admin --> A_ManageArticles
+
+' =========================
+' Use Case Dependencies
+' =========================
+A_UserList .> A_UserDetail : <<include>>
+
+A_PendingDoctors .> A_DoctorDecision : <<include>>
+A_PendingDoctors .> A_DoctorLifecycle : <<include>>
+
+A_PendingArticles .> A_ReviewArticle : <<include>>
+A_PendingRevisions .> A_ReviewArticle : <<include>>
+A_ReviewArticle .> A_ReviewDecision : <<include>>
+A_ManageArticles .> A_CommentModeration : <<extend>>
+
+@enduml

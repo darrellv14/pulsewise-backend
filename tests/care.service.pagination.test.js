@@ -17,6 +17,7 @@ const profileRepository = require('../src/repositories/profileRepository');
 const doctorPatientRepository = require('../src/repositories/doctorPatientRepository');
 const dashboardRepository = require('../src/repositories/dashboardRepository');
 const careService = require('../src/services/careService');
+const { ACCOUNT_STATUSES } = require('../src/constants/enums');
 
 describe('careService pagination normalization', () => {
   afterEach(() => {
@@ -73,6 +74,7 @@ describe('careService pagination normalization', () => {
       actor: {
         userId: 'ba209fa8-42eb-42cc-9ece-36ef47993b40',
         role: 'doctor',
+        accountStatus: ACCOUNT_STATUSES.ACTIVE,
       },
       doctorId: 'ba209fa8-42eb-42cc-9ece-36ef47993b40',
       query: {

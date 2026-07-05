@@ -2,10 +2,21 @@ jest.mock('../src/config/redis', () => ({
   getRedisClient: jest.fn().mockResolvedValue(null),
 }));
 
+const env = require('../src/config/env');
 const { getRedisClient } = require('../src/config/redis');
 const { createRateLimiter } = require('../src/middlewares/rateLimit');
 
 describe('rate limit middleware', () => {
+  const originalRateLimitEnabled = env.rateLimit.enabled;
+
+  beforeEach(() => {
+    env.rateLimit.enabled = true;
+  });
+
+  afterAll(() => {
+    env.rateLimit.enabled = originalRateLimitEnabled;
+  });
+
   test('returns 429 after exceeding configured in-memory limit', async () => {
     const limiter = createRateLimiter({
       name: 'auth-test',

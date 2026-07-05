@@ -35,8 +35,8 @@ const EDUCATION_SORTS = Object.freeze({
 });
 
 const EDUCATION_AUTHOR_BADGES = Object.freeze({
-  DOCTOR: 'Ditulis Dokter',
-  ADMIN: 'Ditulis Admin',
+  DOCTOR: 'Dokter',
+  ADMIN: 'Admin',
 });
 
 module.exports = {

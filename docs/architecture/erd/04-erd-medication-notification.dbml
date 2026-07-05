@@ -1,0 +1,108 @@
+Project pulsewise_erd_medication_notification {
+  database_type: 'PostgreSQL'
+  Note: '''
+  ERD domain medication, reminder, log, token FCM, dan log notifikasi push.
+  requested_by_user_id pada log notifikasi tetap mereferensikan users sehingga
+  request dapat berasal dari pasien, dokter, atau admin sesuai konteks layanan.
+  '''
+}
+
+Table users {
+  user_id uuid [pk]
+  username varchar(100) [not null]
+  email varchar(255) [not null]
+  first_name varchar(100)
+  last_name varchar(100)
+}
+
+Table medications {
+  medication_id uuid [pk]
+  user_id uuid [not null]
+  name varchar(120) [not null]
+  condition_tag varchar(64)
+  form varchar(50)
+  single_dose decimal(10,2)
+  single_dose_unit varchar(32)
+  start_date date
+  frequency varchar(16) [not null]
+  num_of_days smallint
+  created_at timestamptz [not null]
+}
+
+Table medication_schedules {
+  schedule_id uuid [pk]
+  user_id uuid [not null]
+  medication_id uuid [not null]
+  schedule_time time [not null]
+  day_of_week smallint
+  created_at timestamptz [not null]
+}
+
+Table medication_logs {
+  medication_log_id uuid [pk]
+  user_id uuid [not null]
+  medication_id uuid [not null]
+  status varchar(16) [not null]
+  medication_time time
+  medication_date date [not null]
+  created_at timestamptz [not null]
+}
+
+Table fcm_device_tokens {
+  fcm_token_id uuid [pk]
+  user_id uuid [not null]
+  fcm_token varchar [not null, unique]
+  platform varchar(16) [not null]
+  device_id varchar(255)
+  device_name varchar(255)
+  app_version varchar(64)
+  locale varchar(16)
+  timezone varchar(64)
+  is_active boolean [not null]
+  last_seen_at timestamptz [not null]
+  revoked_at timestamptz
+  failure_count int [not null]
+  last_failure_code varchar(128)
+  last_sent_at timestamptz
+  updated_at timestamptz [not null]
+}
+
+Table push_notification_logs {
+  notification_log_id uuid [pk]
+  user_id uuid [not null]
+  fcm_token_id uuid
+  requested_by_user_id uuid
+  dedupe_key varchar(255)
+  notification_type varchar(64) [not null]
+  title varchar(255) [not null]
+  body text [not null]
+  delivery_status varchar(32) [not null]
+  provider_message_id varchar(255)
+  provider_error_code varchar(128)
+  sent_at timestamptz
+  delivered_at timestamptz
+  failed_at timestamptz
+  created_at timestamptz [not null]
+}
+
+TableGroup regimen_obat {
+  users
+  medications
+  medication_schedules
+  medication_logs
+}
+
+TableGroup notifikasi_fcm {
+  fcm_device_tokens
+  push_notification_logs
+}
+
+Ref: medications.user_id > users.user_id
+Ref: medication_schedules.user_id > users.user_id
+Ref: medication_schedules.medication_id > medications.medication_id
+Ref: medication_logs.user_id > users.user_id
+Ref: medication_logs.medication_id > medications.medication_id
+Ref: fcm_device_tokens.user_id > users.user_id
+Ref: push_notification_logs.user_id > users.user_id
+Ref: push_notification_logs.fcm_token_id > fcm_device_tokens.fcm_token_id
+Ref: push_notification_logs.requested_by_user_id > users.user_id

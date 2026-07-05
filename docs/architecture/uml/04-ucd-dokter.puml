@@ -1,0 +1,172 @@
+@startuml
+title Use Case Diagram - Dokter PulseWise Backend
+
+top to bottom direction
+
+' =========================
+' Global Style
+' =========================
+skinparam handwritten false
+skinparam linetype ortho
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontColor #222222
+skinparam ArrowColor #555555
+skinparam ArrowThickness 1
+skinparam nodesep 22
+skinparam ranksep 26
+
+skinparam package {
+  BackgroundColor #F2F2F2
+  BorderColor #7A7A7A
+  FontColor #222222
+  BorderThickness 1
+}
+
+skinparam rectangle {
+  BackgroundColor #EDEDED
+  BorderColor #666666
+  FontColor #222222
+  BorderThickness 1
+}
+
+skinparam actor {
+  BackgroundColor #FAFAFA
+  BorderColor #555555
+  FontColor #222222
+  BorderThickness 1
+}
+
+skinparam usecase {
+  BackgroundColor #F7F7F7
+  BorderColor #666666
+  FontColor #222222
+  BorderThickness 1
+}
+
+' =========================
+' Main Actor
+' =========================
+actor "Dokter" as Doctor
+
+' =========================
+' System Boundary
+' =========================
+rectangle "PulseWise Backend - Use Case Dokter" as System {
+
+  package "Onboarding Dokter" {
+    usecase "Registrasi dan\nVerifikasi Awal" as D_Register
+    usecase "Akses Terbatas dan\nPelengkapan Profil" as D_RestrictedAccess
+    usecase "Verifikasi Akun\nDokter" as D_AdminVerify
+
+    D_Register -[hidden]right-> D_RestrictedAccess
+    D_RestrictedAccess -[hidden]down-> D_AdminVerify
+  }
+
+  package "Layanan Pasien" {
+    usecase "Pengelolaan Relasi\nDokter-Pasien" as D_PatientList
+    usecase "Penautan / Pemutusan\nRelasi Pasien" as D_Linking
+    usecase "Akses Dashboard dan\nDiari Pasien" as D_PatientSummary
+    usecase "Akses Vital dan\nLaporan Abnormal" as D_PatientVitals
+
+    D_PatientList -[hidden]right-> D_Linking
+    D_PatientList -[hidden]down-> D_PatientSummary
+    D_PatientSummary -[hidden]right-> D_PatientVitals
+  }
+
+  package "Pairing dan ML" {
+    usecase "Pengelolaan Pairing\nDashboard" as D_PairCreate
+    usecase "Pemantauan Status\nPairing" as D_PairMonitor
+    usecase "Pengelolaan Data\nML Pasien" as D_MLData
+    usecase "Kesiapan, Payload,\ndan Riwayat ML" as D_MLReadiness
+    usecase "Prediksi Risiko dan\nRekomendasi" as D_MLService
+    usecase "Assessment Second ML\nPasien" as D_SecondAssessment
+    usecase "Prediksi Risiko Jantung\nSecond ML" as D_SecondPredict
+
+    D_PairCreate -[hidden]right-> D_PairMonitor
+    D_PairCreate -[hidden]down-> D_MLData
+    D_MLData -[hidden]right-> D_MLReadiness
+    D_MLReadiness -[hidden]down-> D_MLService
+    D_MLService -[hidden]right-> D_SecondPredict
+    D_MLData -[hidden]down-> D_SecondAssessment
+  }
+
+  package "Edukasi dan Kontribusi" {
+    usecase "Akses Feed dan Detail\nArtikel Edukasi" as D_EduRead
+    usecase "Tulis / Edit Artikel\nEdukasi" as D_EduWrite
+    usecase "Ajukan Review dan\nRevisi Artikel" as D_EduSubmit
+    usecase "Like dan Komentar\nArtikel" as D_EduEngage
+
+    D_EduRead -[hidden]right-> D_EduWrite
+    D_EduRead -[hidden]down-> D_EduEngage
+    D_EduWrite -[hidden]down-> D_EduSubmit
+  }
+
+  package "Layanan Eksternal" {
+    rectangle "Admin" as AdminService
+    rectangle "Pasien" as PatientService
+    rectangle "HFMS ML" as HFMService
+    rectangle "Second ML\nHeart Risk" as SecondMlService
+    rectangle "FCM /\nPush Service" as FCMService
+
+    AdminService -[hidden]right-> PatientService
+    PatientService -[hidden]right-> HFMService
+    HFMService -[hidden]right-> SecondMlService
+    SecondMlService -[hidden]right-> FCMService
+  }
+}
+
+' =========================
+' Layout Helper Antar Package
+' =========================
+D_AdminVerify -[hidden]down-> D_PatientList
+D_PatientVitals -[hidden]down-> D_PairCreate
+D_MLService -[hidden]down-> D_EduRead
+D_EduSubmit -[hidden]down-> AdminService
+
+' =========================
+' Main Actor Relations
+' Dikurangi agar tidak melebar/spaghetti
+' =========================
+Doctor --> D_Register
+Doctor --> D_PatientList
+Doctor --> D_PairCreate
+Doctor --> D_MLData
+Doctor --> D_SecondAssessment
+Doctor --> D_SecondPredict
+Doctor --> D_EduRead
+Doctor --> D_EduWrite
+Doctor --> D_EduEngage
+
+' =========================
+' External Service Relations
+' =========================
+AdminService --> D_AdminVerify
+PatientService --> D_PairCreate
+HFMService --> D_MLData
+SecondMlService --> D_SecondPredict
+FCMService --> D_PairCreate
+
+' =========================
+' Use Case Dependencies
+' =========================
+D_Register .> D_RestrictedAccess : <<include>>
+D_RestrictedAccess .> D_AdminVerify : <<extend>>
+
+D_PatientList .> D_Linking : <<include>>
+D_PatientList .> D_PatientSummary : <<include>>
+D_PatientSummary .> D_PatientVitals : <<include>>
+
+D_PairCreate .> D_PairMonitor : <<include>>
+
+D_MLData .> D_MLReadiness : <<include>>
+D_MLData .> D_MLService : <<include>>
+
+D_SecondPredict .> D_SecondAssessment : <<include>>
+
+D_EduRead .> D_EduEngage : <<extend>>
+D_EduWrite .> D_EduSubmit : <<extend>>
+
+@enduml

@@ -1,0 +1,186 @@
+@startuml
+title Use Case Diagram - Pasien B PulseWise Backend
+
+top to bottom direction
+
+skinparam handwritten false
+skinparam linetype ortho
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontColor #222222
+skinparam ArrowColor #555555
+skinparam ArrowThickness 1
+skinparam nodesep 22
+skinparam ranksep 26
+
+skinparam actor {
+  BackgroundColor #FAFAFA
+  BorderColor #555555
+  FontColor #222222
+  BorderThickness 1
+}
+
+skinparam usecase {
+  BackgroundColor #F7F7F7
+  BorderColor #666666
+  FontColor #222222
+  BorderThickness 1
+}
+
+skinparam rectangle {
+  BackgroundColor #EDEDED
+  BorderColor #666666
+  FontColor #222222
+  BorderThickness 1
+}
+
+skinparam package {
+  BackgroundColor #F2F2F2
+  BorderColor #7A7A7A
+  FontColor #222222
+  BorderThickness 1
+}
+
+' =========================
+' Actors
+' =========================
+actor "Pasien" as Patient
+actor "FCM /\nPush Service" as FCM
+
+actor "HFMS ML" as HFMS
+actor "Second ML\nHeart Risk" as HeartRiskML
+actor "Gemini AI" as Gemini
+
+' Paksa Pasien dan FCM satu sisi kiri
+Patient -[hidden]down-> FCM
+
+' Paksa aktor layanan analitik satu sisi kanan
+HFMS -[hidden]down-> HeartRiskML
+HeartRiskML -[hidden]down-> Gemini
+
+' =========================
+' System Boundary
+' =========================
+rectangle "PulseWise Backend - Use Case Pasien B" as System {
+
+  package "Dashboard dan Medikasi" {
+    usecase "Akses Dashboard\nPribadi" as P_Dashboard
+    usecase "Pengelolaan\nMedikasi" as P_Medication
+    usecase "Pengelolaan Pengingat\nKonsumsi Obat" as P_Reminder
+    usecase "Pencatatan Log\nKonsumsi Obat" as P_MedLog
+
+    P_Dashboard -[hidden]right-> P_Medication
+    P_Dashboard -[hidden]down-> P_Reminder
+    P_Reminder -[hidden]right-> P_MedLog
+  }
+
+  package "ML dan Nutrisi" {
+    usecase "Pemeriksaan dan Layanan\nML HFMS" as P_MLService
+    usecase "Pemeriksaan Kesiapan\nData ML" as P_MLReadiness
+    usecase "Akses Payload\nML" as P_MLPayload
+    usecase "Prediksi Risiko dan\nRekomendasi" as P_MLPredict
+    usecase "Riwayat Hasil\nML" as P_MLHistory
+    usecase "Pengelolaan Assessment\nSecond ML" as P_SecondAssessment
+    usecase "Prediksi Risiko Jantung\nSecond ML" as P_SecondPredict
+    usecase "Riwayat Hasil\nSecond ML" as P_SecondHistory
+    usecase "Analisis Nutrisi\nBerbasis AI" as P_NutritionEstimate
+    usecase "Penyimpanan Hasil\nNutrisi ke Diari" as P_NutritionSave
+
+    P_MLService -[hidden]right-> P_MLReadiness
+    P_MLReadiness -[hidden]right-> P_MLPayload
+    P_MLService -[hidden]down-> P_MLHistory
+    P_MLHistory -[hidden]right-> P_MLPredict
+    P_SecondAssessment -[hidden]right-> P_SecondPredict
+    P_SecondPredict -[hidden]right-> P_SecondHistory
+    P_MLPredict -[hidden]down-> P_SecondAssessment
+    P_SecondHistory -[hidden]down-> P_NutritionEstimate
+    P_NutritionEstimate -[hidden]down-> P_NutritionSave
+  }
+
+  package "Relasi dan Notifikasi" {
+    usecase "Pengelolaan Pairing\nDokter" as P_Pairing
+    usecase "Pembuatan Kode\nBerbagi Pasien" as P_ShareCode
+    usecase "Konfirmasi Pairing\nQR Dokter" as P_PairConfirm
+    usecase "Pengelolaan\nToken FCM" as P_FcmToken
+    usecase "Pengujian Push\nNotification" as P_FcmTest
+
+    P_Pairing -[hidden]right-> P_ShareCode
+    P_Pairing -[hidden]down-> P_PairConfirm
+    P_PairConfirm -[hidden]right-> P_FcmToken
+    P_FcmToken -[hidden]right-> P_FcmTest
+  }
+
+  package "Edukasi dan Artikel" {
+    usecase "Akses Feed\nArtikel Edukasi" as P_EduFeed
+    usecase "Baca Detail\nArtikel" as P_EduDetail
+    usecase "Tulis / Edit\nArtikel Edukasi" as P_EduWrite
+    usecase "Ajukan Review\nArtikel" as P_EduSubmit
+    usecase "Like dan Komentar\nArtikel" as P_EduEngage
+
+    P_EduFeed -[hidden]right-> P_EduDetail
+    P_EduDetail -[hidden]down-> P_EduEngage
+    P_EduFeed -[hidden]down-> P_EduWrite
+    P_EduWrite -[hidden]right-> P_EduSubmit
+  }
+}
+
+' =========================
+' Layout Helper Antar Package
+' =========================
+P_MedLog -[hidden]down-> P_MLService
+P_NutritionSave -[hidden]down-> P_Pairing
+P_FcmTest -[hidden]down-> P_EduFeed
+
+' =========================
+' Main Actor Relations
+' =========================
+Patient -right-> P_Dashboard
+Patient -right-> P_MLService
+Patient -right-> P_SecondAssessment
+Patient -right-> P_SecondPredict
+Patient -right-> P_NutritionEstimate
+Patient -right-> P_Pairing
+Patient -right-> P_FcmToken
+Patient -right-> P_EduFeed
+Patient -right-> P_EduWrite
+Patient -right-> P_EduEngage
+
+' =========================
+' External System Relations
+' =========================
+FCM -right-> P_FcmToken
+
+HFMS -left-> P_MLService
+HeartRiskML -left-> P_SecondPredict
+Gemini -left-> P_NutritionEstimate
+
+' =========================
+' Use Case Dependencies
+' =========================
+P_Dashboard .> P_Medication : <<include>>
+P_Medication .> P_Reminder : <<include>>
+P_Medication .> P_MedLog : <<include>>
+
+P_MLService .> P_MLReadiness : <<include>>
+P_MLService .> P_MLPayload : <<include>>
+P_MLService .> P_MLPredict : <<include>>
+P_MLService .> P_MLHistory : <<include>>
+
+P_SecondPredict .> P_SecondAssessment : <<include>>
+P_SecondPredict .> P_SecondHistory : <<include>>
+
+P_NutritionEstimate .> P_NutritionSave : <<include>>
+
+P_Pairing .> P_ShareCode : <<include>>
+P_Pairing .> P_PairConfirm : <<include>>
+
+P_FcmToken .> P_Pairing : <<include>>
+P_FcmToken .> P_FcmTest : <<include>>
+
+P_EduFeed .> P_EduDetail : <<include>>
+P_EduDetail .> P_EduEngage : <<extend>>
+P_EduWrite .> P_EduSubmit : <<extend>>
+
+@enduml

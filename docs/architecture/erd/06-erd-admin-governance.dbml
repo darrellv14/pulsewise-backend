@@ -1,0 +1,146 @@
+Project pulsewise_erd_admin_governance {
+  database_type: 'PostgreSQL'
+  Note: '''
+  ERD domain admin dan governance akun.
+  Admin tidak dimodelkan sebagai tabel terpisah, tetapi sebagai role pada roles/user_roles.
+  Verifikasi dokter dimodelkan melalui doctor_profiles dan users.account_status.
+  Moderasi Education CMS dimodelkan melalui article, revision, comment, dan relasi reviewer/admin.
+  '''
+}
+
+Table roles {
+  role_id smallint [pk]
+  code varchar(32) [not null, unique]
+  label varchar(64) [not null]
+}
+
+Table users {
+  user_id uuid [pk]
+  username varchar(100) [not null, unique]
+  email varchar(255) [not null, unique]
+  first_name varchar(100)
+  last_name varchar(100)
+  onboarding_completed boolean [not null]
+  account_status varchar(32) [not null]
+  email_verified_at timestamptz
+  is_active boolean [not null]
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+}
+
+Table user_roles {
+  user_id uuid [pk]
+  role_id smallint [pk]
+  assigned_at timestamptz [not null]
+}
+
+Table email_verifications {
+  verification_id uuid [pk]
+  user_id uuid [not null]
+  email varchar(255) [not null]
+  purpose varchar(32) [not null]
+  otp_code_hash text [not null]
+  expires_at timestamptz [not null]
+  consumed_at timestamptz
+  created_at timestamptz [not null]
+}
+
+Table doctor_profiles {
+  doctor_id uuid [pk]
+  specialization varchar(120)
+  license_no varchar(120)
+  hospital_name varchar(150)
+  is_verified boolean [not null]
+  verified_at timestamptz
+  verified_by uuid
+  verification_note text
+  rejection_reason text
+  created_at timestamptz [not null]
+}
+
+Table education_categories {
+  category_id uuid [pk]
+  slug varchar(120) [not null, unique]
+  name varchar(120) [not null]
+  is_active boolean [not null]
+}
+
+Table education_articles {
+  article_id uuid [pk]
+  author_user_id uuid [not null]
+  category_id uuid
+  slug varchar(200) [not null, unique]
+  title varchar(200) [not null]
+  status varchar(32) [not null]
+  approved_by uuid
+  approved_at timestamptz
+  last_reviewed_by uuid
+  last_reviewed_at timestamptz
+  rejection_reason text
+  published_at timestamptz
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+}
+
+Table education_article_revisions {
+  revision_id uuid [pk]
+  article_id uuid [not null]
+  author_user_id uuid [not null]
+  category_id uuid
+  title varchar(200) [not null]
+  status varchar(32) [not null]
+  submitted_at timestamptz
+  reviewed_by uuid
+  reviewed_at timestamptz
+  rejection_reason text
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+}
+
+Table education_article_comments {
+  comment_id uuid [pk]
+  article_id uuid [not null]
+  user_id uuid [not null]
+  parent_comment_id uuid
+  status varchar(32) [not null]
+  hidden_by uuid
+  hidden_at timestamptz
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+}
+
+TableGroup admin_identity {
+  roles
+  users
+  user_roles
+  email_verifications
+}
+
+TableGroup doctor_governance {
+  doctor_profiles
+}
+
+TableGroup education_governance {
+  education_categories
+  education_articles
+  education_article_revisions
+  education_article_comments
+}
+
+Ref: user_roles.user_id > users.user_id
+Ref: user_roles.role_id > roles.role_id
+Ref: email_verifications.user_id > users.user_id
+Ref: doctor_profiles.doctor_id - users.user_id
+Ref: doctor_profiles.verified_by > users.user_id
+Ref: education_articles.author_user_id > users.user_id
+Ref: education_articles.category_id > education_categories.category_id
+Ref: education_articles.approved_by > users.user_id
+Ref: education_articles.last_reviewed_by > users.user_id
+Ref: education_article_revisions.article_id > education_articles.article_id
+Ref: education_article_revisions.author_user_id > users.user_id
+Ref: education_article_revisions.category_id > education_categories.category_id
+Ref: education_article_revisions.reviewed_by > users.user_id
+Ref: education_article_comments.article_id > education_articles.article_id
+Ref: education_article_comments.user_id > users.user_id
+Ref: education_article_comments.parent_comment_id > education_article_comments.comment_id
+Ref: education_article_comments.hidden_by > users.user_id

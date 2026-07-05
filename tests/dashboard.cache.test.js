@@ -1,3 +1,7 @@
+jest.mock('../src/config/redis', () => ({
+  getRedisClient: jest.fn().mockResolvedValue(null),
+}));
+
 jest.mock('../src/repositories/dashboardRepository', () => ({
   getDoctorPatientIdentity: jest.fn(),
   listDailyMetricsSeries: jest.fn(),
@@ -8,9 +12,14 @@ const dashboardRepository = require('../src/repositories/dashboardRepository');
 const doctorDashboardService = require('../src/services/care/doctorDashboardService');
 const { __resetMemoryStoreForTests } = require('../src/services/cache/cacheService');
 const { invalidateDashboardPatientCaches } = require('../src/services/cache/invalidation');
+const { ACCOUNT_STATUSES } = require('../src/constants/enums');
 
 describe('Dashboard cache behavior', () => {
-  const actor = { userId: '8aca6089-3899-4b85-a715-0a63113e846a', role: 'doctor' };
+  const actor = {
+    userId: '8aca6089-3899-4b85-a715-0a63113e846a',
+    role: 'doctor',
+    accountStatus: ACCOUNT_STATUSES.ACTIVE,
+  };
   const doctorId = actor.userId;
   const patientId = '229f4f2c-a907-4c51-877a-c3f867453744';
 

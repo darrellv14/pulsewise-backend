@@ -1,0 +1,133 @@
+@startuml
+title Diagram Use Case Ringkas Backend PulseWise
+
+left to right direction
+
+skinparam handwritten false
+skinparam linetype ortho
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontColor #222222
+skinparam ArrowColor #555555
+skinparam ArrowThickness 1
+skinparam nodesep 28
+skinparam ranksep 38
+
+skinparam actor {
+  BackgroundColor #FAFAFA
+  BorderColor #555555
+  FontColor #222222
+  BorderThickness 1
+}
+
+skinparam usecase {
+  BackgroundColor #F7F7F7
+  BorderColor #666666
+  FontColor #222222
+  BorderThickness 1
+}
+
+skinparam rectangle {
+  BackgroundColor #EDEDED
+  BorderColor #666666
+  FontColor #222222
+  BorderThickness 1
+}
+
+' =========================
+' Aktor utama di sisi kiri
+' =========================
+actor "Pasien" as Patient
+actor "Dokter" as Doctor
+actor "Admin" as Admin
+
+' =========================
+' Sistem utama di tengah
+' =========================
+rectangle "Sistem Backend PulseWise" as System {
+  usecase "Autentikasi,\nProfil, dan\nManajemen Akun" as UC_Account
+  usecase "Monitoring Pasien:\nDiari, Biometrik,\nMedication, Dashboard" as UC_Care
+  usecase "Analitik Klinis:\nPairing Dokter-Pasien,\nML HFMS, Second ML" as UC_Clinical
+  usecase "CMS Edukasi:\nArtikel, Moderasi,\nKomentar, dan Media" as UC_CMS
+
+  UC_Account -[hidden]down- UC_Care
+  UC_Care -[hidden]down- UC_Clinical
+  UC_Clinical -[hidden]down- UC_CMS
+}
+
+' =========================
+' Layanan eksternal di kanan
+' =========================
+actor "Google OAuth /\nEmail Service" as AuthExt
+actor "Health Connect /\nSmartwatch" as Wearable
+actor "Gemini AI" as Gemini
+actor "HFMS ML Service" as HFMS
+actor "Second ML\nHeart Risk Service" as HeartRisk
+actor "FCM /\nPush Service" as FCM
+actor "Cloudinary" as Cloudinary
+
+' =========================
+' Menjaga posisi vertikal aktor kiri
+' =========================
+Patient -[hidden]down- Doctor
+Doctor -[hidden]down- Admin
+
+' =========================
+' Menjaga posisi aktor kanan agar sejajar
+' =========================
+UC_Account -[hidden]right- AuthExt
+UC_Care -[hidden]right- Wearable
+Wearable -[hidden]down- Gemini
+Gemini -[hidden]down- FCM
+UC_Clinical -[hidden]right- HFMS
+HFMS -[hidden]down- HeartRisk
+UC_CMS -[hidden]right- Cloudinary
+
+' =========================
+' Menjaga aktor kiri tetap dekat domain utamanya
+' =========================
+Patient -[hidden]right- UC_Care
+Doctor -[hidden]right- UC_Clinical
+Admin -[hidden]right- UC_CMS
+
+' =========================
+' Relasi aktor utama ke sistem
+' Arah -right-> memaksa aktor berada di kiri use case
+' =========================
+Patient -right-> UC_Account
+Patient -right-> UC_Care
+Patient -right-> UC_Clinical
+Patient -right-> UC_CMS
+
+Doctor -right-> UC_Account
+Doctor -right-> UC_Care
+Doctor -right-> UC_Clinical
+Doctor -right-> UC_CMS
+
+Admin -right-> UC_Account
+Admin -right-> UC_CMS
+
+' =========================
+' Relasi layanan eksternal ke sistem
+' Arah -left-> membantu layanan eksternal tetap di kanan
+' =========================
+AuthExt -left-> UC_Account
+Wearable -left-> UC_Care
+Gemini -left-> UC_Care
+FCM -left-> UC_Care
+
+HFMS -left-> UC_Clinical
+HeartRisk -left-> UC_Clinical
+
+Cloudinary -left-> UC_CMS
+
+' =========================
+' Relasi antar use case
+' =========================
+UC_Care .> UC_Clinical : <<supports>>
+UC_Account .> UC_Care : <<secures>>
+UC_Account .> UC_CMS : <<secures>>
+
+@enduml

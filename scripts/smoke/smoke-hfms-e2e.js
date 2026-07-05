@@ -3,10 +3,15 @@ require('dotenv').config({ override: true });
 const app = require('../../src/app');
 
 const BASE_URL = process.env.SMOKE_BASE_URL || `http://localhost:${process.env.PORT || 5000}`;
-const HFMS_BASE_URL = process.env.ML_SERVICE_BASE_URL || 'http://localhost:8080';
+const HFMS_BASE_URL =
+  process.env.SMOKE_HFMS_BASE_URL ||
+  process.env.ML_SERVICE_BASE_URL ||
+  process.env.HFMS_BASE_URL ||
+  'http://localhost:8080';
 const DOCTOR_EMAIL = process.env.SMOKE_DOCTOR_EMAIL || 'doctor@pulsewise.local';
 const PATIENT_EMAIL = process.env.SMOKE_PATIENT_EMAIL || 'seed.patient2@pulsewise.local';
 const PASSWORD = process.env.SMOKE_PASSWORD || 'dev12345';
+const SHOULD_BOOT_LOCAL_APP = process.env.SMOKE_BOOT_LOCAL_APP === 'true';
 
 async function requestJson(baseUrl, method, path, token, body) {
   const response = await fetch(`${baseUrl}${path}`, {
@@ -81,10 +86,12 @@ function summarizeRecommendation(response) {
 }
 
 async function run() {
-  const server = await new Promise((resolve, reject) => {
-    const instance = app.listen(process.env.PORT || 5000, () => resolve(instance));
-    instance.once('error', reject);
-  });
+  const server = SHOULD_BOOT_LOCAL_APP
+    ? await new Promise((resolve, reject) => {
+        const instance = app.listen(process.env.PORT || 5000, () => resolve(instance));
+        instance.once('error', reject);
+      })
+    : null;
 
   try {
     const doctorLogin = await requestJson(BASE_URL, 'POST', '/auth/login', null, {
@@ -212,15 +219,17 @@ async function run() {
       process.exitCode = 1;
     }
   } finally {
-    await new Promise((resolve, reject) => {
-      server.close((error) => {
-        if (error) {
-          reject(error);
-          return;
-        }
-        resolve();
+    if (server) {
+      await new Promise((resolve, reject) => {
+        server.close((error) => {
+          if (error) {
+            reject(error);
+            return;
+          }
+          resolve();
+        });
       });
-    });
+    }
   }
 }
 

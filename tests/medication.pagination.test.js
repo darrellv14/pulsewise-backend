@@ -345,7 +345,7 @@ describe('medication pagination', () => {
     });
   });
 
-  test('listMedicationCalendar expands daily reminders for every date in range and weekly reminders by weekday', async () => {
+  test('listMedicationCalendar respects numOfDays for daily reminders and weekly reminders by weekday', async () => {
     jest.useFakeTimers().setSystemTime(new Date('2026-04-16T02:00:00.000Z'));
 
     prisma.medication.findMany.mockResolvedValue([
@@ -358,7 +358,7 @@ describe('medication pagination', () => {
         singleDoseUnit: 'tablet',
         startDate: new Date('2026-04-10T00:00:00.000Z'),
         frequency: 'daily',
-        numOfDays: 1,
+        numOfDays: 2,
         createdAt: new Date('2026-04-01T00:00:00.000Z'),
         reminders: [
           {
@@ -400,9 +400,9 @@ describe('medication pagination', () => {
         userId: 'user-1',
         medicationId: 'med-daily',
         status: 'taken',
-        medicationDate: new Date('2026-04-11T00:00:00.000Z'),
+        medicationDate: new Date('2026-04-12T00:00:00.000Z'),
         medicationTime: new Date('1970-01-01T08:00:00.000Z'),
-        createdAt: new Date('2026-04-11T08:05:00.000Z'),
+        createdAt: new Date('2026-04-12T08:05:00.000Z'),
       },
     ]);
     prisma.medicationLog.findMany
@@ -412,9 +412,9 @@ describe('medication pagination', () => {
           userId: 'user-1',
           medicationId: 'med-daily',
           status: 'taken',
-          medicationDate: new Date('2026-04-11T00:00:00.000Z'),
+          medicationDate: new Date('2026-04-12T00:00:00.000Z'),
           medicationTime: new Date('1970-01-01T08:00:00.000Z'),
-          createdAt: new Date('2026-04-11T08:05:00.000Z'),
+          createdAt: new Date('2026-04-12T08:05:00.000Z'),
         },
       ])
       .mockResolvedValueOnce([
@@ -423,9 +423,9 @@ describe('medication pagination', () => {
           userId: 'user-1',
           medicationId: 'med-daily',
           status: 'taken',
-          medicationDate: new Date('2026-04-11T00:00:00.000Z'),
+          medicationDate: new Date('2026-04-12T00:00:00.000Z'),
           medicationTime: new Date('1970-01-01T08:00:00.000Z'),
-          createdAt: new Date('2026-04-11T08:05:00.000Z'),
+          createdAt: new Date('2026-04-12T08:05:00.000Z'),
         },
         {
           medicationLogId: 'log-missed-0410',
@@ -433,24 +433,6 @@ describe('medication pagination', () => {
           medicationId: 'med-daily',
           status: 'missed',
           medicationDate: new Date('2026-04-10T00:00:00.000Z'),
-          medicationTime: new Date('1970-01-01T08:00:00.000Z'),
-          createdAt: new Date('2026-04-16T02:00:00.000Z'),
-        },
-        {
-          medicationLogId: 'log-missed-0412',
-          userId: 'user-1',
-          medicationId: 'med-daily',
-          status: 'missed',
-          medicationDate: new Date('2026-04-12T00:00:00.000Z'),
-          medicationTime: new Date('1970-01-01T08:00:00.000Z'),
-          createdAt: new Date('2026-04-16T02:00:00.000Z'),
-        },
-        {
-          medicationLogId: 'log-missed-0413',
-          userId: 'user-1',
-          medicationId: 'med-daily',
-          status: 'missed',
-          medicationDate: new Date('2026-04-13T00:00:00.000Z'),
           medicationTime: new Date('1970-01-01T08:00:00.000Z'),
           createdAt: new Date('2026-04-16T02:00:00.000Z'),
         },
@@ -526,28 +508,7 @@ describe('medication pagination', () => {
           userId: 'user-1',
           medicationId: 'med-daily',
           status: 'missed',
-          medicationDate: new Date('2026-04-12T00:00:00.000Z'),
-          medicationTime: new Date('1970-01-01T08:00:00.000Z'),
-        },
-        {
-          userId: 'user-1',
-          medicationId: 'med-daily',
-          status: 'missed',
-          medicationDate: new Date('2026-04-13T00:00:00.000Z'),
-          medicationTime: new Date('1970-01-01T08:00:00.000Z'),
-        },
-        {
-          userId: 'user-1',
-          medicationId: 'med-daily',
-          status: 'missed',
           medicationDate: new Date('2026-04-14T00:00:00.000Z'),
-          medicationTime: new Date('1970-01-01T08:00:00.000Z'),
-        },
-        {
-          userId: 'user-1',
-          medicationId: 'med-daily',
-          status: 'missed',
-          medicationDate: new Date('2026-04-15T00:00:00.000Z'),
           medicationTime: new Date('1970-01-01T08:00:00.000Z'),
         },
         {
@@ -563,7 +524,7 @@ describe('medication pagination', () => {
       from: '2026-04-10',
       to: '2026-04-15',
     });
-    expect(result.totalItems).toBe(7);
+    expect(result.totalItems).toBe(4);
     expect(result.items).toEqual([
       expect.objectContaining({
         eventId: 'rem-daily:2026-04-10',
@@ -572,23 +533,11 @@ describe('medication pagination', () => {
         status: 'missed',
       }),
       expect.objectContaining({
-        eventId: 'rem-daily:2026-04-11',
-        scheduledDate: '2026-04-11',
-        scheduledTime: '08:00',
-        status: 'taken',
-        medicationLogId: 'log-1',
-      }),
-      expect.objectContaining({
         eventId: 'rem-daily:2026-04-12',
         scheduledDate: '2026-04-12',
         scheduledTime: '08:00',
-        status: 'missed',
-      }),
-      expect.objectContaining({
-        eventId: 'rem-daily:2026-04-13',
-        scheduledDate: '2026-04-13',
-        scheduledTime: '08:00',
-        status: 'missed',
+        status: 'taken',
+        medicationLogId: 'log-1',
       }),
       expect.objectContaining({
         eventId: 'rem-weekly:2026-04-13',
@@ -601,12 +550,6 @@ describe('medication pagination', () => {
       expect.objectContaining({
         eventId: 'rem-daily:2026-04-14',
         scheduledDate: '2026-04-14',
-        scheduledTime: '08:00',
-        status: 'missed',
-      }),
-      expect.objectContaining({
-        eventId: 'rem-daily:2026-04-15',
-        scheduledDate: '2026-04-15',
         scheduledTime: '08:00',
         status: 'missed',
       }),

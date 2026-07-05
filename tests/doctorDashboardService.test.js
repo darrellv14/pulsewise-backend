@@ -12,6 +12,7 @@ jest.mock('../src/services/cache/cacheService', () => ({
 }));
 
 const dashboardRepository = require('../src/repositories/dashboardRepository');
+const { ACCOUNT_STATUSES } = require('../src/constants/enums');
 const {
   getDoctorDashboardPatientSummary,
   getPatientSelfDashboardSummary,
@@ -55,7 +56,11 @@ describe('doctorDashboardService', () => {
     ]);
 
     const result = await getDoctorDashboardPatientSummary({
-      actor: { userId: 'doctor-1', role: 'doctor' },
+      actor: {
+        userId: 'doctor-1',
+        role: 'doctor',
+        accountStatus: ACCOUNT_STATUSES.ACTIVE,
+      },
       doctorId: 'doctor-1',
       patientId: 'patient-1',
     });
@@ -175,7 +180,11 @@ describe('doctorDashboardService', () => {
     ]);
 
     const result = await getDoctorDashboardPatientSummary({
-      actor: { userId: 'doctor-1', role: 'doctor' },
+      actor: {
+        userId: 'doctor-1',
+        role: 'doctor',
+        accountStatus: ACCOUNT_STATUSES.ACTIVE,
+      },
       doctorId: 'doctor-1',
       patientId: 'patient-1',
     });
@@ -226,7 +235,11 @@ describe('doctorDashboardService', () => {
     ]);
 
     const result = await getDoctorDashboardPatientVitals({
-      actor: { userId: 'doctor-1', role: 'doctor' },
+      actor: {
+        userId: 'doctor-1',
+        role: 'doctor',
+        accountStatus: ACCOUNT_STATUSES.ACTIVE,
+      },
       doctorId: 'doctor-1',
       patientId: 'patient-1',
       query: { timePeriod: 'last_30_days' },

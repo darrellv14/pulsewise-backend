@@ -1,0 +1,118 @@
+@startuml
+title Use Case Diagram - Pasien A PulseWise Backend
+
+top to bottom direction
+
+skinparam linetype ortho
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontColor #222222
+skinparam ArrowColor #555555
+skinparam ArrowThickness 1
+skinparam nodesep 25
+skinparam ranksep 30
+
+skinparam actor {
+  BackgroundColor #FAFAFA
+  BorderColor #555555
+  FontColor #222222
+}
+
+skinparam usecase {
+  BackgroundColor #F7F7F7
+  BorderColor #666666
+  FontColor #222222
+}
+
+skinparam rectangle {
+  BackgroundColor #EDEDED
+  BorderColor #666666
+  FontColor #222222
+}
+
+skinparam package {
+  BackgroundColor #F2F2F2
+  BorderColor #7A7A7A
+  FontColor #222222
+}
+
+actor "Pasien" as Patient
+
+actor "Google OAuth" as Google
+actor "Email Service" as Email
+actor "Health Connect /\nSmartwatch" as Wearable
+
+rectangle "PulseWise Backend - Use Case Pasien A" {
+
+  package "Akses Akun" {
+    usecase "Registrasi dan\nVerifikasi Akun" as P_Register
+    usecase "Login" as P_Login
+    usecase "Login dengan\nGoogle" as P_GoogleLogin
+    usecase "Pengelolaan\nKredensial Akun" as P_Credential
+    usecase "Pengaturan Ulang\nKata Sandi" as P_ResetPassword
+    usecase "Permintaan Hapus\nAkun Permanen" as P_DeleteAccount
+    usecase "Re-autentikasi / OTP\nuntuk Hapus Akun" as P_DeleteReauth
+
+    P_Register -[hidden]down-> P_Login
+    P_Login -[hidden]down-> P_GoogleLogin
+    P_GoogleLogin -[hidden]down-> P_Credential
+    P_Credential -[hidden]down-> P_ResetPassword
+    P_ResetPassword -[hidden]down-> P_DeleteAccount
+    P_DeleteAccount -[hidden]down-> P_DeleteReauth
+  }
+
+  package "Profil Pasien" {
+    usecase "Pengelolaan\nProfil Pasien" as P_Profile
+    usecase "Pengelolaan\nProfil ML Pasien" as P_MlProfile
+    usecase "Pengelolaan\nAsesmen ML Pasien" as P_MlAssessment
+
+    P_Profile -[hidden]down-> P_MlProfile
+    P_MlProfile -[hidden]down-> P_MlAssessment
+  }
+
+  package "Diari dan Biometrik" {
+    usecase "Pengelolaan\nDiari Jantung" as P_Diary
+    usecase "Pencatatan\nEntri Harian" as P_DiaryEntry
+    usecase "Akses Detail\nDiari" as P_DiaryDetail
+    usecase "Sinkronisasi\nBiometrik" as P_Biometrics
+    usecase "Riwayat Data\nBiometrik" as P_BiometricsHistory
+
+    P_Diary -[hidden]down-> P_DiaryEntry
+    P_DiaryEntry -[hidden]down-> P_DiaryDetail
+    P_DiaryDetail -[hidden]down-> P_Biometrics
+    P_Biometrics -[hidden]down-> P_BiometricsHistory
+  }
+}
+
+Patient --> P_Register
+Patient --> P_Login
+Patient --> P_Profile
+Patient --> P_Diary
+Patient --> P_Biometrics
+Patient --> P_DeleteAccount
+
+Google --> P_GoogleLogin
+Email --> P_Register
+Email --> P_Credential
+Email --> P_ResetPassword
+Email --> P_DeleteReauth
+Wearable --> P_Biometrics
+
+P_Login .> P_GoogleLogin : <<extend>>
+
+P_Profile .> P_MlProfile : <<include>>
+P_Profile .> P_MlAssessment : <<include>>
+P_Profile .> P_Credential : <<include>>
+
+P_Credential .> P_ResetPassword : <<include>>
+P_DeleteAccount .> P_DeleteReauth : <<include>>
+P_DeleteAccount .> P_Credential : <<reauth>>
+
+P_Diary .> P_DiaryEntry : <<include>>
+P_Diary .> P_DiaryDetail : <<include>>
+
+P_Biometrics .> P_BiometricsHistory : <<include>>
+
+@enduml
