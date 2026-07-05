@@ -58,6 +58,7 @@ async function register(payload) {
     firstName,
     lastName,
     role,
+    onboardingCompleted: role === 'patient' ? false : true,
     accountStatus: ACCOUNT_STATUSES.PENDING_VERIFICATION,
     emailVerifiedAt: null,
   });

@@ -14,6 +14,7 @@ const {
   buildAuthResponse,
   buildGoogleEmailAlreadyRegisteredError,
   buildGoogleProfile,
+  resolveOnboardingCompleted,
   buildUserProfile,
 } = require('./shared');
 const { buildInactiveAccountError, buildPendingDoctorLoginResponse } = require('./sessionService');
@@ -199,7 +200,7 @@ async function beginGoogleAuth(tokenPayload, role = 'patient') {
   return {
     nextStep: 'VERIFY_OTP',
     accountExists: true,
-    registrationCompleted: true,
+    registrationCompleted: resolveOnboardingCompleted(user),
     otpRequired: true,
     email: user.email,
     user: buildUserProfile(user),
@@ -241,7 +242,7 @@ async function completeGoogleRegistration(payload) {
     return {
       nextStep: 'VERIFY_OTP',
       accountExists: true,
-      registrationCompleted: true,
+      registrationCompleted: resolveOnboardingCompleted(user),
       otpRequired: true,
       email: user.email,
       user: buildUserProfile(user),
@@ -258,7 +259,7 @@ async function completeGoogleRegistration(payload) {
     role,
     passwordHash: placeholderPasswordHash,
     googleSub: googleProfile.googleSub,
-    onboardingCompleted: true,
+    onboardingCompleted: role === 'patient' ? false : true,
     accountStatus: ACCOUNT_STATUSES.PENDING_VERIFICATION,
     emailVerifiedAt: null,
   });
@@ -267,7 +268,7 @@ async function completeGoogleRegistration(payload) {
   return {
     nextStep: 'VERIFY_OTP',
     accountExists: true,
-    registrationCompleted: true,
+    registrationCompleted: resolveOnboardingCompleted(user),
     otpRequired: true,
     email: user.email,
     user: buildUserProfile(user),

@@ -16,6 +16,24 @@ function toNullableNumber(value) {
   return value === null || value === undefined ? null : Number(value);
 }
 
+function isPatientProfileOnboardingComplete(profile) {
+  if (!profile) {
+    return false;
+  }
+
+  return Boolean(
+    profile.dateOfBirth ||
+      profile.sex ||
+      (profile.bodyHeightCm !== null && profile.bodyHeightCm !== undefined) ||
+      profile.healthConnectPreference ||
+      profile.healthConnectStatus ||
+      (profile.isSmoking !== null && profile.isSmoking !== undefined) ||
+      (profile.isElectricSmoking !== null && profile.isElectricSmoking !== undefined) ||
+      profile.bloodType ||
+      profile.user?.address
+  );
+}
+
 function mapPatientProfile(profile) {
   if (!profile) {
     return null;
@@ -224,7 +242,7 @@ async function upsertPatientProfile({
       });
     }
 
-    return tx.patientProfile.findUnique({
+    let currentProfile = await tx.patientProfile.findUnique({
       where: {
         patientId,
       },
@@ -240,6 +258,38 @@ async function upsertPatientProfile({
         },
       },
     });
+
+    const onboardingCompleted = isPatientProfileOnboardingComplete(currentProfile);
+    if (currentProfile?.user?.onboardingCompleted !== onboardingCompleted) {
+      await tx.user.update({
+        where: {
+          userId: patientId,
+        },
+        data: {
+          onboardingCompleted,
+          updatedAt: new Date(),
+        },
+      });
+
+      currentProfile = await tx.patientProfile.findUnique({
+        where: {
+          patientId,
+        },
+        include: {
+          user: {
+            select: {
+              firstName: true,
+              lastName: true,
+              email: true,
+              avatarPhoto: true,
+              address: true,
+            },
+          },
+        },
+      });
+    }
+
+    return currentProfile;
   });
 
   await invalidateCacheTags([

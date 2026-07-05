@@ -46,6 +46,19 @@ function buildUserInclude() {
         rejectionReason: true,
       },
     },
+    patientProfile: {
+      select: {
+        patientId: true,
+        dateOfBirth: true,
+        sex: true,
+        bodyHeightCm: true,
+        healthConnectPreference: true,
+        healthConnectStatus: true,
+        isSmoking: true,
+        isElectricSmoking: true,
+        bloodType: true,
+      },
+    },
   };
 }
 
@@ -72,6 +85,27 @@ function mapUserWithRole(user) {
     role: primaryRole,
     roles,
     doctor_verification: mapDoctorVerification(user.doctorProfile),
+    patient_profile: user.patientProfile
+      ? {
+          patient_id: user.patientProfile.patientId,
+          dateOfBirth: user.patientProfile.dateOfBirth,
+          sex: user.patientProfile.sex,
+          bodyHeightCm:
+            user.patientProfile.bodyHeightCm === null ||
+            user.patientProfile.bodyHeightCm === undefined
+              ? null
+              : Number(user.patientProfile.bodyHeightCm),
+          healthConnectPreference: user.patientProfile.healthConnectPreference || null,
+          healthConnectStatus: user.patientProfile.healthConnectStatus || null,
+          isSmoking:
+            user.patientProfile.isSmoking === undefined ? null : user.patientProfile.isSmoking,
+          isElectricSmoking:
+            user.patientProfile.isElectricSmoking === undefined
+              ? null
+              : user.patientProfile.isElectricSmoking,
+          bloodType: user.patientProfile.bloodType || null,
+        }
+      : null,
   };
 }
 
@@ -209,6 +243,18 @@ async function createUserWithRole({
         });
       }
 
+      if (role === 'patient') {
+        await tx.patientProfile.upsert({
+          where: {
+            patientId: user.userId,
+          },
+          create: {
+            patientId: user.userId,
+          },
+          update: {},
+        });
+      }
+
       return tx.user.findUnique({
         where: {
           userId: user.userId,
@@ -324,6 +370,7 @@ async function activateUserByEmail(email) {
 
     const roles = resolveRoles(existing.userRoles);
     const isDoctor = roles.includes('doctor');
+    const isPatient = roles.includes('patient');
 
     const updatedUser = await tx.user.update({
       where: {
@@ -333,6 +380,7 @@ async function activateUserByEmail(email) {
         accountStatus: isDoctor
           ? ACCOUNT_STATUSES.PENDING_ADMIN_VERIFICATION
           : ACCOUNT_STATUSES.ACTIVE,
+        onboardingCompleted: isPatient ? false : existing.onboardingCompleted,
         emailVerifiedAt: {
           set: new Date(),
         },
@@ -355,6 +403,18 @@ async function activateUserByEmail(email) {
           verifiedBy: null,
           rejectionReason: null,
         },
+      });
+    }
+
+    if (isPatient) {
+      await tx.patientProfile.upsert({
+        where: {
+          patientId: updatedUser.userId,
+        },
+        create: {
+          patientId: updatedUser.userId,
+        },
+        update: {},
       });
     }
 

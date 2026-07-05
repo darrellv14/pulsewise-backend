@@ -62,7 +62,8 @@ describe('authService.register', () => {
       role: 'patient',
       account_status: 'pending_verification',
       email_verified_at: null,
-      onboarding_completed: true,
+      onboarding_completed: false,
+      patient_profile: null,
     });
     userRepository.createEmailVerification.mockResolvedValue({
       verification_id: '22222222-2222-4222-8222-222222222222',
@@ -95,6 +96,7 @@ describe('authService.register', () => {
       user: {
         email: 'patient@example.com',
         accountStatus: 'pending_verification',
+        onboardingCompleted: false,
       },
     });
   });
@@ -109,7 +111,8 @@ describe('authService.register', () => {
       role: 'patient',
       account_status: 'pending_verification',
       email_verified_at: null,
-      onboarding_completed: true,
+      onboarding_completed: false,
+      patient_profile: null,
     });
     userRepository.updatePendingUserRegistration.mockResolvedValue({
       user_id: '33333333-3333-4333-8333-333333333333',
@@ -120,7 +123,8 @@ describe('authService.register', () => {
       role: 'patient',
       account_status: 'pending_verification',
       email_verified_at: null,
-      onboarding_completed: true,
+      onboarding_completed: false,
+      patient_profile: null,
     });
     userRepository.deleteEmailVerificationsByEmail.mockResolvedValue(2);
     userRepository.createEmailVerification.mockResolvedValue({
@@ -432,7 +436,8 @@ describe('authService.completeGoogleRegistration', () => {
       role: 'patient',
       account_status: 'pending_verification',
       email_verified_at: null,
-      onboarding_completed: true,
+      onboarding_completed: false,
+      patient_profile: null,
     });
     userRepository.createEmailVerification.mockResolvedValue({
       verification_id: '55555555-5555-4555-8555-555555555555',
@@ -450,13 +455,14 @@ describe('authService.completeGoogleRegistration', () => {
         username: 'google_signup',
         email: 'google.signup@example.com',
         googleSub: 'google-sub-002',
-        onboardingCompleted: true,
+        onboardingCompleted: false,
         accountStatus: 'pending_verification',
       })
     );
     expect(sendOtpEmail).toHaveBeenCalledTimes(1);
     expect(result.nextStep).toBe('VERIFY_OTP');
     expect(result.user.email).toBe('google.signup@example.com');
+    expect(result.registrationCompleted).toBe(false);
   });
 
   test('rejects Google registration completion when email already belongs to password account', async () => {
@@ -518,6 +524,26 @@ describe('authService.getCurrentUser', () => {
       '11111111-1111-4111-8111-111111111111'
     );
     expect(result.avatarPhoto).toBe('https://res.cloudinary.com/demo/image/upload/v1/avatar.png');
+  });
+
+  test('reports onboarding incomplete for patient without patient profile data', async () => {
+    userRepository.findUserById.mockResolvedValue({
+      user_id: '11111111-1111-4111-8111-111111111111',
+      username: 'patient',
+      email: 'patient@example.com',
+      first_name: 'Pat',
+      last_name: 'Ient',
+      role: 'patient',
+      roles: ['patient'],
+      account_status: 'active',
+      email_verified_at: '2026-04-10T10:43:08.257Z',
+      onboarding_completed: true,
+      patient_profile: null,
+    });
+
+    const result = await authService.getCurrentUser('11111111-1111-4111-8111-111111111111');
+
+    expect(result.onboardingCompleted).toBe(false);
   });
 });
 

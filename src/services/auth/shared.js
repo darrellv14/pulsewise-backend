@@ -41,11 +41,48 @@ function buildAuthPayload(user) {
   };
 }
 
+function hasPatientProfileMinimumData(user) {
+  const profile = user?.patient_profile || null;
+
+  if (!profile) {
+    return false;
+  }
+
+  return Boolean(
+    profile.dateOfBirth ||
+      profile.sex ||
+      (profile.bodyHeightCm !== null && profile.bodyHeightCm !== undefined) ||
+      profile.bloodType ||
+      profile.healthConnectPreference ||
+      profile.healthConnectStatus ||
+      (profile.isSmoking !== null && profile.isSmoking !== undefined) ||
+      (profile.isElectricSmoking !== null && profile.isElectricSmoking !== undefined) ||
+      user?.address
+  );
+}
+
+function resolveOnboardingCompleted(user) {
+  const roles = user?.roles || (user?.role ? [user.role] : []);
+  const isPatient = roles.includes('patient') || user?.role === 'patient';
+
+  if (!isPatient) {
+    return user?.onboarding_completed !== false;
+  }
+
+  if (user?.onboarding_completed === false) {
+    return false;
+  }
+
+  return hasPatientProfileMinimumData(user);
+}
+
 function buildAuthResponse(token, user, overrides = {}) {
+  const onboardingCompleted = resolveOnboardingCompleted(user);
+
   return {
-    nextStep: 'HOME',
+    nextStep: onboardingCompleted ? 'HOME' : 'COMPLETE_REGISTRATION',
     accountExists: true,
-    registrationCompleted: user.onboarding_completed !== false,
+    registrationCompleted: onboardingCompleted,
     otpRequired: false,
     restrictedAccess: false,
     token,
@@ -60,13 +97,15 @@ function buildAuthResponse(token, user, overrides = {}) {
       roles: user.roles || [user.role || 'patient'],
       accountStatus: user.account_status || ACCOUNT_STATUSES.PENDING_VERIFICATION,
       doctorVerification: user.doctor_verification || null,
-      onboardingCompleted: user.onboarding_completed !== false,
+      onboardingCompleted,
     },
     ...overrides,
   };
 }
 
 function buildUserProfile(user) {
+  const onboardingCompleted = resolveOnboardingCompleted(user);
+
   return {
     userId: user.user_id,
     username: user.username,
@@ -79,7 +118,7 @@ function buildUserProfile(user) {
     accountStatus: user.account_status || ACCOUNT_STATUSES.PENDING_VERIFICATION,
     emailVerifiedAt: user.email_verified_at || null,
     doctorVerification: user.doctor_verification || null,
-    onboardingCompleted: user.onboarding_completed !== false,
+    onboardingCompleted,
   };
 }
 
@@ -117,6 +156,7 @@ module.exports = {
   buildGooglePasswordChangeDisabledError,
   buildAuthPayload,
   buildAuthResponse,
+  resolveOnboardingCompleted,
   buildUserProfile,
   buildGoogleProfile,
   generateOtpCode,
