@@ -235,7 +235,7 @@ const env = {
     ),
     medicationReminderTickMs: Math.max(
       1000,
-      Number(process.env.MEDICATION_REMINDER_TICK_MS || 60 * 1000)
+      Number(process.env.MEDICATION_REMINDER_TICK_MS || 5 * 1000)
     ),
   },
   postgres: {
