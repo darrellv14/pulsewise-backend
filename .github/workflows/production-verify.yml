@@ -1,0 +1,53 @@
+name: Production Verify
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify-production:
+    name: Verify Production Health
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: production
+      url: https://pulsewise-api.algoritme.tech/health
+
+    steps:
+      - name: Check backend health endpoint
+        run: |
+          curl \
+            --fail \
+            --show-error \
+            --silent \
+            --location \
+            --retry 5 \
+            --retry-delay 5 \
+            --retry-connrefused \
+            https://pulsewise-api.algoritme.tech/health
+
+      - name: Check frontend public URL
+        run: |
+          curl \
+            --fail \
+            --show-error \
+            --silent \
+            --location \
+            --retry 5 \
+            --retry-delay 5 \
+            --retry-connrefused \
+            https://pulsewise.algoritme.tech/ \
+            > /dev/null
+
+      - name: Production verification summary
+        run: |
+          echo "Production backend and frontend are reachable."
